@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated": "2026-05-17T09:59:19.807Z",
+  "generated": "2026-05-17T09:59:35.767Z",
   "items": [
     {
       "name": "accordion",
@@ -53,9 +53,7 @@
         "framer-motion": "^11.18.1",
         "react": "^19.0.0"
       },
-      "registryDependencies": [
-        "button"
-      ],
+      "registryDependencies": ["button"],
       "files": [
         {
           "path": "alert-dialog.tsx",
@@ -177,9 +175,7 @@
         "react": "^19.0.0",
         "react-day-picker": "8.10.1"
       },
-      "registryDependencies": [
-        "button"
-      ],
+      "registryDependencies": ["button"],
       "files": [
         {
           "path": "calendar.tsx",
@@ -219,9 +215,7 @@
         "lucide-react": "^0.471.1",
         "react": "^19.0.0"
       },
-      "registryDependencies": [
-        "button"
-      ],
+      "registryDependencies": ["button"],
       "files": [
         {
           "path": "carousel.tsx",
@@ -305,9 +299,7 @@
         "lucide-react": "^0.471.1",
         "react": "^19.0.0"
       },
-      "registryDependencies": [
-        "dialog"
-      ],
+      "registryDependencies": ["dialog"],
       "files": [
         {
           "path": "command.tsx",
@@ -349,9 +341,7 @@
         "lucide-react": "^0.471.1",
         "react": "^19.0.0"
       },
-      "registryDependencies": [
-        "button"
-      ],
+      "registryDependencies": ["button"],
       "files": [],
       "import": "@blocks-kit/ui/components/copy-to-clipboard-button"
     },
@@ -385,11 +375,7 @@
         "react": "^19.0.0",
         "react-day-picker": "8.10.1"
       },
-      "registryDependencies": [
-        "button",
-        "calendar",
-        "popover"
-      ],
+      "registryDependencies": ["button", "calendar", "popover"],
       "files": [
         {
           "path": "date-range-picker.tsx",
@@ -474,10 +460,7 @@
         "react-dropzone": "^14.4.1",
         "sonner": "^1.7.1"
       },
-      "registryDependencies": [
-        "button",
-        "input"
-      ],
+      "registryDependencies": ["button", "input"],
       "files": [],
       "import": "@blocks-kit/ui/components/file-uploader"
     },
@@ -491,9 +474,7 @@
         "react": "^19.0.0",
         "react-hook-form": "^7.54.2"
       },
-      "registryDependencies": [
-        "label"
-      ],
+      "registryDependencies": ["label"],
       "files": [
         {
           "path": "form.tsx",
@@ -534,11 +515,7 @@
         "lucide-react": "^0.471.1",
         "react": "^19.0.0"
       },
-      "registryDependencies": [
-        "button",
-        "dialog",
-        "file-uploader"
-      ],
+      "registryDependencies": ["button", "dialog", "file-uploader"],
       "files": [],
       "import": "@blocks-kit/ui/components/import-file-modal"
     },
@@ -607,12 +584,7 @@
         "react": "^19.0.0",
         "react-dom": "^19.0.0"
       },
-      "registryDependencies": [
-        "badge",
-        "button",
-        "card",
-        "scroll-area"
-      ],
+      "registryDependencies": ["badge", "button", "card", "scroll-area"],
       "files": [],
       "import": "@blocks-kit/ui/components/kanban"
     },
@@ -677,13 +649,7 @@
         "lucide-react": "^0.471.1",
         "react": "^19.0.0"
       },
-      "registryDependencies": [
-        "badge",
-        "button",
-        "command",
-        "popover",
-        "separator"
-      ],
+      "registryDependencies": ["badge", "button", "command", "popover", "separator"],
       "files": [],
       "import": "@blocks-kit/ui/components/multi-select"
     },
@@ -717,9 +683,7 @@
         "lucide-react": "^0.471.1",
         "react": "^19.0.0"
       },
-      "registryDependencies": [
-        "button"
-      ],
+      "registryDependencies": ["button"],
       "files": [
         {
           "path": "index.ts",
@@ -739,9 +703,7 @@
         "lucide-react": "^0.471.1",
         "react": "^19.0.0"
       },
-      "registryDependencies": [
-        "input"
-      ],
+      "registryDependencies": ["input"],
       "files": [
         {
           "path": "index.ts",
@@ -928,14 +890,7 @@
         "lucide-react": "^0.471.1",
         "react": "^19.0.0"
       },
-      "registryDependencies": [
-        "button",
-        "input",
-        "separator",
-        "sheet",
-        "skeleton",
-        "tooltip"
-      ],
+      "registryDependencies": ["button", "input", "separator", "sheet", "skeleton", "tooltip"],
       "files": [
         {
           "path": "index.ts",
@@ -1094,10 +1049,7 @@
         "lucide-react": "^0.471.1",
         "react": "^19.0.0"
       },
-      "registryDependencies": [
-        "button",
-        "select"
-      ],
+      "registryDependencies": ["button", "select"],
       "files": [
         {
           "path": "index.ts",
@@ -1159,10 +1111,7 @@
         "lucide-react": "^0.471.1",
         "react": "^19.0.0"
       },
-      "registryDependencies": [
-        "button",
-        "dropdown-menu"
-      ],
+      "registryDependencies": ["button", "dropdown-menu"],
       "files": [],
       "import": "@blocks-kit/ui/components/timeline"
     },
@@ -1196,9 +1145,7 @@
         "class-variance-authority": "^0.7.1",
         "react": "^19.0.0"
       },
-      "registryDependencies": [
-        "toggle"
-      ],
+      "registryDependencies": ["toggle"],
       "files": [
         {
           "path": "index.ts",
@@ -1239,9 +1186,7 @@
         "lucide-react": "^0.471.1",
         "react": "^19.0.0"
       },
-      "registryDependencies": [
-        "button"
-      ],
+      "registryDependencies": ["button"],
       "files": [],
       "import": "@blocks-kit/ui/components/wizard-stepper"
     }
