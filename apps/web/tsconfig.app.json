@@ -1,0 +1,9 @@
+{
+  "extends": "@blocks/typescript-config/vite.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src"]
+}
