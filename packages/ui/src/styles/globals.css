@@ -5,7 +5,7 @@
 /*
  * Tell Tailwind v4 to scan the design-system source files as well as
  * the consuming app. Without these `@source` directives, Tailwind's
- * automatic detection skips classes used inside `@blocks/ui/components/*`
+ * automatic detection skips classes used inside `@blocks-kit/ui/components/*`
  * because the package is resolved through a workspace symlink and looks
  * like `node_modules` (which v4 excludes by default).
  *

@@ -1,9 +1,9 @@
 import { createColumnHelper } from "@tanstack/react-table"
 import { useCallback, useMemo, useState } from "react"
 
-import { useDebouncedColumnFuseFilters } from "@blocks/ui/hooks/use-debounced-column-fuse-filters"
-import { useDebouncedFuseFilter } from "@blocks/ui/hooks/use-debounced-fuse-filter"
-import { defaultFuseSearchOptions } from "@blocks/ui/utils/fuse-search"
+import { useDebouncedColumnFuseFilters } from "@blocks-kit/hooks"
+import { useDebouncedFuseFilter } from "@blocks-kit/hooks"
+import { defaultFuseSearchOptions } from "@blocks-kit/hooks"
 
 import { DataTable } from "./data-table"
 import { getColumnDefId, type BlocksDataTableProps } from "./data-table-types"

@@ -34,7 +34,7 @@ function cssHasBlocksImport(cwd: string, fw: ReturnType<typeof detectFramework>)
   for (const p of paths) {
     try {
       const txt = readFileSync(p, "utf8")
-      if (txt.includes("@blocks/ui/globals.css")) return true
+      if (txt.includes("@blocks-kit/ui/globals.css")) return true
     } catch {
       /* skip */
     }
@@ -42,7 +42,7 @@ function cssHasBlocksImport(cwd: string, fw: ReturnType<typeof detectFramework>)
   try {
     /** root scan */
     const rootCss = join(cwd, "globals.css")
-    if (existsSync(rootCss) && readFileSync(rootCss, "utf8").includes("@blocks/ui/globals.css")) {
+    if (existsSync(rootCss) && readFileSync(rootCss, "utf8").includes("@blocks-kit/ui/globals.css")) {
       return true
     }
   } catch {
@@ -66,14 +66,14 @@ export async function doctorCommand(opts: ResolvedContext): Promise<void> {
   const maj = parseReactMajor(react)
   if (maj !== null && maj < 19) {
     prompts.log.warn(
-      `react@${react} — @blocks/ui expects React 19+ (peer ^19). Upgrade React or expect breakage.`,
+      `react@${react} — @blocks-kit/ui expects React 19+ (peer ^19). Upgrade React or expect breakage.`,
     )
     issues += 1
   }
 
-  if (!deps["@blocks/ui"] && !workspaceHasBlocksUi(cwd)) {
+  if (!deps["@blocks-kit/ui"] && !workspaceHasBlocksUi(cwd)) {
     prompts.log.error(
-      "Missing @blocks/ui dependency and no node_modules/@blocks/ui — run `blocks init`",
+      "Missing @blocks-kit/ui dependency and no node_modules/@blocks-kit/ui — run `blocks init`",
     )
     issues += 2
   }
@@ -85,7 +85,7 @@ export async function doctorCommand(opts: ResolvedContext): Promise<void> {
   }
 
   if (fw !== "unknown" && !cssHasBlocksImport(cwd, fw)) {
-    prompts.log.warn('No @import "@blocks/ui/globals.css" found in common CSS entries')
+    prompts.log.warn('No @import "@blocks-kit/ui/globals.css" found in common CSS entries')
     issues += 1
   }
 

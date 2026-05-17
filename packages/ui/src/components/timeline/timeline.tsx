@@ -4,16 +4,16 @@ import type { ReactNode } from "react"
 import { EllipsisVertical, RotateCcw } from "lucide-react"
 import { motion } from "framer-motion"
 
-import { Button } from "@blocks/ui/components/button"
+import { Button } from "@blocks-kit/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@blocks/ui/components/dropdown-menu"
-import { useIsMobile } from "@blocks/ui/hooks/use-mobile"
-import { cn } from "@blocks/ui/lib/utils"
-import { fadeTransition, staggerContainer, staggerItem } from "@blocks/ui/lib/motion-presets"
+} from "@blocks-kit/ui/components/dropdown-menu"
+import { useIsMobile } from "@blocks-kit/hooks"
+import { cn } from "@blocks-kit/ui/lib/utils"
+import { fadeTransition, staggerContainer, staggerItem } from "@blocks-kit/ui/lib/motion-presets"
 
 export type TimelineEventBase = {
   time?: string

@@ -8,7 +8,7 @@ import type {
 } from "@tanstack/react-table"
 import type { ReactNode } from "react"
 
-import type { FuseSearchOptions } from "@blocks/ui/utils/fuse-search"
+import type { FuseSearchOptions } from "@blocks-kit/hooks"
 
 export type DataTablePaginationMode = "client" | "server"
 

@@ -2,10 +2,10 @@ import * as React from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import type { DateRange } from "react-day-picker";
 
-import { cn, formatFullDate } from "@blocks/ui/lib/utils";
-import { Button } from "@blocks/ui/components/button";
-import { Calendar } from "@blocks/ui/components/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@blocks/ui/components/popover";
+import { cn, formatFullDate } from "@blocks-kit/ui/lib/utils";
+import { Button } from "@blocks-kit/ui/components/button";
+import { Calendar } from "@blocks-kit/ui/components/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@blocks-kit/ui/components/popover";
 
 export interface DateRangePickerProps {
   /** Visible label inside the trigger button when no range is selected. */

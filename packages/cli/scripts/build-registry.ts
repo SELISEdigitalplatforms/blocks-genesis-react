@@ -1,5 +1,5 @@
 /**
- * Generates registry/registry.json from @blocks/ui component sources.
+ * Generates registry/registry.json from @blocks-kit/ui component sources.
  * Run: pnpm build:registry (from packages/cli)
  */
 import { readdirSync, readFileSync, writeFileSync } from "node:fs"
@@ -80,7 +80,7 @@ function resolveRelativeImport(fromFile: string, spec: string): string | null {
 }
 
 function parseBlocksUiComponentImport(spec: string): string | null {
-  const prefix = "@blocks/ui/components/"
+  const prefix = "@blocks-kit/ui/components/"
   if (!spec.startsWith(prefix)) return null
   const rest = spec.slice(prefix.length)
   const slash = rest.indexOf("/")
@@ -130,7 +130,7 @@ function scanFileDeps(args: {
     }
     if (
       spec.startsWith(".") ||
-      spec.startsWith("@blocks/ui") ||
+      spec.startsWith("@blocks-kit/ui") ||
       spec.startsWith("node:")
     ) {
       continue
@@ -183,7 +183,7 @@ function buildItem(args: {
 
   const description =
     kind === "block"
-      ? `Composed block — import from @blocks/ui/components/${name}`
+      ? `Composed block — import from @blocks-kit/ui/components/${name}`
       : `Primitive — copied into your project under components/ui`
 
   const base = {
@@ -196,7 +196,7 @@ function buildItem(args: {
   }
 
   if (kind === "block") {
-    return { ...base, import: `@blocks/ui/components/${name}` }
+    return { ...base, import: `@blocks-kit/ui/components/${name}` }
   }
   return base
 }

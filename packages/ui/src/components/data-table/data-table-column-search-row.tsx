@@ -1,7 +1,7 @@
 import type { Table } from "@tanstack/react-table"
 
-import { Input } from "@blocks/ui/components/input"
-import { TableHead, TableRow } from "@blocks/ui/components/table"
+import { Input } from "@blocks-kit/ui/components/input"
+import { TableHead, TableRow } from "@blocks-kit/ui/components/table"
 
 import type { ColumnSearchState } from "./data-table-types"
 

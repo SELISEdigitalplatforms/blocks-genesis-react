@@ -31,7 +31,7 @@ import {
   XAxis,
 } from "recharts";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@blocks/ui/components/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@blocks-kit/ui/components/accordion";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -42,10 +42,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@blocks/ui/components/alert-dialog";
-import { Alert, AlertDescription, AlertTitle } from "@blocks/ui/components/alert";
-import { Avatar, AvatarFallback, AvatarImage } from "@blocks/ui/components/avatar";
-import { Badge } from "@blocks/ui/components/badge";
+} from "@blocks-kit/ui/components/alert-dialog";
+import { Alert, AlertDescription, AlertTitle } from "@blocks-kit/ui/components/alert";
+import { Avatar, AvatarFallback, AvatarImage } from "@blocks-kit/ui/components/avatar";
+import { Badge } from "@blocks-kit/ui/components/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -53,10 +53,10 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@blocks/ui/components/breadcrumb";
-import { Button } from "@blocks/ui/components/button";
-import { Calendar } from "@blocks/ui/components/calendar";
-import { DateRangePicker } from "@blocks/ui/components/date-range-picker";
+} from "@blocks-kit/ui/components/breadcrumb";
+import { Button } from "@blocks-kit/ui/components/button";
+import { Calendar } from "@blocks-kit/ui/components/calendar";
+import { DateRangePicker } from "@blocks-kit/ui/components/date-range-picker";
 import type { DateRange } from "react-day-picker";
 import {
   Card,
@@ -65,14 +65,14 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@blocks/ui/components/card";
+} from "@blocks-kit/ui/components/card";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@blocks/ui/components/carousel";
+} from "@blocks-kit/ui/components/carousel";
 import {
   ChartContainer,
   ChartLegend,
@@ -80,9 +80,9 @@ import {
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
-} from "@blocks/ui/components/chart";
-import { Checkbox } from "@blocks/ui/components/checkbox";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@blocks/ui/components/collapsible";
+} from "@blocks-kit/ui/components/chart";
+import { Checkbox } from "@blocks-kit/ui/components/checkbox";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@blocks-kit/ui/components/collapsible";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -90,7 +90,7 @@ import {
   ContextMenuSeparator,
   ContextMenuShortcut,
   ContextMenuTrigger,
-} from "@blocks/ui/components/context-menu";
+} from "@blocks-kit/ui/components/context-menu";
 import {
   Dialog,
   DialogContent,
@@ -99,7 +99,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@blocks/ui/components/dialog";
+} from "@blocks-kit/ui/components/dialog";
 import {
   Drawer,
   DrawerContent,
@@ -108,7 +108,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@blocks/ui/components/drawer";
+} from "@blocks-kit/ui/components/drawer";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -117,7 +117,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@blocks/ui/components/dropdown-menu";
+} from "@blocks-kit/ui/components/dropdown-menu";
 import {
   Form,
   FormControl,
@@ -126,18 +126,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@blocks/ui/components/form";
+} from "@blocks-kit/ui/components/form";
 import {
   FileInput,
   FileUploader,
   FileUploaderContent,
   FileUploaderItem,
-} from "@blocks/ui/components/file-uploader";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@blocks/ui/components/hover-card";
-import { KanbanBoard } from "@blocks/ui/components/kanban";
-import { Input } from "@blocks/ui/components/input";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@blocks/ui/components/input-otp";
-import { Label } from "@blocks/ui/components/label";
+} from "@blocks-kit/ui/components/file-uploader";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@blocks-kit/ui/components/hover-card";
+import { KanbanBoard } from "@blocks-kit/ui/components/kanban";
+import { Input } from "@blocks-kit/ui/components/input";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@blocks-kit/ui/components/input-otp";
+import { Label } from "@blocks-kit/ui/components/label";
 import {
   Menubar,
   MenubarContent,
@@ -146,7 +146,7 @@ import {
   MenubarSeparator,
   MenubarShortcut,
   MenubarTrigger,
-} from "@blocks/ui/components/menubar";
+} from "@blocks-kit/ui/components/menubar";
 import {
   Pagination,
   PaginationContent,
@@ -155,20 +155,20 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@blocks/ui/components/pagination";
-import { PasswordInput } from "@blocks/ui/components/password-input";
-import { Popover, PopoverContent, PopoverTrigger } from "@blocks/ui/components/popover";
-import { Progress } from "@blocks/ui/components/progress";
-import { RadioGroup, RadioGroupItem } from "@blocks/ui/components/radio-group";
-import { ScrollArea } from "@blocks/ui/components/scroll-area";
+} from "@blocks-kit/ui/components/pagination";
+import { PasswordInput } from "@blocks-kit/ui/components/password-input";
+import { Popover, PopoverContent, PopoverTrigger } from "@blocks-kit/ui/components/popover";
+import { Progress } from "@blocks-kit/ui/components/progress";
+import { RadioGroup, RadioGroupItem } from "@blocks-kit/ui/components/radio-group";
+import { ScrollArea } from "@blocks-kit/ui/components/scroll-area";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@blocks/ui/components/select";
-import { Separator } from "@blocks/ui/components/separator";
+} from "@blocks-kit/ui/components/select";
+import { Separator } from "@blocks-kit/ui/components/separator";
 import {
   Sheet,
   SheetContent,
@@ -176,12 +176,12 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@blocks/ui/components/sheet";
-import { Skeleton } from "@blocks/ui/components/skeleton";
-import { Slider } from "@blocks/ui/components/slider";
-import { Spinner } from "@blocks/ui/components/spinner";
-import { Stepper } from "@blocks/ui/components/stepper";
-import { Switch } from "@blocks/ui/components/switch";
+} from "@blocks-kit/ui/components/sheet";
+import { Skeleton } from "@blocks-kit/ui/components/skeleton";
+import { Slider } from "@blocks-kit/ui/components/slider";
+import { Spinner } from "@blocks-kit/ui/components/spinner";
+import { Stepper } from "@blocks-kit/ui/components/stepper";
+import { Switch } from "@blocks-kit/ui/components/switch";
 import {
   Table,
   TableBody,
@@ -189,13 +189,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@blocks/ui/components/table";
-import { TablePagination } from "@blocks/ui/components/table-pagination";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@blocks/ui/components/tabs";
-import { Textarea } from "@blocks/ui/components/textarea";
-import { ToggleGroup, ToggleGroupItem } from "@blocks/ui/components/toggle-group";
-import { Toaster, toast } from "@blocks/ui/components/sonner";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@blocks/ui/components/tooltip";
+} from "@blocks-kit/ui/components/table";
+import { TablePagination } from "@blocks-kit/ui/components/table-pagination";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@blocks-kit/ui/components/tabs";
+import { Textarea } from "@blocks-kit/ui/components/textarea";
+import { ToggleGroup, ToggleGroupItem } from "@blocks-kit/ui/components/toggle-group";
+import { Toaster, toast } from "@blocks-kit/ui/components/sonner";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@blocks-kit/ui/components/tooltip";
 
 import { CommandShowcase } from "./components/command-showcase";
 import { DataTableShowcase } from "./components/data-table-showcase";

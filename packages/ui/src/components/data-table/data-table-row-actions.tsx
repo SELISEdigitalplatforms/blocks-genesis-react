@@ -1,11 +1,11 @@
 import { MoreHorizontal } from "lucide-react"
 
-import { Button } from "@blocks/ui/components/button"
+import { Button } from "@blocks-kit/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@blocks/ui/components/dropdown-menu"
+} from "@blocks-kit/ui/components/dropdown-menu"
 
 export type DataTableRowActionsProps = {
   children: React.ReactNode

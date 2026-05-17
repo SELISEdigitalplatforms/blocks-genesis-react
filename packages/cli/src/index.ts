@@ -12,7 +12,7 @@ const program = new Command()
 
 program
   .name("blocks")
-  .description("Blocks UI CLI — install @blocks/ui primitives and blocks in React apps")
+  .description("Blocks UI CLI — install @blocks-kit/ui primitives and blocks in React apps")
   .option("-c, --cwd <path>", "project root", process.cwd())
   .option("--dry-run", "print actions without writing files or installing", false)
   .option("-y, --yes", "non-interactive defaults", false)
@@ -33,7 +33,7 @@ function sharedGlobals(cmd: Command): {
 
 program
   .command("init")
-  .description("Write components.json, patch globals CSS, install @blocks/ui")
+  .description("Write components.json, patch globals CSS, install @blocks-kit/ui")
   .option("-t, --template <vite|next>", "framework (vite or next)")
   .option("--theme <color>", "tailwind baseColor (slate, zinc, neutral, stone, gray)")
   .option("--default-mode <light|dark|system>", "default theme mode for next-themes")
@@ -138,7 +138,7 @@ program
 
 program
   .command("doctor")
-  .description("Check React, @blocks/ui, components.json, and globals CSS wiring")
+  .description("Check React, @blocks-kit/ui, components.json, and globals CSS wiring")
   .action(async (_opts: unknown, cmd: Command) => {
     const g = sharedGlobals(cmd)
     await doctorCommand({ cwd: g.cwd, dryRun: g.dryRun })

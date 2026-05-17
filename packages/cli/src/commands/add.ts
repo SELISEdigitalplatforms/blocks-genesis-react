@@ -159,13 +159,13 @@ export async function addCommand(opts: AddArgs): Promise<void> {
   for (const name of expanded) {
     const item = itemByName.get(name)
     if (item?.kind === "block") {
-      prompts.log.info(`${name}: block → keep importing from ${item.import ?? "@blocks/ui/components/" + name}`)
+      prompts.log.info(`${name}: block → keep importing from ${item.import ?? "@blocks-kit/ui/components/" + name}`)
     }
   }
 
   const deps = aggregateDeps(expandedItems)
   const packages: Record<string, string> = {
-    "@blocks/ui": getDefaultBlocksUiVersion(),
+    "@blocks-kit/ui": getDefaultBlocksUiVersion(),
     ...deps,
   }
 

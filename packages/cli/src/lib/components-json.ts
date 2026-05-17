@@ -43,7 +43,7 @@ export function buildComponentsJson(input: {
     iconLibrary: "lucide",
     aliases: {
       components: "@/components",
-      utils: "@blocks/ui/lib/utils",
+      utils: "@blocks-kit/ui/lib/utils",
       hooks: "@/hooks",
       lib: "@/lib",
       ui: "@/components/ui",

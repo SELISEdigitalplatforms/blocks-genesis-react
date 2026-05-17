@@ -10,9 +10,9 @@ export { DataTableRowActions } from "./data-table-row-actions"
 export { DataTableSkeleton } from "./data-table-skeleton"
 export { DataTableToolbar } from "./data-table-toolbar"
 export { useBlocksDataTable } from "./use-blocks-data-table"
-export { useDebouncedValue } from "@blocks/ui/hooks/use-debounced-value"
-export { useDebouncedFuseFilter } from "@blocks/ui/hooks/use-debounced-fuse-filter"
-export { useDebouncedColumnFuseFilters } from "@blocks/ui/hooks/use-debounced-column-fuse-filters"
+export { useDebouncedValue } from "@blocks-kit/hooks"
+export { useDebouncedFuseFilter } from "@blocks-kit/hooks"
+export { useDebouncedColumnFuseFilters } from "@blocks-kit/hooks"
 export type {
   BlocksDataTableColumnDef,
   BlocksDataTableProps,

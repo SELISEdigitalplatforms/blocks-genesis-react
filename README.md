@@ -39,10 +39,10 @@ blocks-ui/
 │       ├── tsconfig*.json
 │       └── vite.config.ts
 ├── packages/
-│   ├── cli/                    # @blocks/cli — `blocks` installer (init / add / remove / list / doctor)
+│   ├── cli/                    # @blocks-kit/cli — `blocks` installer (init / add / remove / list / doctor)
 │   │   ├── registry/           # generated registry.json (61 components)
 │   │   └── src/commands/
-│   ├── ui/                     # @blocks/ui — shadcn primitives (source)
+│   ├── ui/                     # @blocks-kit/ui — shadcn primitives (source)
 │   │   ├── components.json     # shadcn config (Tailwind v4: tailwind.config = "")
 │   │   ├── postcss.config.js   # @tailwindcss/postcss
 │   │   ├── src/
@@ -51,8 +51,8 @@ blocks-ui/
 │   │   │   ├── lib/utils.ts    # `cn()`
 │   │   │   └── styles/globals.css   # tokens + @theme bridge
 │   │   └── package.json
-│   ├── eslint-config/          # @blocks/eslint-config (flat, react preset)
-│   └── typescript-config/      # @blocks/typescript-config (base / react-library / vite)
+│   ├── eslint-config/          # @blocks-kit/eslint-config (flat, react preset)
+│   └── typescript-config/      # @blocks-kit/tsconfig (base / react-library / vite)
 ├── pnpm-workspace.yaml
 ├── turbo.json
 └── package.json
@@ -61,7 +61,7 @@ blocks-ui/
 The structure follows the official shadcn monorepo guide: each workspace has its
 own `components.json`, the shared package exposes a `globals.css` export, and
 `packages/ui` uses `package.json#imports` (`#components/*`, `#hooks/*`, `#lib/*`)
-for local aliases plus the public `@blocks/ui/*` `exports` for cross-workspace
+for local aliases plus the public `@blocks-kit/ui/*` `exports` for cross-workspace
 imports.
 
 ---
@@ -75,7 +75,7 @@ cd blocks-kit
 pnpm install
 
 # Run the playground
-pnpm --filter @blocks/web dev          # → http://localhost:5173
+pnpm --filter @blocks-kit/web dev          # → http://localhost:5173
 
 # Build everything (apps + packages)
 pnpm build
@@ -90,9 +90,9 @@ pnpm cli:build
 
 ---
 
-## Blocks CLI (`@blocks/cli`)
+## Blocks CLI (`@blocks-kit/cli`)
 
-The **Blocks CLI** installs `@blocks/ui` into any **React 19** app (Vite or Next.js). It works like [shadcn/ui](https://ui.shadcn.com): pick components interactively, copy primitives into your repo, and install peer dependencies in one step.
+The **Blocks CLI** installs `@blocks-kit/ui` into any **React 19** app (Vite or Next.js). It works like [shadcn/ui](https://ui.shadcn.com): pick components interactively, copy primitives into your repo, and install peer dependencies in one step.
 
 ### Prerequisites
 
@@ -119,11 +119,11 @@ pnpm blocks --help
 pnpm cli:dev init       # run via tsx without building
 ```
 
-**In a consumer app** (when `@blocks/cli` is published or linked):
+**In a consumer app** (when `@blocks-kit/cli` is published or linked):
 
 ```bash
-pnpm add -D @blocks/cli
-# or: npx @blocks/cli@latest
+pnpm add -D @blocks-kit/cli
+# or: npx @blocks-kit/cli@latest
 ```
 
 Binaries: `blocks` and `blocks-ui` (same entry).
@@ -133,7 +133,7 @@ Binaries: `blocks` and `blocks-ui` (same entry).
 ```bash
 cd your-react-app
 
-# 1. One-time setup: components.json, globals CSS, @blocks/ui
+# 1. One-time setup: components.json, globals CSS, @blocks-kit/ui
 blocks init
 
 # 2. Add components (interactive multiselect, or by name)
@@ -170,7 +170,7 @@ import { ThemeProvider } from "next-themes"
 | Kind | On `add` | On disk after install | Import from |
 | ---- | -------- | --------------------- | ----------- |
 | **primitive** | Copies source into `@/components/ui/<name>/` | Yes | `@/components/ui/<name>` (or your `aliases.ui`) |
-| **block** | Installs npm deps only | No — stays in package | `@blocks/ui/components/<name>` |
+| **block** | Installs npm deps only | No — stays in package | `@blocks-kit/ui/components/<name>` |
 
 **Blocks** (composed widgets): `data-table`, `kanban`, `multi-select`, `wizard-stepper`, `file-uploader`, etc.  
 **Primitives** (shadcn-style): `button`, `dialog`, `form`, `table`, …
@@ -188,13 +188,13 @@ Every command accepts:
 | `-y, --yes` | Non-interactive defaults (skip prompts) |
 
 Environment: `BLOCKS_CLI_YES=1` behaves like `-y`.  
-`BLOCKS_UI_VERSION_OVERRIDE` pins the `@blocks/ui` version range used on install.
+`BLOCKS_UI_VERSION_OVERRIDE` pins the `@blocks-kit/ui` version range used on install.
 
 ### Commands reference
 
 #### `blocks init`
 
-Writes `components.json`, adds `@import "@blocks/ui/globals.css"` to your CSS entry, installs `@blocks/ui`.
+Writes `components.json`, adds `@import "@blocks-kit/ui/globals.css"` to your CSS entry, installs `@blocks-kit/ui`.
 
 ```bash
 blocks init
@@ -245,7 +245,7 @@ blocks remove button --dry-run
 | `--prune-deps` | Run `pnpm remove` / `npm uninstall` for deps no longer needed |
 | `--pm <pnpm\|npm\|yarn>` | Package manager (with `--prune-deps`) |
 
-`@blocks/ui`, `react`, and `react-dom` are never pruned.
+`@blocks-kit/ui`, `react`, and `react-dom` are never pruned.
 
 #### `blocks list`
 
@@ -258,7 +258,7 @@ blocks list -q fuse
 
 #### `blocks doctor`
 
-Checks React 19, `@blocks/ui`, `components.json`, `aliases.ui` directory, globals CSS import, and `blocks.defaultMode`.
+Checks React 19, `@blocks-kit/ui`, `components.json`, `aliases.ui` directory, globals CSS import, and `blocks.defaultMode`.
 
 ```bash
 blocks doctor
@@ -276,13 +276,13 @@ import { Button } from "@/components/ui/button"
 **Blocks** (package import):
 
 ```tsx
-import { BlocksDataTable } from "@blocks/ui/components/data-table"
+import { BlocksDataTable } from "@blocks-kit/ui/components/data-table"
 ```
 
 **Utils** (from package, configured in `components.json`):
 
 ```tsx
-import { cn } from "@blocks/ui/lib/utils"
+import { cn } from "@blocks-kit/ui/lib/utils"
 ```
 
 ### Develop the CLI in this repo
@@ -298,7 +298,7 @@ pnpm test:smoke         # dry-run init/add/remove against apps/web copy
 Regenerate the registry after changing `packages/ui/src/components`:
 
 ```bash
-pnpm --filter @blocks/cli build:registry
+pnpm --filter @blocks-kit/cli build:registry
 ```
 
 ---
@@ -316,14 +316,14 @@ pnpm dlx shadcn@latest add <component>
 Or, more conveniently, from the repo root:
 
 ```bash
-pnpm --filter @blocks/web exec shadcn@latest add <component>
+pnpm --filter @blocks-kit/web exec shadcn@latest add <component>
 ```
 
 Examples:
 
 ```bash
-pnpm --filter @blocks/web exec shadcn@latest add accordion alert dialog form
-pnpm --filter @blocks/web exec shadcn@latest add login-01            # blocks
+pnpm --filter @blocks-kit/web exec shadcn@latest add accordion alert dialog form
+pnpm --filter @blocks-kit/web exec shadcn@latest add login-01            # blocks
 ```
 
 Files land in `packages/ui/src/components/<name>.tsx`. Composition blocks
@@ -334,21 +334,21 @@ Files land in `packages/ui/src/components/<name>.tsx`. Composition blocks
 ## Importing in apps
 
 ```tsx
-import { Button } from "@blocks/ui/components/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@blocks/ui/components/card";
-import { Form, FormField, FormItem, FormLabel, FormControl } from "@blocks/ui/components/form";
-import { useIsMobile } from "@blocks/ui/hooks/use-mobile";
-import { cn } from "@blocks/ui/lib/utils";
+import { Button } from "@blocks-kit/ui/components/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@blocks-kit/ui/components/card";
+import { Form, FormField, FormItem, FormLabel, FormControl } from "@blocks-kit/ui/components/form";
+import { useIsMobile } from "@blocks-kit/hooks";
+import { cn } from "@blocks-kit/ui/lib/utils";
 ```
 
 In your app's CSS entry, import the shared token + base layer:
 
 ```css
 /* src/index.css */
-@import "@blocks/ui/globals.css";
+@import "@blocks-kit/ui/globals.css";
 ```
 
-Vite picks this up automatically through the `exports` field on `@blocks/ui`.
+Vite picks this up automatically through the `exports` field on `@blocks-kit/ui`.
 
 ---
 
@@ -425,8 +425,8 @@ The shadcn `form` component is included. Standard usage:
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button } from "@blocks/ui/components/button";
-import { Input } from "@blocks/ui/components/input";
+import { Button } from "@blocks-kit/ui/components/button";
+import { Input } from "@blocks-kit/ui/components/input";
 import {
   Form,
   FormControl,
@@ -434,7 +434,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@blocks/ui/components/form";
+} from "@blocks-kit/ui/components/form";
 
 const schema = z.object({ email: z.string().email() });
 
@@ -469,23 +469,23 @@ export function SignInForm() {
 
 ---
 
-## Using `@blocks/ui` in another app (e.g. `blocks-app-next`)
+## Using `@blocks-kit/ui` in another app (e.g. `blocks-app-next`)
 
 1. **Install the Blocks CLI** in the app (or run via `npx`):
 
    ```bash
-   pnpm add -D @blocks/cli
+   pnpm add -D @blocks-kit/cli
    blocks init
    blocks add button card data-table
    ```
 
-2. **Or workspace-link** `@blocks/ui` while iterating in a monorepo:
+2. **Or workspace-link** `@blocks-kit/ui` while iterating in a monorepo:
 
    ```jsonc
    // app's package.json
    {
-     "dependencies": { "@blocks/ui": "workspace:*" },
-     "devDependencies": { "@blocks/cli": "workspace:*" }
+     "dependencies": { "@blocks-kit/ui": "workspace:*" },
+     "devDependencies": { "@blocks-kit/cli": "workspace:*" }
    }
    ```
 
@@ -499,10 +499,10 @@ export function SignInForm() {
 
    ```css
    /* src/index.css */
-   @import "@blocks/ui/globals.css";
+   @import "@blocks-kit/ui/globals.css";
    ```
 
-5. **Use components** — primitives from `@/components/ui/*` after `blocks add`, blocks from `@blocks/ui/components/*`.
+5. **Use components** — primitives from `@/components/ui/*` after `blocks add`, blocks from `@blocks-kit/ui/components/*`.
 
 6. **Remove** when no longer needed:
 
@@ -513,8 +513,8 @@ export function SignInForm() {
 7. **Add new primitives to the design system** (maintainers): shadcn CLI from `apps/web`, then rebuild the Blocks registry:
 
    ```bash
-   pnpm --filter @blocks/web exec shadcn@latest add card
-   pnpm --filter @blocks/cli build:registry
+   pnpm --filter @blocks-kit/web exec shadcn@latest add card
+   pnpm --filter @blocks-kit/cli build:registry
    ```
 
 ---
@@ -528,11 +528,11 @@ export function SignInForm() {
 | `pnpm lint`                                            | ESLint across all workspaces         |
 | `pnpm typecheck`                                       | `tsc --noEmit` across all workspaces |
 | `pnpm format`                                          | Prettier (Tailwind plugin enabled)   |
-| `pnpm cli:build`                                       | Build `@blocks/cli` (registry + dist) |
+| `pnpm cli:build`                                       | Build `@blocks-kit/cli` (registry + dist) |
 | `pnpm blocks -- <cmd>`                                 | Run `blocks` CLI from monorepo root  |
 | `pnpm cli:dev -- <cmd>`                                | Run CLI via `tsx` (no build)         |
-| `pnpm --filter @blocks/cli test:smoke`                 | CLI integration smoke (dry-run)      |
-| `pnpm --filter @blocks/web exec shadcn@latest add <c>` | Add shadcn primitive to `@blocks/ui` |
+| `pnpm --filter @blocks-kit/cli test:smoke`                 | CLI integration smoke (dry-run)      |
+| `pnpm --filter @blocks-kit/web exec shadcn@latest add <c>` | Add shadcn primitive to `@blocks-kit/ui` |
 
 ---
 

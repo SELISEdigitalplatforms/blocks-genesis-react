@@ -3,7 +3,7 @@
 import type { ReactNode } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 
-import { fadeInUp, fadeTransition } from "@blocks/ui/lib/motion-presets"
+import { fadeInUp, fadeTransition } from "@blocks-kit/ui/lib/motion-presets"
 
 import { useWizardStepper } from "./wizard-stepper-provider"
 

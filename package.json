@@ -6,21 +6,42 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter @blocks-kit/web",
+    "dev:cli": "turbo run dev --filter @blocks-kit/cli",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,md,css,json}\" --ignore-path .gitignore",
-    "ui:add": "pnpm --filter @blocks/ui exec shadcn@latest add",
-    "blocks": "pnpm --filter @blocks/cli exec blocks",
-    "cli:dev": "pnpm --filter @blocks/cli exec tsx src/index.ts",
-    "cli:build": "pnpm --filter @blocks/cli build"
+    "ui:add": "pnpm --filter @blocks-kit/ui exec shadcn@latest add",
+    "blocks": "pnpm --filter @blocks-kit/cli exec blocks",
+    "cli:dev": "pnpm --filter @blocks-kit/cli exec tsx src/index.ts",
+    "cli:build": "pnpm --filter @blocks-kit/cli build",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo build && changeset publish",
+    "prepare": "husky"
   },
   "devDependencies": {
-    "prettier": "^3.4.2",
+    "@changesets/cli": "^2.27.1",
+    "@commitlint/cli": "^19.3.0",
+    "@commitlint/config-conventional": "^19.2.2",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "prettier": "catalog:",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "shadcn": "^4.7.0",
     "turbo": "^2.3.3",
     "typescript": "^5.7.3"
   },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix --max-warnings 0",
+      "prettier --write"
+    ],
+    "*.{json,md,yaml,yml,css}": [
+      "prettier --write"
+    ]
+  },
+  "prettier": "@blocks-kit/prettier-config",
   "engines": {
     "node": ">=20"
   },

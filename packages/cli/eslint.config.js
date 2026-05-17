@@ -1,3 +1,3 @@
-import config from "@blocks/eslint-config"
+import config from "@blocks-kit/eslint-config/base"
 
 export default [...config]

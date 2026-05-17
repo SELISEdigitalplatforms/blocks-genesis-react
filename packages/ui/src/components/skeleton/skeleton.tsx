@@ -1,4 +1,4 @@
-import { cn } from "@blocks/ui/lib/utils"
+import { cn } from "@blocks-kit/ui/lib/utils"
 
 function Skeleton({
   className,

@@ -1,5 +1,5 @@
 {
-  "name": "@blocks/typescript-config",
+  "name": "@blocks-kit/tsconfig",
   "version": "0.0.0",
   "private": true,
   "license": "MIT",

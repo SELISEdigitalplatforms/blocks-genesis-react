@@ -1,6 +1,6 @@
 import type { Table } from "@tanstack/react-table"
 
-import { TablePagination } from "@blocks/ui/components/table-pagination"
+import { TablePagination } from "@blocks-kit/ui/components/table-pagination"
 
 export type DataTablePaginationProps<TData> = {
   table: Table<TData>

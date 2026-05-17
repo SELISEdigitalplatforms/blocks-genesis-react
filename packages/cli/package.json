@@ -1,5 +1,5 @@
 {
-  "name": "@blocks/cli",
+  "name": "@blocks-kit/cli",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -23,8 +23,8 @@
     "tsconfck": "^3.1.6"
   },
   "devDependencies": {
-    "@blocks/eslint-config": "workspace:*",
-    "@blocks/typescript-config": "workspace:*",
+    "@blocks-kit/eslint-config": "workspace:*",
+    "@blocks-kit/tsconfig": "workspace:*",
     "@types/node": "^22.10.5",
     "eslint": "^9.17.0",
     "tsup": "^8.5.1",

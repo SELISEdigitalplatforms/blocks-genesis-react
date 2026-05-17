@@ -1,7 +1,7 @@
 import { Search } from "lucide-react"
 
-import { Input } from "@blocks/ui/components/input"
-import { cn } from "@blocks/ui/lib/utils"
+import { Input } from "@blocks-kit/ui/components/input"
+import { cn } from "@blocks-kit/ui/lib/utils"
 
 export type DataTableGlobalSearchProps = {
   value: string

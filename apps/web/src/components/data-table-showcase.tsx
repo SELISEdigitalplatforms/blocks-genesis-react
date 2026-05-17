@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { Badge } from "@blocks/ui/components/badge"
+import { Badge } from "@blocks-kit/ui/components/badge"
 import {
   BlocksDataTable,
   createBlocksColumnHelper,
@@ -8,11 +8,11 @@ import {
   DataTableGlobalSearch,
   DataTableRowActions,
   DataTableToolbar,
-} from "@blocks/ui/components/data-table"
+} from "@blocks-kit/ui/components/data-table"
 import {
   DropdownMenuItem,
   DropdownMenuSeparator,
-} from "@blocks/ui/components/dropdown-menu"
+} from "@blocks-kit/ui/components/dropdown-menu"
 
 type TranslationRow = {
   key: string

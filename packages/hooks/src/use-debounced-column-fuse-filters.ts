@@ -1,12 +1,12 @@
 import { useMemo } from "react"
 import type { IFuseOptions } from "fuse.js"
 
-import { useDebouncedValue } from "@blocks/ui/hooks/use-debounced-value"
+import { useDebouncedValue } from "./use-debounced-value"
 import {
   createFuseSearcher,
   defaultFuseSearchOptions,
   fuseSearchWithIndex,
-} from "@blocks/ui/utils/fuse-search"
+} from "./utils/fuse-search"
 
 export type ColumnFuseFilterConfig<T> = {
   columnId: string
