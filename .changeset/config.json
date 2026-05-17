@@ -3,12 +3,7 @@
   "changelog": "@changesets/cli/changelog",
   "commit": false,
   "fixed": [],
-  "linked": [
-    [
-      "@blocks-kit/ui",
-      "@blocks-kit/hooks"
-    ]
-  ],
+  "linked": [["@blocks-kit/ui", "@blocks-kit/hooks", "@blocks-kit/primitives"]],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",

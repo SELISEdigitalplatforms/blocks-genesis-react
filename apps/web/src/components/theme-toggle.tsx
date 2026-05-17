@@ -1,15 +1,18 @@
 import * as React from "react";
 import { Moon, Sun } from "lucide-react";
 
+import { createStorage } from "@blocks-kit/primitives";
 import { Button } from "@blocks-kit/ui/components/button";
 import { cn } from "@blocks-kit/ui/lib/utils";
 
 type Theme = "light" | "dark";
 
+const storage = createStorage("local", { prefix: "blocks" });
+
 function getInitialTheme(): Theme {
   if (typeof window === "undefined") return "light";
   if (document.documentElement.classList.contains("dark")) return "dark";
-  const stored = window.localStorage.getItem("blocks-theme");
+  const stored = storage.get<Theme>("theme");
   if (stored === "dark" || stored === "light") return stored;
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
@@ -19,7 +22,7 @@ export function ThemeToggle({ className }: { className?: string }) {
 
   React.useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
-    window.localStorage.setItem("blocks-theme", theme);
+    storage.set("theme", theme);
   }, [theme]);
 
   return (
