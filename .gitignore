@@ -37,3 +37,4 @@ coverage
 .turbo
 .DS_Store
 *.log
+registry.json
