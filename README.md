@@ -31,7 +31,7 @@
 ## Repository layout
 
 ```
-blocks-ui/
+blocks-kit/
 ├── apps/
 │   └── web/                    # Vite + React 19 playground / docs
 │       ├── components.json
@@ -42,17 +42,21 @@ blocks-ui/
 │   ├── cli/                    # @blocks-kit/cli — `blocks` installer (init / add / remove / list / doctor)
 │   │   ├── registry/           # generated registry.json (61 components)
 │   │   └── src/commands/
+│   ├── hooks/                  # @blocks-kit/hooks — framework-agnostic logic
+│   │   ├── src/                # use-debounce, use-mobile, etc.
+│   │   └── package.json
 │   ├── ui/                     # @blocks-kit/ui — shadcn primitives (source)
 │   │   ├── components.json     # shadcn config (Tailwind v4: tailwind.config = "")
 │   │   ├── postcss.config.js   # @tailwindcss/postcss
 │   │   ├── src/
 │   │   │   ├── components/     # 40+ shadcn primitives + Blocks extras
-│   │   │   ├── hooks/          # use-mobile.tsx (extend as needed)
 │   │   │   ├── lib/utils.ts    # `cn()`
 │   │   │   └── styles/globals.css   # tokens + @theme bridge
 │   │   └── package.json
-│   ├── eslint-config/          # @blocks-kit/eslint-config (flat, react preset)
-│   └── typescript-config/      # @blocks-kit/tsconfig (base / react-library / vite)
+├── tooling/
+│   ├── eslint/                 # @blocks-kit/eslint-config (flat, react preset)
+│   ├── prettier/               # @blocks-kit/prettier-config
+│   └── typescript/             # @blocks-kit/tsconfig (base / react-library / vite)
 ├── pnpm-workspace.yaml
 ├── turbo.json
 └── package.json
@@ -60,9 +64,7 @@ blocks-ui/
 
 The structure follows the official shadcn monorepo guide: each workspace has its
 own `components.json`, the shared package exposes a `globals.css` export, and
-`packages/ui` uses `package.json#imports` (`#components/*`, `#hooks/*`, `#lib/*`)
-for local aliases plus the public `@blocks-kit/ui/*` `exports` for cross-workspace
-imports.
+`packages/ui` uses `@blocks-kit/hooks` for shared logic.
 
 ---
 
@@ -110,7 +112,7 @@ Scaffold a React app first (`package.json`, `tsconfig` with `@/*` paths). The CL
 **From this monorepo** (development):
 
 ```bash
-cd blocks-ui
+cd blocks-kit
 pnpm install
 pnpm cli:build          # generates registry + dist/index.js
 
