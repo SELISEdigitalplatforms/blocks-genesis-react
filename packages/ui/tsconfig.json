@@ -1,0 +1,13 @@
+{
+  "extends": "@blocks/typescript-config/react-library.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "paths": {
+      "@blocks/ui/*": ["./src/*"]
+    },
+    "noEmit": true
+  },
+  "include": ["src/**/*", "*.ts", "*.tsx", "*.js"],
+  "exclude": ["node_modules", "dist"]
+}
