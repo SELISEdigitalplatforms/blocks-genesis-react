@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
+import { debounce } from "@blocks-kit/primitives";
 
-export const useDebouncedValue = <T,>(value: T, delayMs: number): T => {
-  const [debounced, setDebounced] = useState(value)
+export const useDebouncedValue = <T>(value: T, delayMs: number): T => {
+  const [debounced, setDebounced] = useState(value);
 
   useEffect(() => {
-    const id = window.setTimeout(() => setDebounced(value), delayMs)
-    return () => window.clearTimeout(id)
-  }, [value, delayMs])
+    const handler = debounce((v: T) => setDebounced(v), delayMs);
+    handler(value);
+    return () => handler.cancel();
+  }, [value, delayMs]);
 
-  return debounced
-}
+  return debounced;
+};

@@ -24,6 +24,7 @@
     "@changesets/cli": "^2.27.1",
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
+    "eslint": "catalog:",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "prettier": "catalog:",
@@ -34,11 +35,11 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint --fix --max-warnings 0",
-      "prettier --write"
+      "pnpm exec eslint --fix --max-warnings 0",
+      "pnpm exec prettier --write"
     ],
     "*.{json,md,yaml,yml,css}": [
-      "prettier --write"
+      "pnpm exec prettier --write"
     ]
   },
   "prettier": "@blocks-kit/prettier-config",

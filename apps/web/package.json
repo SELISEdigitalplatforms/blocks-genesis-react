@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@blocks-kit/hooks": "workspace:*",
+    "@blocks-kit/primitives": "workspace:*",
     "@blocks-kit/ui": "workspace:*",
     "@hookform/resolvers": "^3.10.0",
     "lucide-react": "^0.471.1",
