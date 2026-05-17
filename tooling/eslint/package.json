@@ -1,17 +1,12 @@
 {
-  "name": "@blocks/eslint-config",
+  "name": "@blocks-kit/eslint-config",
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "main": "./base.js",
   "exports": {
-    ".": "./base.js",
+    "./base": "./base.js",
     "./react": "./react.js"
   },
-  "files": [
-    "base.js",
-    "react.js"
-  ],
   "dependencies": {
     "@eslint/js": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",

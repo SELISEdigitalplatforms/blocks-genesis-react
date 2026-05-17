@@ -7,8 +7,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@blocks/ui/components/table"
-import { cn } from "@blocks/ui/lib/utils"
+} from "@blocks-kit/ui/components/table"
+import { cn } from "@blocks-kit/ui/lib/utils"
 
 import { DataTableColumnSearchRow } from "./data-table-column-search-row"
 import { DataTablePagination } from "./data-table-pagination"

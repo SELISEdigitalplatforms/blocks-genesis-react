@@ -83,7 +83,7 @@ export function rewriteBlocksUiImports(
   return source.replace(re, (_full, rawPath: string) => {
     const firstSegment = rawPath.split("/")[0]
     if (!firstSegment || !installedNames.has(firstSegment)) {
-      return `@blocks/ui/components/${rawPath}`
+      return `@blocks-kit/ui/components/${rawPath}`
     }
     const rest = rawPath.slice(firstSegment.length)
     const suffix = rest.startsWith("/") ? rest : ""

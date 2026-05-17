@@ -1,12 +1,12 @@
 import * as React from "react"
 import { Search } from "lucide-react"
-import { Input } from "@blocks/ui/components/input"
-import { useFuseSearch } from "@blocks/ui/hooks/use-fuse-search"
+import { Input } from "@blocks-kit/ui/components/input"
+import { useFuseSearch } from "@blocks-kit/hooks"
 import {
   defaultFuseSearchOptions,
   type FuseSearchOptions,
-} from "@blocks/ui/utils/fuse-search"
-import { cn } from "@blocks/ui/lib/utils"
+} from "@blocks-kit/hooks"
+import { cn } from "@blocks-kit/ui/lib/utils"
 
 export type PlaygroundSectionLink = {
   id: string

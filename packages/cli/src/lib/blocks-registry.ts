@@ -52,6 +52,6 @@ export function expandRegistryDependencies(
 }
 
 export function workspaceHasBlocksUi(cwd: string): boolean {
-  const dir = `${cwd}/node_modules/@blocks/ui`
+  const dir = `${cwd}/node_modules/@blocks-kit/ui`
   return existsSync(dir)
 }

@@ -7,7 +7,7 @@ import {
   User as UserIcon,
 } from "lucide-react"
 
-import { Button } from "@blocks/ui/components/button"
+import { Button } from "@blocks-kit/ui/components/button"
 import {
   Command,
   CommandDialog,
@@ -17,12 +17,12 @@ import {
   CommandItem,
   CommandList,
   CommandShortcut,
-} from "@blocks/ui/components/command"
-import { useFuseSearch } from "@blocks/ui/hooks/use-fuse-search"
+} from "@blocks-kit/ui/components/command"
+import { useFuseSearch } from "@blocks-kit/hooks"
 import {
   defaultFuseSearchOptions,
   type FuseSearchOptions,
-} from "@blocks/ui/utils/fuse-search"
+} from "@blocks-kit/hooks"
 
 type CommandPaletteEntry = {
   id: string

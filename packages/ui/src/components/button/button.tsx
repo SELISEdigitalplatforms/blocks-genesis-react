@@ -2,7 +2,7 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@blocks/ui/lib/utils";
+import { cn } from "@blocks-kit/ui/lib/utils";
 
 /**
  * Blocks `Button` — extends shadcn defaults with:

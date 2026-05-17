@@ -1,5 +1,5 @@
 {
-  "name": "@blocks/web",
+  "name": "@blocks-kit/web",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.app.json"
   },
   "dependencies": {
-    "@blocks/ui": "workspace:*",
+    "@blocks-kit/hooks": "workspace:*",
+    "@blocks-kit/ui": "workspace:*",
     "@hookform/resolvers": "^3.10.0",
     "lucide-react": "^0.471.1",
     "react": "^19.0.0",
@@ -22,8 +23,8 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@blocks/eslint-config": "workspace:*",
-    "@blocks/typescript-config": "workspace:*",
+    "@blocks-kit/eslint-config": "workspace:*",
+    "@blocks-kit/tsconfig": "workspace:*",
     "@tailwindcss/vite": "^4.0.0",
     "@types/node": "^22.10.5",
     "@types/react": "^19.0.7",

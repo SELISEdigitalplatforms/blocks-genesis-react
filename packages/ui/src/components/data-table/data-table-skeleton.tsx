@@ -1,4 +1,4 @@
-import { Skeleton } from "@blocks/ui/components/skeleton"
+import { Skeleton } from "@blocks-kit/ui/components/skeleton"
 
 export type DataTableSkeletonProps = {
   rowCount?: number

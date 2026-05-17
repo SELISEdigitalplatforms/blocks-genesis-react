@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Moon, Sun } from "lucide-react";
 
-import { Button } from "@blocks/ui/components/button";
-import { cn } from "@blocks/ui/lib/utils";
+import { Button } from "@blocks-kit/ui/components/button";
+import { cn } from "@blocks-kit/ui/lib/utils";
 
 type Theme = "light" | "dark";
 

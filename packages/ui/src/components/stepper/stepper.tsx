@@ -2,7 +2,7 @@ import * as React from "react";
 import { Check } from "lucide-react";
 import { motion } from "framer-motion";
 
-import { cn } from "@blocks/ui/lib/utils";
+import { cn } from "@blocks-kit/ui/lib/utils";
 
 export type StepStatus = "complete" | "current" | "upcoming";
 

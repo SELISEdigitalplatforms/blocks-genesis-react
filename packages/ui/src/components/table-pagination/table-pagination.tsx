@@ -1,15 +1,15 @@
 import * as React from "react";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 
-import { cn } from "@blocks/ui/lib/utils";
-import { Button } from "@blocks/ui/components/button";
+import { cn } from "@blocks-kit/ui/lib/utils";
+import { Button } from "@blocks-kit/ui/components/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@blocks/ui/components/select";
+} from "@blocks-kit/ui/components/select";
 
 export interface TablePaginationProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Zero-based current page index. */

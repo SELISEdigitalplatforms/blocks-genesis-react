@@ -1,4 +1,4 @@
-import config from "@blocks/eslint-config/react";
+import config from "@blocks-kit/eslint-config/react";
 
 export default [
   ...config,

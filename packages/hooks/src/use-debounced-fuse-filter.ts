@@ -1,9 +1,9 @@
 import { useMemo } from "react"
 import type { IFuseOptions } from "fuse.js"
 
-import { useDebouncedValue } from "@blocks/ui/hooks/use-debounced-value"
-import { useFuseIndex } from "@blocks/ui/hooks/use-fuse-index"
-import { defaultFuseSearchOptions, fuseSearchWithIndex } from "@blocks/ui/utils/fuse-search"
+import { useDebouncedValue } from "./use-debounced-value"
+import { useFuseIndex } from "./use-fuse-index"
+import { defaultFuseSearchOptions, fuseSearchWithIndex } from "./utils/fuse-search"
 
 export const useDebouncedFuseFilter = <T,>(
   list: readonly T[],

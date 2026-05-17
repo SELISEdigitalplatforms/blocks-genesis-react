@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Eye, EyeOff } from "lucide-react";
 
-import { cn } from "@blocks/ui/lib/utils";
-import { Input } from "@blocks/ui/components/input";
+import { cn } from "@blocks-kit/ui/lib/utils";
+import { Input } from "@blocks-kit/ui/components/input";
 
 export interface PasswordInputProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,

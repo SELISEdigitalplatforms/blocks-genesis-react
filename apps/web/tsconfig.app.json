@@ -1,5 +1,5 @@
 {
-  "extends": "@blocks/typescript-config/vite.json",
+  "extends": "@blocks-kit/tsconfig/vite.json",
   "compilerOptions": {
     "paths": {
       "@/*": ["./src/*"]

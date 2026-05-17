@@ -23,7 +23,7 @@ import {
 } from "../registry/load-registry.js"
 
 const SELECT_ALL = "__select_all__"
-const NEVER_PRUNE = new Set(["@blocks/ui", "react", "react-dom"])
+const NEVER_PRUNE = new Set(["@blocks-kit/ui", "react", "react-dom"])
 
 export type RemoveArgs = ResolvedContext & {
   yes?: boolean
@@ -160,7 +160,7 @@ export async function removeCommand(opts: RemoveArgs): Promise<void> {
 
     if (item.kind === "block") {
       prompts.log.info(
-        `${name}: block — no files on disk (import from ${item.import ?? "@blocks/ui/components/" + name}). Stop using the import in your app.`,
+        `${name}: block — no files on disk (import from ${item.import ?? "@blocks-kit/ui/components/" + name}). Stop using the import in your app.`,
       )
       continue
     }

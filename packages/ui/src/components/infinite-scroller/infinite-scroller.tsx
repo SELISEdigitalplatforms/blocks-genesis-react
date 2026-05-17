@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react"
 
-import { fadeInUp, fadeTransition } from "@blocks/ui/lib/motion-presets"
+import { fadeInUp, fadeTransition } from "@blocks-kit/ui/lib/motion-presets"
 
 export type InfiniteScrollerProps<T> = {
   initialData: T[]

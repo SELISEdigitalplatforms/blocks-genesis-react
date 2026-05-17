@@ -4,9 +4,9 @@ import { Check, Copy } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
 import { useState, type MouseEvent, type ReactNode } from "react"
 
-import { Button } from "@blocks/ui/components/button"
-import { cn } from "@blocks/ui/lib/utils"
-import { fadeTransition } from "@blocks/ui/lib/motion-presets"
+import { Button } from "@blocks-kit/ui/components/button"
+import { cn } from "@blocks-kit/ui/lib/utils"
+import { fadeTransition } from "@blocks-kit/ui/lib/motion-presets"
 
 export type CopyToClipboardButtonProps = {
   textToCopy: string

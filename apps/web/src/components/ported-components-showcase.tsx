@@ -1,14 +1,14 @@
 import { useMemo, useState } from "react"
 
-import { Button } from "@blocks/ui/components/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@blocks/ui/components/card"
-import { Dialog, DialogTrigger } from "@blocks/ui/components/dialog"
-import { CopyToClipboardButton } from "@blocks/ui/components/copy-to-clipboard-button"
-import { ImportFileModalContent } from "@blocks/ui/components/import-file-modal"
-import { InfiniteScroller } from "@blocks/ui/components/infinite-scroller"
-import { MaskedText } from "@blocks/ui/components/masked-text"
-import { MultiSelect } from "@blocks/ui/components/multi-select"
-import { Timeline } from "@blocks/ui/components/timeline"
+import { Button } from "@blocks-kit/ui/components/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@blocks-kit/ui/components/card"
+import { Dialog, DialogTrigger } from "@blocks-kit/ui/components/dialog"
+import { CopyToClipboardButton } from "@blocks-kit/ui/components/copy-to-clipboard-button"
+import { ImportFileModalContent } from "@blocks-kit/ui/components/import-file-modal"
+import { InfiniteScroller } from "@blocks-kit/ui/components/infinite-scroller"
+import { MaskedText } from "@blocks-kit/ui/components/masked-text"
+import { MultiSelect } from "@blocks-kit/ui/components/multi-select"
+import { Timeline } from "@blocks-kit/ui/components/timeline"
 import {
   WizardHorizontalTrackBar,
   WizardStepContent,
@@ -16,7 +16,7 @@ import {
   WizardStepViewport,
   WizardVerticalTrackBar,
   useWizardStepper,
-} from "@blocks/ui/components/wizard-stepper"
+} from "@blocks-kit/ui/components/wizard-stepper"
 
 const FILTER_OPTIONS = [
   { label: "English", value: "en" },

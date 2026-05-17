@@ -4,8 +4,8 @@ import { Check, PlusCircle } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
 import { useEffect, useMemo, useState } from "react"
 
-import { Badge } from "@blocks/ui/components/badge"
-import { Button } from "@blocks/ui/components/button"
+import { Badge } from "@blocks-kit/ui/components/badge"
+import { Button } from "@blocks-kit/ui/components/button"
 import {
   Command,
   CommandEmpty,
@@ -14,18 +14,18 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@blocks/ui/components/command"
+} from "@blocks-kit/ui/components/command"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@blocks/ui/components/popover"
-import { Separator } from "@blocks/ui/components/separator"
-import { useDebouncedFuseFilter } from "@blocks/ui/hooks/use-debounced-fuse-filter"
-import { useIsMobile } from "@blocks/ui/hooks/use-mobile"
-import { usePopoverWidth } from "@blocks/ui/hooks/use-popover-width"
-import { cn } from "@blocks/ui/lib/utils"
-import { fadeTransition } from "@blocks/ui/lib/motion-presets"
+} from "@blocks-kit/ui/components/popover"
+import { Separator } from "@blocks-kit/ui/components/separator"
+import { useDebouncedFuseFilter } from "@blocks-kit/hooks"
+import { useIsMobile } from "@blocks-kit/hooks"
+import { usePopoverWidth } from "@blocks-kit/hooks"
+import { cn } from "@blocks-kit/ui/lib/utils"
+import { fadeTransition } from "@blocks-kit/ui/lib/motion-presets"
 
 export type MultiSelectOption = {
   label: string

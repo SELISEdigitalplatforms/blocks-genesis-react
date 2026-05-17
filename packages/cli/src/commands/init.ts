@@ -196,7 +196,7 @@ export async function initCommand(opts: InitArgs): Promise<void> {
     cwd: opts.cwd,
     dryRun: opts.dryRun,
     pm,
-    packages: { "@blocks/ui": getDefaultBlocksUiVersion() },
+    packages: { "@blocks-kit/ui": getDefaultBlocksUiVersion() },
   })
 
   if (!okInstall) process.exitCode = 1
@@ -208,5 +208,5 @@ import { ThemeProvider } from "next-themes"
 <ThemeProvider attribute="class" defaultTheme="${defaultMode}" enableSystem>
   {children}
 </ThemeProvider>`)
-  prompts.log.info(`Primitives install with: blocks add <name>. Blocks stay on @blocks/ui.`)
+  prompts.log.info(`Primitives install with: blocks add <name>. Blocks stay on @blocks-kit/ui.`)
 }

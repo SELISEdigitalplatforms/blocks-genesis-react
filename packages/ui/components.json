@@ -12,10 +12,10 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@blocks/ui/components",
-    "utils": "@blocks/ui/lib/utils",
-    "hooks": "@blocks/ui/hooks",
-    "lib": "@blocks/ui/lib",
-    "ui": "@blocks/ui/components"
+    "components": "@blocks-kit/ui/components",
+    "utils": "@blocks-kit/ui/lib/utils",
+    "hooks": "@blocks-kit/ui/hooks",
+    "lib": "@blocks-kit/ui/lib",
+    "ui": "@blocks-kit/ui/components"
   }
 }
