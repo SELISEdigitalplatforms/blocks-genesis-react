@@ -4,7 +4,7 @@ export default {
     'scope-enum': [
       2,
       'always',
-      ['ui', 'hooks', 'docs', 'tooling', 'release', 'deps', 'cli'],
+      ['ui', 'hooks', 'docs', 'tooling', 'release', 'deps', 'cli', 'chore', 'test'],
     ],
   },
 }
