@@ -1,4 +1,4 @@
-export function debounce<T extends (...args: unknown[]) => unknown>(
+export function debounce<T extends (...args: any[]) => any>(
   fn: T,
   delay: number,
 ): { (...args: Parameters<T>): void; cancel: () => void } {
@@ -16,7 +16,7 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
   return debounced;
 }
 
-export function throttle<T extends (...args: unknown[]) => unknown>(
+export function throttle<T extends (...args: any[]) => any>(
   fn: T,
   limit: number,
 ): { (...args: Parameters<T>): void; cancel: () => void } {
@@ -39,7 +39,7 @@ export function throttle<T extends (...args: unknown[]) => unknown>(
   return throttled;
 }
 
-export function memoize<T extends (...args: unknown[]) => unknown>(
+export function memoize<T extends (...args: any[]) => any>(
   fn: T,
   keyFn?: (...args: Parameters<T>) => string,
 ): T {
