@@ -1,4 +1,4 @@
-# Blocks UI
+# Blocks UI Kit
 
 > A React 19 + shadcn/ui design-system monorepo for the Blocks platform.
 > Built on **Tailwind CSS v4**, Radix primitives, and the **shadcn monorepo
@@ -31,7 +31,7 @@
 ## Repository layout
 
 ```
-blocks-ui/
+blocks-kit/
 ├── apps/
 │   └── web/                    # Vite + React 19 playground / docs
 │       ├── components.json
@@ -110,7 +110,7 @@ Scaffold a React app first (`package.json`, `tsconfig` with `@/*` paths). The CL
 **From this monorepo** (development):
 
 ```bash
-cd blocks-ui
+cd blocks-kit
 pnpm install
 pnpm cli:build          # generates registry + dist/index.js
 
