@@ -1,13 +1,18 @@
 /**
- * Validation result.
+ * @type ValidationResult
+ * @description - The validation result type.
  * @template T - The type of the data to validate.
- * @description The validation result type. Either a success result with an optional data payload, or a error result with an error message payload.
+ * @property {boolean} success - Whether the validation was successful or not.
+ * @property {T} data - The validated data, if successful.
+ * @property {string} error - The error message, if validation failed.
  */
 export type ValidationResult<T> = { success: true; data: T } | { success: false; error: string };
 
 /**
- * Validator function.
+ * @type Validator
+ * @description - The validator function type.
  * @template T - The type of the data to validate.
- * @description The validator function type.
+ * @property {unknown} val - The value to validate.
+ * @returns {ValidationResult<T>} - The validation result.
  */
 export type Validator<T> = (val: unknown) => ValidationResult<T>;
