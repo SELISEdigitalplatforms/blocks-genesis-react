@@ -1,5 +1,5 @@
 export { HttpClient } from "./client";
-export { HttpError } from "./types";
+export { HttpError } from "./error";
 export { createRetry } from "./retry";
 export type {
   HttpClientConfig,

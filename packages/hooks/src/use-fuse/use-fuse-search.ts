@@ -1,7 +1,7 @@
-import { useMemo } from "react"
-import type { IFuseOptions } from "fuse.js"
+import { useMemo } from "react";
+import type { IFuseOptions } from "fuse.js";
 
-import { fuseFilter } from "./utils/fuse-search"
+import { fuseFilter } from "./utils/fuse-search";
 
 /**
  * Memoized fuzzy filter for React lists. Pass a stable `options` object (e.g. from useMemo)
@@ -12,5 +12,5 @@ export const useFuseSearch = <T>(
   query: string,
   options: IFuseOptions<T>,
 ): T[] => {
-  return useMemo(() => fuseFilter(list, query, options), [list, query, options])
-}
+  return useMemo(() => fuseFilter(list, query, options), [list, query, options]);
+};

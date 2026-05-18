@@ -1,17 +1,31 @@
-import {
-  type HttpClientConfig,
-  type RequestConfig,
-  type HttpResponse,
-  type RequestInterceptor,
-  type ResponseInterceptor,
-  HttpError,
+import type {
+  HttpClientConfig,
+  RequestConfig,
+  HttpResponse,
+  RequestInterceptor,
+  ResponseInterceptor,
 } from "./types";
+import { HttpError } from "./error";
+import { anySignal } from "./util";
+import { sleep } from "@/utils";
 
+/**
+ * HTTP client.
+ * @param config - The HTTP client configuration.
+ * @returns The HTTP client instance.
+ * */
 export class HttpClient {
   private config: Required<HttpClientConfig>;
   private requestInterceptors: RequestInterceptor[] = [];
   private responseInterceptors: ResponseInterceptor[] = [];
 
+  /**
+   * HTTP client constructor.
+   * @param config - The HTTP client configuration.
+   * @returns The HTTP client instance.
+   * @example
+   * const client = new HttpClient({ baseUrl: "https://api.example.com" });
+   * */
   constructor(config: HttpClientConfig = {}) {
     this.config = {
       baseUrl: config.baseUrl ?? "",
@@ -22,6 +36,11 @@ export class HttpClient {
     };
   }
 
+  /**
+   * Add a request interceptor.
+   * @param interceptor - The request interceptor.
+   * @returns The request interceptor.
+   */
   addRequestInterceptor(interceptor: RequestInterceptor): () => void {
     this.requestInterceptors.push(interceptor);
     return () => {
@@ -29,6 +48,11 @@ export class HttpClient {
     };
   }
 
+  /**
+   * Add a response interceptor.
+   * @param interceptor - The response interceptor.
+   * @returns The response interceptor.
+   */
   addResponseInterceptor<T>(interceptor: ResponseInterceptor<T>): () => void {
     this.responseInterceptors.push(interceptor as ResponseInterceptor);
     return () => {
@@ -36,6 +60,12 @@ export class HttpClient {
     };
   }
 
+  /**
+   * Make a request.
+   * @param url - The URL to request.
+   * @param config - The request configuration.
+   * @returns The response data.
+   */
   async request<T>(url: string, config: RequestConfig = {}): Promise<HttpResponse<T>> {
     const fullUrl = this.buildUrl(url, config.params);
     let resolvedConfig = { ...config, url: fullUrl };
@@ -50,6 +80,14 @@ export class HttpClient {
     return this.executeWithRetry<T>(resolvedConfig.url, resolvedConfig, retries, retryDelay);
   }
 
+  /**
+   * Execute a request with retry.
+   * @param url - The URL to request.
+   * @param config - The request configuration.
+   * @param retriesLeft - The number of retries left.
+   * @param retryDelay - The delay in milliseconds between retries.
+   * @returns The response data.
+   */
   private async executeWithRetry<T>(
     url: string,
     config: RequestConfig,
@@ -71,6 +109,12 @@ export class HttpClient {
     }
   }
 
+  /**
+   * Execute a request.
+   * @param url - The URL to request.
+   * @param config - The request configuration.
+   * @returns The response data.
+   */
   private async execute<T>(url: string, config: RequestConfig): Promise<HttpResponse<T>> {
     const timeout = config.timeout ?? this.config.timeout;
     const controller = new AbortController();
@@ -120,26 +164,65 @@ export class HttpClient {
     }
   }
 
+  /**
+   * Make a GET request.
+   * @param url - The URL to request.
+   * @param config - The request configuration.
+   * @returns The response data.
+   */
   get<T>(url: string, config?: Omit<RequestConfig, "method" | "body">) {
     return this.request<T>(url, { ...config, method: "GET" });
   }
 
+  /**
+   * Make a POST request.
+   * @param url - The URL to request.
+   * @param body - The request body.
+   * @param config - The request configuration.
+   * @returns The response data.
+   */
   post<T>(url: string, body?: unknown, config?: Omit<RequestConfig, "method" | "body">) {
     return this.request<T>(url, { ...config, method: "POST", body });
   }
 
+  /**
+   * Make a PUT request.
+   * @param url - The URL to request.
+   * @param body - The request body.
+   * @param config - The request configuration.
+   * @returns The response data.
+   */
   put<T>(url: string, body?: unknown, config?: Omit<RequestConfig, "method" | "body">) {
     return this.request<T>(url, { ...config, method: "PUT", body });
   }
 
+  /**
+   * Make a PATCH request.
+   * @param url - The URL to request.
+   * @param body - The request body.
+   * @param config - The request configuration.
+   * @returns The response data.
+   */
   patch<T>(url: string, body?: unknown, config?: Omit<RequestConfig, "method" | "body">) {
     return this.request<T>(url, { ...config, method: "PATCH", body });
   }
 
+  /**
+   * Make a DELETE request.
+   * @param url - The URL to request.
+   * @param config - The request configuration.
+   * @returns The response data.
+   */
   delete<T>(url: string, config?: Omit<RequestConfig, "method" | "body">) {
     return this.request<T>(url, { ...config, method: "DELETE" });
   }
 
+  /**
+   * Build a URL with query parameters.
+   * @param path - The path to append to the base URL.
+   * @param params - The query parameters.
+   * @returns The URL with query parameters.
+   */
   private buildUrl(path: string, params?: Record<string, string | number | boolean>): string {
     const url = path.startsWith("http") ? path : `${this.config.baseUrl}${path}`;
     if (!params || Object.keys(params).length === 0) return url;
@@ -148,20 +231,4 @@ export class HttpClient {
     );
     return `${url}?${searchParams.toString()}`;
   }
-}
-
-function sleep(ms: number) {
-  return new Promise<void>((resolve) => setTimeout(resolve, ms));
-}
-
-function anySignal(signals: AbortSignal[]): AbortSignal {
-  const controller = new AbortController();
-  for (const signal of signals) {
-    if (signal.aborted) {
-      controller.abort();
-      break;
-    }
-    signal.addEventListener("abort", () => controller.abort(), { once: true });
-  }
-  return controller.signal;
 }

@@ -1,7 +1,11 @@
-export type ValidationResult<T> = { success: true; data: T } | { success: false; error: string };
+import type { ValidationResult, Validator } from "./types";
 
-export type Validator<T> = (val: unknown) => ValidationResult<T>;
-
+/**
+ * Create a schema validator.
+ * @param schema - The schema to validate.
+ * @description Create a schema validator that validates an object against the specified schema.
+ * @returns The schema validator.
+ */
 export const createSchema = <T extends Record<string, Validator<unknown>>>(schema: T) => {
   return (
     data: unknown,
@@ -28,11 +32,23 @@ export const createSchema = <T extends Record<string, Validator<unknown>>>(schem
   };
 };
 
+/**
+ * String validator.
+ * @param message - The error message to use.
+ * @description Validate a string.
+ * @returns The string validator.
+ */
 export const string =
   (message = "Expected a string"): Validator<string> =>
   (val) =>
     typeof val === "string" ? { success: true, data: val } : { success: false, error: message };
 
+/**
+ * Number validator.
+ * @param message - The error message to use.
+ * @description Validate a number.
+ * @returns The number validator.
+ */
 export const number =
   (message = "Expected a number"): Validator<number> =>
   (val) =>
@@ -40,6 +56,12 @@ export const number =
       ? { success: true, data: val }
       : { success: false, error: message };
 
+/**
+ * Boolean validator.
+ * @param message - The error message to use.
+ * @description Validate a boolean.
+ * @returns The boolean validator.
+ */
 export const boolean =
   (message = "Expected a boolean"): Validator<boolean> =>
   (val) =>
