@@ -1,7 +1,7 @@
 import type { FuseResult, IFuseOptions } from "fuse.js";
 
 /**
- * @typedef FuseSearchOptions
+ * @type FuseSearchOptions
  * @description - The options for the fuse search.
  * @template T - The type of the items to search.
  * @property {IFuseOptions<T>} - The options for the fuse search.
@@ -9,7 +9,7 @@ import type { FuseResult, IFuseOptions } from "fuse.js";
 export type FuseSearchOptions<T> = IFuseOptions<T>;
 
 /**
- * @typedef FuseSearchResult
+ * @type FuseSearchResult
  * @description - The result of the fuse search.
  * @template T - The type of the items to search.
  * @property {FuseResult<T>} - The result of the fuse search.
