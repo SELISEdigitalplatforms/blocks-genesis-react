@@ -1,69 +1,86 @@
-import Fuse, { type FuseResult, type IFuseOptions } from "fuse.js"
+import Fuse, { type FuseResult, type IFuseOptions } from "fuse.js";
 
-export type FuseSearchOptions<T> = IFuseOptions<T>
-export type FuseSearchResult<T> = FuseResult<T>
+const DEFAULT_THRESHOLD = 0.35;
+const DEFAULT_DISTANCE = 100;
 
-const DEFAULT_THRESHOLD = 0.35
-const DEFAULT_DISTANCE = 100
-
-/** Sensible defaults for UI list filtering (typo-tolerant, location-agnostic). */
+/**
+ * @function defaultFuseSearchOptions
+ * @description - Default Fuse search options for UI list filtering (typo-tolerant, location-agnostic).
+ * @returns The default Fuse search options.
+ */
 export const defaultFuseSearchOptions = <T>(): Partial<IFuseOptions<T>> => ({
   threshold: DEFAULT_THRESHOLD,
   distance: DEFAULT_DISTANCE,
   ignoreLocation: true,
   includeScore: true,
-})
+});
 
-/** Create a reusable Fuse index for a list. Reuse the instance when the list is stable. */
-export const createFuseSearcher = <T>(
-  list: readonly T[],
-  options: IFuseOptions<T>,
-): Fuse<T> => {
-  return new Fuse([...list], options)
-}
+/**
+ * @function createFuseSearcher
+ * @description - Create a reusable Fuse index for a list. Reuse the instance when the list is stable.
+ * @param {readonly T[]} list - The list to search.
+ * @param {IFuseOptions<T>} options - The options for the fuse search.
+ * @returns {Fuse<T>} The Fuse index.
+ */
+export const createFuseSearcher = <T>(list: readonly T[], options: IFuseOptions<T>): Fuse<T> => {
+  return new Fuse([...list], options);
+};
 
-/** Fuzzy-filter `list` by `query`. Returns all items when query is empty. */
-export const fuseFilter = <T>(
-  list: readonly T[],
-  query: string,
-  options: IFuseOptions<T>,
-): T[] => {
-  const trimmed = query.trim()
+/**
+ * @function fuseFilter
+ * @description - Fuzzy-filter `list` by `query`. Returns all items when query is empty.
+ * @param {readonly T[]} list - The list to search.
+ * @param {string} query - The query to search for.
+ * @param {IFuseOptions<T>} options - The options for the fuse search.
+ * @returns {T[]} The result of the fuse search.
+ */
+export const fuseFilter = <T>(list: readonly T[], query: string, options: IFuseOptions<T>): T[] => {
+  const trimmed = query.trim();
   if (!trimmed) {
-    return [...list]
+    return [...list];
   }
 
   return createFuseSearcher(list, options)
     .search(trimmed)
-    .map((result) => result.item)
-}
+    .map((result) => result.item);
+};
 
-/** Like `fuseFilter`, but returns full Fuse results (scores, refIndex). */
+/**
+ * @function fuseSearch
+ * @description - Like `fuseFilter`, but returns full Fuse results (scores, refIndex).
+ * @param {readonly T[]} list - The list to search.
+ * @param {string} query - The query to search for.
+ * @param {IFuseOptions<T>} options - The options for the fuse search.
+ * @returns {FuseResult<T>[]} The result of the fuse search.
+ */
 export const fuseSearch = <T>(
   list: readonly T[],
   query: string,
   options: IFuseOptions<T>,
 ): FuseResult<T>[] => {
-  const trimmed = query.trim()
+  const trimmed = query.trim();
   if (!trimmed) {
     return list.map((item, refIndex) => ({
       item,
       refIndex,
-    }))
+    }));
   }
 
-  return createFuseSearcher(list, options).search(trimmed)
-}
+  return createFuseSearcher(list, options).search(trimmed);
+};
 
-/** Search using an existing Fuse index (cheap after debounce). */
-export const fuseSearchWithIndex = <T>(
-  fuse: Fuse<T>,
-  list: readonly T[],
-  query: string,
-): T[] => {
-  const trimmed = query.trim()
+/**
+ * @function fuseSearchWithIndex
+ * @description - Search using an existing Fuse index (cheap after debounce).
+ * @param {Fuse<T>} fuse - The Fuse index to search.
+ * @param {readonly T[]} list - The list to search.
+ * @param {string} query - The query to search for.
+ * @returns {T[]} The result of the fuse search.
+ */
+export const fuseSearchWithIndex = <T>(fuse: Fuse<T>, list: readonly T[], query: string): T[] => {
+  const trimmed = query.trim();
   if (!trimmed) {
-    return [...list]
+    return [...list];
   }
-  return fuse.search(trimmed).map((result) => result.item)
-}
+  return fuse.search(trimmed).map((result) => result.item);
+};
