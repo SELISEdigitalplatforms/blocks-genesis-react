@@ -1,12 +1,13 @@
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD";
 
 /**
- * HTTP client configuration.
- * @param baseUrl - The base URL for the HTTP client.
- * @param timeout - The timeout in milliseconds for the HTTP client.
- * @param headers - The default headers for the HTTP client.
- * @param retries - The number of retries for the HTTP client.
- * @param retryDelay - The delay in milliseconds between retries for the HTTP client.
+ * @type HttpClientConfig
+ * @description - The HTTP client configuration type.
+ * @property {string} baseUrl - The base URL for the HTTP client.
+ * @property {number} timeout - The timeout in milliseconds for the HTTP client.
+ * @property {Record<string, string>} headers - The default headers for the HTTP client.
+ * @property {number} retries - The number of retries for the HTTP client.
+ * @property {number} retryDelay - The delay in milliseconds between retries for the HTTP client.
  */
 export interface HttpClientConfig {
   baseUrl?: string;
@@ -17,14 +18,15 @@ export interface HttpClientConfig {
 }
 
 /**
- * HTTP request configuration.
- * @param method - The HTTP method for the request.
- * @param params - The query parameters for the request.
- * @param body - The request body.
- * @param timeout - The timeout in milliseconds for the request.
- * @param retries - The number of retries for the request.
- * @param retryDelay - The delay in milliseconds between retries for the request.
- * @param signal - The abort signal for the request.
+ * @type RequestConfig
+ * @description - The HTTP request configuration type.
+ * @property {HttpMethod} method - The HTTP method for the request.
+ * @property {Record<string, string | number | boolean>} params - The query parameters for the request.
+ * @property {unknown} body - The request body.
+ * @property {number} timeout - The timeout in milliseconds for the request.
+ * @property {number} retries - The number of retries for the request.
+ * @property {number} retryDelay - The delay in milliseconds between retries for the request.
+ * @property {AbortSignal} signal - The abort signal for the request.
  */
 export interface RequestConfig extends Omit<RequestInit, "method" | "body"> {
   method?: HttpMethod;
@@ -37,12 +39,14 @@ export interface RequestConfig extends Omit<RequestInit, "method" | "body"> {
 }
 
 /**
- * HTTP response.
- * @param data - The response data.
- * @param status - The HTTP status code.
- * @param statusText - The HTTP status text.
- * @param headers - The response headers.
- * @param ok - Whether the response is OK.
+ * @type HttpResponse
+ * @description - The HTTP response type.
+ * @template T - The type of the response data.
+ * @property {T} data - The response data.
+ * @property {number} status - The HTTP status code.
+ * @property {string} statusText - The HTTP status text.
+ * @property {Headers} headers - The response headers.
+ * @property {boolean} ok - Whether the response is OK.
  */
 export interface HttpResponse<T = unknown> {
   data: T;
@@ -53,8 +57,9 @@ export interface HttpResponse<T = unknown> {
 }
 
 /**
- * HTTP request interceptor.
- * @param config - The request configuration.
+ * @type RequestInterceptor
+ * @description - The HTTP request interceptor type.
+ * @param {RequestConfig & { url: string }} config - The request configuration.
  * @returns The modified request configuration.
  */
 export type RequestInterceptor = (
@@ -62,8 +67,9 @@ export type RequestInterceptor = (
 ) => RequestConfig & { url: string };
 
 /**
- * HTTP response interceptor.
- * @param response - The response object.
- * @returns The modified response object.
+ * @type ResponseInterceptor
+ * @description - The HTTP response interceptor type.
+ * @param {HttpResponse<T>} response - The response object.
+ * @returns {HttpResponse<T>} - The modified response object.
  */
 export type ResponseInterceptor<T = unknown> = (response: HttpResponse<T>) => HttpResponse<T>;

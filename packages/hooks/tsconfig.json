@@ -1,21 +1,15 @@
 {
   "extends": "@blocks-kit/tsconfig/base.json",
   "compilerOptions": {
-    "lib": [
-      "ES2020",
-      "DOM"
-    ],
+    "lib": ["ES2020", "DOM"],
     "jsx": "react-jsx",
     "outDir": "dist",
-    "rootDir": "."
+    "rootDir": ".",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
-  "include": [
-    "src",
-    "eslint.config.js",
-    "tsup.config.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src", "eslint.config.js", "tsup.config.ts"],
+  "exclude": ["node_modules", "dist"]
 }
