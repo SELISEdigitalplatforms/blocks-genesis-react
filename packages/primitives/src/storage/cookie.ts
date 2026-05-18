@@ -1,7 +1,16 @@
+/**
+ * Cookie store.
+ * @returns The cookie store instance.
+ */
 export function createCookieStore() {
   const isBrowser = typeof document !== "undefined";
 
   return {
+    /**
+     * Get a cookie value by name.
+     * @param name - The name of the cookie to retrieve.
+     * @returns The value of the cookie, or null if not found.
+     */
     get(name: string): string | null {
       if (!isBrowser) return null;
       const nameEQ = `${name}=`;
@@ -14,6 +23,12 @@ export function createCookieStore() {
       return null;
     },
 
+    /**
+     * Set a cookie value by name.
+     * @param name - The name of the cookie to set.
+     * @param value - The value of the cookie to set.
+     * @param days - The number of days to set the cookie to expire.
+     */
     set(name: string, value: string, days?: number): void {
       if (!isBrowser) return;
       let expires = "";
@@ -25,6 +40,10 @@ export function createCookieStore() {
       document.cookie = `${name}=${value || ""}${expires}; path=/; SameSite=Lax`;
     },
 
+    /**
+     * Delete a cookie by name.
+     * @param name - The name of the cookie to delete.
+     */
     delete(name: string): void {
       if (!isBrowser) return;
       this.set(name, "", -1);
