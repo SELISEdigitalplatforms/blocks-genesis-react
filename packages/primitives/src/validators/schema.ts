@@ -1,10 +1,11 @@
 import type { ValidationResult, Validator } from "./types";
 
 /**
- * Create a schema validator.
- * @param schema - The schema to validate.
- * @description Create a schema validator that validates an object against the specified schema.
- * @returns The schema validator.
+ * Creates an object schema validator from field validators.
+ *
+ * @typeParam T Schema validator map type.
+ * @param schema Field validator map.
+ * @returns Validator function for objects matching the schema.
  */
 export const createSchema = <T extends Record<string, Validator<unknown>>>(schema: T) => {
   return (
@@ -33,10 +34,10 @@ export const createSchema = <T extends Record<string, Validator<unknown>>>(schem
 };
 
 /**
- * String validator.
- * @param message - The error message to use.
- * @description Validate a string.
- * @returns The string validator.
+ * Creates a string validator.
+ *
+ * @param message Error message used for invalid values.
+ * @returns String validator.
  */
 export const string =
   (message = "Expected a string"): Validator<string> =>
@@ -44,10 +45,10 @@ export const string =
     typeof val === "string" ? { success: true, data: val } : { success: false, error: message };
 
 /**
- * Number validator.
- * @param message - The error message to use.
- * @description Validate a number.
- * @returns The number validator.
+ * Creates a number validator.
+ *
+ * @param message Error message used for invalid values.
+ * @returns Number validator.
  */
 export const number =
   (message = "Expected a number"): Validator<number> =>
@@ -57,10 +58,10 @@ export const number =
       : { success: false, error: message };
 
 /**
- * Boolean validator.
- * @param message - The error message to use.
- * @description Validate a boolean.
- * @returns The boolean validator.
+ * Creates a boolean validator.
+ *
+ * @param message Error message used for invalid values.
+ * @returns Boolean validator.
  */
 export const boolean =
   (message = "Expected a boolean"): Validator<boolean> =>

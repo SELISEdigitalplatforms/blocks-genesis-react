@@ -1,30 +1,16 @@
-import * as React from "react";
+import { useMediaQuery } from "./use-media-query";
 
 /**
- * @hook useIsMobile
- * @description - This hook checks if the current device is mobile by using a breakpoint.
- * @param {number} breakPoint - The breakpoint to use for the check. Optional Defaults to 768px.
- * @returns Whether the current device is mobile.
- * @example
- * const isMobile = useIsMobile()
- * return (
- *   <div>
- *     {isMobile ? "Mobile" : "Desktop"}
- *   </div>
- * )
+ * Default breakpoint used by `useIsMobile`.
  */
-export function useIsMobile(breakPoint: number = 768) {
-  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined);
+export const MOBILE_BREAKPOINT = 768;
 
-  React.useEffect(() => {
-    const mql = window.matchMedia(`(max-width: ${breakPoint - 1}px)`);
-    const onChange = () => {
-      setIsMobile(window.innerWidth < breakPoint);
-    };
-    mql.addEventListener("change", onChange);
-    setIsMobile(window.innerWidth < breakPoint);
-    return () => mql.removeEventListener("change", onChange);
-  }, [breakPoint]);
-
-  return !!isMobile;
+/**
+ * Determines whether the viewport width is below a mobile breakpoint.
+ *
+ * @param breakpoint Breakpoint in pixels. Defaults to `MOBILE_BREAKPOINT`.
+ * @returns `true` for mobile widths; otherwise `false`.
+ */
+export function useIsMobile(breakpoint = MOBILE_BREAKPOINT): boolean {
+  return useMediaQuery(`(max-width: ${breakpoint - 1}px)`);
 }

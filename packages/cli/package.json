@@ -9,9 +9,9 @@
   },
   "files": ["dist", "registry"],
   "scripts": {
-    "build:registry": "tsx scripts/build-registry.ts",
-    "build": "tsx scripts/build-registry.ts && tsup && cp -r registry dist/",
-    "dev": "tsx src/index.ts",
+    "build:registry": "node --import tsx scripts/build-registry.ts",
+    "build": "node --import tsx scripts/build-registry.ts && tsup && cp -r registry dist/",
+    "dev": "node --import tsx src/index.ts",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "test:smoke": "node scripts/smoke.mjs"

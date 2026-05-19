@@ -1,19 +1,21 @@
 import { useMemo } from "react";
 import type { IFuseOptions } from "fuse.js";
+
 import { useDebouncedValue } from "./use-debounced-value";
-import { useFuseIndex } from "@/use-fuse";
-import { defaultFuseSearchOptions, fuseSearchWithIndex } from "@/utils/fuse-search";
+import { useFuseIndex } from "../use-fuse/use-fuse-index";
+import { defaultFuseSearchOptions, fuseSearchWithIndex } from "../utils/fuse-search";
 
 /**
- * @hook useDebouncedFuseFilter
- * @description - Debounce a Fuse search for a specified delay.
- * @param {readonly T[]} list - The list to search.
- * @param {string} query - The query to search for.
- * @param {IFuseOptions<T>} fuseOptions - The options for the fuse search.
- * @param {number} debounceMs - The delay in milliseconds.
- * @returns {T[]} The debounced result of the fuse search.
+ * Debounced fuzzy filter for a list using Fuse.js.
+ *
+ * @typeParam T Row type.
+ * @param list Source rows.
+ * @param query Search query.
+ * @param fuseOptions Fuse.js options.
+ * @param debounceMs Debounce duration in milliseconds. Defaults to `250`.
+ * @returns Filtered rows.
  */
-export const useDebouncedFuseFilter = <T>(
+export const useDebouncedFuseFilter = <T,>(
   list: readonly T[],
   query: string,
   fuseOptions: IFuseOptions<T>,

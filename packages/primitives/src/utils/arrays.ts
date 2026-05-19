@@ -1,8 +1,11 @@
 /**
- * Group an array by a key function.
- * @param array - The array to group.
- * @param keyFn - The key function to use to group the array.
- * @returns The grouped array.
+ * Groups array items by a computed key.
+ *
+ * @typeParam T Item type.
+ * @typeParam K Group key type.
+ * @param array Source array.
+ * @param keyFn Key selector function.
+ * @returns Record keyed by group values.
  */
 export function groupBy<T, K extends string | number | symbol>(
   array: T[],
@@ -20,10 +23,13 @@ export function groupBy<T, K extends string | number | symbol>(
 }
 
 /**
- * Get unique values from an array by a key function.
- * @param array - The array to get unique values from.
- * @param keyFn - The key function to use to get unique values.
- * @returns The unique values.
+ * Returns unique array items by a computed key.
+ *
+ * @typeParam T Item type.
+ * @typeParam K Key type used for uniqueness.
+ * @param array Source array.
+ * @param keyFn Key selector function.
+ * @returns De-duplicated array preserving first occurrences.
  */
 export function uniqueBy<T, K>(array: T[], keyFn: (item: T) => K): T[] {
   const seen = new Set<K>();

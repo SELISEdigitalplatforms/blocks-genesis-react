@@ -1,18 +1,13 @@
 /**
- * File formatter.
- * @param bytes - The file size in bytes.
- * @returns The formatted file size.
- * @example
- * formatFileSize(1024); // "1 KB"
- * @example
- * formatFileSize(1024 * 1024); // "1 MB"
- * @example
- * formatFileSize(1024 * 1024 * 1024); // "1 GB"
+ * Formats bytes into a human-readable file-size string.
+ *
+ * @param bytes File size in bytes.
+ * @returns Human-readable size string (for example, `"1.5 MB"`).
  */
 export const formatFileSize = (bytes: number): string => {
   if (bytes === 0) return "0 Bytes";
   const k = 1024;
   const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  const index = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, index)).toFixed(2))} ${sizes[index]}`;
 };

@@ -1,33 +1,28 @@
-/**
- * Storage options.
- * @param prefix - The prefix to use for the storage keys.
- * @param ttlMs - The TTL in milliseconds to use for the storage.
- */
 type StorageOptions = {
   prefix?: string;
   ttlMs?: number;
 };
 
-/**
- * Stored value.
- * @param value - The value to store.
- * @param expiresAt - The expiration timestamp of the value.
- */
 type StoredValue<T> = {
   value: T;
   expiresAt?: number;
 };
 
 /**
- * Create a storage instance.
- * @param driver - The storage driver to use. Defaults to local.
- * @param options - The storage options.
- * @returns The storage instance.
+ * Creates a localStorage/sessionStorage wrapper with optional key prefix and TTL.
+ *
+ * Behavior notes:
+ * - No-ops in non-browser runtimes.
+ * - `clear()` removes only prefixed keys when a prefix is provided.
+ *
+ * @param driver Storage backend (`"local"` or `"session"`).
+ * @param options Prefix and TTL configuration.
+ * @returns Typed storage adapter.
  */
 export function createStorage(driver: "local" | "session" = "local", options: StorageOptions = {}) {
   const { prefix = "", ttlMs } = options;
 
-  const key = (k: string) => (prefix ? `${prefix}:${k}` : k);
+  const withPrefix = (key: string) => (prefix ? `${prefix}:${key}` : key);
 
   const store = (): Storage | null => {
     if (typeof window === "undefined") return null;
@@ -36,19 +31,22 @@ export function createStorage(driver: "local" | "session" = "local", options: St
 
   return {
     /**
-     * Get a value from the storage by key.
-     * @param rawKey - The raw key to retrieve the value from.
-     * @returns The value of the item, or null if not found.
+     * Reads a typed value by key.
+     *
+     * Expired values are removed and return `null`.
      */
     get<T>(rawKey: string): T | null {
       try {
-        const raw = store()?.getItem(key(rawKey));
+        const raw = store()?.getItem(withPrefix(rawKey));
         if (!raw) return null;
-        const parsed: StoredValue<T> = JSON.parse(raw);
+
+        const parsed = JSON.parse(raw) as StoredValue<T>;
+
         if (parsed.expiresAt && Date.now() > parsed.expiresAt) {
-          store()?.removeItem(key(rawKey));
+          store()?.removeItem(withPrefix(rawKey));
           return null;
         }
+
         return parsed.value;
       } catch {
         return null;
@@ -56,29 +54,44 @@ export function createStorage(driver: "local" | "session" = "local", options: St
     },
 
     /**
-     * Set a value in the storage by key.
-     * @param rawKey - The raw key to set the value for.
-     * @param value - The value to set.
-     * @param customTtlMs - The custom TTL in milliseconds to use for the value.
+     * Writes a value by key.
      */
     set<T>(rawKey: string, value: T, customTtlMs?: number): void {
-      const expiresAt = (customTtlMs ?? ttlMs) ? Date.now() + (customTtlMs ?? ttlMs!) : undefined;
-      store()?.setItem(key(rawKey), JSON.stringify({ value, expiresAt }));
+      const effectiveTtl = customTtlMs ?? ttlMs;
+      const expiresAt = effectiveTtl ? Date.now() + effectiveTtl : undefined;
+      store()?.setItem(withPrefix(rawKey), JSON.stringify({ value, expiresAt }));
     },
 
     /**
-     * Delete a value from the storage by key.
-     * @param rawKey - The raw key to delete the value from.
+     * Deletes a value by key.
      */
     delete(rawKey: string): void {
-      store()?.removeItem(key(rawKey));
+      store()?.removeItem(withPrefix(rawKey));
     },
 
     /**
-     * Clear all items from the storage.
+     * Clears values from storage.
+     *
+     * Clears all keys when no prefix is configured; otherwise clears only prefixed keys.
      */
     clear(): void {
-      store()?.clear();
+      const activeStore = store();
+      if (!activeStore) return;
+
+      if (!prefix) {
+        activeStore.clear();
+        return;
+      }
+
+      const keysToDelete: string[] = [];
+      for (let index = 0; index < activeStore.length; index++) {
+        const key = activeStore.key(index);
+        if (key && key.startsWith(`${prefix}:`)) {
+          keysToDelete.push(key);
+        }
+      }
+
+      keysToDelete.forEach((key) => activeStore.removeItem(key));
     },
   };
 }

@@ -4,9 +4,10 @@ const DEFAULT_THRESHOLD = 0.35;
 const DEFAULT_DISTANCE = 100;
 
 /**
- * @function defaultFuseSearchOptions
- * @description - Default Fuse search options for UI list filtering (typo-tolerant, location-agnostic).
- * @returns The default Fuse search options.
+ * Returns default Fuse.js options suitable for UI search inputs.
+ *
+ * @typeParam T Row type.
+ * @returns Default Fuse.js options.
  */
 export const defaultFuseSearchOptions = <T>(): Partial<IFuseOptions<T>> => ({
   threshold: DEFAULT_THRESHOLD,
@@ -16,23 +17,25 @@ export const defaultFuseSearchOptions = <T>(): Partial<IFuseOptions<T>> => ({
 });
 
 /**
- * @function createFuseSearcher
- * @description - Create a reusable Fuse index for a list. Reuse the instance when the list is stable.
- * @param {readonly T[]} list - The list to search.
- * @param {IFuseOptions<T>} options - The options for the fuse search.
- * @returns {Fuse<T>} The Fuse index.
+ * Creates a Fuse.js search index for the given rows.
+ *
+ * @typeParam T Row type.
+ * @param list Source rows.
+ * @param options Fuse.js options.
+ * @returns Fuse.js instance.
  */
 export const createFuseSearcher = <T>(list: readonly T[], options: IFuseOptions<T>): Fuse<T> => {
   return new Fuse([...list], options);
 };
 
 /**
- * @function fuseFilter
- * @description - Fuzzy-filter `list` by `query`. Returns all items when query is empty.
- * @param {readonly T[]} list - The list to search.
- * @param {string} query - The query to search for.
- * @param {IFuseOptions<T>} options - The options for the fuse search.
- * @returns {T[]} The result of the fuse search.
+ * Fuzzy-filters rows by query string.
+ *
+ * @typeParam T Row type.
+ * @param list Source rows.
+ * @param query Search query.
+ * @param options Fuse.js options.
+ * @returns Filtered rows. Returns all rows when query is empty.
  */
 export const fuseFilter = <T>(list: readonly T[], query: string, options: IFuseOptions<T>): T[] => {
   const trimmed = query.trim();
@@ -46,12 +49,13 @@ export const fuseFilter = <T>(list: readonly T[], query: string, options: IFuseO
 };
 
 /**
- * @function fuseSearch
- * @description - Like `fuseFilter`, but returns full Fuse results (scores, refIndex).
- * @param {readonly T[]} list - The list to search.
- * @param {string} query - The query to search for.
- * @param {IFuseOptions<T>} options - The options for the fuse search.
- * @returns {FuseResult<T>[]} The result of the fuse search.
+ * Fuzzy-searches rows and returns full Fuse.js metadata.
+ *
+ * @typeParam T Row type.
+ * @param list Source rows.
+ * @param query Search query.
+ * @param options Fuse.js options.
+ * @returns Fuse.js search results including scores and ref indices.
  */
 export const fuseSearch = <T>(
   list: readonly T[],
@@ -70,12 +74,13 @@ export const fuseSearch = <T>(
 };
 
 /**
- * @function fuseSearchWithIndex
- * @description - Search using an existing Fuse index (cheap after debounce).
- * @param {Fuse<T>} fuse - The Fuse index to search.
- * @param {readonly T[]} list - The list to search.
- * @param {string} query - The query to search for.
- * @returns {T[]} The result of the fuse search.
+ * Fuzzy-searches using an existing Fuse.js index.
+ *
+ * @typeParam T Row type.
+ * @param fuse Existing Fuse index.
+ * @param list Source rows.
+ * @param query Search query.
+ * @returns Filtered rows. Returns all rows when query is empty.
  */
 export const fuseSearchWithIndex = <T>(fuse: Fuse<T>, list: readonly T[], query: string): T[] => {
   const trimmed = query.trim();

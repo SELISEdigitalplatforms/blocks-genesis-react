@@ -1,15 +1,9 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 
 /**
- * @hook Hook to get the width of a popover element.
- * @returns The popover width.
- * @example
- * const [buttonRef, popoverWidth] = usePopoverWidth()
- * return (
- *   <button ref={buttonRef}>
- *     {popoverWidth}
- *   </button>
- * )
+ * Measures a trigger button width for popover alignment.
+ *
+ * @returns Button ref and current width in pixels.
  */
 export function usePopoverWidth(): [RefObject<HTMLButtonElement | null>, number | undefined] {
   const [popoverWidth, setPopoverWidth] = useState<number | undefined>(undefined);
