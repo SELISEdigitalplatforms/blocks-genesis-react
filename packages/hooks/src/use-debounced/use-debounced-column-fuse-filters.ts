@@ -1,17 +1,19 @@
 import { useMemo } from "react";
+import type { IFuseOptions } from "fuse.js";
+
 import { useDebouncedValue } from "./use-debounced-value";
 import { applyColumnFuseFilters } from "./util";
-import type { IFuseOptions } from "fuse.js";
 import type { ColumnFuseFilterConfig } from "./types";
 
 /**
- * @hook useDebouncedColumnFuseFilters
- * @description - Debounce column fuse filters for a specified delay.
- * @param {readonly T[]} list - The list to filter.
- * @param {Record<string, string>} columnSearch - The column search queries.
- * @param {function(string): IFuseOptions<T>["keys"] | undefined} getKeysForColumn - The function to get the keys for a column.
- * @param {number} debounceMs - The delay in milliseconds.
- * @returns {T[]} The debounced result of the column fuse filters.
+ * Debounced multi-column fuzzy filtering helper.
+ *
+ * @typeParam T Row type.
+ * @param list Source rows.
+ * @param columnSearch Active search query per column id.
+ * @param getKeysForColumn Function returning Fuse keys for a column id.
+ * @param debounceMs Debounce duration in milliseconds. Defaults to `250`.
+ * @returns Filtered rows.
  */
 export const useDebouncedColumnFuseFilters = <T>(
   list: readonly T[],

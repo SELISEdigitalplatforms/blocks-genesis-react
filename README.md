@@ -26,6 +26,17 @@
 | Build        | Turborepo + pnpm workspaces                                               |
 | Tests / Lint | `eslint` 9 (flat config), `typescript-eslint`, `prettier`                 |
 
+## API Documentation Standard
+
+All exported APIs in `@blocks-kit/hooks` and `@blocks-kit/primitives` follow a shared JSDoc style:
+
+- One-line summary focused on behavior
+- `@param` and `@returns` for exported functions and hooks
+- Side-effect/runtime notes where relevant (SSR safety, DOM writes, error semantics)
+- Concise examples only when behavior is non-obvious
+
+When implementation behavior changes, update JSDoc in the same PR to keep published API docs accurate.
+
 ---
 
 ## Repository layout

@@ -1,52 +1,123 @@
 /**
- * Cookie store.
- * @returns The cookie store instance.
+ * Allowed `SameSite` values for cookie writes.
  */
-export function createCookieStore() {
+export type CookieSameSite = "Lax" | "Strict" | "None";
+
+/**
+ * Options used for cookie read/write behavior.
+ */
+export type CookieStoreOptions = {
+  /** Cookie path scope. */
+  path?: string;
+  /** Cookie domain scope. */
+  domain?: string;
+  /** Adds `Secure` attribute when `true`. */
+  secure?: boolean;
+  /** Sets `SameSite` policy. */
+  sameSite?: CookieSameSite;
+  /** Absolute cookie expiration date. */
+  expires?: Date;
+  /** Relative expiration in seconds. */
+  maxAge?: number;
+  /** Optional custom encoder for persisted values. */
+  encode?: (value: string) => string;
+  /** Optional custom decoder for persisted values. */
+  decode?: (value: string) => string;
+};
+
+/**
+ * Cookie storage adapter interface.
+ */
+export type CookieStore = {
+  /** Reads a cookie by name. */
+  get: (name: string) => string | null;
+  /** Writes a cookie value. */
+  set: (name: string, value: string, options?: CookieStoreOptions) => void;
+  /** Deletes a cookie by writing an expired value. */
+  delete: (name: string, options?: Omit<CookieStoreOptions, "expires" | "maxAge">) => void;
+};
+
+const defaultEncode = (value: string) => encodeURIComponent(value);
+const defaultDecode = (value: string) => decodeURIComponent(value);
+
+const buildCookieOptions = (options: CookieStoreOptions = {}) => {
+  const parts: string[] = [];
+
+  if (options.path) parts.push(`path=${options.path}`);
+  if (options.domain) parts.push(`domain=${options.domain}`);
+  if (options.sameSite) parts.push(`samesite=${options.sameSite}`);
+  if (options.secure) parts.push("secure");
+  if (typeof options.maxAge === "number") parts.push(`max-age=${Math.floor(options.maxAge)}`);
+  if (options.expires) parts.push(`expires=${options.expires.toUTCString()}`);
+
+  return parts.length ? `; ${parts.join("; ")}` : "";
+};
+
+/**
+ * Creates a browser cookie store with configurable defaults.
+ *
+ * Behavior notes:
+ * - No-ops in non-browser runtimes.
+ * - Defaults to `path=/` and `SameSite=Lax` for writes.
+ *
+ * @param defaultOptions Default options merged into every `set`/`delete` call.
+ * @returns Cookie storage adapter.
+ */
+export function createCookieStore(defaultOptions: CookieStoreOptions = {}): CookieStore {
   const isBrowser = typeof document !== "undefined";
 
+  const resolveEncode = (options?: CookieStoreOptions) => options?.encode ?? defaultOptions.encode ?? defaultEncode;
+  const resolveDecode = (options?: CookieStoreOptions) => options?.decode ?? defaultOptions.decode ?? defaultDecode;
+
   return {
-    /**
-     * Get a cookie value by name.
-     * @param name - The name of the cookie to retrieve.
-     * @returns The value of the cookie, or null if not found.
-     */
-    get(name: string): string | null {
+    get(name) {
       if (!isBrowser) return null;
-      const nameEQ = `${name}=`;
-      const ca = document.cookie.split(";");
-      for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c?.charAt(0) === " ") c = c.substring(1, c.length);
-        if (c?.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+
+      const namePrefix = `${name}=`;
+      const cookieParts = document.cookie.split(";");
+
+      for (const cookie of cookieParts) {
+        const trimmed = cookie.trim();
+        if (!trimmed.startsWith(namePrefix)) continue;
+
+        const rawValue = trimmed.slice(namePrefix.length);
+        try {
+          return resolveDecode()(rawValue);
+        } catch {
+          return rawValue;
+        }
       }
+
       return null;
     },
 
-    /**
-     * Set a cookie value by name.
-     * @param name - The name of the cookie to set.
-     * @param value - The value of the cookie to set.
-     * @param days - The number of days to set the cookie to expire.
-     */
-    set(name: string, value: string, days?: number): void {
+    set(name, value, options = {}) {
       if (!isBrowser) return;
-      let expires = "";
-      if (days) {
-        const date = new Date();
-        date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-        expires = `; expires=${date.toUTCString()}`;
-      }
-      document.cookie = `${name}=${value || ""}${expires}; path=/; SameSite=Lax`;
+
+
+
+      const mergedOptions: CookieStoreOptions = {
+        path: "/",
+        sameSite: "Lax",
+        ...defaultOptions,
+        ...options,
+
+      };
+
+      const encodedValue = resolveEncode(mergedOptions)(value ?? "");
+      const cookieOptions = buildCookieOptions(mergedOptions);
+
+      document.cookie = `${name}=${encodedValue}${cookieOptions}`;
     },
 
-    /**
-     * Delete a cookie by name.
-     * @param name - The name of the cookie to delete.
-     */
-    delete(name: string): void {
+    delete(name, options = {}) {
       if (!isBrowser) return;
-      this.set(name, "", -1);
+
+      this.set(name, "", {
+        ...defaultOptions,
+        ...options,
+        expires: new Date(0),
+      });
     },
   };
 }

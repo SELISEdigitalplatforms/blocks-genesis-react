@@ -1,14 +1,11 @@
 /**
- * Number formatter.
- * @param value - The number to format.
- * @param options - The number format options.
- * @param locale - The locale to use.
- * @returns The formatted number.
- * @example
- * formatNumber(1234567890); // "123.457M"
- * @example
- * formatNumber(1234567890, { notation: "long" }); // "123,456,789,000"
- * */
+ * Formats a number using `Intl.NumberFormat`.
+ *
+ * @param value Number to format.
+ * @param options Intl format options.
+ * @param locale BCP 47 locale string. Defaults to `"en-US"`.
+ * @returns Localized number string.
+ */
 export const formatNumber = (
   value: number,
   options: Intl.NumberFormatOptions = {

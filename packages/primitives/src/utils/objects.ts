@@ -1,10 +1,12 @@
 import { isObject } from "./guards";
 
 /**
- * Deep merge two objects.
- * @param target - The target object.
- * @param source - The source object.
- * @returns The merged object.
+ * Deep-merges two objects recursively.
+ *
+ * @typeParam T Target object type.
+ * @param target Target object.
+ * @param source Source object.
+ * @returns Deep-merged object.
  */
 export function deepMerge<T extends Record<string, unknown>>(target: T, source: unknown): T {
   const output = { ...target };
@@ -26,20 +28,29 @@ export function deepMerge<T extends Record<string, unknown>>(target: T, source: 
   }
   return output;
 }
+
 /**
- * Deep clone an object.
- * @param val - The object to clone.
- * @returns The cloned object.
+ * Deep-clones a value.
+ *
+ * Uses `structuredClone` when available, otherwise JSON serialization fallback.
+ *
+ * @typeParam T Value type.
+ * @param val Value to clone.
+ * @returns Deep-cloned value.
  */
 export function deepClone<T>(val: T): T {
   if (typeof structuredClone !== "undefined") return structuredClone(val);
   return JSON.parse(JSON.stringify(val));
 }
+
 /**
- * Pick properties from an object.
- * @param obj - The object to pick properties from.
- * @param keys - The keys to pick.
- * @returns The object with picked properties.
+ * Picks selected keys from an object.
+ *
+ * @typeParam T Source object type.
+ * @typeParam K Selected key type.
+ * @param obj Source object.
+ * @param keys Keys to include.
+ * @returns Object with selected keys only.
  */
 export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
   const result = {} as Pick<T, K>;
@@ -48,11 +59,15 @@ export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pi
   });
   return result;
 }
+
 /**
- * Omit properties from an object.
- * @param obj - The object to omit properties from.
- * @param keys - The keys to omit.
- * @returns The object with omitted properties.
+ * Omits selected keys from an object.
+ *
+ * @typeParam T Source object type.
+ * @typeParam K Omitted key type.
+ * @param obj Source object.
+ * @param keys Keys to remove.
+ * @returns Object without omitted keys.
  */
 export function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
   const result = { ...obj };

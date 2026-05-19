@@ -1,9 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
- * Debounce a function.
- * @param fn - The function to debounce.
- * @param delay - The delay in milliseconds to debounce.
- * @returns The debounced function.
+ * Creates a debounced function with `cancel` support.
+ *
+ * @typeParam T Function type.
+ * @param fn Function to debounce.
+ * @param delay Delay in milliseconds.
+ * @returns Debounced function with `cancel()` helper.
  */
 export function debounce<T extends (...args: any[]) => any>(
   fn: T,
@@ -24,10 +27,12 @@ export function debounce<T extends (...args: any[]) => any>(
 }
 
 /**
- * Throttle a function.
- * @param fn - The function to throttle.
- * @param limit - The limit in milliseconds to throttle.
- * @returns The throttled function.
+ * Creates a throttled function with `cancel` support.
+ *
+ * @typeParam T Function type.
+ * @param fn Function to throttle.
+ * @param limit Minimum interval in milliseconds.
+ * @returns Throttled function with `cancel()` helper.
  */
 export function throttle<T extends (...args: any[]) => any>(
   fn: T,
@@ -53,10 +58,12 @@ export function throttle<T extends (...args: any[]) => any>(
 }
 
 /**
- * Memoize a function.
- * @param fn - The function to memoize.
- * @param keyFn - The key function to use to memoize the function.
- * @returns The memoized function.
+ * Memoizes a pure function by key.
+ *
+ * @typeParam T Function type.
+ * @param fn Function to memoize.
+ * @param keyFn Optional cache key resolver. Defaults to `JSON.stringify(args)`.
+ * @returns Memoized function.
  */
 export function memoize<T extends (...args: any[]) => any>(
   fn: T,
@@ -73,19 +80,17 @@ export function memoize<T extends (...args: any[]) => any>(
 }
 
 /**
- * Create an event emitter.
- * @param T - The type of the event emitter.
- * @returns The event emitter.
+ * Creates a lightweight typed event emitter.
+ *
+ * @typeParam T Event map where keys are event names and values are payload types.
+ * @returns Event emitter with `on`, `off`, and `emit` methods.
  */
 export function createEventEmitter<T extends Record<string, unknown>>() {
   const listeners = new Map<keyof T, Set<(data: unknown) => void>>();
 
   return {
     /**
-     * Add a listener to the event emitter.
-     * @param event - The event to listen for.
-     * @param listener - The listener function.
-     * @returns A function to remove the listener.
+     * Subscribes to an event.
      */
     on<K extends keyof T>(event: K, listener: (data: T[K]) => void) {
       if (!listeners.has(event)) listeners.set(event, new Set());
@@ -93,27 +98,25 @@ export function createEventEmitter<T extends Record<string, unknown>>() {
       return () => this.off(event, listener);
     },
     /**
-     * Remove a listener from the event emitter.
-     * @param event - The event to remove the listener from.
-     * @param listener - The listener function.
+     * Unsubscribes an event listener.
      */
     off<K extends keyof T>(event: K, listener: (data: T[K]) => void) {
       listeners.get(event)?.delete(listener as (data: unknown) => void);
     },
     /**
-     * Emit an event.
-     * @param event - The event to emit.
-     * @param data - The data to emit.
+     * Emits an event payload to current listeners.
      */
     emit<K extends keyof T>(event: K, data: T[K]) {
-      listeners.get(event)?.forEach((l) => l(data));
+      listeners.get(event)?.forEach((listener) => listener(data));
     },
   };
 }
+
 /**
- * Sleep for a given number of milliseconds.
- * @param ms - The number of milliseconds to sleep.
- * @returns A promise that resolves after the specified number of milliseconds.
+ * Waits for a given duration.
+ *
+ * @param ms Duration in milliseconds.
+ * @returns Promise resolved after the delay.
  */
 export function sleep(ms: number) {
   return new Promise<void>((resolve) => setTimeout(resolve, ms));

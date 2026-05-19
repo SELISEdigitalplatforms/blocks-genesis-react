@@ -1,14 +1,12 @@
 const pad = (num: number): string => num.toString().padStart(2, "0");
+
 /**
- * Date formatter.
- * @param date - The date to format.
- * @param shouldOmitTime - Whether to omit the time component.
- * @returns The formatted date.
- * @example
- * formatFullDate(new Date()); // "Jan 1, 2023 at 12:00"
- * @example
- * formatFullDate(new Date(), true); // "Jan 1, 2023"
- * */
+ * Formats a date into `Mon DD, YYYY` (with optional time).
+ *
+ * @param date Date instance.
+ * @param shouldOmitTime When `true`, omits the `HH:mm` suffix.
+ * @returns Formatted date string.
+ */
 export const formatFullDate = (date: Date, shouldOmitTime?: boolean): string => {
   const monthNames = [
     "Jan",
@@ -31,16 +29,13 @@ export const formatFullDate = (date: Date, shouldOmitTime?: boolean): string => 
 };
 
 /**
- * Date formatter.
- * @param date - The date to format.
- * @param options - The date format options.
- * @param locale - The locale to use.
- * @returns The formatted date.
- * @example
- * formatDate(new Date()); // "2023-01-01"
- * @example
- * formatDate(new Date(), { month: "short" }); // "Jan 1, 2023"
- * */
+ * Formats a date with either legacy boolean formatting or Intl options.
+ *
+ * @param date Date-like input value.
+ * @param options Intl options or legacy boolean flag (`true` = omit time).
+ * @param locale BCP 47 locale string. Defaults to `"en-US"`.
+ * @returns Formatted date string.
+ */
 export const formatDate = (
   date: Date | string | number,
   options: Intl.DateTimeFormatOptions | boolean = {
@@ -50,29 +45,24 @@ export const formatDate = (
   },
   locale = "en-US",
 ): string => {
-  const d = new Date(date);
+  const normalizedDate = new Date(date);
   if (typeof options === "boolean") {
-    const withoutTime = options;
-    const dateStr = `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
-    const timeStr = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-    if (withoutTime) return `${dateStr}`;
+    const shouldOmitTime = options;
+    const dateStr = `${pad(normalizedDate.getDate())}/${pad(normalizedDate.getMonth() + 1)}/${normalizedDate.getFullYear()}`;
+    const timeStr = `${pad(normalizedDate.getHours())}:${pad(normalizedDate.getMinutes())}`;
+    if (shouldOmitTime) return dateStr;
     return `${dateStr}, ${timeStr}`;
   }
-  return new Intl.DateTimeFormat(locale, options).format(d);
+  return new Intl.DateTimeFormat(locale, options).format(normalizedDate);
 };
 
 /**
- * Date comparator.
- * @param firstDateString - The first date string to compare.
- * @param secondDateString - The second date string to compare.
- * @returns The comparison result.
- * @example
- * compareDates("2023-01-01", "2023-01-02"); // -1
- * @example
- * compareDates("2023-01-01", "2023-01-01"); // 0
- * @example
- * compareDates("2023-01-01", "2023-01-02"); // 1
- * */
+ * Compares two date strings by epoch milliseconds.
+ *
+ * @param firstDateString First date string.
+ * @param secondDateString Second date string.
+ * @returns Negative when first date is earlier; positive when later; zero when equal.
+ */
 export function compareDates(firstDateString: string, secondDateString: string): number {
   const dateA = new Date(firstDateString);
   const dateB = new Date(secondDateString);

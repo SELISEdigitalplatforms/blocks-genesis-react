@@ -2,11 +2,18 @@ export { HttpClient } from "./client";
 export { HttpError } from "./error";
 export { createRetry } from "./retry";
 export type {
+  BodySerializer,
   HttpClientConfig,
-  RequestConfig,
+  HttpMethod,
   HttpResponse,
+  QueryParams,
+  QueryParamValue,
+  RequestConfig,
+  RequestContext,
   RequestInterceptor,
   ResponseInterceptor,
-  HttpMethod,
+  ResponseParser,
+  ResponseType,
+  RetryPolicy,
 } from "./types";
 export type { RetryOptions } from "./retry";

@@ -1,20 +1,18 @@
 /**
- * Parse a date string into a Date object.
- * @param dateString - The date string to parse.
- * @returns The parsed Date object.
- * @example
- * parseDateString("2023-01-01"); // Date(2023, 0, 1)
+ * Parses a date string into a `Date` object.
+ *
+ * @param dateString Date string input.
+ * @returns Parsed date instance.
  */
 export function parseDateString(dateString: string): Date {
   return new Date(dateString);
 }
 
 /**
- * Parse a MongoDB string into a JavaScript object.
- * @param text - The MongoDB string to parse.
- * @returns The parsed JavaScript object.
- * @example
- * parseMongoDBString("ISODate(\"2023-01-01\")"); // Date(2023, 0, 1)
+ * Normalizes common Mongo shell wrappers into JSON-friendly primitives.
+ *
+ * @param text Mongo-style text containing wrappers like `ISODate(...)`.
+ * @returns Normalized string suitable for further parsing.
  */
 export const parseMongoDBString = (text: string) => {
   return text

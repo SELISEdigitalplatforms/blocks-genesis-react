@@ -1,18 +1,22 @@
-import { isValid, isBefore } from "date-fns";
+import { isBefore, isValid } from "date-fns";
+
+export * from "./schema";
 
 /**
- * Validate an email address.
- * @param email - The email address to validate.
- * @returns True if the email address is valid, false otherwise.
+ * Validates email format using a simple RFC-like regex.
+ *
+ * @param email Email string.
+ * @returns `true` when valid.
  */
 export const isEmail = (email: string): boolean => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 
 /**
- * Check if a string is a valid URL.
- * @param url - The string to check.
- * @returns True if the string is a valid URL, false otherwise.
+ * Validates URL format using the platform `URL` constructor.
+ *
+ * @param url URL string.
+ * @returns `true` when valid.
  */
 export const isUrl = (url: string): boolean => {
   try {
@@ -24,29 +28,30 @@ export const isUrl = (url: string): boolean => {
 };
 
 /**
- * Check if a string is a valid UUID.
- * @param uuid - The string to check.
- * @returns True if the string is a valid UUID, false otherwise.
+ * Validates UUID format (versions are not distinguished).
+ *
+ * @param uuid UUID string.
+ * @returns `true` when valid.
  */
 export const isUuid = (uuid: string): boolean => {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid);
 };
 
 /**
- * Check if a string is a valid phone number.
- * @param phone - The phone number to check.
- * @description Check if a string is a valid phone number in E.164 format.
- * @returns True if the phone number is valid, false otherwise.
+ * Validates E.164 phone number format.
+ *
+ * @param phone Phone string.
+ * @returns `true` when valid.
  */
 export const isPhone = (phone: string): boolean => {
   return /^\+[1-9]\d{1,14}$/.test(phone);
 };
 
 /**
- * Check if a string is a valid credit card number.
- * @param card - The credit card number to check.
- * @description Check if a string is a valid credit card number using Luhn algorithm.
- * @returns True if the credit card number is valid, false otherwise.
+ * Validates credit card number using the Luhn algorithm.
+ *
+ * @param card Credit card string (digits and separators supported).
+ * @returns `true` when valid.
  */
 export const isCreditCard = (card: string): boolean => {
   const nDigits = card.replace(/\D/g, "").length;
@@ -55,8 +60,8 @@ export const isCreditCard = (card: string): boolean => {
   let sum = 0;
   let shouldDouble = false;
 
-  for (let i = card.length - 1; i >= 0; i--) {
-    let digit = parseInt(card.charAt(i));
+  for (let index = card.length - 1; index >= 0; index--) {
+    let digit = parseInt(card.charAt(index));
     if (isNaN(digit)) continue;
 
     if (shouldDouble) {
@@ -72,11 +77,11 @@ export const isCreditCard = (card: string): boolean => {
 };
 
 /**
- * Check if a string is a valid postal code.
- * @param code - The postal code to check.
- * @param country - The country to check the postal code for.
- * @description Check if a string is a valid postal code for the specified country.
- * @returns True if the postal code is valid, false otherwise.
+ * Validates postal code format for selected countries.
+ *
+ * @param code Postal code value.
+ * @param country Country code (`US`, `UK`, or `CA`).
+ * @returns `true` when valid for the selected country.
  */
 export const isPostalCode = (code: string, country: "US" | "UK" | "CA" = "US"): boolean => {
   const patterns = {
@@ -88,10 +93,10 @@ export const isPostalCode = (code: string, country: "US" | "UK" | "CA" = "US"): 
 };
 
 /**
- * Check if a date is valid.
- * @param date - The date to check.
- * @description Check if a date is valid and after 1900-01-01.
- * @returns True if the date is valid, false otherwise.
+ * Validates date input and ensures it is not before `1900-01-01`.
+ *
+ * @param date Date input.
+ * @returns `true` when valid and above lower-bound date.
  */
 export const checkValidDate = (date: string | Date) => {
   const isValidDate = isValid(new Date(date));

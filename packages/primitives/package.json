@@ -59,6 +59,11 @@
       "types": "./dist/storage/index.d.ts",
       "import": "./dist/storage/index.js",
       "require": "./dist/storage/index.cjs"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.cjs"
     }
   },
   "main": "./dist/index.cjs",
