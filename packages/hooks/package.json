@@ -20,6 +20,11 @@
       "types": "./dist/query-state/index.d.ts",
       "import": "./dist/query-state/index.js",
       "require": "./dist/query-state/index.cjs"
+    },
+    "./query-client": {
+      "types": "./dist/query-client/index.d.ts",
+      "import": "./dist/query-client/index.js",
+      "require": "./dist/query-client/index.cjs"
     }
   },
   "main": "./dist/index.cjs",
@@ -40,7 +45,8 @@
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
-    "nuqs": "^2.8.9"
+    "nuqs": "^2.8.9",
+    "@tanstack/react-query": "^5.0.0"
   },
   "dependencies": {
     "@blocks-kit/primitives": "workspace:*",
@@ -49,6 +55,7 @@
   "devDependencies": {
     "@blocks-kit/eslint-config": "workspace:*",
     "@blocks-kit/tsconfig": "workspace:*",
+    "@tanstack/react-query": "^5.62.11",
     "@types/react": "catalog:",
     "eslint": "catalog:",
     "react": "catalog:",

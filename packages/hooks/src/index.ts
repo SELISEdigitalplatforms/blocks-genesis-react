@@ -1,4 +1,5 @@
 export * from "./query-state";
+export * from "./query-client";
 export * from "./use-boolean";
 export * from "./use-copy-to-clipboard";
 export * from "./use-countdown";
