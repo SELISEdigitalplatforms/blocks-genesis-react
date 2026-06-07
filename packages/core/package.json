@@ -1,5 +1,5 @@
 {
-  "name": "@blocks-kit/core",
+  "name": "@seliseblocks/blocks-kit-core",
   "version": "0.0.1",
   "description": "Framework-agnostic core utilities for blocks-kit",
   "keywords": [
@@ -32,22 +32,21 @@
       "types": "./dist/auth/index.d.ts",
       "import": "./dist/auth/index.js",
       "require": "./dist/auth/index.cjs"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist",
-    "src",
-    "!**/*.test.*",
-    "!**/*.spec.*"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm run build",
     "clean": "rm -rf dist node_modules .turbo"
   },
   "devDependencies": {

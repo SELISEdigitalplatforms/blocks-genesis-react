@@ -11,8 +11,10 @@ export const useLogout = () => {
 
 export const useImpersonationStatusChecker = () => {
   return useQuery({
-    queryKey: ["impersonation", "status"],
+    queryKey: ["blocks-kit-impersonation", "status"],
     queryFn: () => impersonationService.impersonationStatus(),
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 };
 
