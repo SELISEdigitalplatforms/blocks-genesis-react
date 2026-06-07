@@ -1,0 +1,98 @@
+import { motion } from "framer-motion";
+import { Card } from "@/components/core/card";
+import { Skeleton } from "@/components/core/skeleton";
+
+import { useGetProjects } from "@/hooks/use-project";
+import { ProjectCard } from "./project-card";
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20, scale: 0.97 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      delay: i * 0.06,
+      duration: 0.4,
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+    },
+  }),
+};
+
+export const ProjectCardLoading = () => {
+  return (
+    <Card className="border-border/60 flex h-[160px] flex-col overflow-hidden rounded-xl border p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1">
+          <Skeleton className="h-4 w-4/5" />
+          <Skeleton className="mt-1.5 h-4 w-3/5" />
+        </div>
+        <Skeleton className="h-8 w-8 flex-shrink-0 rounded-md" />
+      </div>
+      <div className="mt-auto flex flex-wrap gap-1.5">
+        <Skeleton className="h-5 w-16 rounded-full" />
+        <Skeleton className="h-5 w-16 rounded-full" />
+      </div>
+    </Card>
+  );
+};
+
+const SelfProjectLoading = () => {
+  return (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {Array(8)
+        .fill(null)
+        .map((_item, index) => (
+          <ProjectCardLoading key={index} />
+        ))}
+    </div>
+  );
+};
+
+export const SelfProject = () => {
+  const { data, isLoading, isFetching } = useGetProjects();
+
+  if (isLoading || isFetching) return <SelfProjectLoading />;
+  const projectGroups = data || [];
+  // if (!projectGroups.length) return <ConsoleCreateProject />;
+
+  return (
+    <section className="flex flex-col gap-4">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          <h2 className="shrink-0 text-base font-semibold text-[hsl(var(--high-emphasis))]">
+            Your Blocks Projects
+          </h2>
+          <span className="bg-primary/10 text-primary rounded-full px-2 py-0.5 text-xs font-semibold">
+            {projectGroups.length}
+          </span>
+        </div>
+        {projectGroups.length > 9 && (
+          <span className="shrink-0 text-sm text-[hsl(var(--medium-emphasis))]">
+            Please delete an existing project to create a new one.
+          </span>
+        )}
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {/* {projectGroups.length < 10 && (
+          <motion.div variants={cardVariants} custom={0} initial="hidden" animate="visible">
+            <AddProjectCard />
+          </motion.div>
+        )} */}
+        {projectGroups.map((project, i) => (
+          <motion.div
+            key={project.tenantGroupId}
+            variants={cardVariants}
+            custom={projectGroups.length < 10 ? i + 1 : i}
+            initial="hidden"
+            animate="visible"
+          >
+            {project.projects[0] && (
+              <ProjectCard project={project.projects[0]} projects={project.projects} />
+            )}
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+};

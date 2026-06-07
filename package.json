@@ -6,15 +6,9 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "dev:web": "turbo run dev --filter @blocks-kit/web",
-    "dev:cli": "turbo run dev --filter @blocks-kit/cli",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,md,css,json}\" --ignore-path .gitignore",
-    "ui:add": "pnpm --filter @blocks-kit/ui exec shadcn@latest add",
-    "blocks": "pnpm --filter @blocks-kit/cli exec blocks",
-    "cli:dev": "pnpm --filter @blocks-kit/cli exec tsx src/index.ts",
-    "cli:build": "pnpm --filter @blocks-kit/cli build",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "turbo build && changeset publish",
@@ -42,7 +36,6 @@
       "pnpm exec prettier --write"
     ]
   },
-  "prettier": "@blocks-kit/prettier-config",
   "engines": {
     "node": ">=20"
   },
