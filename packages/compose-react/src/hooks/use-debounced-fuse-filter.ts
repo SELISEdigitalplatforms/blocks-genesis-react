@@ -1,11 +1,8 @@
 import { useMemo } from "react";
 import Fuse from "fuse.js";
+import type { FuseResult, IFuseOptions } from "fuse.js";
 
-export interface FuseSearchOptions<T> {
-  keys?: (keyof T)[] | string[];
-  threshold?: number;
-  [key: string]: unknown;
-}
+export type FuseSearchOptions<T> = Partial<IFuseOptions<T>>;
 
 export function useDebouncedFuseFilter<T extends Record<string, unknown>>(
   items: T[],
@@ -22,7 +19,7 @@ export function useDebouncedFuseFilter<T extends Record<string, unknown>>(
       ...options,
     });
 
-    const results = fuse.search(searchTerm);
+    const results: FuseResult<T>[] = fuse.search(searchTerm);
     return results.map((result) => result.item);
   }, [items, searchTerm, options]);
 }
