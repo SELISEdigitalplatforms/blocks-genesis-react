@@ -1,0 +1,37 @@
+
+import { HttpClient } from "@blocks-kit/core/http";
+import { getRuntimeEnv } from "@blocks-kit/core/runtime-env";
+import { useEffect } from "react";
+import { useAuthStore } from "../store/auth-store";
+
+
+
+ const http = new HttpClient({
+  baseURL: getRuntimeEnv("BLOCKS_OS_BASE_URL") || "",
+  blocksKey: getRuntimeEnv("BLOCKS_X_BLOCKS_KEY") || "",
+}
+
+);
+
+
+export function AuthResolver({ children }: { children: React.ReactNode }) {
+  const { setUser, setAuthenticated ,setUnAuthenticated} = useAuthStore();
+//   const { isMounted, } = useAppState();
+
+  useEffect(() => {
+    async function resolve() {
+      try {
+        const res =  await   http.get<{data:any}>(`https://dev-iam.blocksdevelopers.com/api/iam/me`, undefined, {
+                absoluteUrl: true,
+              })
+        setUser(res.data);
+        setAuthenticated();
+      } catch {
+        setUnAuthenticated();
+      } 
+    }
+    resolve();
+  }, [setAuthenticated, setUnAuthenticated, setUser]);
+
+  return <>{children}</>;
+}
