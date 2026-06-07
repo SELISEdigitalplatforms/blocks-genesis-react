@@ -5,6 +5,12 @@ export interface AppConfig {
   loginInitiateUrl?: string;
   projectBaseUrlKey?: string;
   userBaseUrlKey?: string;
+  appLogoUrl?:
+    | {
+        dark?: string;
+        light?: string;
+      }
+    | string;
 }
 
 export interface AppConfigStoreState {

@@ -4,7 +4,7 @@ import { Loader } from "lucide-react";
 import { useAuthStore } from "@/store";
 
 type CallbackPageProps = {
-  redirectUrl: string;
+  redirectUrl?: string;
 };
 
 export const CallbackPage = ({ redirectUrl }: CallbackPageProps) => {
@@ -14,39 +14,44 @@ export const CallbackPage = ({ redirectUrl }: CallbackPageProps) => {
 
   const code = searchParams.get("code");
   const state = searchParams.get("state");
+  const forwardTo = searchParams.get("forwardedTo");
   const error = searchParams.get("error");
-  const tenantId = searchParams.get("tenant_id");
 
   useEffect(() => {
-    if (hasProcessed.current) return;
-    hasProcessed.current = true;
+    try {
+      if (hasProcessed.current) return;
+      hasProcessed.current = true;
 
-    const idpBaseUrl = window.process?.env.userBaseUrl;
-    const callbackUrl = new URL(`${idpBaseUrl}/api/idp/callback`);
-    // Forward the callback parameters to backend
-    if (code) callbackUrl.searchParams.set("code", code);
-    if (state) callbackUrl.searchParams.set("state", state);
-    if (error) callbackUrl.searchParams.set("error", error);
-    if (tenantId) callbackUrl.searchParams.set("tenant_id", tenantId);
+      const idpBaseUrl = window.process?.env.userBaseUrl;
+      const callbackUrl = new URL(`${idpBaseUrl}/api/idp/callback`);
+      const tenantId = window.process?.env.BLOCKS_X_BLOCKS_KEY;
+      const appRedirectUrl = forwardTo || redirectUrl || "/";
 
-    const headers: Record<string, string> = {};
-    if (tenantId) {
-      headers["X-Blocks-Key"] = tenantId;
+      // Forward the callback parameters to backend
+      if (code) callbackUrl.searchParams.set("code", code);
+      if (state) callbackUrl.searchParams.set("state", state);
+      if (error) callbackUrl.searchParams.set("error", error);
+
+      const headers: Record<string, string> = {};
+      if (tenantId) headers["X-Blocks-Key"] = tenantId;
+
+      fetch(callbackUrl.toString(), { headers, credentials: "include" })
+        .then((res) => {
+          if (res.ok) {
+            setAuthenticated();
+
+            window.location.href = appRedirectUrl;
+          } else {
+            window.location.href = "/login?error=callback_failed";
+          }
+        })
+        .catch(() => {
+          window.location.href = "/login?error=callback_error";
+        });
+    } catch (err) {
+      console.log("Error processing callback:", err);
     }
-
-    fetch(callbackUrl.toString(), { headers, credentials: "include" })
-      .then((res) => {
-        if (res.ok) {
-          setAuthenticated();
-          window.location.href = redirectUrl;
-        } else {
-          window.location.href = "/login?error=callback_failed";
-        }
-      })
-      .catch(() => {
-        window.location.href = "/login?error=callback_error";
-      });
-  }, [code, state, error, tenantId, setAuthenticated, redirectUrl]);
+  }, [code, state, error, setAuthenticated, redirectUrl, forwardTo]);
 
   return (
     <div className="flex min-h-screen items-center justify-center">
