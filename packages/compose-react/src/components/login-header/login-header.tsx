@@ -1,3 +1,4 @@
+import { useBlocksAppConfigStore } from "@/index";
 import { ThemeSwitcher } from "../common";
 import { Logo } from "../common/logo";
 
@@ -12,9 +13,30 @@ export const LoginHeader = ({
   blocksUrl = "https://seliseblocks.com",
   githubUrl = "https://github.com/SELISEdigitalplatforms",
 }: LoginHeaderProps) => {
+  const {
+    config: { appLogoUrl },
+  } = useBlocksAppConfigStore((state) => state);
+
+  const appLightLogo = appLogoUrl
+    ? typeof appLogoUrl === "string"
+      ? appLogoUrl
+      : appLogoUrl.light
+    : undefined;
+
+  const appDarkLogo = appLogoUrl
+    ? typeof appLogoUrl === "string"
+      ? appLogoUrl
+      : appLogoUrl.dark
+    : undefined;
   return (
     <nav className="site-nav">
-      <Logo width={96} height={32} className="h-8 w-auto" />
+      <Logo
+        width={96}
+        height={32}
+        className="h-8 w-auto"
+        lightSrc={appLightLogo}
+        darkSrc={appDarkLogo}
+      />
 
       <div className="nav-right">
         <a href={docsUrl} target="_blank" rel="noreferrer" className="nav-link">

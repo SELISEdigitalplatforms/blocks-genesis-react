@@ -4,9 +4,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/core/popov
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/core/dialog/dialog";
 import { cn } from "@/lib/utils";
 import { Grip, Pencil } from "lucide-react";
-import { getRuntimeEnv } from "@seliseblocks/blocks-kit-core/runtime-env";
-// import { getRuntimeEnv } from "@/lib/runtime-env";
-// import { showErrorToast } from "@/hooks/use-toast";
+import { APP_SWITCHER_DATA } from "./app-switcher-data";
+
 export interface BlocksApp {
   key: string;
   label: string;
@@ -15,6 +14,46 @@ export interface BlocksApp {
   icon: React.ReactNode;
   clientId: string;
   redirectUri: string;
+}
+
+interface AppTileProps {
+  app: BlocksApp;
+  onClick: () => void;
+  isLoading: boolean;
+}
+function AppTile({ app, onClick, isLoading }: AppTileProps) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={isLoading}
+      className="hover:bg-accent focus-visible:ring-ring group flex flex-col items-center gap-2 rounded-xl p-3 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:opacity-50"
+    >
+      <div className="flex h-12 w-12 items-center justify-center overflow-hidden">{app.icon}</div>
+      <span className="text-foreground line-clamp-1 max-w-[90px] text-[12px] font-medium leading-tight">
+        {isLoading ? "Opening…" : app.label}
+      </span>
+    </button>
+  );
+}
+function LauncherTriggerIcon() {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-5 w-5"
+    >
+      <rect x="1" y="1" width="5" height="5" rx="1.5" />
+      <rect x="7.5" y="1" width="5" height="5" rx="1.5" />
+      <rect x="14" y="1" width="5" height="5" rx="1.5" />
+      <rect x="1" y="7.5" width="5" height="5" rx="1.5" />
+      <rect x="7.5" y="7.5" width="5" height="5" rx="1.5" />
+      <rect x="14" y="7.5" width="5" height="5" rx="1.5" />
+      <rect x="1" y="14" width="5" height="5" rx="1.5" />
+      <rect x="7.5" y="14" width="5" height="5" rx="1.5" />
+      <rect x="14" y="14" width="5" height="5" rx="1.5" />
+    </svg>
+  );
 }
 function IdpIcon() {
   return (
@@ -204,133 +243,94 @@ function StudioIcon() {
     </svg>
   );
 }
-const SELISE_APPS: BlocksApp[] = [
-  {
-    key: "iam",
-    label: "IAM",
-    description: "Identity & Access",
-    url: window.process?.env.BLOCKS_IAM_BASE_URL || "",
-    icon: <IdpIcon />,
-    clientId: window.process?.env.BLOCKS_IAM_CLIENT_ID || "",
-    redirectUri: window.process?.env.BLOCKS_IAM_DASHBOARD_CALLBACK_URL || "",
-  },
-  {
-    key: "localization",
-    label: "Localization",
-    description: "Localization",
-    url: window.process?.env.BLOCKS_LOCALIZATION_BASE_URL || "",
-    icon: <UilmIcon />,
-    clientId: window.process?.env.BLOCKS_LOCALIZATION_CLIENT_ID || "",
-    redirectUri: window.process?.env.BLOCKS_LOCALIZATION_DASHBOARD_CALLBACK_URL || "",
-  },
-  {
-    key: "agents",
-    label: "Agents",
-    description: "AI Platform",
-    url: window.process?.env.BLOCKS_AGENTS_BASE_URL || "",
-    icon: <AiIcon />,
-    clientId: window.process?.env.BLOCKS_AGENTS_CLIENT_ID || "",
-    redirectUri: window.process?.env.BLOCKS_AGENTS_DASHBOARD_CALLBACK_URL || "",
-  },
-  {
-    key: "data",
-    label: "Data",
-    description: "Data Integration",
-    url: window.process?.env.BLOCKS_DATA_BASE_URL || "",
-    icon: <DataGatewayIcon />,
-    clientId: window.process?.env.BLOCKS_DATA_CLIENT_ID || "",
-    redirectUri: window.process?.env.BLOCKS_DATA_DASHBOARD_CALLBACK_URL || "",
-  },
-  {
-    key: "os",
-    label: "OS",
-    description: "Operating System",
-    url: window.process?.env.BLOCKS_OS_BASE_URL || "",
-    icon: <BlocksOsIcon />,
-    clientId: window.process?.env.BLOCKS_OS_CLIENT_ID || "",
-    redirectUri: window.process?.env.BLOCKS_OS_DASHBOARD_CALLBACK_URL || "",
-  },
-  {
-    key: "utilities",
-    label: "Utilities",
-    description: "Utility Tools",
-    url: window.process?.env.BLOCKS_UTILITIES_BASE_URL || "",
-    icon: <UtilityIcon />,
-    clientId: window.process?.env.BLOCKS_UTILITIES_CLIENT_ID || "",
-    redirectUri: window.process?.env.BLOCKS_UTILITIES_DASHBOARD_CALLBACK_URL || "",
-  },
-  {
-    key: "logic",
-    label: "Logic",
-    description: "Business Logic",
-    url: window.process?.env.BLOCKS_LOGIC_BASE_URL || "",
-    icon: <LogicIcon />,
-    clientId: window.process?.env.BLOCKS_LOGIC_CLIENT_ID || "",
-    redirectUri: window.process?.env.BLOCKS_LOGIC_DASHBOARD_CALLBACK_URL || "",
-  },
-  {
-    key: "monitor",
-    label: "Monitor",
-    description: "Monitoring & Logs",
-    url: window.process?.env.BLOCKS_MONITOR_BASE_URL || "",
-    icon: <ObservabilityIcon />,
-    clientId: window.process?.env.BLOCKS_MONITOR_CLIENT_ID || "",
-    redirectUri: window.process?.env.BLOCKS_MONITOR_DASHBOARD_CALLBACK_URL || "",
-  },
-  {
-    key: "release",
-    label: "Release",
-    description: "CI/CD & Releases",
-    url: window.process?.env.BLOCKS_RELEASE_BASE_URL || "",
-    icon: <DeploymentsIcon />,
-    clientId: window.process?.env.BLOCKS_RELEASE_CLIENT_ID || "",
-    redirectUri: window.process?.env.BLOCKS_RELEASE_DASHBOARD_CALLBACK_URL || "",
-  },
-];
-interface AppTileProps {
-  app: BlocksApp;
-  onClick: () => void;
-  isLoading: boolean;
-}
-function AppTile({ app, onClick, isLoading }: AppTileProps) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={isLoading}
-      className="hover:bg-accent focus-visible:ring-ring group flex flex-col items-center gap-2 rounded-xl p-3 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:opacity-50"
-    >
-      <div className="flex h-12 w-12 items-center justify-center overflow-hidden">{app.icon}</div>
-      <span className="text-foreground line-clamp-1 max-w-[90px] text-[12px] font-medium leading-tight">
-        {isLoading ? "Opening…" : app.label}
-      </span>
-    </button>
-  );
-}
-function LauncherTriggerIcon() {
-  return (
-    <svg
-      viewBox="0 0 20 20"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-5 w-5"
-    >
-      <rect x="1" y="1" width="5" height="5" rx="1.5" />
-      <rect x="7.5" y="1" width="5" height="5" rx="1.5" />
-      <rect x="14" y="1" width="5" height="5" rx="1.5" />
-      <rect x="1" y="7.5" width="5" height="5" rx="1.5" />
-      <rect x="7.5" y="7.5" width="5" height="5" rx="1.5" />
-      <rect x="14" y="7.5" width="5" height="5" rx="1.5" />
-      <rect x="1" y="14" width="5" height="5" rx="1.5" />
-      <rect x="7.5" y="14" width="5" height="5" rx="1.5" />
-      <rect x="14" y="14" width="5" height="5" rx="1.5" />
-    </svg>
-  );
-}
 
 type AppSwitcherProps = {
-  apps: BlocksApp[];
+  forwardedTo: string;
 };
-export const AppSwitcher = ({ apps }: AppSwitcherProps) => {
+export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
+  const APP_SWITCHER_DATA: BlocksApp[] = [
+    {
+      key: "iam",
+      label: "IAM",
+      description: "Identity & Access",
+      url: window.process?.env.BLOCKS_IAM_BASE_URL || "",
+      icon: <IdpIcon />,
+      clientId: window.process?.env.BLOCKS_IAM_CLIENT_ID || "",
+      redirectUri: window.process?.env.BLOCKS_AGENTS_CALLBACK_URL || "",
+    },
+    {
+      key: "localization",
+      label: "Localization",
+      description: "Localization",
+      url: window.process?.env.BLOCKS_LOCALIZATION_BASE_URL || "",
+      icon: <UilmIcon />,
+      clientId: window.process?.env.BLOCKS_LOCALIZATION_CLIENT_ID || "",
+      redirectUri: window.process?.env.BLOCKS_LOCALIZATION_CALLBACK_URL || "",
+    },
+    {
+      key: "agents",
+      label: "Agents",
+      description: "AI Platform",
+      url: window.process?.env.BLOCKS_AGENTS_BASE_URL || "",
+      icon: <AiIcon />,
+      clientId: window.process?.env.BLOCKS_AGENTS_CLIENT_ID || "",
+      redirectUri: window.process?.env.BLOCKS_AGENTS_CALLBACK_URL || "",
+    },
+    {
+      key: "data",
+      label: "Data",
+      description: "Data Integration",
+      url: window.process?.env.BLOCKS_DATA_BASE_URL || "",
+      icon: <DataGatewayIcon />,
+      clientId: window.process?.env.BLOCKS_DATA_CLIENT_ID || "",
+      redirectUri: window.process?.env.BLOCKS_DATA_CALLBACK_URL || "",
+    },
+    {
+      key: "os",
+      label: "OS",
+      description: "Operating System",
+      url: window.process?.env.BLOCKS_OS_BASE_URL || "",
+      icon: <BlocksOsIcon />,
+      clientId: window.process?.env.BLOCKS_OS_CLIENT_ID || "",
+      redirectUri: window.process?.env.BLOCKS_OS_CALLBACK_URL || "",
+    },
+    {
+      key: "utilities",
+      label: "Utilities",
+      description: "Utility Tools",
+      url: window.process?.env.BLOCKS_UTILITIES_BASE_URL || "",
+      icon: <UtilityIcon />,
+      clientId: window.process?.env.BLOCKS_UTILITIES_CLIENT_ID || "",
+      redirectUri: window.process?.env.BLOCKS_UTILITIES_CALLBACK_URL || "",
+    },
+    {
+      key: "logic",
+      label: "Logic",
+      description: "Business Logic",
+      url: window.process?.env.BLOCKS_LOGIC_BASE_URL || "",
+      icon: <LogicIcon />,
+      clientId: window.process?.env.BLOCKS_LOGIC_CLIENT_ID || "",
+      redirectUri: window.process?.env.BLOCKS_LOGIC_CALLBACK_URL || "",
+    },
+    {
+      key: "monitor",
+      label: "Monitor",
+      description: "Monitoring & Logs",
+      url: window.process?.env.BLOCKS_MONITOR_BASE_URL || "",
+      icon: <ObservabilityIcon />,
+      clientId: window.process?.env.BLOCKS_MONITOR_CLIENT_ID || "",
+      redirectUri: window.process?.env.BLOCKS_MONITOR_CALLBACK_URL || "",
+    },
+    {
+      key: "release",
+      label: "Release",
+      description: "CI/CD & Releases",
+      url: window.process?.env.BLOCKS_RELEASE_BASE_URL || "",
+      icon: <DeploymentsIcon />,
+      clientId: window.process?.env.BLOCKS_RELEASE_CLIENT_ID || "",
+      redirectUri: window.process?.env.BLOCKS_RELEASE_CALLBACK_URL || "",
+    },
+  ];
   const [open, setOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [favouriteKeys, setFavouriteKeys] = useState<Set<string>>(new Set());
@@ -362,10 +362,11 @@ export const AppSwitcher = ({ apps }: AppSwitcherProps) => {
   const initiateLogin = async (app: BlocksApp) => {
     if (loadingKey) return;
     try {
+      console.log(app);
       setLoadingKey(app.key);
       const blocksKey = "";
-      const idpBaseUrl = "";
-      const initiateUrl = `${idpBaseUrl}/api/idp/initiate?x-blocks-key=${blocksKey}&clientId=${app.clientId}&redirectUri=${app.redirectUri}`;
+      const iamBaseUrl = window.process?.env.userBaseUrl;
+      const initiateUrl = `${iamBaseUrl}/api/idp/initiate?x-blocks-key=${blocksKey}&clientId=${app.clientId}&redirectUri=${app.redirectUri}&forwardedTo=${forwardedTo}`;
       const headers: Record<string, string> = {};
       if (blocksKey) headers["X-Blocks-Key"] = blocksKey;
 
@@ -386,8 +387,8 @@ export const AppSwitcher = ({ apps }: AppSwitcherProps) => {
   };
   // if (!isHydrated || !isAllowedRoute) return null;
   if (!isHydrated) return null;
-  const favourites = apps.filter((a) => favouriteKeys.has(a.key));
-  const moreApps = apps.filter((a) => !favouriteKeys.has(a.key));
+  const favourites = APP_SWITCHER_DATA.filter((a) => favouriteKeys.has(a.key));
+  const moreApps = APP_SWITCHER_DATA.filter((a) => !favouriteKeys.has(a.key));
   return (
     <>
       <Popover open={open} onOpenChange={setOpen}>
@@ -455,7 +456,7 @@ export const AppSwitcher = ({ apps }: AppSwitcherProps) => {
             <DialogTitle>Manage Favourites</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4 py-2">
-            {SELISE_APPS.map((app) => (
+            {APP_SWITCHER_DATA.map((app) => (
               <button
                 key={app.key}
                 onClick={() => toggleFavourite(app.key)}

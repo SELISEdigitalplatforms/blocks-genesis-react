@@ -1,6 +1,6 @@
 {
   "name": "@seliseblocks/blocks-kit",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "React app-shell composition package for blocks-kit",
   "license": "MIT",
   "type": "module",
