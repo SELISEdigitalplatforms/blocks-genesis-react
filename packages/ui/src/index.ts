@@ -1,6 +1,5 @@
 export * from "./components/tabs";
 export * from "./components/sidebar";
-export * from "./components/drawer";
 export * from "./components/pagination";
 export * from "./components/form";
 export * from "./components/tooltip";
