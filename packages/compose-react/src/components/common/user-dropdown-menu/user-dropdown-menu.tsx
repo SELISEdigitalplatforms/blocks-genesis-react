@@ -20,11 +20,20 @@ function UserDropdownMenuLogo() {
     lastName: "",
     profileImageUrl: "",
   };
-  const initials = `${userData.firstName?.[0] || ""}${userData.lastName?.[0] || ""}`.toUpperCase();
+  const profileImageUrl =
+    typeof userData.profileImageUrl === "string"
+      ? userData.profileImageUrl
+      : "";
+  const initials =
+    `${userData.firstName?.[0] || ""}${userData.lastName?.[0] || ""}`.toUpperCase();
 
-  if (userData.profileImageUrl) {
+  if (profileImageUrl) {
     return (
-      <img src={userData.profileImageUrl} alt="Profile" className="h-full w-full object-cover" />
+      <img
+        src={profileImageUrl}
+        alt="Profile"
+        className="h-full w-full object-cover"
+      />
     );
   }
 
@@ -35,7 +44,7 @@ function UserDropdownMenuLogo() {
   return <UserRound className="h-4 w-4" />;
 }
 
-export function UserDropdownMenu() {
+export const UserDropdownMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -64,4 +73,4 @@ export function UserDropdownMenu() {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+};

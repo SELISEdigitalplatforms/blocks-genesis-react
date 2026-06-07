@@ -1,15 +1,15 @@
 import { Button } from "@/components/core/button";
-// import { useLanguageViewStore } from "@/modules/workflow/store/use-language-view-store";
-import { useLogout } from "@/idp/authentication/hooks/use-auth";
+import { useLogout } from "@/hooks/use-auth-api";
 import { getQueryClient } from "@/providers/query-provider";
-import { useAuthStore } from "@/store/useAuthStore";
-import { useProjectStore } from "@/store/useProjectStore";
+import { useAppSettingsStore } from "@/store";
+import { useAuthStore } from "@/store/auth-store";
+import { useProjectStore } from "@/store/project-store";
 
 export function LogOutButton() {
   const queryClient = getQueryClient();
   const { reset } = useProjectStore();
   const { setUnAuthenticated, clearTokens } = useAuthStore();
-  const { resetSelectedLanguages } = useLanguageViewStore();
+  const { setSettings } = useAppSettingsStore();
   const { isPending, mutateAsync } = useLogout();
 
   const handleLogout = async () => {
@@ -17,8 +17,8 @@ export function LogOutButton() {
       await mutateAsync();
       reset();
       setUnAuthenticated();
-      clearTokens(); // Clear tokens for localhost
-      resetSelectedLanguages();
+      clearTokens();
+      setSettings({ language: "en" });
       queryClient.clear();
       window.location.replace(`${window.location.origin}/login`);
     } catch (error) {
