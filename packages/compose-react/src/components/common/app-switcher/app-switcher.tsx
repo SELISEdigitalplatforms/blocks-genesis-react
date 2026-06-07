@@ -256,7 +256,7 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
       url: window.process?.env.BLOCKS_IAM_BASE_URL || "",
       icon: <IdpIcon />,
       clientId: window.process?.env.BLOCKS_IAM_CLIENT_ID || "",
-      redirectUri: window.process?.env.BLOCKS_AGENTS_CALLBACK_URL || "",
+      redirectUri: window.process?.env.BLOCKS_IAM_CALLBACK_URL || "",
     },
     {
       key: "localization",
