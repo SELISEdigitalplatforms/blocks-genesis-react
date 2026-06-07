@@ -1,4 +1,4 @@
-import { HttpClient } from "@blocks-kit/core/http";
+import { HttpClient } from "@seliseblocks/blocks-kit-core/http";
 
 const http = new HttpClient({
   baseURL: window?.process?.env?.BLOCKS_API_BASE_URL || "",

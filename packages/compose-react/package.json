@@ -1,6 +1,6 @@
 {
-  "name": "@blocks-kit/compose-react",
-  "version": "0.0.1",
+  "name": "@seliseblocks/blocks-kit",
+  "version": "0.0.2",
   "description": "React app-shell composition package for blocks-kit",
   "license": "MIT",
   "type": "module",
@@ -106,7 +106,7 @@
     "@radix-ui/react-icons": "^1.3.2"
   },
   "peerDependencies": {
-    "@blocks-kit/core": "^0.0.1",
+    "@seliseblocks/blocks-kit-core": "^0.0.1",
     "react": "^18.3.1 || ^19.0.0",
     "react-dom": "^18.3.1 || ^19.0.0",
     "react-router-dom": "^6.0.0",
@@ -115,7 +115,7 @@
     "nuqs": "^2.0.0"
   },
   "devDependencies": {
-    "@blocks-kit/core": "file:../core",
+    "@seliseblocks/blocks-kit-core": "workspace:*",
     "@blocks-kit/eslint-config": "workspace:*",
     "@blocks-kit/tsconfig": "workspace:*",
     "@blocks-kit/prettier-config": "workspace:*",

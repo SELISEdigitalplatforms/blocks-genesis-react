@@ -2,7 +2,7 @@ import type * as React from "react";
 import { useEffect } from "react";
 import { redirect, useNavigate } from "react-router-dom";
 import { useProjectStore } from "../store/project-store";
-import { getRuntimeEnv, HttpClient } from "@blocks-kit/core";
+import { getRuntimeEnv, HttpClient } from "@seliseblocks/blocks-kit-core";
 
 interface ProjectGuardProps {
   children: React.ReactNode;

@@ -1,4 +1,4 @@
-import type { BaseUser } from "@blocks-kit/core";
+import type { BaseUser } from "@seliseblocks/blocks-kit-core";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 

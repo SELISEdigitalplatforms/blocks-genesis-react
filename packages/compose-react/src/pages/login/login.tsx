@@ -1,9 +1,5 @@
 import { useState } from "react";
 import { BlocksLoginPage, type BlocksProduct, type LoginCarouselItem } from "./blockslogin";
-import { useBlocksAppConfigStore } from "@/layouts/blocksapp-layout";
-// import { getRuntimeEnv } from "@/lib/runtime-env";
-// import { showErrorToast } from "@/hooks/use-toast";
-// import { API_BASES } from "@/constants/endpoint.constant";
 
 export const BLOCKS_PRODUCTS: BlocksProduct[] = [
   {
@@ -218,7 +214,6 @@ export const BLOCKS_PRODUCTS: BlocksProduct[] = [
 
 export const LoginPage = () => {
   const [isStarting, setIsStarting] = useState(false);
-  const { loginInitiateUrl } = useBlocksAppConfigStore((state) => state.config);
 
   const startLogin = async () => {
     try {
@@ -226,8 +221,9 @@ export const LoginPage = () => {
       setIsStarting(true);
       const blocksKey = window.process?.env.BLOCKS_X_BLOCKS_KEY;
       const clientId = window.process?.env.BLOCKS_OIDC_CLIENT_ID;
+      const baseUrl = window.process?.env.userBaseUrl;
       const redirectUri = `${window.location.origin}/login/callback`;
-      const initiateUrl = `${loginInitiateUrl}/api/idp/initiate?x-blocks-key=${blocksKey}&clientId=${clientId}&redirectUri=${redirectUri}`;
+      const initiateUrl = `${baseUrl}/api/idp/initiate?x-blocks-key=${blocksKey}&clientId=${clientId}&redirectUri=${redirectUri}`;
       const headers: Record<string, string> = {};
       if (blocksKey) headers["X-Blocks-Key"] = blocksKey;
       const response = await fetch(initiateUrl.toString(), { headers });
