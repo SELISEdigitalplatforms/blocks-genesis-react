@@ -23,29 +23,19 @@ export function ProjectGuard({ children, fallbackPath = "/console" }: ProjectGua
   return <>{children}</>;
 }
 
-
 export const http = new HttpClient({
   baseURL: getRuntimeEnv("BLOCKS_OS_BASE_URL") || "",
   blocksKey: getRuntimeEnv("BLOCKS_X_BLOCKS_KEY") || "",
-}
-
-);
+});
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty-pattern
-export const UsePublic = async (   all:{ request:any, context:any},
-  next:any) => {
-    try{
-
-      const res =  await   http.get(`https://dev-iam.blocksdevelopers.com/api/iam/me`, undefined, {
-        absoluteUrl: true,
-      })
-      console.log("res", res);
-        //  return redirect("/console")
-
-    }catch(err){
-
-     return redirect("/profile")
-    }
-
-    
-
-}
+export const UsePublic = async (all: { request: any; context: any }, next: any) => {
+  try {
+    const res = await http.get(`https://dev-iam.blocksdevelopers.com/api/iam/me`, undefined, {
+      absoluteUrl: true,
+    });
+    console.log("res", res);
+    //  return redirect("/console")
+  } catch (err) {
+    return redirect("/profile");
+  }
+};

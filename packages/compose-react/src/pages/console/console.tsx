@@ -3,11 +3,16 @@ import { useProjectStore } from "@/store/project-store";
 import { DefaultDoc } from "./default-doc";
 import { SelfProject } from "./self-project";
 
-export const ConsolePage = () => {
-  const { resetSelectedProject } = useProjectStore();
+export type ConsolePageProps = {
+  canCreateProject?: boolean;
+};
+
+export const ConsolePage = ({ canCreateProject = false }: ConsolePageProps) => {
+  const { resetSelectedProject, resetTenantGroup } = useProjectStore();
   useEffect(() => {
     resetSelectedProject();
-  }, [resetSelectedProject]);
+    resetTenantGroup();
+  }, [resetSelectedProject, resetTenantGroup]);
 
   return (
     <div className="relative flex flex-1 flex-col overflow-hidden">
@@ -16,7 +21,7 @@ export const ConsolePage = () => {
       <div className="bg-primary/[0.04] pointer-events-none absolute left-1/3 top-10 h-[350px] w-[350px] rounded-full blur-[80px]" />
 
       <div className="relative flex flex-1 flex-col gap-12 px-6 py-10 sm:px-10 xl:px-[154px]">
-        <SelfProject />
+        <SelfProject canCreateProject={canCreateProject} />
 
         <section className="flex flex-col gap-5">
           <div className="flex items-center gap-3">
