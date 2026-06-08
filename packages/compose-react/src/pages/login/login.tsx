@@ -212,7 +212,11 @@ export const BLOCKS_PRODUCTS: BlocksProduct[] = [
   },
 ];
 
-export const LoginPage = () => {
+export interface LoginPageProps {
+  name?: string;
+}
+
+export const LoginPage = ({ name = "blocks-os" }: LoginPageProps) => {
   const [isStarting, setIsStarting] = useState(false);
 
   const startLogin = async () => {
@@ -247,7 +251,7 @@ export const LoginPage = () => {
 
   return (
     <BlocksLoginPage
-      name="blocks-logic"
+      name={name}
       onLogin={startLogin}
       isLoading={isStarting}
       carouselItems={BLOCKS_PRODUCTS as LoginCarouselItem[]}

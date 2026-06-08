@@ -89,17 +89,17 @@ export const BlocksLoginPage = ({
   footerLink = { label: "Visit Blocks", url: "https://seliseblocks.com" },
   carouselItems,
 }: BlocksLoginPageProps) => {
-  const active = useMemo(
-    () => BLOCKS_PRODUCTS.find((p) => p.name === name) ?? BLOCKS_PRODUCTS[0],
-    [name],
-  );
+  const active = useMemo(() => {
+    const products = (carouselItems as BlocksProduct[]) ?? BLOCKS_PRODUCTS;
+    return products.find((p) => p.name === name) ?? products[0];
+  }, [name, carouselItems]);
   const otherProducts = useMemo(
     () => BLOCKS_PRODUCTS.filter((p) => p.name !== active?.name),
     [active?.name],
   );
   const carouselSource = carouselItems ?? otherProducts;
   const [titleHead, titleTail] = splitAppName(active?.appName ?? "");
-  const navLabel = active?.badge;
+  // const navLabel = active?.badge;
   const heroSubtitle = active?.tagline;
   const features = active?.featureChips;
   const derivedKeywordPrefix = active?.descriptionTitle;
