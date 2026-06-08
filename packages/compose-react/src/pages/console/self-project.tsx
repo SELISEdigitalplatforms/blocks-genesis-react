@@ -4,6 +4,8 @@ import { Skeleton } from "@/components/core/skeleton";
 
 import { useGetProjects } from "@/hooks/use-project";
 import { ProjectCard } from "./project-card";
+import { AddProjectCard } from "./add-project-card";
+import ConsoleCreateProject from "./console-create";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.97 },
@@ -49,12 +51,17 @@ const SelfProjectLoading = () => {
   );
 };
 
-export const SelfProject = () => {
+export type SelfProjectProps = {
+  canCreateProject?: boolean;
+};
+
+export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
   const { data, isLoading, isFetching } = useGetProjects();
 
   if (isLoading || isFetching) return <SelfProjectLoading />;
   const projectGroups = data || [];
-  // if (!projectGroups.length) return <ConsoleCreateProject />;
+
+  if (!projectGroups.length && canCreateProject) return <ConsoleCreateProject />;
 
   return (
     <section className="flex flex-col gap-4">
@@ -74,11 +81,11 @@ export const SelfProject = () => {
         )}
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {/* {projectGroups.length < 10 && (
+        {canCreateProject && projectGroups.length < 10 && (
           <motion.div variants={cardVariants} custom={0} initial="hidden" animate="visible">
             <AddProjectCard />
           </motion.div>
-        )} */}
+        )}
         {projectGroups.map((project, i) => (
           <motion.div
             key={project.tenantGroupId}

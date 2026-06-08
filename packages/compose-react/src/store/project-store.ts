@@ -44,6 +44,6 @@ export const useProjectStore = create<ProjectStoreState>()(
         set((state) => ({ ...state, selectedTenantGroup: null }));
       },
     }),
-    { name: "project-store" },
+    { name: "blocks-kit-project-store" },
   ),
 );

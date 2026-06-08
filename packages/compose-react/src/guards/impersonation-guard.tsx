@@ -4,9 +4,11 @@ import {
   useStartImpersonation,
   useStopImpersonation,
 } from "@/hooks/use-auth-api";
+import { useGetProjects } from "@/hooks/use-project";
 import type { ImpersonationRequest } from "@/services/impersonation.service";
 import { useImpersonateStore, useProjectStore } from "@/store";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { projectService } from "@/services/project.service";
 
 export const ImpersonationChecker = ({ children }: { children: React.ReactNode }) => {
   const { data, isLoading, isSuccess } = useImpersonationStatusChecker();
@@ -21,7 +23,7 @@ export const ImpersonationChecker = ({ children }: { children: React.ReactNode }
     );
     setInitialized(true);
   }, [data, setImpersonation, setInitialized]);
-  console.log("Impersonation status: 2133", { data, isLoading, isSuccess, isInitialized });
+
   if (isLoading || !isSuccess || !isInitialized) return null;
   return <>{children}</>;
 };
@@ -50,38 +52,69 @@ export function ImpersonationTerminator({ children }: { children: React.ReactNod
 }
 
 export function ImpersonationSynchronizer({ children }: { children: React.ReactNode }) {
+  useGetProjects();
   const { impersonate, isImpersonated, impersonatedTenantId } = useImpersonateStore();
   const { mutateAsync } = useStartImpersonation();
 
-  const { selectedProject, setSelectedProject, projects } = useProjectStore();
-  const isTriggering = useRef(false);
-  const [isImpersonating, setIsImpersonating] = useState(false);
+  const { selectedProject, setSelectedProject, projects, setTenantGroup } = useProjectStore();
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
+  const inflightRef = useRef<string | null>(null); // tracks which tenantId is in-flight
+
+  const getProject = useCallback(async (tenantId: string) => {
+    const res = await projectService.getProject({ projectId: tenantId });
+    return res.data;
+  }, []);
 
   useEffect(() => {
-    if (!impersonatedTenantId) return;
-    if (isTriggering.current) return;
+    const targetId = impersonatedTenantId ?? selectedProject?.tenantId;
+    if (!targetId) return;
+    if (impersonatedTenantId === selectedProject?.tenantId) return;
+    if (inflightRef.current === targetId) return; // dedupe
 
-    isTriggering.current = true;
-    setIsImpersonating(true);
-    const payload: ImpersonationRequest = {
-      targeted_tenant_id: impersonatedTenantId,
+    inflightRef.current = targetId;
+    setStatus("loading");
+
+    const run = async () => {
+      try {
+        if (impersonatedTenantId) {
+          // Sync store to match already-impersonated tenant
+          let project = projects.find((p) => p.tenantId === impersonatedTenantId);
+          if (!project) project = await getProject(impersonatedTenantId);
+          if (!project) throw new Error(`Project not found: ${impersonatedTenantId}`);
+          setSelectedProject(project);
+          setTenantGroup(project.tenantGroupId);
+        } else {
+          // Start new impersonation for selected project
+          const payload: ImpersonationRequest = {
+            targeted_tenant_id: selectedProject!.tenantId,
+          };
+          await mutateAsync(payload);
+          const blocksKey = window.process?.env.BLOCKS_X_BLOCKS_KEY ?? "";
+          impersonate(payload.targeted_tenant_id, blocksKey);
+        }
+        setStatus("idle");
+      } catch (err) {
+        console.error("Impersonation error:", err);
+        setStatus("error");
+      } finally {
+        inflightRef.current = null;
+      }
     };
-    const project = projects.find((project) => project.tenantId === impersonatedTenantId);
-    if (!project) return;
-    const blocksKey = window.process?.env.BLOCKS_X_BLOCKS_KEY || "";
-    mutateAsync(payload)
-      .then(() => {
-        impersonate(impersonatedTenantId, blocksKey);
-        setSelectedProject(project);
-        isTriggering.current = false;
-        setIsImpersonating(false);
-      })
-      .catch(() => {
-        isTriggering.current = false;
-        setIsImpersonating(false);
-      });
-  }, [mutateAsync, impersonate, impersonatedTenantId, isTriggering, projects, setSelectedProject]);
-  if (isImpersonating) return <AppLoadingSpinner />;
-  if (!isImpersonated || isTriggering.current) return null;
+
+    run();
+  }, [
+    impersonatedTenantId,
+    selectedProject?.tenantId,
+    projects,
+    mutateAsync,
+    impersonate,
+    getProject,
+    setSelectedProject,
+    setTenantGroup,
+    selectedProject,
+  ]);
+
+  if (status === "loading") return <AppLoadingSpinner />;
+  if (!isImpersonated) return null;
   return <>{children}</>;
 }

@@ -79,7 +79,7 @@ export const EnvironmentCard = ({
 
   const handleCardClick = async (): Promise<void> => {
     try {
-      const res = await mutateAsync({ targeted_tenant_id: project.tenantId });
+      await mutateAsync({ targeted_tenant_id: project.tenantId });
       setTenantGroup(project.tenantGroupId);
       setSelectedProject(project);
       navigate("/dashboard");
