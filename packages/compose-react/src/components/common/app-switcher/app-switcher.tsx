@@ -1,7 +1,16 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/core/popover/popover";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/core/dialog/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/core/popover/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/core/dialog/dialog";
 import { cn } from "@/lib/utils";
 import { Grip, Pencil } from "lucide-react";
 import { APP_SWITCHER_DATA } from "./app-switcher-data";
@@ -28,7 +37,9 @@ function AppTile({ app, onClick, isLoading }: AppTileProps) {
       disabled={isLoading}
       className="hover:bg-accent focus-visible:ring-ring group flex flex-col items-center gap-2 rounded-xl p-3 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:opacity-50"
     >
-      <div className="flex h-12 w-12 items-center justify-center overflow-hidden">{app.icon}</div>
+      <div className="flex h-12 w-12 items-center justify-center overflow-hidden">
+        {app.icon}
+      </div>
       <span className="text-foreground line-clamp-1 max-w-[90px] text-[12px] font-medium leading-tight">
         {isLoading ? "Opening…" : app.label}
       </span>
@@ -57,7 +68,12 @@ function LauncherTriggerIcon() {
 }
 function IdpIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#1A3C8F" />
       <path
         d="M20 7L10 11v9c0 5.55 4.27 10.74 10 12 5.73-1.26 10-6.45 10-12v-9L20 7z"
@@ -65,20 +81,37 @@ function IdpIcon() {
         opacity="0.9"
       />
       <rect x="16" y="18" width="8" height="7" rx="1.5" fill="#1A3C8F" />
-      <circle cx="20" cy="17.5" r="2.5" stroke="#1A3C8F" strokeWidth="1.5" fill="none" />
+      <circle
+        cx="20"
+        cy="17.5"
+        r="2.5"
+        stroke="#1A3C8F"
+        strokeWidth="1.5"
+        fill="none"
+      />
     </svg>
   );
 }
 function UilmIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#0E7490" />
       <path
         d="M8 12h16a2 2 0 012 2v8a2 2 0 01-2 2h-3l-3 3v-3H8a2 2 0 01-2-2v-8a2 2 0 012-2z"
         fill="white"
         opacity="0.95"
       />
-      <path d="M12 17h8M12 20h5" stroke="#0E7490" strokeWidth="1.5" strokeLinecap="round" />
+      <path
+        d="M12 17h8M12 20h5"
+        stroke="#0E7490"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
       <path
         d="M24 21h6a1.5 1.5 0 011.5 1.5v5a1.5 1.5 0 01-1.5 1.5h-1.5l-2 2v-2H24a1.5 1.5 0 01-1.5-1.5v-5A1.5 1.5 0 0124 21z"
         fill="white"
@@ -89,9 +122,17 @@ function UilmIcon() {
 }
 function AiIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#7C3AED" />
-      <path d="M20 8l2.5 6.5L29 17l-6.5 2.5L20 26l-2.5-6.5L11 17l6.5-2.5L20 8z" fill="white" />
+      <path
+        d="M20 8l2.5 6.5L29 17l-6.5 2.5L20 26l-2.5-6.5L11 17l6.5-2.5L20 8z"
+        fill="white"
+      />
       <path
         d="M29 26l1.2 3L33 30.2l-2.8 1.2L29 34l-1.2-2.8L25 30.2l2.8-1.2L29 26z"
         fill="white"
@@ -107,7 +148,12 @@ function AiIcon() {
 }
 function DataGatewayIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#D97706" />
       <ellipse cx="20" cy="13" rx="8" ry="3.5" fill="white" opacity="0.95" />
       <path
@@ -129,7 +175,12 @@ function DataGatewayIcon() {
 }
 function BlocksOsIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#059669" />
       <rect
         x="8"
@@ -150,7 +201,12 @@ function BlocksOsIcon() {
 }
 function UtilityIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#64748B" />
       <path
         d="M27.5 9a5.5 5.5 0 00-5.24 7.18l-10.5 10.5a2 2 0 002.83 2.83l10.5-10.5A5.5 5.5 0 1027.5 9z"
@@ -163,11 +219,40 @@ function UtilityIcon() {
 }
 function LogicIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#4F46E5" />
-      <rect x="8" y="17" width="6" height="6" rx="1.5" fill="white" opacity="0.9" />
-      <rect x="26" y="11" width="6" height="6" rx="1.5" fill="white" opacity="0.9" />
-      <rect x="26" y="23" width="6" height="6" rx="1.5" fill="white" opacity="0.9" />
+      <rect
+        x="8"
+        y="17"
+        width="6"
+        height="6"
+        rx="1.5"
+        fill="white"
+        opacity="0.9"
+      />
+      <rect
+        x="26"
+        y="11"
+        width="6"
+        height="6"
+        rx="1.5"
+        fill="white"
+        opacity="0.9"
+      />
+      <rect
+        x="26"
+        y="23"
+        width="6"
+        height="6"
+        rx="1.5"
+        fill="white"
+        opacity="0.9"
+      />
       <path
         d="M14 20h5l3-6h2"
         stroke="white"
@@ -189,9 +274,18 @@ function LogicIcon() {
 }
 function ObservabilityIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#0891B2" />
-      <path d="M20 12c-6 0-10 8-10 8s4 8 10 8 10-8 10-8-4-8-10-8z" fill="white" opacity="0.9" />
+      <path
+        d="M20 12c-6 0-10 8-10 8s4 8 10 8 10-8 10-8-4-8-10-8z"
+        fill="white"
+        opacity="0.9"
+      />
       <circle cx="20" cy="20" r="3.5" fill="#0891B2" />
       <circle cx="20" cy="20" r="1.5" fill="white" opacity="0.8" />
       <path
@@ -206,7 +300,12 @@ function ObservabilityIcon() {
 }
 function DeploymentsIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#DC2626" />
       <path
         d="M20 7c-2 4-6 6-9 7l1 8c1 5 5 9 8 10 3-1 7-5 8-10l1-8c-3-1-7-3-9-7z"
@@ -225,7 +324,12 @@ function DeploymentsIcon() {
 }
 function StudioIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#DB2777" />
       <rect
         x="9"
@@ -238,7 +342,13 @@ function StudioIcon() {
         fill="none"
         opacity="0.95"
       />
-      <path d="M12 29h16" stroke="white" strokeWidth="1.8" strokeLinecap="round" opacity="0.85" />
+      <path
+        d="M12 29h16"
+        stroke="white"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        opacity="0.85"
+      />
       <circle cx="20" cy="17" r="3" fill="white" opacity="0.9" />
     </svg>
   );
@@ -348,7 +458,10 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
   }, []);
   const saveFavourites = (keys: Set<string>) => {
     setFavouriteKeys(keys);
-    localStorage.setItem("blocks-app-favourites", JSON.stringify(Array.from(keys)));
+    localStorage.setItem(
+      "blocks-app-favourites",
+      JSON.stringify(Array.from(keys)),
+    );
   };
   const toggleFavourite = (key: string) => {
     const newFavourites = new Set(favouriteKeys);
@@ -389,6 +502,10 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
   if (!isHydrated) return null;
   const favourites = APP_SWITCHER_DATA.filter((a) => favouriteKeys.has(a.key));
   const moreApps = APP_SWITCHER_DATA.filter((a) => !favouriteKeys.has(a.key));
+  const blocksApps = [...APP_SWITCHER_DATA].sort((a, b) =>
+    a.label.localeCompare(b.label),
+  );
+
   return (
     <>
       <Popover open={open} onOpenChange={setOpen}>
@@ -409,8 +526,10 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
           sideOffset={8}
           className="w-[260px] overflow-hidden rounded-2xl p-0 shadow-xl"
         >
-          <div className="bg-background flex items-center justify-between border-b px-3 py-3">
-            <p className="text-foreground text-[13px] font-semibold">Your favourites</p>
+          {/* <div className="bg-background flex items-center justify-between border-b px-3 py-3">
+            <p className="text-foreground text-[13px] font-semibold">
+              Your favourites
+            </p>
             <button
               onClick={() => setEditDialogOpen(true)}
               className="text-muted-foreground hover:bg-accent hover:text-foreground flex h-6 w-6 items-center justify-center rounded transition-colors"
@@ -418,8 +537,8 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
             >
               <Pencil className="h-4 w-4" />
             </button>
-          </div>
-          <div className="px-3 pb-2 pt-3">
+          </div> */}
+          {/* <div className="px-3 pb-2 pt-3">
             <div className="grid grid-cols-3">
               {favourites.map((app) => (
                 <AppTile
@@ -430,14 +549,14 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
                 />
               ))}
             </div>
-          </div>
-          {moreApps.length > 0 && (
+          </div> */}
+          {blocksApps.length > 0 && (
             <div className="bg-muted/50 border-t px-3 pb-4 pt-3">
               <p className="text-muted-foreground mb-2 px-1 text-[13px] font-semibold">
-                More from SELISE Blocks
+                SELISE Blocks
               </p>
               <div className="grid grid-cols-3">
-                {moreApps.map((app) => (
+                {blocksApps.map((app) => (
                   <AppTile
                     key={app.key}
                     app={app}
@@ -450,7 +569,7 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
           )}
         </PopoverContent>
       </Popover>
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+      {/* <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Manage Favourites</DialogTitle>
@@ -466,7 +585,9 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
                 )}
                 aria-pressed={favouriteKeys.has(app.key)}
               >
-                <span className="mb-1 flex h-12 w-12 items-center justify-center">{app.icon}</span>
+                <span className="mb-1 flex h-12 w-12 items-center justify-center">
+                  {app.icon}
+                </span>
                 <span className="text-foreground mb-0.5 line-clamp-1 text-sm font-semibold">
                   {app.label}
                 </span>
@@ -477,7 +598,7 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
             ))}
           </div>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
     </>
   );
 };
