@@ -54,7 +54,8 @@ type RuntimeKey =
   | "BLOCKS_UDS_API_BASE_URL"
   | "BLOCKS_OIDC_CLIENT_ID"
   | "projectBaseUrl"
-  | "userBaseUrl";
+  | "userBaseUrl"
+  | "BLOCKS_PUBLIC_API_BASE_URL";
 
 declare global {
   interface Window {
