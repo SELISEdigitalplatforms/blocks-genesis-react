@@ -257,7 +257,7 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
     if (loadingKey) return;
     try {
       setLoadingKey(app.key);
-      const blocksKey = "";
+      const blocksKey = window.process?.env.BLOCKS_X_BLOCKS_KEY;
       const iamBaseUrl = window.process?.env.userBaseUrl;
       const initiateUrl = `${iamBaseUrl}/api/idp/initiate?x-blocks-key=${blocksKey}&clientId=${app.clientId}&redirectUri=${app.redirectUri}&forwardedTo=${forwardedTo}`;
       const headers: Record<string, string> = {};
