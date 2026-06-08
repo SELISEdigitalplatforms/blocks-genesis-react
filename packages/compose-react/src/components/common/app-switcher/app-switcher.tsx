@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import {
   Popover,
@@ -13,7 +13,7 @@ import {
 } from "@/components/core/dialog/dialog";
 import { cn } from "@/lib/utils";
 import { Grip, Pencil } from "lucide-react";
-import { APP_SWITCHER_DATA } from "./app-switcher-data";
+import utilityAppLight from "@/assets/images/apps/utilities-app-dark.svg";
 
 export interface BlocksApp {
   key: string;
@@ -357,121 +357,95 @@ function StudioIcon() {
 type AppSwitcherProps = {
   forwardedTo: string;
 };
+
+const APP_SWITCHER_DATA: BlocksApp[] = [
+  {
+    key: "iam",
+    label: "IAM",
+    description: "Identity & Access",
+    url: window.process?.env.BLOCKS_IAM_BASE_URL || "",
+    icon: <IdpIcon />,
+    clientId: window.process?.env.BLOCKS_IAM_CLIENT_ID || "",
+    redirectUri: window.process?.env.BLOCKS_IAM_CALLBACK_URL || "",
+  },
+  {
+    key: "localization",
+    label: "Localization",
+    description: "Localization",
+    url: window.process?.env.BLOCKS_LOCALIZATION_BASE_URL || "",
+    icon: <UilmIcon />,
+    clientId: window.process?.env.BLOCKS_LOCALIZATION_CLIENT_ID || "",
+    redirectUri: window.process?.env.BLOCKS_LOCALIZATION_CALLBACK_URL || "",
+  },
+  {
+    key: "agents",
+    label: "Agents",
+    description: "AI Platform",
+    url: window.process?.env.BLOCKS_AGENTS_BASE_URL || "",
+    icon: <AiIcon />,
+    clientId: window.process?.env.BLOCKS_AGENTS_CLIENT_ID || "",
+    redirectUri: window.process?.env.BLOCKS_AGENTS_CALLBACK_URL || "",
+  },
+  {
+    key: "data",
+    label: "Data",
+    description: "Data Integration",
+    url: window.process?.env.BLOCKS_DATA_BASE_URL || "",
+    icon: <DataGatewayIcon />,
+    clientId: window.process?.env.BLOCKS_DATA_CLIENT_ID || "",
+    redirectUri: window.process?.env.BLOCKS_DATA_CALLBACK_URL || "",
+  },
+  {
+    key: "os",
+    label: "OS",
+    description: "Operating System",
+    url: window.process?.env.BLOCKS_OS_BASE_URL || "",
+    icon: <BlocksOsIcon />,
+    clientId: window.process?.env.BLOCKS_OS_CLIENT_ID || "",
+    redirectUri: window.process?.env.BLOCKS_OS_CALLBACK_URL || "",
+  },
+  {
+    key: "utilities",
+    label: "Utilities",
+    description: "Utility Tools",
+    url: window.process?.env.BLOCKS_UTILITIES_BASE_URL || "",
+    icon: <UtilityIcon />,
+    clientId: window.process?.env.BLOCKS_UTILITIES_CLIENT_ID || "",
+    redirectUri: window.process?.env.BLOCKS_UTILITIES_CALLBACK_URL || "",
+  },
+  {
+    key: "logic",
+    label: "Logic",
+    description: "Business Logic",
+    url: window.process?.env.BLOCKS_LOGIC_BASE_URL || "",
+    icon: <LogicIcon />,
+    clientId: window.process?.env.BLOCKS_LOGIC_CLIENT_ID || "",
+    redirectUri: window.process?.env.BLOCKS_LOGIC_CALLBACK_URL || "",
+  },
+  {
+    key: "monitor",
+    label: "Monitor",
+    description: "Monitoring & Logs",
+    url: window.process?.env.BLOCKS_MONITOR_BASE_URL || "",
+    icon: <ObservabilityIcon />,
+    clientId: window.process?.env.BLOCKS_MONITOR_CLIENT_ID || "",
+    redirectUri: window.process?.env.BLOCKS_MONITOR_CALLBACK_URL || "",
+  },
+  {
+    key: "release",
+    label: "Release",
+    description: "CI/CD & Releases",
+    url: window.process?.env.BLOCKS_RELEASE_BASE_URL || "",
+    icon: <DeploymentsIcon />,
+    clientId: window.process?.env.BLOCKS_RELEASE_CLIENT_ID || "",
+    redirectUri: window.process?.env.BLOCKS_RELEASE_CALLBACK_URL || "",
+  },
+];
+
 export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
-  const APP_SWITCHER_DATA: BlocksApp[] = [
-    {
-      key: "iam",
-      label: "IAM",
-      description: "Identity & Access",
-      url: window.process?.env.BLOCKS_IAM_BASE_URL || "",
-      icon: <IdpIcon />,
-      clientId: window.process?.env.BLOCKS_IAM_CLIENT_ID || "",
-      redirectUri: window.process?.env.BLOCKS_IAM_CALLBACK_URL || "",
-    },
-    {
-      key: "localization",
-      label: "Localization",
-      description: "Localization",
-      url: window.process?.env.BLOCKS_LOCALIZATION_BASE_URL || "",
-      icon: <UilmIcon />,
-      clientId: window.process?.env.BLOCKS_LOCALIZATION_CLIENT_ID || "",
-      redirectUri: window.process?.env.BLOCKS_LOCALIZATION_CALLBACK_URL || "",
-    },
-    {
-      key: "agents",
-      label: "Agents",
-      description: "AI Platform",
-      url: window.process?.env.BLOCKS_AGENTS_BASE_URL || "",
-      icon: <AiIcon />,
-      clientId: window.process?.env.BLOCKS_AGENTS_CLIENT_ID || "",
-      redirectUri: window.process?.env.BLOCKS_AGENTS_CALLBACK_URL || "",
-    },
-    {
-      key: "data",
-      label: "Data",
-      description: "Data Integration",
-      url: window.process?.env.BLOCKS_DATA_BASE_URL || "",
-      icon: <DataGatewayIcon />,
-      clientId: window.process?.env.BLOCKS_DATA_CLIENT_ID || "",
-      redirectUri: window.process?.env.BLOCKS_DATA_CALLBACK_URL || "",
-    },
-    {
-      key: "os",
-      label: "OS",
-      description: "Operating System",
-      url: window.process?.env.BLOCKS_OS_BASE_URL || "",
-      icon: <BlocksOsIcon />,
-      clientId: window.process?.env.BLOCKS_OS_CLIENT_ID || "",
-      redirectUri: window.process?.env.BLOCKS_OS_CALLBACK_URL || "",
-    },
-    {
-      key: "utilities",
-      label: "Utilities",
-      description: "Utility Tools",
-      url: window.process?.env.BLOCKS_UTILITIES_BASE_URL || "",
-      icon: <UtilityIcon />,
-      clientId: window.process?.env.BLOCKS_UTILITIES_CLIENT_ID || "",
-      redirectUri: window.process?.env.BLOCKS_UTILITIES_CALLBACK_URL || "",
-    },
-    {
-      key: "logic",
-      label: "Logic",
-      description: "Business Logic",
-      url: window.process?.env.BLOCKS_LOGIC_BASE_URL || "",
-      icon: <LogicIcon />,
-      clientId: window.process?.env.BLOCKS_LOGIC_CLIENT_ID || "",
-      redirectUri: window.process?.env.BLOCKS_LOGIC_CALLBACK_URL || "",
-    },
-    {
-      key: "monitor",
-      label: "Monitor",
-      description: "Monitoring & Logs",
-      url: window.process?.env.BLOCKS_MONITOR_BASE_URL || "",
-      icon: <ObservabilityIcon />,
-      clientId: window.process?.env.BLOCKS_MONITOR_CLIENT_ID || "",
-      redirectUri: window.process?.env.BLOCKS_MONITOR_CALLBACK_URL || "",
-    },
-    {
-      key: "release",
-      label: "Release",
-      description: "CI/CD & Releases",
-      url: window.process?.env.BLOCKS_RELEASE_BASE_URL || "",
-      icon: <DeploymentsIcon />,
-      clientId: window.process?.env.BLOCKS_RELEASE_CLIENT_ID || "",
-      redirectUri: window.process?.env.BLOCKS_RELEASE_CALLBACK_URL || "",
-    },
-  ];
   const [open, setOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [favouriteKeys, setFavouriteKeys] = useState<Set<string>>(new Set());
-  const [isHydrated, setIsHydrated] = useState(false);
   const [loadingKey, setLoadingKey] = useState<string | null>(null);
-  const location = useLocation();
-  // const isAllowedRoute = !location.pathname.includes("/console") && !location.pathname.includes("/project-overview") && !location.pathname.includes("/services/lmt/logs");
-  useEffect(() => {
-    const stored = localStorage.getItem("blocks-app-favourites");
-    const keys = stored
-      ? new Set<string>(JSON.parse(stored) as string[])
-      : new Set<string>(["iam", "localization"]);
-    setFavouriteKeys(keys);
-    setIsHydrated(true);
-  }, []);
-  const saveFavourites = (keys: Set<string>) => {
-    setFavouriteKeys(keys);
-    localStorage.setItem(
-      "blocks-app-favourites",
-      JSON.stringify(Array.from(keys)),
-    );
-  };
-  const toggleFavourite = (key: string) => {
-    const newFavourites = new Set(favouriteKeys);
-    if (newFavourites.has(key)) {
-      newFavourites.delete(key);
-    } else {
-      newFavourites.add(key);
-    }
-    saveFavourites(newFavourites);
-  };
+
   const initiateLogin = async (app: BlocksApp) => {
     if (loadingKey) return;
     try {
@@ -498,12 +472,10 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
       setLoadingKey(null);
     }
   };
-  // if (!isHydrated || !isAllowedRoute) return null;
-  if (!isHydrated) return null;
-  const favourites = APP_SWITCHER_DATA.filter((a) => favouriteKeys.has(a.key));
-  const moreApps = APP_SWITCHER_DATA.filter((a) => !favouriteKeys.has(a.key));
-  const blocksApps = [...APP_SWITCHER_DATA].sort((a, b) =>
-    a.label.localeCompare(b.label),
+
+  const blocksApps = useMemo(
+    () => [...APP_SWITCHER_DATA].sort((a, b) => a.label.localeCompare(b.label)),
+    [],
   );
 
   return (
@@ -524,32 +496,8 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
         <PopoverContent
           align="end"
           sideOffset={8}
-          className="w-[260px] overflow-hidden rounded-2xl p-0 shadow-xl"
+          className="w-60 overflow-hidden rounded-2xl p-0 shadow-xl"
         >
-          {/* <div className="bg-background flex items-center justify-between border-b px-3 py-3">
-            <p className="text-foreground text-[13px] font-semibold">
-              Your favourites
-            </p>
-            <button
-              onClick={() => setEditDialogOpen(true)}
-              className="text-muted-foreground hover:bg-accent hover:text-foreground flex h-6 w-6 items-center justify-center rounded transition-colors"
-              aria-label="Edit favourites"
-            >
-              <Pencil className="h-4 w-4" />
-            </button>
-          </div> */}
-          {/* <div className="px-3 pb-2 pt-3">
-            <div className="grid grid-cols-3">
-              {favourites.map((app) => (
-                <AppTile
-                  key={app.key}
-                  app={app}
-                  onClick={() => initiateLogin(app)}
-                  isLoading={loadingKey === app.key}
-                />
-              ))}
-            </div>
-          </div> */}
           {blocksApps.length > 0 && (
             <div className="bg-muted/50 border-t px-3 pb-4 pt-3">
               <p className="text-muted-foreground mb-2 px-1 text-[13px] font-semibold">
@@ -569,36 +517,6 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
           )}
         </PopoverContent>
       </Popover>
-      {/* <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Manage Favourites</DialogTitle>
-          </DialogHeader>
-          <div className="grid grid-cols-2 gap-4 py-2">
-            {APP_SWITCHER_DATA.map((app) => (
-              <button
-                key={app.key}
-                onClick={() => toggleFavourite(app.key)}
-                className={cn(
-                  "bg-muted/40 hover:bg-accent focus-visible:ring-primary group flex flex-col items-center gap-2 rounded-xl border border-transparent p-4 shadow-sm transition-all hover:shadow-md focus-visible:outline-none focus-visible:ring-2",
-                  favouriteKeys.has(app.key) && "border-primary bg-primary/10",
-                )}
-                aria-pressed={favouriteKeys.has(app.key)}
-              >
-                <span className="mb-1 flex h-12 w-12 items-center justify-center">
-                  {app.icon}
-                </span>
-                <span className="text-foreground mb-0.5 line-clamp-1 text-sm font-semibold">
-                  {app.label}
-                </span>
-                <span className="text-muted-foreground line-clamp-2 text-center text-xs">
-                  {app.description}
-                </span>
-              </button>
-            ))}
-          </div>
-        </DialogContent>
-      </Dialog> */}
     </>
   );
 };
