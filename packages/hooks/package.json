@@ -49,7 +49,6 @@
     "@tanstack/react-query": "^5.0.0"
   },
   "dependencies": {
-    "@blocks-kit/primitives": "workspace:*",
     "fuse.js": "^7.3.0"
   },
   "devDependencies": {
