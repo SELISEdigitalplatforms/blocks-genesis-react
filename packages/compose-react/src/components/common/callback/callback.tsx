@@ -53,9 +53,10 @@ export const CallbackPage = ({ redirectUrl }: CallbackPageProps) => {
     }
   }, [code, state, error, setAuthenticated, redirectUrl, forwardTo]);
 
+  const LoaderIcon = Loader as any;
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <Loader className="h-12 w-12 animate-spin text-gray-500" />
+      <LoaderIcon className="h-12 w-12 animate-spin text-gray-500" />
     </div>
   );
 };

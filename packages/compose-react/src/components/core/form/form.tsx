@@ -13,7 +13,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/core/label"
 
-const Form = FormProvider
+const Form: any = FormProvider
 
 type FormFieldContextValue<
   TFieldValues extends FieldValues = FieldValues,
@@ -30,9 +30,10 @@ const FormField = <
 >({
   ...props
 }: ControllerProps<TFieldValues, TName>) => {
+  const ControllerComponent = Controller as any
   return (
     <FormFieldContext.Provider value={{ name: props.name }}>
-      <Controller {...props} />
+      <ControllerComponent {...props} />
     </FormFieldContext.Provider>
   )
 }

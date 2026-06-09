@@ -41,10 +41,12 @@ function UserDropdownMenuLogo() {
     return <span>{initials}</span>;
   }
 
-  return <UserRound className="h-4 w-4" />;
+  const UserRoundIcon = UserRound as any;
+  return <UserRoundIcon className="h-4 w-4" />;
 }
 
 export const UserDropdownMenu = () => {
+  const LinkComponent = Link as any;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -59,7 +61,7 @@ export const UserDropdownMenu = () => {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link to="/profile">My profile</Link>
+            <LinkComponent to="/profile">My profile</LinkComponent>
           </DropdownMenuItem>
           <DropdownMenuItem disabled>Privacy</DropdownMenuItem>
           <DropdownMenuItem disabled>Support</DropdownMenuItem>

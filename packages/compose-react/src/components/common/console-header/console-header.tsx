@@ -11,6 +11,8 @@ import { Notification } from "../notification";
 import { useBlocksAppConfigStore } from "@/index";
 
 export function ConsoleHeader() {
+  const LinkComponent = Link as any;
+  const MenuIcon = Menu as any;
   const {
     config: { appLogoUrl },
   } = useBlocksAppConfigStore((state) => state);
@@ -49,7 +51,7 @@ export function ConsoleHeader() {
       >
         <div className={`mx-0 flex h-full w-full flex-row items-center md:mx-auto`}>
           <div className="w-57 ml-2 flex h-full items-center">
-            <Link to="/console" className="cursor-pointer">
+            <LinkComponent to="/console" className="cursor-pointer">
               <Logo
                 width={96}
                 height={32}
@@ -57,14 +59,14 @@ export function ConsoleHeader() {
                 lightSrc={appLightLogo}
                 darkSrc={appDarkLogo}
               />
-            </Link>
+            </LinkComponent>
           </div>
         </div>
         <div className="block sm:hidden">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline">
-                <Menu className="h-5 w-5" />
+                <MenuIcon className="h-5 w-5" />
               </Button>
             </SheetTrigger>
             <SheetContent

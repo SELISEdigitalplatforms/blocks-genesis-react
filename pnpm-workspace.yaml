@@ -6,16 +6,16 @@ allowBuilds:
   msw: true
 # pnpm catalog: pin versions once, reference them everywhere
 catalog:
-  typescript: ^5.8.3
-  tsup: ^8.4.0
-  eslint: ^9.27.0
-  prettier: ^3.5.3
+  typescript: ^5.9.3
+  tsup: ^8.5.1
+  eslint: ^9.39.4
+  prettier: ^3.8.3
   react: ^18.3.1
   react-dom: ^18.3.1
-  "@types/react": ^18.3.1
-  "@types/react-dom": ^18.3.1
+  "@types/react": ^18.3.31
+  "@types/react-dom": ^18.3.7
   tailwindcss: ^3.4.17
   class-variance-authority: ^0.7.1
   clsx: ^2.1.1
   tailwind-merge: ^2.6.0
-  date-fns: ^4.1.0
+  date-fns: ^4.4.0
