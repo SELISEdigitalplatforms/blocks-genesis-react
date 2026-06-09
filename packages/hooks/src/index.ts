@@ -10,5 +10,4 @@ export * from "./use-media-query";
 export * from "./use-mobile";
 export * from "./use-path-segments";
 export * from "./use-popover-width";
-export * from "./use-theme";
 export * from "./utils/fuse-search";
