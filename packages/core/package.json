@@ -18,21 +18,6 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
-    "./http": {
-      "types": "./dist/http/index.d.ts",
-      "import": "./dist/http/index.js",
-      "require": "./dist/http/index.cjs"
-    },
-    "./runtime-env": {
-      "types": "./dist/runtime-env/index.d.ts",
-      "import": "./dist/runtime-env/index.js",
-      "require": "./dist/runtime-env/index.cjs"
-    },
-    "./auth": {
-      "types": "./dist/auth/index.d.ts",
-      "import": "./dist/auth/index.js",
-      "require": "./dist/auth/index.cjs"
-    },
     "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",

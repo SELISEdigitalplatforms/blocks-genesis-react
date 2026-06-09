@@ -16,13 +16,17 @@ declare global {
 }
 
 export const getRuntimeEnv = <K extends string>(key: K): string => {
-  const windowValue =
-    typeof window !== "undefined" ? window.__BLOCKS_ENV__?.[key] : undefined;
-  console.log("getRuntimeEnv: windowValue sd", { key, windowValue });
-  if (windowValue && !isPlaceholder(windowValue)) {
-    return windowValue;
+  if (typeof window !== "undefined") {
+    // 1. Check window.__BLOCKS_ENV__
+    const windowValue = (window as any).__BLOCKS_ENV__?.[key];
+    if (windowValue && !isPlaceholder(windowValue)) return windowValue;
+
+    // 2. Check window.process.env (Common in legacy/Vite apps)
+    const processEnvValue = (window as any).process?.env?.[key];
+    if (processEnvValue && !isPlaceholder(processEnvValue)) return processEnvValue;
   }
 
+  // 3. Check import.meta.env
   const metaEnvValue = (import.meta.env as Record<string, string | undefined>)[key];
   return metaEnvValue ?? "";
 };

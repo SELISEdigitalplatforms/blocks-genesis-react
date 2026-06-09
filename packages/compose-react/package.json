@@ -106,7 +106,6 @@
     "zod": "^3.25.76"
   },
   "peerDependencies": {
-    "@seliseblocks/blocks-kit-core": "^0.0.1",
     "@tanstack/react-query": "^5.0.0",
     "nuqs": "^2.0.0",
     "react": "^18.3.1 || ^19.0.0",
@@ -118,7 +117,6 @@
     "@blocks-kit/eslint-config": "workspace:*",
     "@blocks-kit/prettier-config": "workspace:*",
     "@blocks-kit/tsconfig": "workspace:*",
-    "@seliseblocks/blocks-kit-core": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "eslint": "catalog:",
