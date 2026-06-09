@@ -1,9 +1,0 @@
-{
-  "extends": "@blocks-kit/tsconfig/vite.json",
-  "compilerOptions": {
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  },
-  "include": ["src"]
-}
