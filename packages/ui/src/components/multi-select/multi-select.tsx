@@ -21,7 +21,7 @@ import {
   PopoverTrigger,
 } from "@blocks-kit/ui/components/popover"
 import { Separator } from "@blocks-kit/ui/components/separator"
-import { useDebouncedFuseFilter } from "@blocks-kit/hooks"
+import { useFuseSearch } from "@blocks-kit/hooks"
 import { useIsMobile } from "@blocks-kit/hooks"
 import { usePopoverWidth } from "@blocks-kit/hooks"
 import { cn } from "@blocks-kit/ui/lib/utils"
@@ -64,7 +64,7 @@ export const MultiSelect = ({
     () => ({ keys: ["label", "value"], threshold: 0.35 }),
     [],
   )
-  const filteredOptions = useDebouncedFuseFilter(options, search, fuseOptions)
+  const filteredOptions = useFuseSearch(options, search, fuseOptions)
 
   const handleSelect = (value: string) => {
     setSelectedValues((prev) => {
@@ -148,7 +148,7 @@ export const MultiSelect = ({
           <CommandList>
             <CommandEmpty>{emptyMessage}</CommandEmpty>
             <CommandGroup>
-              {filteredOptions.map((option) => {
+              {filteredOptions.map((option: MultiSelectOption) => {
                 const isSelected = selectedValues.includes(option.value)
                 return (
                   <CommandItem

@@ -364,6 +364,7 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
   ];
 
   const blocksApps = [...APP_SWITCHER_DATA].sort((a, b) => a.label.localeCompare(b.label));
+  const GripIcon = Grip as any;
 
   return (
     <>
@@ -377,7 +378,7 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
               open && "bg-accent text-foreground",
             )}
           >
-            <Grip className="stroke-3 h-6 w-6" />
+            <GripIcon className="stroke-3 h-6 w-6" />
           </button>
         </PopoverTrigger>
         <PopoverContent

@@ -6,12 +6,12 @@ type ThemeOption = "light" | "dark" | "system";
 
 const OPTIONS: Array<{
   value: ThemeOption;
-  Icon: React.ElementType;
+  Icon: any;
   label: string;
 }> = [
-  { value: "system", Icon: Monitor, label: "Auto" },
-  { value: "light", Icon: Sun, label: "Light" },
-  { value: "dark", Icon: Moon, label: "Dark" },
+  { value: "system", Icon: Monitor as any, label: "Auto" },
+  { value: "light", Icon: Sun as any, label: "Light" },
+  { value: "dark", Icon: Moon as any, label: "Dark" },
 ];
 
 export function ThemeSwitcher() {

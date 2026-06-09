@@ -53,6 +53,7 @@ const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePickerProps
     }, [open, value]);
 
     const formatted = formatRange(value);
+    const CalendarIconComponent = CalendarIcon as any;
 
     return (
       <Popover open={open} onOpenChange={setOpen}>
@@ -63,7 +64,7 @@ const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePickerProps
             size="sm"
             className={cn("h-8 gap-2 rounded-full font-normal", className)}
           >
-            <CalendarIcon className="h-4 w-4" />
+            <CalendarIconComponent className="h-4 w-4" />
             <span className="truncate">{formatted ?? label}</span>
           </Button>
         </PopoverTrigger>

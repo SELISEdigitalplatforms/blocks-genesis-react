@@ -5,9 +5,9 @@ import { useEffect, useRef, useState, type RefObject } from "react";
  *
  * @returns Button ref and current width in pixels.
  */
-export function usePopoverWidth(): [RefObject<HTMLButtonElement | null>, number | undefined] {
+export function usePopoverWidth(): [RefObject<HTMLButtonElement>, number | undefined] {
   const [popoverWidth, setPopoverWidth] = useState<number | undefined>(undefined);
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const updateWidth = () => {

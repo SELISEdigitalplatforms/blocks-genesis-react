@@ -88,6 +88,9 @@ export const EnvironmentCard = ({
       console.log("Failed to switch environment", err);
     }
   };
+  const HourglassIcon = Hourglass as any;
+  const ChevronRightIcon = ChevronRight as any;
+
   return (
     <Card
       onClick={handleCardClick}
@@ -103,7 +106,7 @@ export const EnvironmentCard = ({
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Hourglass className="text-icon-warning h-4 w-4 cursor-pointer" />
+                    <HourglassIcon className="text-icon-warning h-4 w-4 cursor-pointer" />
                   </TooltipTrigger>
                   <TooltipContent className="border-none bg-neutral-500 text-white shadow-none">
                     Migration in progress
@@ -113,7 +116,7 @@ export const EnvironmentCard = ({
             )}
           </div>
         </CardTitle>
-        <ChevronRight className="h-4 w-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+        <ChevronRightIcon className="h-4 w-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
       </CardHeader>
       <div className="mt-2">
         <div className="flex flex-wrap items-center gap-1.5 py-0.5 text-xs sm:py-1 md:py-1.5">
