@@ -1,4 +1,9 @@
-import type { AuthTokenPair } from "../auth/index";
+import type { AuthTokenPair } from "@/types";
+import { getRuntimeEnv } from "./runtime-env";
+
+const AUTH_OIDC_ENDPOINTS = {
+  OIDC_TOKEN: "/api/oidc/token",
+};
 
 export class HttpError extends Error {
   status: number;
@@ -91,11 +96,32 @@ export class HttpClient {
   }
 
   private async refreshAccessToken() {
-    if (isRefreshing || !this.onTokenRefresh) return;
+    if (isRefreshing) return;
 
     try {
       isRefreshing = true;
-      await this.onTokenRefresh();
+      if(this.onTokenRefresh) await this.onTokenRefresh();
+
+      const formData = new URLSearchParams();
+      formData.append("grant_type", "refresh_token");
+      formData.append("refresh_token", '""');
+      formData.append(
+        "client_id",
+        getRuntimeEnv("BLOCKS_OIDC_CLIENT_ID") || "",
+      );
+      const baseUrl = window?.process?.env.userBaseUrl || "";
+      const url = `${baseUrl}${AUTH_OIDC_ENDPOINTS.OIDC_TOKEN}?tenant_id=${this.blocksKey}`;
+      const response = await fetch(url, {
+        method: "POST",
+        body: formData,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-Blocks-Key": this.blocksKey,
+        },
+        credentials: "include",
+      });
+
+      if (!response.ok) throw new Error("Failed to refresh token");
 
       while (requestQueue.length > 0) {
         const { url, requestOption, resolve, reject } = requestQueue.shift()!;
@@ -152,7 +178,7 @@ export class HttpClient {
     try {
       const response = await fetch(fullUrl, config);
 
-      if (response.status === 401 && !skipTokenRotation && this.onTokenRefresh) {
+      if (response.status === 401 && !skipTokenRotation) {
         return new Promise<T>((resolve, reject) => {
           requestQueue.push({
             url,

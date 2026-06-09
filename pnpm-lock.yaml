@@ -249,9 +249,6 @@ importers:
       '@blocks-kit/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/typescript
-      '@seliseblocks/blocks-kit-core':
-        specifier: workspace:*
-        version: link:../core
       '@types/react':
         specifier: 'catalog:'
         version: 18.3.31

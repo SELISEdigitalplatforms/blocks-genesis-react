@@ -1,5 +1,5 @@
 import { useBlocksAppConfigStore } from "@/layouts";
-import { HttpClient } from "@seliseblocks/blocks-kit-core";
+import { HttpClient } from "@/lib/http";
 
 export interface IProject {
   itemId: string;

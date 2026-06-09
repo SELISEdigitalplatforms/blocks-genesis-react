@@ -1,5 +1,5 @@
-import { HttpClient } from "@seliseblocks/blocks-kit-core/http";
-import { getRuntimeEnv } from "@seliseblocks/blocks-kit-core/runtime-env";
+import { HttpClient } from "@/lib/http";
+import { getRuntimeEnv } from "@/lib/runtime-env";
 import { useEffect } from "react";
 import { useAuthStore } from "../store/auth-store";
 

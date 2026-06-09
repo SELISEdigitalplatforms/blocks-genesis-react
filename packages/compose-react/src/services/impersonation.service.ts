@@ -1,4 +1,4 @@
-import { HttpClient } from "@seliseblocks/blocks-kit-core";
+import { HttpClient } from "@/lib/http";
 
 export interface ImpersonationRequest {
   targeted_tenant_id: string;

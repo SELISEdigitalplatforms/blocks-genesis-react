@@ -1,4 +1,4 @@
-import { HttpClient } from "@seliseblocks/blocks-kit-core/http";
+import { HttpClient } from "@/lib/http";
 
 export class AuthService {
   logout() {
