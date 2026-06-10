@@ -1,9 +1,9 @@
 import { createStore } from "zustand";
 
-type Name = 'blocks-os' | 'blocks-utilities' | 'blocks-logic' | 'blocks-monitor' | 'blocks-release' | 'blocks-iam' | 'blocks-studio' | 'blocks-agents' | 'blocks-data';
+export type ServiceName = 'blocks-os' | 'blocks-utilities' | 'blocks-logic' | 'blocks-monitor' | 'blocks-release' | 'blocks-iam' | 'blocks-studio' | 'blocks-agents' | 'blocks-data' | 'blocks-localization';
 
 export interface AppConfig {
-  name: Name;
+  name: ServiceName;
   envPrefix?: string;
   loginInitiateUrl?: string;
   projectBaseUrlKey?: string;
