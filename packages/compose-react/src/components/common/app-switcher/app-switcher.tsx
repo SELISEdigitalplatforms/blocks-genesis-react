@@ -1,13 +1,17 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/core/popover/popover";
 import { cn } from "@/lib/utils";
-import { Grip } from "lucide-react";
+import { Grip as LucideGrip } from "lucide-react";
 import { APP_SWITCHER_DATA } from "./app-switcher-data";
+import type { RuntimeKey } from "@/layouts/blocksapp-layout";
+
+const Link = RouterLink as any;
+const Grip = LucideGrip as any;
 
 export interface BlocksApp {
   key: string;
@@ -15,8 +19,8 @@ export interface BlocksApp {
   description: string;
   url: string;
   icon: React.ReactNode;
-  clientId: string;
-  redirectUri: string;
+  clientId: RuntimeKey;
+  redirectUri: RuntimeKey;
   initiateUrl: string;
   isLoading: boolean;
 }
@@ -26,7 +30,7 @@ interface AppTileProps {
   isLoading: boolean;
 }
 
-function AppTile({ app, isLoading }: AppTileProps) {
+const  AppTile= ({ app, isLoading }: AppTileProps) =>{
   return (
     <Link
       to={app.initiateUrl}
@@ -55,12 +59,14 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
     async (app: BlocksApp) => {
       const blocksKey = window.process?.env.BLOCKS_X_BLOCKS_KEY;
       const iamBaseUrl = window.process?.env.userBaseUrl;
-      const initiateUrl = `${iamBaseUrl}/api/idp/initiate?x-blocks-key=${blocksKey}&clientId=${app.clientId}&redirectUri=${app.redirectUri}&forwardedTo=${forwardedTo}`;
+      const clientId = window.process?.env[app.clientId];
+      const redirectUri = window.process?.env[app.redirectUri];
+      const initiateUrl = `${iamBaseUrl}/api/idp/initiate?x-blocks-key=${blocksKey}&clientId=${clientId}&redirectUri=${redirectUri}&forwardedTo=${forwardedTo}`;
       const headers: Record<string, string> = {};
       if (blocksKey) headers["X-Blocks-Key"] = blocksKey;
 
       const response = await fetch(initiateUrl, { headers });
-      const data = await response.json();
+    const data = await response.json();
       if (data.redirect_uri) {
         return data.redirect_uri as string;
       }
@@ -71,10 +77,10 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
   );
 
   useEffect(() => {
-    if (isRedirecting.current) return;
+    if (isRedirecting.current || !open) return;
     isRedirecting.current = true;
 
-    APP_SWITCHER_DATA.forEach((app) => {
+    APP_SWITCHER_DATA.forEach((app, idx) => {
       getRedirectUrl(app)
         .then((redirectUrl) => {
           if (redirectUrl) {
@@ -83,9 +89,13 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
         })
         .catch((error) => {
           console.error("Error getting redirect URL:", error);
+        }).finally(() => {
+          if (idx === APP_SWITCHER_DATA.length - 1) {
+            isRedirecting.current = false;
+          }
         });
     });
-  }, [getRedirectUrl]);
+  }, [getRedirectUrl, open]);
 
   const blocksApps = useMemo(() => {
     return APP_SWITCHER_DATA.map((app) => ({
