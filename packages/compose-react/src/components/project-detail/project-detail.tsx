@@ -9,7 +9,7 @@
 
 import { Button, CopyToClipboardButton, formatFullDate, MaskedText, Skeleton } from "@/index";
 import type { IProject } from "@/services/project.service";
-import { environmentOptions } from "../constants/environment-options";
+import { environmentOptions } from "../../constants/environment-options";
 import type { ReactNode } from "react";
 import { getProjectBlocksApiUrl } from "../../lib/domain";
 

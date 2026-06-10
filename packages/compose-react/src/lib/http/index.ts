@@ -1,59 +1,9 @@
+import { getRuntimeEnv } from "@/lib/runtime-env";
+import { AUTH_OIDC_ENDPOINTS } from "@/constants/endpoint.constant";
 import type { AuthTokenPair } from "@/types";
-import { getRuntimeEnv } from "./runtime-env";
+import type { RequestQueueItem, HttpClientConfig, HttpClientOptions, HeadersInitValue, RequestOptions, RequestBody } from "./types";
+import { HttpError } from "./error";
 
-const AUTH_OIDC_ENDPOINTS = {
-  OIDC_TOKEN: "/api/oidc/token",
-};
-
-export class HttpError extends Error {
-  status: number;
-  errors: Record<string, string | string[]>;
-
-  constructor(status: number, error: { errors: Record<string, string | string[]> }) {
-    super(JSON.stringify(error.errors));
-    this.status = status;
-    this.errors = error.errors;
-  }
-}
-
-type HeadersInitValue = [string, string][] | Record<string, string> | Headers;
-type RequestBody =
-  | string
-  | object
-  | Array<unknown>
-  | FormData
-  | URLSearchParams
-  | Blob
-  | File
-  | null
-  | undefined;
-
-export interface HttpClientOptions {
-  skipBlocksKey?: boolean;
-  withCredentials?: boolean;
-  absoluteUrl?: boolean;
-  skipTokenRotation?: boolean;
-}
-
-interface RequestOptions extends HttpClientOptions {
-  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-  headers?: HeadersInitValue;
-  body?: RequestBody;
-}
-
-interface RequestQueueItem<T> {
-  url: string;
-  requestOption: RequestOptions;
-  resolve: (value: T | PromiseLike<T>) => void;
-  reject: (reason?: unknown) => void;
-}
-
-export interface HttpClientConfig {
-  baseURL: string;
-  blocksKey?: string;
-  onTokenRefresh?: () => Promise<AuthTokenPair>;
-  onUnauthorized?: (error: unknown) => void;
-}
 
 let isRefreshing = false;
 let requestQueue: RequestQueueItem<unknown>[] = [];
@@ -307,3 +257,4 @@ export class HttpClient {
     return response.body;
   }
 }
+

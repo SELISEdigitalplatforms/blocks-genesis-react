@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { PanelLeft } from "lucide-react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
-import { CookieStorage } from "@/lib/cookieStorage";
+import { CookieStorage } from "@/lib/cookie-storage";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/core/button";
 import { Input } from "@/components/core/input";

@@ -3,3 +3,4 @@ export * from "./theme-switcher";
 export * from "./user-dropdown-menu";
 export * from "./callback";
 export * from "./console-header";
+export * from "./profile";

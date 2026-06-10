@@ -8,6 +8,7 @@ export default defineConfig({
     "guards/index": "src/guards/index.ts",
     "layouts/index": "src/layouts/index.ts",
     "types/index": "src/types/index.ts",
+    "http/index": "src/lib/http/index.ts",
   },
   format: ["esm", "cjs"],
   dts: true,

@@ -1,5 +1,5 @@
 import type { Theme } from "@/hooks/use-theme";
-import { CookieStorage } from "@/lib/cookieStorage";
+import { CookieStorage } from "@/lib/cookie-storage";
 import { create } from "zustand";
 import { persist, type PersistStorage } from "zustand/middleware";
 
