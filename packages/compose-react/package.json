@@ -1,6 +1,6 @@
 {
   "name": "@seliseblocks/blocks-kit",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "React app-shell composition package for blocks-kit",
   "license": "MIT",
   "type": "module",
@@ -41,7 +41,6 @@
       "import": "./dist/lib/http/index.js",
       "require": "./dist/lib/http/index.cjs"
     },
-
     "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
