@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useBlocksAppConfigStore } from "@/layouts/blocksapp-layout";
 import { BlocksLoginPage, type BlocksProduct, type LoginCarouselItem } from "./blockslogin";
 
 export const BLOCKS_PRODUCTS: BlocksProduct[] = [
@@ -212,11 +213,8 @@ export const BLOCKS_PRODUCTS: BlocksProduct[] = [
   },
 ];
 
-export interface LoginPageProps {
-  name?: string;
-}
-
-export const LoginPage = ({ name = "blocks-os" }: LoginPageProps) => {
+export const LoginPage = () => {
+  const config = useBlocksAppConfigStore((state) => state.getConfig());
   const [isStarting, setIsStarting] = useState(false);
 
   const startLogin = async () => {
@@ -237,24 +235,22 @@ export const LoginPage = ({ name = "blocks-os" }: LoginPageProps) => {
       if (data.redirect_uri) {
         window.location.href = data.redirect_uri;
       } else {
-        // showErrorToast({ errors: "Failed to get authorization URL" });
         setIsStarting(false);
       }
     } catch (errors) {
       console.log("Login initiation error:", errors);
-      // showErrorToast({
-      //   errors: "Unable to start login. Please try again.",
-      // });
       setIsStarting(false);
     }
   };
 
   return (
     <BlocksLoginPage
-      name={name}
+      name={config.name}
       onLogin={startLogin}
       isLoading={isStarting}
       carouselItems={BLOCKS_PRODUCTS as LoginCarouselItem[]}
     />
   );
 };
+
+
