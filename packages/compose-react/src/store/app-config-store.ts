@@ -1,6 +1,9 @@
 import { createStore } from "zustand";
 
+type Name = 'blocks-os' | 'blocks-utilities' | 'blocks-logic' | 'blocks-monitor' | 'blocks-release' | 'blocks-iam' | 'blocks-studio' | 'blocks-agents' | 'blocks-data';
+
 export interface AppConfig {
+  name: Name;
   envPrefix?: string;
   loginInitiateUrl?: string;
   projectBaseUrlKey?: string;
@@ -22,7 +25,7 @@ export interface AppConfigStoreState {
 
 export const CreateAppConfigStore = (initialConfig?: Partial<AppConfig>) =>
   createStore<AppConfigStoreState>()((set, get) => ({
-    config: { ...initialConfig },
+    config: { name: 'blocks-os', ...initialConfig },
     getConfig: () => get().config,
     setConfig: (nextConfig) => {
       set((state) => ({
@@ -31,6 +34,6 @@ export const CreateAppConfigStore = (initialConfig?: Partial<AppConfig>) =>
       }));
     },
     resetConfig: () => {
-      set((state) => ({ ...state, config: { loginInitiateUrl: undefined } }));
+      set((state) => ({ ...state, config: { name: 'blocks-os', loginInitiateUrl: undefined } }));
     },
   }));

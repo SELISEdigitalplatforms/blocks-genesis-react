@@ -13,7 +13,7 @@ type BlocksAppLayoutProps = {
 
 const PLACEHOLDER_PREFIX = "__BLOCKS_";
 
-type RuntimeKey =
+export type RuntimeKey =
   | "BLOCKS_LOCALIZATION_BASE_URL"
   | "BLOCKS_LOCALIZATION_CLIENT_ID"
   | "BLOCKS_LOCALIZATION_CALLBACK_URL"
