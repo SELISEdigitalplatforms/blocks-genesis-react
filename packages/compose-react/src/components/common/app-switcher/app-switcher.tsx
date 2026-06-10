@@ -11,12 +11,13 @@ import { Grip as LucideGrip } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { APP_SWITCHER_DATA } from "./app-switcher.constant";
+import type { ServiceName } from "@/store";
 
 const Link = RouterLink as any;
 const Grip = LucideGrip as any;
 
 export interface BlocksApp {
-  key: string;
+  key: ServiceName;
   label: string;
   description: string;
   url: string;
@@ -99,7 +100,9 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
     [forwardedTo],
   );
 
-  const filteredApps = APP_SWITCHER_DATA.filter((app) => app.key !== config.name);
+  const filteredApps = useMemo(() => APP_SWITCHER_DATA.filter((app) => app.key !== config.name), [config.name]);
+
+
 
   useEffect(() => {
     if (isRedirecting.current || !open) return;
@@ -121,14 +124,14 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
           }
         });
     });
-  }, [getRedirectUrl, open]);
+  }, [getRedirectUrl, open, filteredApps]);
 
   const blocksApps = useMemo(() => {
     return filteredApps.map((app) => ({
       ...app,
       initiateUrl: redirectUrls[app.key] ?? app.initiateUrl,
     })).sort((a, b) => a.label.localeCompare(b.label));
-  }, [redirectUrls]);
+  }, [redirectUrls, filteredApps]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
