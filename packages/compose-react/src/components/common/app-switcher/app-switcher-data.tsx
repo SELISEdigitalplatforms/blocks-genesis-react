@@ -1,8 +1,14 @@
+/* eslint-disable react-refresh/only-export-components -- icon helpers are co-located with static app config */
 import type { BlocksApp } from "./app-switcher";
 
 function IdpIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#1A3C8F" />
       <path
         d="M20 7L10 11v9c0 5.55 4.27 10.74 10 12 5.73-1.26 10-6.45 10-12v-9L20 7z"
@@ -10,20 +16,37 @@ function IdpIcon() {
         opacity="0.9"
       />
       <rect x="16" y="18" width="8" height="7" rx="1.5" fill="#1A3C8F" />
-      <circle cx="20" cy="17.5" r="2.5" stroke="#1A3C8F" strokeWidth="1.5" fill="none" />
+      <circle
+        cx="20"
+        cy="17.5"
+        r="2.5"
+        stroke="#1A3C8F"
+        strokeWidth="1.5"
+        fill="none"
+      />
     </svg>
   );
 }
 function UilmIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#0E7490" />
       <path
         d="M8 12h16a2 2 0 012 2v8a2 2 0 01-2 2h-3l-3 3v-3H8a2 2 0 01-2-2v-8a2 2 0 012-2z"
         fill="white"
         opacity="0.95"
       />
-      <path d="M12 17h8M12 20h5" stroke="#0E7490" strokeWidth="1.5" strokeLinecap="round" />
+      <path
+        d="M12 17h8M12 20h5"
+        stroke="#0E7490"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
       <path
         d="M24 21h6a1.5 1.5 0 011.5 1.5v5a1.5 1.5 0 01-1.5 1.5h-1.5l-2 2v-2H24a1.5 1.5 0 01-1.5-1.5v-5A1.5 1.5 0 0124 21z"
         fill="white"
@@ -34,9 +57,17 @@ function UilmIcon() {
 }
 function AiIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#7C3AED" />
-      <path d="M20 8l2.5 6.5L29 17l-6.5 2.5L20 26l-2.5-6.5L11 17l6.5-2.5L20 8z" fill="white" />
+      <path
+        d="M20 8l2.5 6.5L29 17l-6.5 2.5L20 26l-2.5-6.5L11 17l6.5-2.5L20 8z"
+        fill="white"
+      />
       <path
         d="M29 26l1.2 3L33 30.2l-2.8 1.2L29 34l-1.2-2.8L25 30.2l2.8-1.2L29 26z"
         fill="white"
@@ -52,7 +83,12 @@ function AiIcon() {
 }
 function DataGatewayIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#D97706" />
       <ellipse cx="20" cy="13" rx="8" ry="3.5" fill="white" opacity="0.95" />
       <path
@@ -74,7 +110,12 @@ function DataGatewayIcon() {
 }
 function BlocksOsIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#059669" />
       <rect
         x="8"
@@ -95,7 +136,12 @@ function BlocksOsIcon() {
 }
 function UtilityIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#64748B" />
       <path
         d="M27.5 9a5.5 5.5 0 00-5.24 7.18l-10.5 10.5a2 2 0 002.83 2.83l10.5-10.5A5.5 5.5 0 1027.5 9z"
@@ -108,11 +154,40 @@ function UtilityIcon() {
 }
 function LogicIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#4F46E5" />
-      <rect x="8" y="17" width="6" height="6" rx="1.5" fill="white" opacity="0.9" />
-      <rect x="26" y="11" width="6" height="6" rx="1.5" fill="white" opacity="0.9" />
-      <rect x="26" y="23" width="6" height="6" rx="1.5" fill="white" opacity="0.9" />
+      <rect
+        x="8"
+        y="17"
+        width="6"
+        height="6"
+        rx="1.5"
+        fill="white"
+        opacity="0.9"
+      />
+      <rect
+        x="26"
+        y="11"
+        width="6"
+        height="6"
+        rx="1.5"
+        fill="white"
+        opacity="0.9"
+      />
+      <rect
+        x="26"
+        y="23"
+        width="6"
+        height="6"
+        rx="1.5"
+        fill="white"
+        opacity="0.9"
+      />
       <path
         d="M14 20h5l3-6h2"
         stroke="white"
@@ -134,9 +209,18 @@ function LogicIcon() {
 }
 function ObservabilityIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#0891B2" />
-      <path d="M20 12c-6 0-10 8-10 8s4 8 10 8 10-8 10-8-4-8-10-8z" fill="white" opacity="0.9" />
+      <path
+        d="M20 12c-6 0-10 8-10 8s4 8 10 8 10-8 10-8-4-8-10-8z"
+        fill="white"
+        opacity="0.9"
+      />
       <circle cx="20" cy="20" r="3.5" fill="#0891B2" />
       <circle cx="20" cy="20" r="1.5" fill="white" opacity="0.8" />
       <path
@@ -151,7 +235,12 @@ function ObservabilityIcon() {
 }
 function DeploymentsIcon() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-9 w-9"
+    >
       <rect width="40" height="40" rx="10" fill="#DC2626" />
       <path
         d="M20 7c-2 4-6 6-9 7l1 8c1 5 5 9 8 10 3-1 7-5 8-10l1-8c-3-1-7-3-9-7z"
@@ -168,27 +257,6 @@ function DeploymentsIcon() {
     </svg>
   );
 }
-function StudioIcon() {
-  return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-9">
-      <rect width="40" height="40" rx="10" fill="#DB2777" />
-      <rect
-        x="9"
-        y="10"
-        width="22"
-        height="14"
-        rx="2"
-        stroke="white"
-        strokeWidth="1.5"
-        fill="none"
-        opacity="0.95"
-      />
-      <path d="M12 29h16" stroke="white" strokeWidth="1.8" strokeLinecap="round" opacity="0.85" />
-      <circle cx="20" cy="17" r="3" fill="white" opacity="0.9" />
-    </svg>
-  );
-}
-
 export const APP_SWITCHER_DATA: BlocksApp[] = [
   {
     key: "iam",
@@ -198,6 +266,8 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     icon: <IdpIcon />,
     clientId: window.process?.env.BLOCKS_IAM_CLIENT_ID || "",
     redirectUri: window.process?.env.BLOCKS_AGENTS_CALLBACK_URL || "",
+    isLoading: false,
+    initiateUrl: "",
   },
   {
     key: "localization",
@@ -207,6 +277,8 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     icon: <UilmIcon />,
     clientId: window.process?.env.BLOCKS_LOCALIZATION_CLIENT_ID || "",
     redirectUri: window.process?.env.BLOCKS_LOCALIZATION_CALLBACK_URL || "",
+    isLoading: false,
+    initiateUrl: "",
   },
   {
     key: "agents",
@@ -216,6 +288,8 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     icon: <AiIcon />,
     clientId: window.process?.env.BLOCKS_AGENTS_CLIENT_ID || "",
     redirectUri: window.process?.env.BLOCKS_AGENTS_CALLBACK_URL || "",
+    isLoading: false,
+    initiateUrl: "",
   },
   {
     key: "data",
@@ -225,6 +299,8 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     icon: <DataGatewayIcon />,
     clientId: window.process?.env.BLOCKS_DATA_CLIENT_ID || "",
     redirectUri: window.process?.env.BLOCKS_DATA_CALLBACK_URL || "",
+    isLoading: false,
+    initiateUrl: "",
   },
   {
     key: "os",
@@ -234,6 +310,8 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     icon: <BlocksOsIcon />,
     clientId: window.process?.env.BLOCKS_OS_CLIENT_ID || "",
     redirectUri: window.process?.env.BLOCKS_OS_CALLBACK_URL || "",
+    isLoading: false,
+    initiateUrl: "",
   },
   {
     key: "utilities",
@@ -243,6 +321,8 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     icon: <UtilityIcon />,
     clientId: window.process?.env.BLOCKS_UTILITIES_CLIENT_ID || "",
     redirectUri: window.process?.env.BLOCKS_UTILITIES_CALLBACK_URL || "",
+    isLoading: false,
+    initiateUrl: "",
   },
   {
     key: "logic",
@@ -252,6 +332,8 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     icon: <LogicIcon />,
     clientId: window.process?.env.BLOCKS_LOGIC_CLIENT_ID || "",
     redirectUri: window.process?.env.BLOCKS_LOGIC_CALLBACK_URL || "",
+    isLoading: false,
+    initiateUrl: "",
   },
   {
     key: "monitor",
@@ -261,6 +343,8 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     icon: <ObservabilityIcon />,
     clientId: window.process?.env.BLOCKS_MONITOR_CLIENT_ID || "",
     redirectUri: window.process?.env.BLOCKS_MONITOR_CALLBACK_URL || "",
+    isLoading: false,
+    initiateUrl: "",
   },
   {
     key: "release",
@@ -270,5 +354,7 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     icon: <DeploymentsIcon />,
     clientId: window.process?.env.BLOCKS_RELEASE_CLIENT_ID || "",
     redirectUri: window.process?.env.BLOCKS_RELEASE_CALLBACK_URL || "",
+    isLoading: false,
+    initiateUrl: "",
   },
 ];
