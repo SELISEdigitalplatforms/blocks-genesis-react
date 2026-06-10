@@ -36,6 +36,12 @@
       "import": "./dist/types/index.js",
       "require": "./dist/types/index.cjs"
     },
+    "./http": {
+      "types": "./dist/lib/http/index.d.ts",
+      "import": "./dist/lib/http/index.js",
+      "require": "./dist/lib/http/index.cjs"
+    },
+
     "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
