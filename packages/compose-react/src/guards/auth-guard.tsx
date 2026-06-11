@@ -1,6 +1,6 @@
 import { HttpClient } from "@/lib/http";
 import { getRuntimeEnv } from "@/lib/runtime-env";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAuthStore } from "../store/auth-store";
 
 const http = new HttpClient({
@@ -10,9 +10,13 @@ const http = new HttpClient({
 
 export function AuthResolver({ children }: { children: React.ReactNode }) {
   const { setUser, setAuthenticated, setUnAuthenticated } = useAuthStore();
+  const hasResolved = useRef(false);
   //   const { isMounted, } = useAppState();
 
   useEffect(() => {
+    if (hasResolved.current) return;
+    hasResolved.current = true;
+
     async function resolve() {
       try {
         const baseUrl = window.process?.env.userBaseUrl;

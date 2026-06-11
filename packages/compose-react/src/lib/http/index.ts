@@ -3,6 +3,8 @@ import { AUTH_OIDC_ENDPOINTS } from "@/constants/endpoint.constant";
 import type { AuthTokenPair } from "@/types";
 import type { RequestQueueItem, HttpClientConfig, HttpClientOptions, HeadersInitValue, RequestOptions, RequestBody } from "./types";
 import { HttpError } from "./error";
+import { getQueryClient } from "@/providers";
+import { useAuthStore, useProjectStore } from "@/store";
 
 
 let isRefreshing = false;
@@ -79,9 +81,19 @@ export class HttpClient {
       }
     } catch (error) {
       if (this.onUnauthorized) this.onUnauthorized(error);
+
       while (requestQueue.length > 0) {
         const queued = requestQueue.shift();
         queued?.reject(error);
+      }
+
+      const queryClient = getQueryClient();
+      useAuthStore.getState().reset();
+      useProjectStore.getState().reset();
+      queryClient.cancelQueries();
+      queryClient.clear();
+      if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+        window.location.replace("/login");
       }
     } finally {
       isRefreshing = false;
