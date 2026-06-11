@@ -9,11 +9,9 @@ import { getRuntimeEnv } from "@/lib/runtime-env";
 import { cn } from "@/lib/utils";
 import { Grip as LucideGrip } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
 import { APP_SWITCHER_DATA } from "./app-switcher.constant";
 import type { ServiceName } from "@/store";
 
-const Link = RouterLink as any;
 const Grip = LucideGrip as any;
 
 export interface BlocksApp {
@@ -42,10 +40,14 @@ const AppTile = ({ app, isLoading }: AppTileProps) => {
     resolvedTheme === "dark" ? app.icon.darkModeIcon : app.icon.lightModeIcon;
 
   return (
-    <Link
-      to={app.initiateUrl}
-      className="hover:bg-accent focus-visible:ring-ring group flex flex-col items-center gap-2 rounded-xl p-3 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:opacity-50"
-    >
+    <a
+      href={isLoading ? undefined : app.initiateUrl}
+      aria-disabled={isLoading}
+      onClick={isLoading ? (e) => e.preventDefault() : undefined}
+      className={cn(
+        "hover:bg-accent focus-visible:ring-ring group flex flex-col items-center gap-2 rounded-xl p-3 text-center transition-colors focus-visible:outline-none focus-visible:ring-2",
+        isLoading && "pointer-events-none opacity-50 cursor-default"
+)}    >
       <div className="flex h-12 w-12 items-center justify-center overflow-hidden">
         {typeof icon === "string" ? (
           <img
@@ -60,7 +62,7 @@ const AppTile = ({ app, isLoading }: AppTileProps) => {
       <span className="text-foreground line-clamp-1 max-w-[90px] text-[12px] font-medium leading-tight">
         {isLoading ? "Opening…" : app.label}
       </span>
-    </Link>
+    </a>
   );
 };
 
@@ -106,6 +108,8 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
 
   useEffect(() => {
     if (isRedirecting.current || !open) return;
+    setRedirectUrls({});
+
     isRedirecting.current = true;
 
     filteredApps.forEach((app, idx) => {
@@ -126,12 +130,13 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
     });
   }, [getRedirectUrl, open, filteredApps]);
 
-  const blocksApps = useMemo(() => {
-    return filteredApps.map((app) => ({
-      ...app,
-      initiateUrl: redirectUrls[app.key] ?? app.initiateUrl,
-    })).sort((a, b) => a.label.localeCompare(b.label));
-  }, [redirectUrls, filteredApps]);
+const blocksApps = useMemo(() => {
+  return filteredApps.map((app) => ({
+    ...app,
+    initiateUrl: redirectUrls[app.key] ?? app.initiateUrl,
+    isLoading: !redirectUrls[app.key],
+  })).sort((a, b) => a.label.localeCompare(b.label));
+}, [redirectUrls, filteredApps]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
