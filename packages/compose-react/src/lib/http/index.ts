@@ -1,11 +1,17 @@
 import { getRuntimeEnv } from "@/lib/runtime-env";
 import { AUTH_OIDC_ENDPOINTS } from "@/constants/endpoint.constant";
 import type { AuthTokenPair } from "@/types";
-import type { RequestQueueItem, HttpClientConfig, HttpClientOptions, HeadersInitValue, RequestOptions, RequestBody } from "./types";
+import type {
+  RequestQueueItem,
+  HttpClientConfig,
+  HttpClientOptions,
+  HeadersInitValue,
+  RequestOptions,
+  RequestBody,
+} from "./types";
 import { HttpError } from "./error";
 import { getQueryClient } from "@/providers";
 import { useAuthStore, useProjectStore } from "@/store";
-
 
 let isRefreshing = false;
 let requestQueue: RequestQueueItem<unknown>[] = [];
@@ -23,11 +29,16 @@ export class HttpClient {
     this.onUnauthorized = config.onUnauthorized;
   }
 
-  private normalizeHeaders(headers?: HeadersInitValue, skipBlocksKey?: boolean): Headers {
+  private normalizeHeaders(
+    headers?: HeadersInitValue,
+    skipBlocksKey?: boolean,
+  ): Headers {
     const normalizedHeaders = new Headers({
       Accept: "application/json",
       "Content-Type": "application/json",
-      ...(!skipBlocksKey && this.blocksKey ? { "X-Blocks-Key": this.blocksKey } : {}),
+      ...(!skipBlocksKey && this.blocksKey
+        ? { "X-Blocks-Key": this.blocksKey }
+        : {}),
     });
 
     if (headers instanceof Headers) {
@@ -41,7 +52,9 @@ export class HttpClient {
     }
 
     if (headers) {
-      Object.entries(headers).forEach(([key, value]) => normalizedHeaders.set(key, value));
+      Object.entries(headers).forEach(([key, value]) =>
+        normalizedHeaders.set(key, value),
+      );
     }
 
     return normalizedHeaders;
@@ -52,7 +65,7 @@ export class HttpClient {
 
     try {
       isRefreshing = true;
-      if(this.onTokenRefresh) await this.onTokenRefresh();
+      if (this.onTokenRefresh) await this.onTokenRefresh();
 
       const formData = new URLSearchParams();
       formData.append("grant_type", "refresh_token");
@@ -92,16 +105,19 @@ export class HttpClient {
       useProjectStore.getState().reset();
       queryClient.cancelQueries();
       queryClient.clear();
-      if (typeof window !== "undefined" && !window.location.pathname.includes("login")) {
-        window.location.replace("/login");
-      }
+      // if (typeof window !== "undefined" && !window.location.pathname.includes("login")) {
+      //   window.location.replace("/login");
+      // }
     } finally {
       isRefreshing = false;
       requestQueue = [];
     }
   }
 
-  private async request<T = unknown>(url: string, requestOption: RequestOptions): Promise<T> {
+  private async request<T = unknown>(
+    url: string,
+    requestOption: RequestOptions,
+  ): Promise<T> {
     const {
       method,
       body,
@@ -155,7 +171,8 @@ export class HttpClient {
       if (!response.ok) {
         const errorBody = await response.json().catch(() => ({}));
         throw new HttpError(response.status, {
-          errors: errorBody?.errors || errorBody || { general: "Request failed" },
+          errors: errorBody?.errors ||
+            errorBody || { general: "Request failed" },
         });
       }
 
@@ -168,7 +185,8 @@ export class HttpClient {
         });
       }
 
-      if (contentType.includes("text/")) return (await response.text()) as unknown as T;
+      if (contentType.includes("text/"))
+        return (await response.text()) as unknown as T;
 
       if (
         contentType.includes("image/") ||
@@ -243,7 +261,11 @@ export class HttpClient {
     headers?: HeadersInitValue,
     options?: HttpClientOptions,
   ): Promise<ReadableStream<Uint8Array>> {
-    const { absoluteUrl = false, skipBlocksKey = false, withCredentials = true } = options || {};
+    const {
+      absoluteUrl = false,
+      skipBlocksKey = false,
+      withCredentials = true,
+    } = options || {};
 
     const fullUrl = absoluteUrl ? url : `${this.baseURL}${url}`;
     const normalizedHeaders = this.normalizeHeaders(headers, skipBlocksKey);
@@ -269,4 +291,3 @@ export class HttpClient {
     return response.body;
   }
 }
-
