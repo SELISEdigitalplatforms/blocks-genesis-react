@@ -29,7 +29,7 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
       lightModeIcon: IamIconLight,
     },
     clientId: "BLOCKS_IAM_CLIENT_ID",
-    redirectUri: "BLOCKS_AGENTS_CALLBACK_URL",
+    redirectUri: "BLOCKS_IAM_CALLBACK_URL",
     initiateUrl: "",
     isLoading: false,
   },
