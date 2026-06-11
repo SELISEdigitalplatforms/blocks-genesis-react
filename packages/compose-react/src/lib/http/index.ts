@@ -92,7 +92,7 @@ export class HttpClient {
       useProjectStore.getState().reset();
       queryClient.cancelQueries();
       queryClient.clear();
-      if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+      if (typeof window !== "undefined" && !window.location.pathname.includes("login")) {
         window.location.replace("/login");
       }
     } finally {
