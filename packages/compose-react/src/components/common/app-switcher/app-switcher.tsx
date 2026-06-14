@@ -4,15 +4,17 @@ import {
   PopoverTrigger,
 } from "@/components/core/popover/popover";
 import { useTheme } from "@/hooks/use-theme";
-import { useBlocksAppConfigStore, type RuntimeKey } from "@/layouts/blocksapp-layout";
+import {
+  useBlocksAppConfigStore,
+  type RuntimeKey,
+} from "@/layouts/blocksapp-layout";
 import { getRuntimeEnv } from "@/lib/runtime-env";
-import { cn } from "@/lib/utils";
-import { Grip as LucideGrip } from "lucide-react";
+import { cn, getForwardedToPath } from "@/lib/utils";
+import { Grip } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { APP_SWITCHER_DATA } from "./app-switcher.constant";
 import type { ServiceName } from "@/store";
-
-const Grip = LucideGrip as any;
+import type { ForwardToPaths } from "@/types";
 
 export interface BlocksApp {
   key: ServiceName;
@@ -46,8 +48,9 @@ const AppTile = ({ app, isLoading }: AppTileProps) => {
       onClick={isLoading ? (e) => e.preventDefault() : undefined}
       className={cn(
         "hover:bg-accent focus-visible:ring-ring group flex flex-col items-center gap-2 rounded-xl p-3 text-center transition-colors focus-visible:outline-none focus-visible:ring-2",
-        isLoading && "pointer-events-none opacity-50 cursor-default"
-)}    >
+        isLoading && "pointer-events-none opacity-50 cursor-default",
+      )}
+    >
       <div className="flex h-12 w-12 items-center justify-center overflow-hidden">
         {typeof icon === "string" ? (
           <img
@@ -67,10 +70,11 @@ const AppTile = ({ app, isLoading }: AppTileProps) => {
 };
 
 type AppSwitcherProps = {
-  forwardedTo: string;
+  forwardedTo?: ForwardToPaths;
 };
 
 export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
+  const resolvedForwardedTo = forwardedTo ?? getForwardedToPath();
   const [open, setOpen] = useState(false);
   const [redirectUrls, setRedirectUrls] = useState<Record<string, string>>({});
   const isRedirecting = useRef(false);
@@ -84,7 +88,7 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
         const clientId = getRuntimeEnv(app.clientId);
         const redirectUri = getRuntimeEnv(app.redirectUri);
 
-        const initiateUrl = `${iamBaseUrl}/api/idp/initiate?x-blocks-key=${blocksKey}&clientId=${clientId}&redirectUri=${redirectUri}&forwardedTo=${forwardedTo}`;
+        const initiateUrl = `${iamBaseUrl}/api/idp/initiate?x-blocks-key=${blocksKey}&clientId=${clientId}&redirectUri=${redirectUri}&forwardedTo=${resolvedForwardedTo}`;
         const headers: Record<string, string> = {};
         if (blocksKey) headers["X-Blocks-Key"] = blocksKey;
 
@@ -94,17 +98,21 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
           return data.redirect_uri as string;
         }
       } catch (error) {
-        console.error(`[AppSwitcher] Failed to get redirect URL for ${app.key}:`, error);
+        console.error(
+          `[AppSwitcher] Failed to get redirect URL for ${app.key}:`,
+          error,
+        );
       }
 
       return null;
     },
-    [forwardedTo],
+    [resolvedForwardedTo],
   );
 
-  const filteredApps = useMemo(() => APP_SWITCHER_DATA.filter((app) => app.key !== config.name), [config.name]);
-
-
+  const filteredApps = useMemo(
+    () => APP_SWITCHER_DATA.filter((app) => app.key !== config.name),
+    [config.name],
+  );
 
   useEffect(() => {
     if (isRedirecting.current || !open) return;
@@ -130,13 +138,15 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
     });
   }, [getRedirectUrl, open, filteredApps]);
 
-const blocksApps = useMemo(() => {
-  return filteredApps.map((app) => ({
-    ...app,
-    initiateUrl: redirectUrls[app.key] ?? app.initiateUrl,
-    isLoading: !redirectUrls[app.key],
-  })).sort((a, b) => a.label.localeCompare(b.label));
-}, [redirectUrls, filteredApps]);
+  const blocksApps = useMemo(() => {
+    return filteredApps
+      .map((app) => ({
+        ...app,
+        initiateUrl: redirectUrls[app.key] ?? app.initiateUrl,
+        isLoading: !redirectUrls[app.key],
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [redirectUrls, filteredApps]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

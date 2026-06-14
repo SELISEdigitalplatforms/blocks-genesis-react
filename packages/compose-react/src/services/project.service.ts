@@ -1,4 +1,3 @@
-import { useBlocksAppConfigStore } from "@/layouts";
 import { HttpClient } from "@/lib/http";
 
 export interface IProject {
@@ -40,7 +39,7 @@ export interface IProjectGroup {
 
 const http = new HttpClient({
   baseURL: window?.process?.env?.BLOCKS_API_BASE_URL || "",
-  blocksKey: window?.process?.env?.BLOCKS_X_BLOCKS_KEY,
+  blocksKey: window?.process?.env?.BLOCKS_X_BLOCKS_KEY || "",
 });
 
 const PROJECT_SUBPATH = "Project";

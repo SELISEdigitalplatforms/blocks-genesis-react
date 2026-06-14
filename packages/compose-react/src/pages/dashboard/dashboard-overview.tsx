@@ -1,11 +1,8 @@
-import * as React from "react";
-
+import { ProjectDetail } from "@/components/common/project/detail";
 import { useGetProject } from "@/hooks/use-project";
 import { useProjectStore } from "@/store/project.store";
-import { ProjectDetail } from "@/components/common/project-detail/project-detail";
 
 export const DashboardOverview = () => {
-  const projectKey = useProjectStore().selectedProject?.tenantId || "";
   const { itemId } = useProjectStore().selectedProject || {
     itemId: "",
     tenantId: "",

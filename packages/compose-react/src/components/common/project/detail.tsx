@@ -1,12 +1,3 @@
-// import { ReactNode } from "react";
-// import { CopyToClipboardButton } from "@/components/copy-to-clipboard-button";
-// import { Button } from "@/components/ui-kits/button/button";
-// import { formatFullDate } from "@/lib/utils";
-// import { Skeleton } from "@/components/ui-kits/skeleton/skeleton";
-// import { MaskedText } from "@/components/masked-text";
-// import { IProject } from "@blocks-identifier/models/project.model";
-// import { getProjectBlocksApiUrl } from "@/lib/domain";
-
 import {
   Button,
   CopyToClipboardButton,
@@ -15,9 +6,9 @@ import {
   Skeleton,
 } from "@/index";
 import type { IProject } from "@/services/project.service";
-import { environmentOptions } from "../../../constants/environment-options";
+import { environmentOptions } from "@/constants/environment-options";
 import type { ReactNode } from "react";
-import { getProjectBlocksApiUrl } from "../../../lib/domain";
+import { getProjectBlocksApiUrl } from "@/lib/domain";
 
 interface ProjectDetailItemProps {
   label: string;
@@ -75,7 +66,8 @@ export const ProjectDetail = ({
           <div className="flex h-6 items-center gap-2">
             <CopyToClipboardButton
               textToCopy={project?.tenantId || ""}
-              isHoverable>
+              isHoverable
+            >
               <MaskedText
                 text={project?.tenantId || ""}
                 showFirstN={3}
@@ -90,7 +82,8 @@ export const ProjectDetail = ({
             <div className="flex h-6 items-center gap-2">
               <CopyToClipboardButton
                 textToCopy={project?.tenantSlug || ""}
-                isHoverable>
+                isHoverable
+              >
                 {project?.tenantSlug}
               </CopyToClipboardButton>
             </div>
@@ -105,7 +98,8 @@ export const ProjectDetail = ({
             <Button
               className="h-6 rounded-xl bg-blocks-btn-secondary hover:bg-blocks-btn-secondary/80"
               size="sm"
-              variant="secondary">
+              variant="secondary"
+            >
               {
                 environmentOptions.find(
                   (option) => option.value === project?.environment,

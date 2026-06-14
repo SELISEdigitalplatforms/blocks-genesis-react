@@ -3,13 +3,18 @@ import { useQuery } from "@tanstack/react-query";
 import { projectService } from "@/services/project.service";
 import { useProjectStore } from "@/store/project.store";
 
-export const useGetProjects = (tenantGroupId = "") => {
+export const useGetProjects = (options: { tenantGroupId?: string }) => {
   const setProjects = useProjectStore((state) => state.setProjects);
   const projectBaseUrl = window?.process?.env?.projectBaseUrl || "";
   const query = useQuery({
-    queryKey: ["identifier", "projects", tenantGroupId],
+    queryKey: ["identifier", "projects", options?.tenantGroupId],
     queryFn: () =>
-      projectService.getProjects(projectBaseUrl, 0, 100, tenantGroupId),
+      projectService.getProjects(
+        projectBaseUrl,
+        0,
+        100,
+        options?.tenantGroupId,
+      ),
   });
 
   useEffect(() => {

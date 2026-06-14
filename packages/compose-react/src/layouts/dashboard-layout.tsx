@@ -1,33 +1,50 @@
+import { DashboardHeader, SidebarMenuDesktop } from "@/components";
+import {
+  ImpersonationChecker,
+  ImpersonationSynchronizer,
+} from "@/guards/impersonation-guard";
 import type * as React from "react";
-import { ProtectedGuard } from "../guards/protected-guard";
+import type { LayoutProps } from "./layout.types";
+import { DashboardLayoutProvider } from "@/contexts/dashboard-layout/dashboard-layout-provider";
 
-import { ImpersonationChecker, ImpersonationTerminator } from "../guards/impersonation-guard";
-
-export interface DashboardLayoutProps {
+export interface DashboardLayoutProps extends LayoutProps {
   children?: React.ReactNode;
-  sidebar?: React.ReactNode;
-  header?: React.ReactNode;
   wrapper?: (content: React.ReactNode) => React.ReactNode;
 }
 
-export function DashboardLayout({ children, sidebar, header, wrapper }: DashboardLayoutProps) {
+export function DashboardLayout({
+  children,
+  wrapper,
+  redirectPaths,
+  navigationMenus,
+  forwardedTo,
+}: DashboardLayoutProps) {
   const content = (
-    <div className="relative flex h-screen bg-[hsl(var(--surface-app))]">
-      {sidebar}
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        {header}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden">{children}</main>
+    <DashboardLayoutProvider isOpen={true} persist>
+      <div className="relative flex h-screen bg-[hsl(var(--surface-app))]">
+        <SidebarMenuDesktop
+          redirectPaths={redirectPaths}
+          navigationMenus={navigationMenus}
+        />
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+          <DashboardHeader
+            redirectPaths={redirectPaths}
+            navigationMenus={navigationMenus}
+            forwardedTo={forwardedTo}
+          />
+          <main className="flex-1 overflow-y-auto overflow-x-hidden">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </DashboardLayoutProvider>
   );
 
   return (
-    <ProtectedGuard>
-      <ImpersonationChecker>
-        {/* <ImpersonationSynchronizer> */}
+    <ImpersonationChecker>
+      <ImpersonationSynchronizer>
         {wrapper ? wrapper(content) : content}
-        {/* </ImpersonationSynchronizer> */}
-      </ImpersonationChecker>
-    </ProtectedGuard>
+      </ImpersonationSynchronizer>
+    </ImpersonationChecker>
   );
 }
