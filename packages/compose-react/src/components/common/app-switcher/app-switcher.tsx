@@ -63,7 +63,7 @@ const AppTile = ({ app, isLoading }: AppTileProps) => {
         )}
       </div>
       <span className="text-foreground line-clamp-1 max-w-[90px] text-[12px] font-medium leading-tight">
-        {isLoading ? "Opening…" : app.label}
+        {isLoading ? "Loading…" : app.label}
       </span>
     </a>
   );
