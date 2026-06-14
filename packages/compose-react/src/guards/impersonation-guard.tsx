@@ -10,9 +10,14 @@ import { useImpersonateStore, useProjectStore } from "@/store";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { projectService } from "@/services/project.service";
 
-export const ImpersonationChecker = ({ children }: { children: React.ReactNode }) => {
+export const ImpersonationChecker = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const { data, isLoading, isSuccess } = useImpersonationStatusChecker();
-  const { setImpersonation, isInitialized, setInitialized } = useImpersonateStore();
+  const { setImpersonation, isInitialized, setInitialized } =
+    useImpersonateStore();
 
   useEffect(() => {
     if (!data) return;
@@ -28,7 +33,11 @@ export const ImpersonationChecker = ({ children }: { children: React.ReactNode }
   return <>{children}</>;
 };
 
-export function ImpersonationTerminator({ children }: { children: React.ReactNode }) {
+export function ImpersonationTerminator({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { terminate, isImpersonated } = useImpersonateStore();
   const { mutateAsync } = useStopImpersonation();
   const isTriggering = useRef(false);
@@ -51,12 +60,18 @@ export function ImpersonationTerminator({ children }: { children: React.ReactNod
   return <>{children}</>;
 }
 
-export function ImpersonationSynchronizer({ children }: { children: React.ReactNode }) {
-  const { impersonate, isImpersonated, impersonatedTenantId } = useImpersonateStore();
+export function ImpersonationSynchronizer({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { impersonate, isImpersonated, impersonatedTenantId } =
+    useImpersonateStore();
   const { mutateAsync } = useStartImpersonation();
-  const { data: _data } = useGetProjects();
+  const { data: _data } = useGetProjects({});
 
-  const { selectedProject, setSelectedProject, projects, setTenantGroup } = useProjectStore();
+  const { selectedProject, setSelectedProject, projects, setTenantGroup } =
+    useProjectStore();
   const isTriggering = useRef(false);
   const [isImpersonating, setIsImpersonating] = useState(false);
 
@@ -74,7 +89,9 @@ export function ImpersonationSynchronizer({ children }: { children: React.ReactN
     setIsImpersonating(true);
     try {
       if (impersonatedTenantId) {
-        let project = projects.find((project) => project.tenantId === impersonatedTenantId);
+        let project = projects.find(
+          (project) => project.tenantId === impersonatedTenantId,
+        );
         if (!project) project = await getProject(impersonatedTenantId);
         if (!project) {
           isTriggering.current = false;

@@ -5,3 +5,4 @@ export * from "./oidc-layout";
 export * from "./project-overview-layout";
 export * from "./public-layout";
 export * from "./blocksapp-layout";
+export * from "./layout.types";

@@ -1,74 +1,22 @@
-import { ChevronRight, Hourglass } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { Card, CardHeader, CardTitle } from "@/components/core/card/card";
-import { useProjectStore } from "@/store/project.store";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/core/tooltip/tooltip";
-import type { IProject } from "@/services/project.service";
+import { environmentOptions } from "@/constants/environment-options";
 import { useStartImpersonation } from "@/hooks/use-auth-api";
+import type { IProject } from "@/services/project.service";
+import { useProjectStore } from "@/store/project.store";
+import { ChevronRightIcon, HourglassIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 type EnvironmentCardProps = {
   project: IProject;
   isMigrationOngoing?: boolean;
   className?: string;
 };
-
-export const environmentOptions = [
-  {
-    index: 0,
-    label: "Development",
-    value: "dev",
-    subtext: "For day-to-day development and testing unstable changes.",
-  },
-  {
-    index: 1,
-    label: "Testing",
-    value: "test",
-    subtext: "For QA testing and validation of new features.",
-  },
-  {
-    index: 2,
-    label: "Staging",
-    value: "stg",
-    subtext: "For final pre-prod validation in a near-production replica.",
-  },
-  {
-    index: 3,
-    label: "IAT",
-    value: "iat",
-    subtext: "For testing service integrations across modules/systems.",
-  },
-  {
-    index: 4,
-    label: "UAT",
-    value: "uat",
-    subtext: "For end-user or stakeholder validation of new features.",
-  },
-  {
-    index: 5,
-    label: "Prod Shadow",
-    value: "prod-shadow",
-    subtext:
-      "For mirroring production data/traffic to validate changes invisibly.",
-  },
-  {
-    index: 6,
-    label: "Pre-Prod",
-    value: "pre-prod",
-    subtext:
-      "For load testing, security checks, or final sanity tests before production.",
-  },
-  {
-    index: 7,
-    label: "Production",
-    value: "prod",
-    subtext: "The live environment serving actual users.",
-  },
-];
 
 export const EnvironmentCard = ({
   project,
@@ -90,13 +38,12 @@ export const EnvironmentCard = ({
       console.log("Failed to switch environment", err);
     }
   };
-  const HourglassIcon = Hourglass as any;
-  const ChevronRightIcon = ChevronRight as any;
 
   return (
     <Card
       onClick={handleCardClick}
-      className={`group flex min-h-[70px] cursor-pointer flex-col justify-between rounded-sm p-4 shadow-none transition-shadow duration-200 hover:shadow-md ${className}`}>
+      className={`group flex min-h-[70px] cursor-pointer flex-col justify-between rounded-sm p-4 shadow-none transition-shadow duration-200 hover:shadow-md ${className}`}
+    >
       <CardHeader className="flex flex-row justify-between !p-0">
         <CardTitle className="line-clamp-1 break-all text-lg leading-tight">
           <div className="flex w-fit flex-row items-center gap-1">
