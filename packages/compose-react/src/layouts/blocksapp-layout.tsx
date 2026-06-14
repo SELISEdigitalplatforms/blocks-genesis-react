@@ -1,10 +1,13 @@
-import { CreateAppConfigStore, type AppConfigStoreState } from "@/store/app-config-store";
+import {
+  CreateAppConfigStore,
+  type AppConfigStoreState,
+} from "@/store/app-config.store";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useStore, type StoreApi } from "zustand";
 
-export const BlocksAppLayoutContext = createContext<StoreApi<AppConfigStoreState> | undefined>(
-  undefined,
-);
+export const BlocksAppLayoutContext = createContext<
+  StoreApi<AppConfigStoreState> | undefined
+>(undefined);
 
 type BlocksAppLayoutProps = {
   children: React.ReactNode;
@@ -69,8 +72,10 @@ window.process = { env: window.__BLOCKS_ENV__ as Record<string, string> };
 export const BlocksAppLayout = ({ children, config }: BlocksAppLayoutProps) => {
   const [store] = useState(() => CreateAppConfigStore(config));
   if (window && window.process && config) {
-    const projectBaseUrlKey = (config.projectBaseUrlKey as RuntimeKey) ?? "BLOCKS_OS_API_BASE_URL";
-    window.process.env.projectBaseUrl = window.process.env[projectBaseUrlKey] ?? "";
+    const projectBaseUrlKey =
+      (config.projectBaseUrlKey as RuntimeKey) ?? "BLOCKS_OS_API_BASE_URL";
+    window.process.env.projectBaseUrl =
+      window.process.env[projectBaseUrlKey] ?? "";
 
     const userBaseUrlKey = config.userBaseUrlKey as RuntimeKey;
     window.process.env["userBaseUrl"] = userBaseUrlKey
@@ -78,15 +83,21 @@ export const BlocksAppLayout = ({ children, config }: BlocksAppLayoutProps) => {
       : "";
   }
   return (
-    <BlocksAppLayoutContext.Provider value={store}>{children}</BlocksAppLayoutContext.Provider>
+    <BlocksAppLayoutContext.Provider value={store}>
+      {children}
+    </BlocksAppLayoutContext.Provider>
   );
 };
 
-export const useBlocksAppConfigStore = <T,>(selector: (state: AppConfigStoreState) => T): T => {
+export const useBlocksAppConfigStore = <T,>(
+  selector: (state: AppConfigStoreState) => T,
+): T => {
   const context = useContext(BlocksAppLayoutContext);
 
   if (!context) {
-    throw new Error("useBlocksAppConfigStore must be used within a BlocksAppLayout");
+    throw new Error(
+      "useBlocksAppConfigStore must be used within a BlocksAppLayout",
+    );
   }
   return useStore(context, selector);
 };

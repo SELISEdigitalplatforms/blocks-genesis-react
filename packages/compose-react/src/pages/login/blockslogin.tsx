@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Badge } from "@/components/core/badge";
 import { Button } from "@/components/core/button";
-import { LoginHeader } from "@/components/login-header/login-header";
+import { LoginHeader } from "@/components/common/login-header/login-header";
 
 export interface BlocksProduct {
   name: string;
@@ -109,7 +109,10 @@ export const BlocksLoginPage = ({
   const [keywordVisible, setKeywordVisible] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const resolvedKeywords = useMemo(() => derivedKeywords ?? [], [derivedKeywords]);
+  const resolvedKeywords = useMemo(
+    () => derivedKeywords ?? [],
+    [derivedKeywords],
+  );
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -147,8 +150,13 @@ export const BlocksLoginPage = ({
       l /= 100;
       const k = (n: number) => (n + hue / 30) % 12;
       const a = s * Math.min(l, 1 - l);
-      const f = (n: number) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
-      return [Math.round(f(0) * 255), Math.round(f(8) * 255), Math.round(f(4) * 255)];
+      const f = (n: number) =>
+        l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+      return [
+        Math.round(f(0) * 255),
+        Math.round(f(8) * 255),
+        Math.round(f(4) * 255),
+      ];
     };
 
     const draw = () => {
@@ -162,21 +170,42 @@ export const BlocksLoginPage = ({
       ctx.clearRect(0, 0, w / dpr, h / dpr);
 
       const r1 = (Math.max(w, h) / dpr) * 0.6;
-      const g1 = ctx.createRadialGradient(cx * 0.6, cy * 0.7, 0, cx * 0.6, cy * 0.7, r1);
+      const g1 = ctx.createRadialGradient(
+        cx * 0.6,
+        cy * 0.7,
+        0,
+        cx * 0.6,
+        cy * 0.7,
+        r1,
+      );
       g1.addColorStop(0, `rgba(${c1[0]},${c1[1]},${c1[2]},0.18)`);
       g1.addColorStop(1, `rgba(${c1[0]},${c1[1]},${c1[2]},0)`);
       ctx.fillStyle = g1;
       ctx.fillRect(0, 0, w / dpr, h / dpr);
 
       const r2 = (Math.max(w, h) / dpr) * 0.5;
-      const g2 = ctx.createRadialGradient(cx * 1.3, cy * 0.4, 0, cx * 1.3, cy * 0.4, r2);
+      const g2 = ctx.createRadialGradient(
+        cx * 1.3,
+        cy * 0.4,
+        0,
+        cx * 1.3,
+        cy * 0.4,
+        r2,
+      );
       g2.addColorStop(0, `rgba(${c2[0]},${c2[1]},${c2[2]},0.12)`);
       g2.addColorStop(1, `rgba(${c2[0]},${c2[1]},${c2[2]},0)`);
       ctx.fillStyle = g2;
       ctx.fillRect(0, 0, w / dpr, h / dpr);
 
       const r3 = (Math.max(w, h) / dpr) * 0.45;
-      const g3 = ctx.createRadialGradient(cx * 0.3, cy * 1.2, 0, cx * 0.3, cy * 1.2, r3);
+      const g3 = ctx.createRadialGradient(
+        cx * 0.3,
+        cy * 1.2,
+        0,
+        cx * 0.3,
+        cy * 1.2,
+        r3,
+      );
       g3.addColorStop(0, `rgba(${c3[0]},${c3[1]},${c3[2]},0.10)`);
       g3.addColorStop(1, `rgba(${c3[0]},${c3[1]},${c3[2]},0)`);
       ctx.fillStyle = g3;
@@ -307,7 +336,9 @@ export const BlocksLoginPage = ({
           <p className="title-sub">{heroSubtitle}</p>
           <p className="keywords">
             {derivedKeywordPrefix}{" "}
-            <span className="keyword-anim" style={{ opacity: keywordVisible ? 1 : 0 }}>
+            <span
+              className="keyword-anim"
+              style={{ opacity: keywordVisible ? 1 : 0 }}>
               {resolvedKeywords[keywordIdx]}
             </span>
           </p>
@@ -327,11 +358,18 @@ export const BlocksLoginPage = ({
             <div className="button-container">
               <div className="button-ring" />
               <div className="button-ring" />
-              <Button className="launch-btn blocks-gradient" disabled={isLoading} onClick={onLogin}>
+              <Button
+                className="launch-btn blocks-gradient"
+                disabled={isLoading}
+                onClick={onLogin}>
                 {isLoading ? "Redirecting…" : loginLabel}
               </Button>
             </div>
-            <a href={docsUrl} target="_blank" rel="noreferrer" className="cta-docs">
+            <a
+              href={docsUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="cta-docs">
               View documentation
               <svg
                 width="12"
@@ -339,8 +377,7 @@ export const BlocksLoginPage = ({
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.5"
-              >
+                strokeWidth="2.5">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </a>
@@ -369,7 +406,9 @@ export const BlocksLoginPage = ({
                   ? (item as (typeof otherProducts)[number]).shortDescription
                   : (item as LoginCarouselItem).description;
                 const badge = item.badge;
-                const stacks = isCarouselProduct ? undefined : (item as LoginCarouselItem).stacks;
+                const stacks = isCarouselProduct
+                  ? undefined
+                  : (item as LoginCarouselItem).stacks;
                 const features = isCarouselProduct
                   ? (item as (typeof otherProducts)[number]).featureChips
                   : (item as LoginCarouselItem).features;
@@ -398,15 +437,17 @@ export const BlocksLoginPage = ({
                                 href={st.links[0]?.to ?? "#"}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="sdk-link"
-                              >
+                                className="sdk-link">
                                 {st.name}
                               </a>
                             ))}
                           {stacks
                             .filter((st) => !st.available)
                             .map((st) => (
-                              <Badge key={st.name} variant="outline" className="sdk-link dim">
+                              <Badge
+                                key={st.name}
+                                variant="outline"
+                                className="sdk-link dim">
                                 {st.name}
                               </Badge>
                             ))}
@@ -414,7 +455,10 @@ export const BlocksLoginPage = ({
                       ) : (
                         <div className="sdk-links">
                           {features.slice(0, 4).map((chip) => (
-                            <Badge key={chip} variant="outline" className="sdk-link dim">
+                            <Badge
+                              key={chip}
+                              variant="outline"
+                              className="sdk-link dim">
                               {chip}
                             </Badge>
                           ))}
@@ -423,7 +467,11 @@ export const BlocksLoginPage = ({
                     </div>
                     {url ? (
                       <div className="sdk-card-footer">
-                        <a href={url} target="_blank" rel="noreferrer" className="sdk-cta">
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="sdk-cta">
                           {cta}
                           <svg
                             width="10"
@@ -431,8 +479,7 @@ export const BlocksLoginPage = ({
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
-                            strokeWidth="2.5"
-                          >
+                            strokeWidth="2.5">
                             <path d="M5 12h14M12 5l7 7-7 7" />
                           </svg>
                         </a>
@@ -445,7 +492,11 @@ export const BlocksLoginPage = ({
           </div>
 
           <div className="sdk-footer">
-            <a href={footerLink.url} target="_blank" rel="noreferrer" className="visit-construct">
+            <a
+              href={footerLink.url}
+              target="_blank"
+              rel="noreferrer"
+              className="visit-construct">
               {footerLink.label}
               <svg
                 width="12"
@@ -453,8 +504,7 @@ export const BlocksLoginPage = ({
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.5"
-              >
+                strokeWidth="2.5">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </a>

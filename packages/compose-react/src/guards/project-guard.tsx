@@ -1,7 +1,7 @@
 import type * as React from "react";
 import { useEffect } from "react";
 import { redirect, useNavigate } from "react-router-dom";
-import { useProjectStore } from "../store/project-store";
+import { useProjectStore } from "../store/project.store";
 import { getRuntimeEnv } from "@/lib/runtime-env";
 import { HttpClient } from "@/lib/http";
 
@@ -10,7 +10,10 @@ interface ProjectGuardProps {
   fallbackPath?: string;
 }
 
-export function ProjectGuard({ children, fallbackPath = "/console" }: ProjectGuardProps) {
+export function ProjectGuard({
+  children,
+  fallbackPath = "/console",
+}: ProjectGuardProps) {
   const navigate = useNavigate();
   const { selectedProject } = useProjectStore();
 
@@ -29,11 +32,18 @@ export const http = new HttpClient({
   blocksKey: getRuntimeEnv("BLOCKS_X_BLOCKS_KEY") || "",
 });
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty-pattern
-export const UsePublic = async (all: { request: any; context: any }, next: any) => {
+export const UsePublic = async (
+  all: { request: any; context: any },
+  next: any,
+) => {
   try {
-    const res = await http.get(`https://dev-iam.blocksdevelopers.com/api/iam/me`, undefined, {
-      absoluteUrl: true,
-    });
+    const res = await http.get(
+      `https://dev-iam.blocksdevelopers.com/api/iam/me`,
+      undefined,
+      {
+        absoluteUrl: true,
+      },
+    );
     console.log("res", res);
     //  return redirect("/console")
   } catch (err) {

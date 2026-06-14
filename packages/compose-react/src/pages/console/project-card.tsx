@@ -7,9 +7,13 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/core/tooltip/tooltip";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/core/popover/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/core/popover/popover";
 
-import { useProjectStore } from "@/store/project-store";
+import { useProjectStore } from "@/store/project.store";
 import { ChevronRight, Settings2 } from "lucide-react";
 import type { IProject } from "@/services/project.service";
 import { useStartImpersonation } from "@/hooks/use-auth-api";
@@ -56,13 +60,15 @@ export const environmentOptions = [
     index: 5,
     label: "Prod Shadow",
     value: "prod-shadow",
-    subtext: "For mirroring production data/traffic to validate changes invisibly.",
+    subtext:
+      "For mirroring production data/traffic to validate changes invisibly.",
   },
   {
     index: 6,
     label: "Pre-Prod",
     value: "pre-prod",
-    subtext: "For load testing, security checks, or final sanity tests before production.",
+    subtext:
+      "For load testing, security checks, or final sanity tests before production.",
   },
   {
     index: 7,
@@ -85,7 +91,9 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
   const onEnvBadgeClick = async (e: React.MouseEvent, envProject: IProject) => {
     try {
       e.stopPropagation();
-      const res = await mutateAsync({ targeted_tenant_id: envProject.tenantId });
+      const res = await mutateAsync({
+        targeted_tenant_id: envProject.tenantId,
+      });
       setTenantGroup(envProject.tenantGroupId);
       setSelectedProject(envProject);
       navigate("/dashboard");
@@ -96,13 +104,14 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
   };
 
   const renderEnvChip = (envProject: IProject) => {
-    const label = environmentOptions.find((o) => o.value === envProject.environment)?.label;
+    const label = environmentOptions.find(
+      (o) => o.value === envProject.environment,
+    )?.label;
     return (
       <button
         key={envProject.environment}
         onClick={(e) => onEnvBadgeClick(e, envProject)}
-        className="group/chip border-primary bg-primary text-primary-foreground hover:text-primary inline-flex cursor-pointer items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium transition-all duration-150 hover:border-[hsl(var(--blocks-primary-50))] hover:bg-[hsl(var(--blocks-primary-25))] active:scale-95"
-      >
+        className="group/chip border-primary bg-primary text-primary-foreground hover:text-primary inline-flex cursor-pointer items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium transition-all duration-150 hover:border-[hsl(var(--blocks-primary-50))] hover:bg-[hsl(var(--blocks-primary-25))] active:scale-95">
         {label}
         <ChevronRight className="h-3 w-3 transition-all duration-150 group-hover/chip:translate-x-0.5" />
       </button>
@@ -110,7 +119,9 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
   };
 
   const hasOverflow = projects.length > INLINE_LIMIT;
-  const visibleProjects = hasOverflow ? projects.slice(0, INLINE_LIMIT) : projects;
+  const visibleProjects = hasOverflow
+    ? projects.slice(0, INLINE_LIMIT)
+    : projects;
   const overflowCount = projects.length - INLINE_LIMIT;
 
   return (
@@ -127,8 +138,7 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
                   size="icon"
                   variant="ghost"
                   className="text-primary hover:bg-primary/10 h-8 w-8 flex-shrink-0 transition-colors"
-                  onClick={onConfigureClick}
-                >
+                  onClick={onConfigureClick}>
                   <Settings2 size={16} />
                 </Button>
               </TooltipTrigger>
@@ -150,28 +160,29 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
                 <PopoverTrigger asChild>
                   <button
                     onClick={(e) => e.stopPropagation()}
-                    className="border-border/60 bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground inline-flex cursor-pointer items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors"
-                  >
+                    className="border-border/60 bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground inline-flex cursor-pointer items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors">
                     +{overflowCount} more
                   </button>
                 </PopoverTrigger>
                 <PopoverContent
                   className="w-52 p-1.5"
                   align="start"
-                  onClick={(e) => e.stopPropagation()}
-                >
+                  onClick={(e) => e.stopPropagation()}>
                   <p className="text-muted-foreground px-2 pb-1.5 pt-1 text-[10px] font-semibold uppercase tracking-wider">
                     All environments
                   </p>
                   {projects.map((p) => {
-                    const opt = environmentOptions.find((o) => o.value === p.environment);
+                    const opt = environmentOptions.find(
+                      (o) => o.value === p.environment,
+                    );
                     return (
                       <button
                         key={p.environment}
                         onClick={(e) => onEnvBadgeClick(e, p)}
-                        className="group/item hover:bg-accent flex w-full items-center justify-between rounded-md px-2 py-1.5 text-sm transition-colors"
-                      >
-                        <span className="font-medium">{opt?.label ?? p.environment}</span>
+                        className="group/item hover:bg-accent flex w-full items-center justify-between rounded-md px-2 py-1.5 text-sm transition-colors">
+                        <span className="font-medium">
+                          {opt?.label ?? p.environment}
+                        </span>
                         <ChevronRight className="text-muted-foreground group-hover/item:text-foreground h-3.5 w-3.5 transition-transform duration-150 group-hover/item:translate-x-0.5" />
                       </button>
                     );

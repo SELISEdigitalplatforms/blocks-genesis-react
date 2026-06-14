@@ -1,9 +1,9 @@
 import { Button } from "@/components/core/button";
 import { useLogout } from "@/hooks/use-auth-api";
-import { getQueryClient } from "@/providers/query-provider";
+import { getQueryClient } from "@/providers/query.provider";
 import { useAppSettingsStore } from "@/store";
-import { useAuthStore } from "@/store/auth-store";
-import { useProjectStore } from "@/store/project-store";
+import { useAuthStore } from "@/store/auth.store";
+import { useProjectStore } from "@/store/project.store";
 
 export function LogOutButton() {
   const queryClient = getQueryClient();
@@ -32,8 +32,7 @@ export function LogOutButton() {
       size="sm"
       className="text-error flex h-full w-full justify-start !p-0 hover:no-underline"
       disabled={isPending}
-      onClick={handleLogout}
-    >
+      onClick={handleLogout}>
       Logout
     </Button>
   );

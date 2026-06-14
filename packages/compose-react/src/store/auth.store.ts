@@ -1,4 +1,4 @@
-import type { BaseUser } from "../types/auth";
+import type { BaseUser } from "../types/auth.types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 

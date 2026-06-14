@@ -7,11 +7,17 @@
 // import { IProject } from "@blocks-identifier/models/project.model";
 // import { getProjectBlocksApiUrl } from "@/lib/domain";
 
-import { Button, CopyToClipboardButton, formatFullDate, MaskedText, Skeleton } from "@/index";
+import {
+  Button,
+  CopyToClipboardButton,
+  formatFullDate,
+  MaskedText,
+  Skeleton,
+} from "@/index";
 import type { IProject } from "@/services/project.service";
-import { environmentOptions } from "../../constants/environment-options";
+import { environmentOptions } from "../../../constants/environment-options";
 import type { ReactNode } from "react";
-import { getProjectBlocksApiUrl } from "../../lib/domain";
+import { getProjectBlocksApiUrl } from "../../../lib/domain";
 
 interface ProjectDetailItemProps {
   label: string;
@@ -67,15 +73,24 @@ export const ProjectDetail = ({
         <ProjectDetailItem label="Name">{project?.name}</ProjectDetailItem>
         <ProjectDetailItem label="X-Blocks-Key">
           <div className="flex h-6 items-center gap-2">
-            <CopyToClipboardButton textToCopy={project?.tenantId || ""} isHoverable>
-              <MaskedText text={project?.tenantId || ""} showFirstN={3} showLastN={3} length={20} />
+            <CopyToClipboardButton
+              textToCopy={project?.tenantId || ""}
+              isHoverable>
+              <MaskedText
+                text={project?.tenantId || ""}
+                showFirstN={3}
+                showLastN={3}
+                length={20}
+              />
             </CopyToClipboardButton>
           </div>
         </ProjectDetailItem>
         {project?.tenantSlug && (
           <ProjectDetailItem label="Project Slug">
             <div className="flex h-6 items-center gap-2">
-              <CopyToClipboardButton textToCopy={project?.tenantSlug || ""} isHoverable>
+              <CopyToClipboardButton
+                textToCopy={project?.tenantSlug || ""}
+                isHoverable>
                 {project?.tenantSlug}
               </CopyToClipboardButton>
             </div>
@@ -90,9 +105,12 @@ export const ProjectDetail = ({
             <Button
               className="h-6 rounded-xl bg-blocks-btn-secondary hover:bg-blocks-btn-secondary/80"
               size="sm"
-              variant="secondary"
-            >
-              {environmentOptions.find((option) => option.value === project?.environment)?.label}
+              variant="secondary">
+              {
+                environmentOptions.find(
+                  (option) => option.value === project?.environment,
+                )?.label
+              }
             </Button>
           )}
         </ProjectDetailItem>
@@ -102,10 +120,12 @@ export const ProjectDetail = ({
           </div>
         </ProjectDetailItem>
         <ProjectDetailItem label="Last updated Date">
-          {project?.lastUpdatedDate && formatFullDate(new Date(project.lastUpdatedDate))}
+          {project?.lastUpdatedDate &&
+            formatFullDate(new Date(project.lastUpdatedDate))}
         </ProjectDetailItem>
         <ProjectDetailItem label="Created Date">
-          {project?.createdDate && formatFullDate(new Date(project.createdDate))}
+          {project?.createdDate &&
+            formatFullDate(new Date(project.createdDate))}
         </ProjectDetailItem>
       </div>
     </div>

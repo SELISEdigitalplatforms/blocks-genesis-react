@@ -1,7 +1,7 @@
 import type * as React from "react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../store/auth-store";
+import { useAuthStore } from "../store/auth.store";
 
 export const useAppState = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -18,7 +18,10 @@ export type PublicGuardProps = {
   defaultProtectedPath?: string;
 };
 
-export function PublicGuard({ children,  defaultProtectedPath = "/console" }: PublicGuardProps) {
+export function PublicGuard({
+  children,
+  defaultProtectedPath = "/console",
+}: PublicGuardProps) {
   const { isAuthenticated } = useAuthStore();
   const { isMounted } = useAppState();
   const navigate = useNavigate();

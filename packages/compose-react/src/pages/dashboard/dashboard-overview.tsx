@@ -1,9 +1,8 @@
-
 import * as React from "react";
 
 import { useGetProject } from "@/hooks/use-project";
-import { useProjectStore } from "@/store/project-store";
-import { ProjectDetail } from "@/components/project-detail/project-detail";
+import { useProjectStore } from "@/store/project.store";
+import { ProjectDetail } from "@/components/common/project-detail/project-detail";
 
 export const DashboardOverview = () => {
   const projectKey = useProjectStore().selectedProject?.tenantId || "";
@@ -12,8 +11,6 @@ export const DashboardOverview = () => {
     tenantId: "",
   };
   const { data, isLoading } = useGetProject({ projectId: itemId });
-
-
 
   return (
     <main className="flex flex-col gap-6 p-6">
