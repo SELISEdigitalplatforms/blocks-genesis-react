@@ -1,2 +1,2 @@
-export * from "./auth";
-export * from "./navigation";
+export * from "./auth.types";
+export * from "./navigation.types";

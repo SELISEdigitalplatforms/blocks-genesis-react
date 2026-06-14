@@ -1,6 +1,6 @@
 import { useBlocksAppConfigStore } from "@/index";
-import { ThemeSwitcher } from "../common";
-import { Logo } from "../common/logo";
+import { ThemeSwitcher } from "..";
+import { Logo } from "../logo";
 
 export type LoginHeaderProps = {
   docsUrl?: string;
@@ -42,10 +42,18 @@ export const LoginHeader = ({
         <a href={docsUrl} target="_blank" rel="noreferrer" className="nav-link">
           Docs
         </a>
-        <a href={blocksUrl} target="_blank" rel="noreferrer" className="nav-link">
+        <a
+          href={blocksUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="nav-link">
           Blocks
         </a>
-        <a href={githubUrl} target="_blank" rel="noreferrer" className="nav-link">
+        <a
+          href={githubUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="nav-link">
           GitHub
         </a>
         <ThemeSwitcher />

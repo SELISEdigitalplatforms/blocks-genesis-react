@@ -1,6 +1,9 @@
 import type { AuthTokenPair } from "@/types";
 
-export type HeadersInitValue = [string, string][] | Record<string, string> | Headers;
+export type HeadersInitValue =
+  | [string, string][]
+  | Record<string, string>
+  | Headers;
 export type RequestBody =
   | string
   | object
@@ -34,7 +37,7 @@ export interface RequestQueueItem<T> {
 
 export interface HttpClientConfig {
   baseURL: string;
-  blocksKey?: string;
+  blocksKey: string;
   onTokenRefresh?: () => Promise<AuthTokenPair>;
   onUnauthorized?: (error: unknown) => void;
 }

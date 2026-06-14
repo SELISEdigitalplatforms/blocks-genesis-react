@@ -1,7 +1,7 @@
 import { ChevronRight, Hourglass } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardHeader, CardTitle } from "@/components/core/card/card";
-import { useProjectStore } from "@/store/project-store";
+import { useProjectStore } from "@/store/project.store";
 import {
   Tooltip,
   TooltipContent,
@@ -52,13 +52,15 @@ export const environmentOptions = [
     index: 5,
     label: "Prod Shadow",
     value: "prod-shadow",
-    subtext: "For mirroring production data/traffic to validate changes invisibly.",
+    subtext:
+      "For mirroring production data/traffic to validate changes invisibly.",
   },
   {
     index: 6,
     label: "Pre-Prod",
     value: "pre-prod",
-    subtext: "For load testing, security checks, or final sanity tests before production.",
+    subtext:
+      "For load testing, security checks, or final sanity tests before production.",
   },
   {
     index: 7,
@@ -94,13 +96,16 @@ export const EnvironmentCard = ({
   return (
     <Card
       onClick={handleCardClick}
-      className={`group flex min-h-[70px] cursor-pointer flex-col justify-between rounded-sm p-4 shadow-none transition-shadow duration-200 hover:shadow-md ${className}`}
-    >
+      className={`group flex min-h-[70px] cursor-pointer flex-col justify-between rounded-sm p-4 shadow-none transition-shadow duration-200 hover:shadow-md ${className}`}>
       <CardHeader className="flex flex-row justify-between !p-0">
         <CardTitle className="line-clamp-1 break-all text-lg leading-tight">
           <div className="flex w-fit flex-row items-center gap-1">
             <div className="text-medium-emphasis text-base">
-              {environmentOptions.find((option) => option.value === project?.environment)?.label}
+              {
+                environmentOptions.find(
+                  (option) => option.value === project?.environment,
+                )?.label
+              }
             </div>
             {isMigrationOngoing && (
               <TooltipProvider>
@@ -120,8 +125,12 @@ export const EnvironmentCard = ({
       </CardHeader>
       <div className="mt-2">
         <div className="flex flex-wrap items-center gap-1.5 py-0.5 text-xs sm:py-1 md:py-1.5">
-          <span className="text-muted-foreground font-semibold">X-Blocks-Key:</span>
-          <span className="text-muted-foreground truncate font-mono">{project?.tenantId}</span>
+          <span className="text-muted-foreground font-semibold">
+            X-Blocks-Key:
+          </span>
+          <span className="text-muted-foreground truncate font-mono">
+            {project?.tenantId}
+          </span>
         </div>
       </div>
     </Card>

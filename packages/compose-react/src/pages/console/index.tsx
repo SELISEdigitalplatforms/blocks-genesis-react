@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useProjectStore } from "@/store/project-store";
+import { useProjectStore } from "@/store/project.store";
 import { DefaultDoc } from "./default-doc";
 import { SelfProject } from "./self-project";
 

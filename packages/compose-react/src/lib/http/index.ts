@@ -24,7 +24,7 @@ export class HttpClient {
 
   constructor(config: HttpClientConfig) {
     this.baseURL = config.baseURL;
-    this.blocksKey = config.blocksKey ?? "";
+    this.blocksKey = config.blocksKey;
     this.onTokenRefresh = config.onTokenRefresh;
     this.onUnauthorized = config.onUnauthorized;
   }
@@ -105,9 +105,12 @@ export class HttpClient {
       useProjectStore.getState().reset();
       queryClient.cancelQueries();
       queryClient.clear();
-      // if (typeof window !== "undefined" && !window.location.pathname.includes("login")) {
-      //   window.location.replace("/login");
-      // }
+      if (
+        typeof window !== "undefined" &&
+        !window.location.pathname.includes("login")
+      ) {
+        window.location.replace("/login");
+      }
     } finally {
       isRefreshing = false;
       requestQueue = [];
