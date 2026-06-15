@@ -1,36 +1,30 @@
-import { useFilteredMenus } from "@/hooks/use-filtered-menus";
-import { useTheme } from "@/hooks/use-theme";
-import { cn } from "@/lib/utils";
-import { PanelLeft } from "lucide-react";
-import { Fragment, useContext, useMemo } from "react";
-import { Link, useLocation } from "react-router-dom";
-import type { SideBarMenuProps } from "./types";
 import {
   Button,
   DesktopMenuItem,
   EnvironmentList,
+  Logo,
   ProjectList,
   Separator,
 } from "@/components";
 import { SidebarContext } from "@/contexts/dashboard-layout";
+import { useFilteredMenus } from "@/hooks/use-filtered-menus";
+import { useLogo } from "@/hooks/use-logo";
+import { cn } from "@/lib/utils";
+import { PanelLeft } from "lucide-react";
+import { Fragment, useContext } from "react";
+import { Link, useLocation } from "react-router-dom";
+import type { SideBarMenuProps } from "./types";
 
 export function SidebarMenuDesktop({
   redirectPaths,
   navigationMenus,
 }: SideBarMenuProps) {
   const { isSidebarOpen, toggleSidebar } = useContext(SidebarContext);
-  const { resolvedTheme } = useTheme();
+  const { appLightLogo, appDarkLogo } = useLogo();
   const allowedMenu = useFilteredMenus(navigationMenus);
   const { pathname } = useLocation();
 
   const isProjectOverviewRoute = pathname.startsWith("/project-overview");
-
-  const getLogoSrc = useMemo(() => {
-    if (isSidebarOpen) {
-      return resolvedTheme === "dark" ? "/Logo_Dark.svg" : "/Logo_Light.svg";
-    }
-    return resolvedTheme === "dark" ? "/Icon_Dark.svg" : "/Icon_Light.svg";
-  }, [isSidebarOpen, resolvedTheme]);
 
   return (
     <div
@@ -44,8 +38,9 @@ export function SidebarMenuDesktop({
             isSidebarOpen ? "h-[36px] w-[72px]" : "h-8 w-8",
           )}
         >
-          <img
-            src={getLogoSrc}
+          <Logo
+            lightSrc={appLightLogo}
+            darkSrc={appDarkLogo}
             alt="Logo"
             className="h-full w-full object-contain"
           />
