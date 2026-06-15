@@ -116,7 +116,13 @@
     "react": "^18.3.1 || ^19.0.0",
     "react-dom": "^18.3.1 || ^19.0.0",
     "react-router-dom": "^6.0.0",
-    "zustand": "^5.0.0"
+    "zustand": "^5.0.0",
+    "@types/react": ">=18.3.31"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@blocks-kit/eslint-config": "workspace:*",
