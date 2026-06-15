@@ -4,8 +4,8 @@ import * as React from "react";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 import { AnimatePresence, motion, type Transition } from "framer-motion";
 
-import { cn } from "@blocks/ui/lib/utils";
-import { buttonVariants } from "@blocks/ui/components/button";
+import { cn } from "@blocks-kit/ui/lib/utils";
+import { buttonVariants } from "@blocks-kit/ui/components/button";
 
 const AlertDialogOpenContext = React.createContext<boolean>(false);
 

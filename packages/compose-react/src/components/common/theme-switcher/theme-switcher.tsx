@@ -1,0 +1,41 @@
+import { Monitor, Moon, Sun } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/core/tabs/tabs";
+import { useTheme } from "@/hooks/use-theme";
+
+type ThemeOption = "light" | "dark" | "system";
+
+const OPTIONS: Array<{
+  value: ThemeOption;
+  Icon: any;
+  label: string;
+}> = [
+  { value: "system", Icon: Monitor as any, label: "Auto" },
+  { value: "light", Icon: Sun as any, label: "Light" },
+  { value: "dark", Icon: Moon as any, label: "Dark" },
+];
+
+export function ThemeSwitcher() {
+  const { theme, setTheme } = useTheme();
+
+  return (
+    <Tabs
+      value={theme}
+      onValueChange={(value) => setTheme(value as ThemeOption)}
+    >
+      <TabsList className="h-auto gap-0.5 rounded-md !bg-transparent p-0.5">
+        {OPTIONS.map(({ value, Icon, label }) => (
+          <TabsTrigger
+            key={value}
+            value={value}
+            className="group h-auto rounded-sm px-2 py-1 text-xs font-medium data-[state=active]:bg-[hsl(var(--primary)/0.1)] data-[state=active]:text-[hsl(var(--primary))] data-[state=inactive]:text-[hsl(var(--muted-foreground)/0.9)] data-[state=active]:shadow-sm data-[state=inactive]:hover:text-[hsl(var(--foreground)/0.9)]"
+          >
+            <Icon size={13} aria-hidden />
+            <span className="ml-1.5 hidden group-data-[state=active]:inline">
+              {label}
+            </span>
+          </TabsTrigger>
+        ))}
+      </TabsList>
+    </Tabs>
+  );
+}

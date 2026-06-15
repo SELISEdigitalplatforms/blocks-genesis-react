@@ -1,0 +1,14 @@
+node_modules
+dist
+.turbo
+build
+.DS_Store
+*.log
+registry.json
+package-lock.json
+pnpm-lock.yaml
+**/dist/**
+**/node_modules/**
+**/.turbo/**
+**/build/**
+**/registry.json

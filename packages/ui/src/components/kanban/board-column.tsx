@@ -6,9 +6,9 @@ import { GripVertical } from "lucide-react"
 import * as React from "react"
 import { useMemo } from "react"
 
-import { Button } from "@blocks/ui/components/button"
-import { Card, CardContent, CardHeader } from "@blocks/ui/components/card"
-import { ScrollArea, ScrollBar } from "@blocks/ui/components/scroll-area"
+import { Button } from "@blocks-kit/ui/components/button"
+import { Card, CardContent, CardHeader } from "@blocks-kit/ui/components/card"
+import { ScrollArea, ScrollBar } from "@blocks-kit/ui/components/scroll-area"
 
 import { KanbanTaskCard } from "./task-card"
 import type {

@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion"
 
-import { Button } from "@blocks/ui/components/button"
-import { cn } from "@blocks/ui/lib/utils"
-import { fadeTransition } from "@blocks/ui/lib/motion-presets"
+import { Button } from "@blocks-kit/ui/components/button"
+import { cn } from "@blocks-kit/ui/lib/utils"
+import { fadeTransition } from "@blocks-kit/ui/lib/motion-presets"
 
 import { WizardStepIndicator } from "./wizard-step-indicator"
 import { useWizardStepper } from "./wizard-stepper-provider"

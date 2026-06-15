@@ -1,0 +1,67 @@
+{
+  "name": "@blocks-kit/hooks",
+  "version": "0.0.1",
+  "description": "Framework-agnostic React hooks for blocks-kit",
+  "keywords": [
+    "react",
+    "hooks",
+    "typescript"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./query-state": {
+      "types": "./dist/query-state/index.d.ts",
+      "import": "./dist/query-state/index.js",
+      "require": "./dist/query-state/index.cjs"
+    },
+    "./query-client": {
+      "types": "./dist/query-client/index.d.ts",
+      "import": "./dist/query-client/index.js",
+      "require": "./dist/query-client/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "!**/*.test.*",
+    "!**/*.spec.*"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist node_modules .turbo"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "nuqs": "^2.8.9",
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "dependencies": {
+    "fuse.js": "^7.4.2"
+  },
+  "devDependencies": {
+    "@blocks-kit/eslint-config": "workspace:*",
+    "@blocks-kit/tsconfig": "workspace:*",
+    "@tanstack/react-query": "^5.101.0",
+    "@types/react": "catalog:",
+    "eslint": "catalog:",
+    "react": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

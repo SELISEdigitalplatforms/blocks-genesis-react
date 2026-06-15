@@ -5,7 +5,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { AnimatePresence, motion, type Transition } from "framer-motion";
 import { X } from "lucide-react";
 
-import { cn } from "@blocks/ui/lib/utils";
+import { cn } from "@blocks-kit/ui/lib/utils";
 
 const DialogOpenContext = React.createContext<boolean>(false);
 

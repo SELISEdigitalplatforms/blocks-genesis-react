@@ -2,10 +2,11 @@ import * as React from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import type { DateRange } from "react-day-picker";
 
-import { cn, formatFullDate } from "@blocks/ui/lib/utils";
-import { Button } from "@blocks/ui/components/button";
-import { Calendar } from "@blocks/ui/components/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@blocks/ui/components/popover";
+import { cn } from "@blocks-kit/ui/lib/utils";
+import { formatFullDate } from "@blocks-kit/primitives";
+import { Button } from "@blocks-kit/ui/components/button";
+import { Calendar } from "@blocks-kit/ui/components/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@blocks-kit/ui/components/popover";
 
 export interface DateRangePickerProps {
   /** Visible label inside the trigger button when no range is selected. */
@@ -37,10 +38,7 @@ function formatRange(range: DateRange | undefined): string | null {
  * Localization → Translations table (e.g. "Create Date" filter).
  */
 const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePickerProps>(
-  (
-    { label, value, onChange, numberOfMonths = 2, disabled, className, align = "start" },
-    ref,
-  ) => {
+  ({ label, value, onChange, numberOfMonths = 2, disabled, className, align = "start" }, ref) => {
     const [open, setOpen] = React.useState(false);
     /** Draft selection — only committed to `onChange` when "Apply" is pressed. */
     const [draft, setDraft] = React.useState<DateRange | undefined>(value);
@@ -74,7 +72,7 @@ const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePickerProps
             disabled={disabled}
             defaultMonth={value?.from ?? draft?.from ?? new Date()}
           />
-          <div className="flex items-center justify-between gap-2 border-t border-border p-3">
+          <div className="border-border flex items-center justify-between gap-2 border-t p-3">
             <Button
               variant="outline"
               size="sm"
