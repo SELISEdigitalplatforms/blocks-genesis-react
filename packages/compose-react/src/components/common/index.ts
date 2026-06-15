@@ -12,3 +12,4 @@ export * from "./environment";
 export * from "./sidebar-menu";
 export * from "./error-boundary";
 export * from "./error-display";
+export * from "./logo";
