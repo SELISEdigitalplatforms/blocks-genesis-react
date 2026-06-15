@@ -15,6 +15,8 @@ export const useGetProjects = (options: { tenantGroupId?: string }) => {
         100,
         options?.tenantGroupId,
       ),
+    staleTime: 5 * 60 * 1000,
+    retry: false,
   });
 
   useEffect(() => {
