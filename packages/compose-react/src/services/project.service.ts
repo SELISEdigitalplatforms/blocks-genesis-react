@@ -1,4 +1,4 @@
-import { HttpClient } from "@/lib/http";
+import { logicClient } from "@/lib/http";
 
 export interface IProject {
   itemId: string;
@@ -37,32 +37,26 @@ export interface IProjectGroup {
   isShared: boolean;
 }
 
-const http = new HttpClient({
-  baseURL: window?.process?.env?.BLOCKS_API_BASE_URL || "",
-  blocksKey: window?.process?.env?.BLOCKS_X_BLOCKS_KEY || "",
-});
-
 const PROJECT_SUBPATH = "Project";
 export const PROJECT_ENDPOINTS = {
-  GETS: `api/${PROJECT_SUBPATH}/Gets`,
-  GET: `api/${PROJECT_SUBPATH}/Get`,
-  DISABLE: `api/${PROJECT_SUBPATH}/Disable`,
+  GETS: `/api/${PROJECT_SUBPATH}/Gets`,
+  GET: `/api/${PROJECT_SUBPATH}/Get`,
+  DISABLE: `/api/${PROJECT_SUBPATH}/Disable`,
 };
 
 export class ProjectService {
   getProjects(
-    projectBaseUrl = "",
     page = 0,
     pageSize = 100,
     tenantGroupId = "",
   ): Promise<IProjectGroup[]> {
-    const url = `${projectBaseUrl}/${PROJECT_ENDPOINTS.GETS}?page=${page}&pageSize=${pageSize}&tenantGroupId=${tenantGroupId}`;
-    return http.get(url, undefined, { absoluteUrl: true });
+    const url = `${PROJECT_ENDPOINTS.GETS}?page=${page}&pageSize=${pageSize}&tenantGroupId=${tenantGroupId}`;
+    return logicClient.get(url);
   }
 
   getProject(payload: IGetProjectPayload): Promise<IGetProjectResponse> {
     const url = `${PROJECT_ENDPOINTS.GET}?projectId=${payload.projectId}`;
-    return http.get(url, undefined, { absoluteUrl: true });
+    return logicClient.get(url);
   }
 }
 

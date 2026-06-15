@@ -36,8 +36,8 @@ export interface RequestQueueItem<T> {
 }
 
 export interface HttpClientConfig {
-  baseURL: string;
-  blocksKey: string;
+  baseURL: string | (() => string);
+  blocksKey: string | (() => string);
   onTokenRefresh?: () => Promise<AuthTokenPair>;
   onUnauthorized?: (error: unknown) => void;
 }
