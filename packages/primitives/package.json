@@ -1,0 +1,98 @@
+{
+  "name": "@blocks-kit/primitives",
+  "version": "0.0.1",
+  "description": "Framework-agnostic pure JavaScript utilities for blocks-kit",
+  "keywords": [
+    "http-client",
+    "validators",
+    "formatters",
+    "utilities",
+    "typescript",
+    "isomorphic",
+    "framework-agnostic"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./http": {
+      "types": "./dist/http/index.d.ts",
+      "import": "./dist/http/index.js",
+      "require": "./dist/http/index.cjs"
+    },
+    "./validators": {
+      "types": "./dist/validators/index.d.ts",
+      "import": "./dist/validators/index.js",
+      "require": "./dist/validators/index.cjs"
+    },
+    "./currency": {
+      "types": "./dist/currency/index.d.ts",
+      "import": "./dist/currency/index.js",
+      "require": "./dist/currency/index.cjs"
+    },
+    "./number": {
+      "types": "./dist/number/index.d.ts",
+      "import": "./dist/number/index.js",
+      "require": "./dist/number/index.cjs"
+    },
+    "./file": {
+      "types": "./dist/file/index.d.ts",
+      "import": "./dist/file/index.js",
+      "require": "./dist/file/index.cjs"
+    },
+    "./date": {
+      "types": "./dist/date/index.d.ts",
+      "import": "./dist/date/index.js",
+      "require": "./dist/date/index.cjs"
+    },
+    "./parser": {
+      "types": "./dist/parser/index.d.ts",
+      "import": "./dist/parser/index.js",
+      "require": "./dist/parser/index.cjs"
+    },
+    "./storage": {
+      "types": "./dist/storage/index.d.ts",
+      "import": "./dist/storage/index.js",
+      "require": "./dist/storage/index.cjs"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "!**/*.test.*",
+    "!**/*.spec.*"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist node_modules .turbo"
+  },
+  "dependencies": {
+    "date-fns": "catalog:"
+  },
+  "devDependencies": {
+    "@blocks-kit/eslint-config": "workspace:*",
+    "@blocks-kit/tsconfig": "workspace:*",
+    "eslint": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

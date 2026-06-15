@@ -3,8 +3,8 @@
 import { Check } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
 
-import { cn } from "@blocks/ui/lib/utils"
-import { fadeTransition } from "@blocks/ui/lib/motion-presets"
+import { cn } from "@blocks-kit/ui/lib/utils"
+import { fadeTransition } from "@blocks-kit/ui/lib/motion-presets"
 
 type WizardStepIndicatorProps = {
   stepNumber: number

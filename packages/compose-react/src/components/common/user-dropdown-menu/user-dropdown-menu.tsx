@@ -1,0 +1,78 @@
+import { UserRound } from "lucide-react";
+import { Link } from "react-router-dom";
+import { LogOutButton } from "./log-out-button";
+import { Button } from "@/components/core/button";
+
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/core/dropdown-menu";
+import { useAuthStore } from "@/store";
+
+function UserDropdownMenuLogo() {
+  const { user } = useAuthStore();
+  const userData = user || {
+    firstName: "",
+    lastName: "",
+    profileImageUrl: "",
+  };
+  const profileImageUrl =
+    typeof userData.profileImageUrl === "string"
+      ? userData.profileImageUrl
+      : "";
+  const initials =
+    `${userData.firstName?.[0] || ""}${userData.lastName?.[0] || ""}`.toUpperCase();
+
+  if (profileImageUrl) {
+    return (
+      <img
+        src={profileImageUrl}
+        alt="Profile"
+        className="h-full w-full object-cover"
+      />
+    );
+  }
+
+  if (initials) {
+    return <span>{initials}</span>;
+  }
+
+  const UserRoundIcon = UserRound as any;
+  return <UserRoundIcon className="h-4 w-4" />;
+}
+
+export const UserDropdownMenu = () => {
+  const LinkComponent = Link as any;
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="link"
+          size="icon"
+          className="relative h-10 w-10 overflow-hidden rounded-full bg-[hsl(var(--avatar-surface-default))] p-0 text-base font-normal text-[hsl(var(--avatar-text-high-emphasis))] hover:no-underline"
+        >
+          <UserDropdownMenuLogo />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuGroup>
+          <DropdownMenuItem asChild>
+            <LinkComponent to="/profile">My profile</LinkComponent>
+          </DropdownMenuItem>
+          <DropdownMenuItem disabled>Privacy</DropdownMenuItem>
+          <DropdownMenuItem disabled>Support</DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem>
+            <LogOutButton />
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};

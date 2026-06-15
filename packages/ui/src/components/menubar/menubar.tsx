@@ -2,7 +2,7 @@ import * as React from "react"
 import * as MenubarPrimitive from "@radix-ui/react-menubar"
 import { Check, ChevronRight, Circle } from "lucide-react"
 
-import { cn } from "@blocks/ui/lib/utils"
+import { cn } from "@blocks-kit/ui/lib/utils"
 
 function MenubarMenu({
   ...props

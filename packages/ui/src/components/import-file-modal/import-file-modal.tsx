@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react"
 import { ArrowDownToLine, CloudUpload, Paperclip, TriangleAlert } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
 
-import { Button } from "@blocks/ui/components/button"
+import { Button } from "@blocks-kit/ui/components/button"
 import {
   DialogContent,
   DialogDescription,
@@ -12,15 +12,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@blocks/ui/components/dialog"
+} from "@blocks-kit/ui/components/dialog"
 import {
   FileInput,
   FileUploader,
   FileUploaderContent,
   FileUploaderItem,
-} from "@blocks/ui/components/file-uploader"
-import { cn } from "@blocks/ui/lib/utils"
-import { fadeInScale, fadeTransition } from "@blocks/ui/lib/motion-presets"
+} from "@blocks-kit/ui/components/file-uploader"
+import { cn } from "@blocks-kit/ui/lib/utils"
+import { fadeInScale, fadeTransition } from "@blocks-kit/ui/lib/motion-presets"
 
 export type ImportFileModalDropzoneOptions = {
   maxFiles?: number

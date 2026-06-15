@@ -4,7 +4,7 @@ import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import { motion, type Transition } from "framer-motion";
 
-import { cn } from "@blocks/ui/lib/utils";
+import { cn } from "@blocks-kit/ui/lib/utils";
 
 const Tabs = TabsPrimitive.Root;
 

@@ -3,9 +3,9 @@ import { CSS } from "@dnd-kit/utilities"
 import { cva } from "class-variance-authority"
 import { GripVertical } from "lucide-react"
 
-import { Badge } from "@blocks/ui/components/badge"
-import { Button } from "@blocks/ui/components/button"
-import { Card, CardContent, CardHeader } from "@blocks/ui/components/card"
+import { Badge } from "@blocks-kit/ui/components/badge"
+import { Button } from "@blocks-kit/ui/components/button"
+import { Card, CardContent, CardHeader } from "@blocks-kit/ui/components/card"
 
 import type { KanbanTask, KanbanTaskDragData } from "./types"
 

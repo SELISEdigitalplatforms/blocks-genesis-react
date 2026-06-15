@@ -21,9 +21,9 @@ import {
 import { toast } from "sonner";
 import { Trash2 as RemoveIcon } from "lucide-react";
 
-import { cn } from "@blocks/ui/lib/utils";
-import { Input } from "@blocks/ui/components/input";
-import { buttonVariants } from "@blocks/ui/components/button";
+import { cn } from "@blocks-kit/ui/lib/utils";
+import { Input } from "@blocks-kit/ui/components/input";
+import { buttonVariants } from "@blocks-kit/ui/components/button";
 
 type DirectionOptions = "rtl" | "ltr" | undefined;
 
