@@ -56,12 +56,13 @@ export type SelfProjectProps = {
 };
 
 export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
-  const { data, isLoading, isFetching } = useGetProjects();
+  const { data, isLoading, isFetching } = useGetProjects({});
 
   if (isLoading || isFetching) return <SelfProjectLoading />;
   const projectGroups = data || [];
 
-  if (!projectGroups.length && canCreateProject) return <ConsoleCreateProject />;
+  if (!projectGroups.length && canCreateProject)
+    return <ConsoleCreateProject />;
 
   return (
     <section className="flex flex-col gap-4">
@@ -74,15 +75,19 @@ export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
             {projectGroups.length}
           </span>
         </div>
-        {projectGroups.length > 9 && (
+        {canCreateProject && projectGroups.length > 9 && (
           <span className="shrink-0 text-sm text-[hsl(var(--medium-emphasis))]">
             Please delete an existing project to create a new one.
           </span>
         )}
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {canCreateProject && projectGroups.length < 10 && (
-          <motion.div variants={cardVariants} custom={0} initial="hidden" animate="visible">
+        {projectGroups.length < 10 && (
+          <motion.div
+            variants={cardVariants}
+            custom={0}
+            initial="hidden"
+            animate="visible">
             <AddProjectCard />
           </motion.div>
         )}
@@ -92,10 +97,12 @@ export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
             variants={cardVariants}
             custom={projectGroups.length < 10 ? i + 1 : i}
             initial="hidden"
-            animate="visible"
-          >
+            animate="visible">
             {project.projects[0] && (
-              <ProjectCard project={project.projects[0]} projects={project.projects} />
+              <ProjectCard
+                project={project.projects[0]}
+                projects={project.projects}
+              />
             )}
           </motion.div>
         ))}

@@ -2,7 +2,7 @@ import {
   CreateAppConfigStore,
   type AppConfigStoreState,
 } from "@/store/app-config.store";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { useStore, type StoreApi } from "zustand";
 
 export const BlocksAppLayoutContext = createContext<
@@ -13,8 +13,6 @@ type BlocksAppLayoutProps = {
   children: React.ReactNode;
   config: Partial<AppConfigStoreState["config"]>;
 };
-
-const PLACEHOLDER_PREFIX = "__BLOCKS_";
 
 export type RuntimeKey =
   | "BLOCKS_LOCALIZATION_BASE_URL"
