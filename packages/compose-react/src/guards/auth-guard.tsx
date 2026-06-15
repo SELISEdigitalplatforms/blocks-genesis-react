@@ -1,12 +1,7 @@
-import { HttpClient } from "@/lib/http";
-import { getRuntimeEnv } from "@/lib/runtime-env";
+import { iamClient } from "@/lib/http";
 import { useEffect, useRef } from "react";
 import { useAuthStore } from "../store/auth.store";
-
-const http = new HttpClient({
-  baseURL: getRuntimeEnv("BLOCKS_OS_BASE_URL") || "",
-  blocksKey: getRuntimeEnv("BLOCKS_X_BLOCKS_KEY") || "",
-});
+import type { BaseUser } from "@/types";
 
 export function AuthResolver({ children }: { children: React.ReactNode }) {
   const { setUser, setAuthenticated, setUnAuthenticated } = useAuthStore();
@@ -19,14 +14,7 @@ export function AuthResolver({ children }: { children: React.ReactNode }) {
 
     async function resolve() {
       try {
-        const baseUrl = window.process?.env.userBaseUrl;
-        const res = await http.get<{ data: any }>(
-          `${baseUrl}/api/iam/me`,
-          undefined,
-          {
-            absoluteUrl: true,
-          },
-        );
+        const res = await iamClient.get<{ data: BaseUser }>("/api/iam/me");
         setUser(res.data);
         setAuthenticated();
       } catch {

@@ -17,8 +17,8 @@ let isRefreshing = false;
 let requestQueue: RequestQueueItem<unknown>[] = [];
 
 export class HttpClient {
-  private baseURL: string;
-  private blocksKey: string;
+  private baseURL: string | (() => string);
+  private blocksKey: string | (() => string);
   private onTokenRefresh?: () => Promise<AuthTokenPair>;
   private onUnauthorized?: (error: unknown) => void;
 
@@ -29,6 +29,16 @@ export class HttpClient {
     this.onUnauthorized = config.onUnauthorized;
   }
 
+  private getBaseURL(): string {
+    return typeof this.baseURL === "function" ? this.baseURL() : this.baseURL;
+  }
+
+  private getBlocksKey(): string {
+    return typeof this.blocksKey === "function"
+      ? this.blocksKey()
+      : this.blocksKey;
+  }
+
   private normalizeHeaders(
     headers?: HeadersInitValue,
     skipBlocksKey?: boolean,
@@ -36,8 +46,8 @@ export class HttpClient {
     const normalizedHeaders = new Headers({
       Accept: "application/json",
       "Content-Type": "application/json",
-      ...(!skipBlocksKey && this.blocksKey
-        ? { "X-Blocks-Key": this.blocksKey }
+      ...(!skipBlocksKey && this.getBlocksKey()
+        ? { "X-Blocks-Key": this.getBlocksKey() }
         : {}),
     });
 
@@ -75,13 +85,13 @@ export class HttpClient {
         getRuntimeEnv("BLOCKS_OIDC_CLIENT_ID") || "",
       );
       const baseUrl = window?.process?.env.userBaseUrl || "";
-      const url = `${baseUrl}${AUTH_OIDC_ENDPOINTS.OIDC_TOKEN}?tenant_id=${this.blocksKey}`;
+      const url = `${baseUrl}${AUTH_OIDC_ENDPOINTS.OIDC_TOKEN}?tenant_id=${this.getBlocksKey()}`;
       const response = await fetch(url, {
         method: "POST",
         body: formData,
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-          "X-Blocks-Key": this.blocksKey,
+          "X-Blocks-Key": this.getBlocksKey(),
         },
         credentials: "include",
       });
@@ -131,7 +141,7 @@ export class HttpClient {
       skipTokenRotation = false,
     } = requestOption;
 
-    const fullUrl = absoluteUrl ? url : `${this.baseURL}${url}`;
+    const fullUrl = absoluteUrl ? url : `${this.getBaseURL()}${url}`;
     const normalizedHeaders = this.normalizeHeaders(headers, skipBlocksKey);
 
     const config: RequestInit = {
@@ -270,7 +280,7 @@ export class HttpClient {
       withCredentials = true,
     } = options || {};
 
-    const fullUrl = absoluteUrl ? url : `${this.baseURL}${url}`;
+    const fullUrl = absoluteUrl ? url : `${this.getBaseURL()}${url}`;
     const normalizedHeaders = this.normalizeHeaders(headers, skipBlocksKey);
 
     const response = await fetch(fullUrl, {
@@ -294,3 +304,51 @@ export class HttpClient {
     return response.body;
   }
 }
+
+export const resolveBaseUrl = (type: "user" | "project" | "os"): string => {
+  if (typeof window === "undefined") return "";
+
+  const directKey =
+    type === "user"
+      ? "userBaseUrl"
+      : type === "project"
+        ? "projectBaseUrl"
+        : "BLOCKS_OS_BASE_URL";
+  const directVal = getRuntimeEnv(directKey);
+  if (directVal) return directVal;
+
+  if (type === "user") {
+    return (
+      getRuntimeEnv("BLOCKS_IAM_BASE_URL") ||
+      getRuntimeEnv("BLOCKS_API_BASE_URL") ||
+      ""
+    );
+  } else if (type === "project") {
+    return (
+      getRuntimeEnv("BLOCKS_LOGIC_BASE_URL") ||
+      getRuntimeEnv("BLOCKS_OS_API_BASE_URL") ||
+      ""
+    );
+  } else {
+    return (
+      getRuntimeEnv("BLOCKS_OS_BASE_URL") ||
+      getRuntimeEnv("BLOCKS_API_BASE_URL") ||
+      ""
+    );
+  }
+};
+
+export const iamClient = new HttpClient({
+  baseURL: () => resolveBaseUrl("user"),
+  blocksKey: () => getRuntimeEnv("BLOCKS_X_BLOCKS_KEY"),
+});
+
+export const logicClient = new HttpClient({
+  baseURL: () => resolveBaseUrl("project"),
+  blocksKey: () => getRuntimeEnv("BLOCKS_X_BLOCKS_KEY"),
+});
+
+export const osClient = new HttpClient({
+  baseURL: () => resolveBaseUrl("os"),
+  blocksKey: () => getRuntimeEnv("BLOCKS_X_BLOCKS_KEY"),
+});

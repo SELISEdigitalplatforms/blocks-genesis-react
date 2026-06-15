@@ -5,16 +5,9 @@ import { useProjectStore } from "@/store/project.store";
 
 export const useGetProjects = (options: { tenantGroupId?: string }) => {
   const setProjects = useProjectStore((state) => state.setProjects);
-  const projectBaseUrl = window?.process?.env?.projectBaseUrl || "";
   const query = useQuery({
     queryKey: ["identifier", "projects", options?.tenantGroupId],
-    queryFn: () =>
-      projectService.getProjects(
-        projectBaseUrl,
-        0,
-        100,
-        options?.tenantGroupId,
-      ),
+    queryFn: () => projectService.getProjects(0, 100, options?.tenantGroupId),
   });
 
   useEffect(() => {
