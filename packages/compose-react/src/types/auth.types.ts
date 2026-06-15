@@ -8,7 +8,10 @@ export interface BaseUser {
   email?: string;
   firstName?: string;
   lastName?: string;
-  [key: string]: unknown;
+  profileImageUrl: string;
+  profileImageId: string;
+  lastUsedOrganizationId: string | null;
+  roles: Record<string, string[]>;
 }
 
 export interface ImpersonationState {
