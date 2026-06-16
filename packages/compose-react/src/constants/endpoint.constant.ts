@@ -1,3 +1,46 @@
-export const AUTH_OIDC_ENDPOINTS = {
-  OIDC_TOKEN: "/api/oidc/token",
-};
+const API_BASE = "/api";
+
+export const AUTH_ENDPOINTS = {
+  OIDC_TOKEN: `${API_BASE}/oidc/token`,
+  LOGOUT: `${API_BASE}/auth/Logout`,
+} as const;
+
+export const IAM_ENDPOINTS = {
+  INITIATE: `${API_BASE}/idp/initiate`,
+} as const;
+
+const AUTH_SUBPATH = "auth";
+
+export const IMPERSONATE_ENDPOINTS = {
+  IMPERSONATE: `${API_BASE}/${AUTH_SUBPATH}/impersonate`,
+  STOP_IMPERSONATION: `${API_BASE}/${AUTH_SUBPATH}/impersonation/stop`,
+  IMPERSONATION_STATUS: `${API_BASE}/${AUTH_SUBPATH}/impersonation/status`,
+} as const;
+
+const NOTIFIER_SUBPATH = "Notifier";
+const NOTIFICATION_SUBPATH = "Notification";
+
+export const NOTIFICATION_ENDPOINTS = {
+  GET_NOTIFICATIONS: `${API_BASE}/${NOTIFIER_SUBPATH}/GetNotifications`,
+  MARK_AS_READ: `${API_BASE}/${NOTIFIER_SUBPATH}/MarkNotificationAsRead`,
+  MARK_ALL_AS_READ: `${API_BASE}/${NOTIFIER_SUBPATH}/MarkAllNotificationAsRead`,
+} as const;
+
+export const NOTIFICATION_CONFIG_ENDPOINTS = {
+  GET_CONFIGS: `${API_BASE}/${NOTIFICATION_SUBPATH}/Gets`,
+} as const;
+
+const PROJECT_SUBPATH = "Project";
+const DOMAIN_SUBPATH = "Domain";
+const BUILD_SUBPATH = "Build";
+const DEPLOYMENT_SUBPATH = "Deployment";
+
+export const PROJECT_ENDPOINTS = {
+  GETS: `${API_BASE}/${PROJECT_SUBPATH}/Gets`,
+  GET: `${API_BASE}/${PROJECT_SUBPATH}/Get`,
+  DISABLE: `${API_BASE}/${PROJECT_SUBPATH}/Disable`,
+  UPDATE_TENANT_GROUP: `${API_BASE}/${PROJECT_SUBPATH}/UpdateTenantGroup`,
+  CONFIGURE: `${API_BASE}/${DOMAIN_SUBPATH}/Configure`,
+  REPOS_LIST: `${API_BASE}/${DEPLOYMENT_SUBPATH}/GetReposList`,
+  REPO_UPDATE: `${API_BASE}/${BUILD_SUBPATH}/repo-update`,
+} as const;

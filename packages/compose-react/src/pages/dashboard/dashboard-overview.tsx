@@ -1,8 +1,17 @@
-import { ProjectDetail } from "@/components/common/project/detail";
+import {
+  ActionsListProject,
+  GitCommandSnippet,
+  ProjectCliSnippet,
+  ProjectDetail,
+  ProjectRepoList,
+  RenderConditionally,
+} from "@/components";
+import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { useGetProject } from "@/hooks/use-project";
 import { useProjectStore } from "@/store/project.store";
 
 export const DashboardOverview = () => {
+  const { name } = useBlocksAppConfigStore((state) => state.config);
   const { itemId } = useProjectStore().selectedProject || {
     itemId: "",
     tenantId: "",
@@ -15,12 +24,16 @@ export const DashboardOverview = () => {
         <h1 className="text-xl font-semibold md:text-2xl">
           Environment Overview
         </h1>
-        {/* <ActionsListProject /> */}
+        <RenderConditionally condition={name === "blocks-os"}>
+          <ActionsListProject />
+        </RenderConditionally>
       </div>
       <ProjectDetail project={data?.data} isLoading={isLoading} />
-      {/* <ProjectRepoList project={data?.data} isLoading={isLoading} />
-      <ProjectCliSnippet />
-      <GitCommandSnippet /> */}
+      <RenderConditionally condition={name === "blocks-os"}>
+        <ProjectRepoList project={data?.data} isLoading={isLoading} />
+        <ProjectCliSnippet />
+        <GitCommandSnippet />
+      </RenderConditionally>
     </main>
   );
 };

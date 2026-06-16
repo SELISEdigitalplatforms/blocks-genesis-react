@@ -13,6 +13,7 @@ import { APP_SWITCHER_DATA } from "./app-switcher.constant";
 import type { ServiceName } from "@/store";
 import type { ForwardToPaths } from "@/types";
 import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
+import { initiateService } from "@/services/initiate.service";
 
 export interface BlocksApp {
   key: ServiceName;
@@ -79,31 +80,20 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
   const config = useBlocksAppConfigStore((state) => state.getConfig());
 
   const getRedirectUrl = useCallback(
-    async (app: BlocksApp) => {
-      try {
-        const blocksKey = getRuntimeEnv("BLOCKS_X_BLOCKS_KEY");
-        const iamBaseUrl = getRuntimeEnv("userBaseUrl");
-        const clientId = getRuntimeEnv(app.clientId);
-        const redirectUri = getRuntimeEnv(app.redirectUri);
-
-        const initiateUrl = `${iamBaseUrl}/api/idp/initiate?x-blocks-key=${blocksKey}&clientId=${clientId}&redirectUri=${redirectUri}&forwardedTo=${resolvedForwardedTo}`;
-        const headers: Record<string, string> = {};
-        if (blocksKey) headers["X-Blocks-Key"] = blocksKey;
-
-        const response = await fetch(initiateUrl, { headers });
-        const data = await response.json();
-        if (data.redirect_uri) {
-          return data.redirect_uri as string;
-        }
-      } catch (error) {
-        console.error(
-          `[AppSwitcher] Failed to get redirect URL for ${app.key}:`,
-          error,
-        );
-      }
-
-      return null;
-    },
+    (app: BlocksApp) =>
+      initiateService
+        .fetchRedirectUrl({
+          clientId: getRuntimeEnv(app.clientId),
+          redirectUri: getRuntimeEnv(app.redirectUri),
+          forwardedTo: resolvedForwardedTo,
+        })
+        .catch((err) => {
+          console.error(
+            `[AppSwitcher] Failed to get redirect URL for ${app.key}:`,
+            err,
+          );
+          return null;
+        }),
     [resolvedForwardedTo],
   );
 

@@ -3,14 +3,13 @@ import type {
   IProjectGroup,
   IGetProjectPayload,
   IGetProjectResponse,
+  IDisableProjectPayload,
+  IDisableProjectResponse,
+  IUpdateTenantGroupPayload,
+  IUpdateProjectResponse,
+  IEnvRepository,
 } from "@/models";
-
-const PROJECT_SUBPATH = "Project";
-export const PROJECT_ENDPOINTS = {
-  GETS: `/api/${PROJECT_SUBPATH}/Gets`,
-  GET: `/api/${PROJECT_SUBPATH}/Get`,
-  DISABLE: `/api/${PROJECT_SUBPATH}/Disable`,
-};
+import { PROJECT_ENDPOINTS } from "@/constants/endpoint.constant";
 
 export class ProjectService {
   getProjects(
@@ -25,6 +24,48 @@ export class ProjectService {
   getProject(payload: IGetProjectPayload): Promise<IGetProjectResponse> {
     const url = `${PROJECT_ENDPOINTS.GET}?projectId=${payload.projectId}`;
     return logicClient.get(url);
+  }
+
+  getEnvRepositories(projectKey: string): Promise<{
+    data: IEnvRepository[];
+    errors: unknown | null;
+    isSuccess: boolean;
+  }> {
+    const url = `${PROJECT_ENDPOINTS.REPOS_LIST}?projectkey=${projectKey}`;
+    return logicClient.get(url);
+  }
+
+  repoUpdate(payload: {
+    projectKey: string;
+    projectEnv: string;
+    repoWithDomains: {
+      repoId: string;
+      repoUrl: string;
+      customDeploymentDomain: string;
+    }[];
+  }): Promise<{
+    errors: unknown | null;
+    isSuccess: boolean;
+  }> {
+    return logicClient.post(PROJECT_ENDPOINTS.REPO_UPDATE, payload);
+  }
+
+  updateTenantGroup(
+    payload: IUpdateTenantGroupPayload,
+  ): Promise<IUpdateProjectResponse> {
+    return logicClient.post(PROJECT_ENDPOINTS.UPDATE_TENANT_GROUP, payload);
+  }
+
+  disableProject(
+    payload: IDisableProjectPayload,
+  ): Promise<IDisableProjectResponse> {
+    return logicClient.post(PROJECT_ENDPOINTS.DISABLE, payload);
+  }
+
+  validateCNameProject(payload: {
+    projectKey: string;
+  }): Promise<{ isValid: boolean }> {
+    return logicClient.post(PROJECT_ENDPOINTS.CONFIGURE, payload);
   }
 }
 

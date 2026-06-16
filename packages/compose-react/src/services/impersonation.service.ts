@@ -1,16 +1,10 @@
+import { IMPERSONATE_ENDPOINTS } from "@/constants/endpoint.constant";
 import { iamClient } from "@/lib/http/instances";
 import type {
   ImpersonationRequest,
   ImpersonationState,
   ImpersonationStatusResponse,
 } from "@/models/impersonation.model";
-
-const AUTH_SUBPATH = "/auth";
-const IMPERSONATE_ENDPOINTS = {
-  IMPERSONATE: `/api${AUTH_SUBPATH}/impersonate`,
-  STOP_IMPERSONATION: `/api${AUTH_SUBPATH}/impersonation/stop`,
-  IMPERSONATION_STATUS: `/api${AUTH_SUBPATH}/impersonation/status`,
-} as const;
 
 class ImpersonationService {
   startImpersonation(
