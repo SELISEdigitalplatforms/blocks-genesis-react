@@ -7,7 +7,7 @@ import { useProjectStore } from "@/store/project.store";
 
 export function LogOutButton() {
   const queryClient = getQueryClient();
-  const { reset } = useProjectStore();
+  const { resetProjectStore } = useProjectStore();
   const { setUnAuthenticated, clearTokens } = useAuthStore();
   const { setSettings } = useAppSettingsStore();
   const { isPending, mutateAsync } = useLogout();
@@ -15,7 +15,7 @@ export function LogOutButton() {
   const handleLogout = async () => {
     try {
       await mutateAsync();
-      reset();
+      resetProjectStore();
       setUnAuthenticated();
       clearTokens();
       setSettings({ language: "en" });
@@ -32,7 +32,8 @@ export function LogOutButton() {
       size="sm"
       className="text-error flex h-full w-full justify-start !p-0 hover:no-underline"
       disabled={isPending}
-      onClick={handleLogout}>
+      onClick={handleLogout}
+    >
       Logout
     </Button>
   );
