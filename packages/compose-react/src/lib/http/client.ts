@@ -1,5 +1,5 @@
 import { getRuntimeEnv } from "@/lib/runtime-env";
-import { AUTH_OIDC_ENDPOINTS } from "@/constants/endpoint.constant";
+import { AUTH_ENDPOINTS } from "@/constants/endpoint.constant";
 import type { AuthTokenPair } from "@/models";
 import type {
   RequestQueueItem,
@@ -85,7 +85,7 @@ export class HttpClient {
         getRuntimeEnv("BLOCKS_OIDC_CLIENT_ID") || "",
       );
       const baseUrl = window?.process?.env.userBaseUrl || "";
-      const url = `${baseUrl}${AUTH_OIDC_ENDPOINTS.OIDC_TOKEN}?tenant_id=${this.getBlocksKey()}`;
+      const url = `${baseUrl}${AUTH_ENDPOINTS.OIDC_TOKEN}?tenant_id=${this.getBlocksKey()}`;
       const response = await fetch(url, {
         method: "POST",
         body: formData,

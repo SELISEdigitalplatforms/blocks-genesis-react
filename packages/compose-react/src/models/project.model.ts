@@ -34,3 +34,28 @@ export interface IProjectGroup {
   nonSharedProject: IProject[];
   isShared: boolean;
 }
+
+export interface IEnvRepository {
+  itemId: string;
+  repoName: string;
+  repoUrl: string;
+  defaultDeploymentUrl: string;
+  customDeploymentUrl: string;
+  lastDeploymentDate: string;
+}
+
+export interface IUpdateTenantGroupPayload {
+  name: string;
+  tenantGroupId: string;
+}
+export interface IUpdateProjectResponse {
+  errors: unknown | null;
+  isSuccess: boolean;
+}
+export interface IDisableProjectPayload {
+  projectKey: string;
+}
+export interface IDisableProjectResponse {
+  errors: string | null;
+  isSuccess: boolean;
+}

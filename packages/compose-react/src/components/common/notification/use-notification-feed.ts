@@ -46,7 +46,6 @@ export function useNotificationFeed(open: boolean) {
   useEffect(() => {
     if (!open) return;
     setPageNumber(1);
-    setNotifications([]);
     setHasMore(true);
     queryClient.invalidateQueries({ queryKey: ["notifications"] });
   }, [open, queryClient]);

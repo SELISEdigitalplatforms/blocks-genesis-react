@@ -1,18 +1,9 @@
 import { logicClient } from "@/lib/http/instances";
 import type { INotification, INotificationConfig } from "@/models";
-
-const NOTIFIER_BASE = "/api/Notifier";
-const NOTIFICATION_BASE = "/api/Notification";
-
-export const NOTIFICATION_ENDPOINTS = {
-  GET_NOTIFICATIONS: `${NOTIFIER_BASE}/GetNotifications`,
-  MARK_AS_READ: `${NOTIFIER_BASE}/MarkNotificationAsRead`,
-  MARK_ALL_AS_READ: `${NOTIFIER_BASE}/MarkAllNotificationAsRead`,
-} as const;
-
-export const NOTIFICATION_CONFIG_ENDPOINTS = {
-  GET_CONFIGS: `${NOTIFICATION_BASE}/Gets`,
-} as const;
+import {
+  NOTIFICATION_ENDPOINTS,
+  NOTIFICATION_CONFIG_ENDPOINTS,
+} from "@/constants/endpoint.constant";
 
 export class NotificationService {
   private readonly logicService = logicClient;
@@ -82,9 +73,8 @@ export class NotificationService {
     errors: null | unknown;
     isSuccess: boolean;
   }> => {
-    return this.logicService.get(
-      `${NOTIFICATION_CONFIG_ENDPOINTS.GET_CONFIGS}?page=${page}&pageSize=${pageSize}&projectKey=${projectKey}`,
-    );
+    const url = `${NOTIFICATION_CONFIG_ENDPOINTS.GET_CONFIGS}?page=${page}&pageSize=${pageSize}&projectKey=${projectKey}`;
+    return this.logicService.get(url);
   };
 }
 

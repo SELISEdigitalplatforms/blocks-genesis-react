@@ -131,9 +131,11 @@
     "@blocks-kit/tsconfig": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "eslint": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "react-syntax-highlighter": "^16.1.1",
     "tsup": "catalog:",
     "typescript": "catalog:"
   },

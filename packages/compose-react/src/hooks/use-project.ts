@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { projectService } from "@/services/project.service";
 import { useProjectStore } from "@/store/project.store";
 
@@ -24,5 +24,64 @@ export const useGetProject = (options: { projectId: string }) => {
     queryKey: ["identifier", "project", options],
     queryFn: () => projectService.getProject(options),
     enabled: Boolean(options.projectId),
+  });
+};
+
+export const useGetEnvRepositories = (projectKey: string) => {
+  return useQuery({
+    queryKey: ["env-repositories", projectKey],
+    queryFn: () => projectService.getEnvRepositories(projectKey),
+    enabled: !!projectKey,
+  });
+};
+
+export const useUpdateRepositories = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["env-repositories", "update"],
+    mutationFn: projectService.repoUpdate,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["env-repositories"] });
+    },
+  });
+};
+
+export const useUpdateProject = (_: { projectKey: string }) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["identifier", "project-update"],
+    mutationFn: (payload: { name: string; tenantGroupId: string }) =>
+      projectService.updateTenantGroup(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["identifier", "project"] });
+      queryClient.invalidateQueries({ queryKey: ["identifier", "projects"] });
+    },
+  });
+};
+
+export const useValidateCNameProject = (options: { projectKey: string }) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["identifier", "projects", "validate cname"],
+    mutationFn: () => projectService.validateCNameProject(options),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["identifier", "project", options],
+      });
+    },
+  });
+};
+
+export const useDisableProject = (options: { projectKey: string }) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["identifier", "projects", "disable"],
+    mutationFn: () => projectService.disableProject(options),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["identifier", "project", options],
+      });
+      queryClient.invalidateQueries({ queryKey: ["identifier", "projects"] });
+    },
   });
 };
