@@ -84,11 +84,6 @@ export function useNotificationFeed(open: boolean) {
     });
   }, [markAllAsRead, queryClient]);
 
-  useEffect(() => {
-    console.log("notifications", notifications);
-    console.log("data", data);
-  }, [notifications, data]);
-
   return {
     notifications,
     isLoading,

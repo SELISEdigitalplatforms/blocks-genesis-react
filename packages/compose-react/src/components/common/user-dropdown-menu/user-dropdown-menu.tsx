@@ -48,7 +48,7 @@ function UserAvatar({ size = "sm" }: { size?: "sm" | "lg" }) {
 export function UserDropdownMenu() {
   const { user: userData } = useAuthStore();
   const { isPending, mutateAsync } = useLogout();
-  const { reset } = useProjectStore();
+  const { resetProjectStore } = useProjectStore();
   const { setUnAuthenticated, clearTokens } = useAuthStore();
   const { resetSelectedLanguages } = useLanguageViewStore();
 
@@ -60,7 +60,7 @@ export function UserDropdownMenu() {
   const handleLogout = async () => {
     try {
       await mutateAsync();
-      reset();
+      resetProjectStore();
       setUnAuthenticated();
       clearTokens();
       resetSelectedLanguages();

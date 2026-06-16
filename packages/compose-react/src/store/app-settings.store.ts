@@ -55,6 +55,7 @@ export const useAppSettingsStore = create<AppSettingsStoreState>()(
     (set, get) => ({
       settings: {
         theme: "system",
+        language: "en",
       },
       getSettings: () => get().settings,
       setSettings: (nextSettings) => {
@@ -64,7 +65,10 @@ export const useAppSettingsStore = create<AppSettingsStoreState>()(
         }));
       },
       resetSettings: () => {
-        set((state) => ({ ...state, settings: { theme: "system" } }));
+        set((state) => ({
+          ...state,
+          settings: { theme: "system", language: "en" },
+        }));
       },
     }),
     {
