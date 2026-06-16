@@ -4,6 +4,7 @@ import {
   EnvironmentList,
   Logo,
   ProjectList,
+  RenderAlternatively,
   Separator,
 } from "@/components";
 import { SidebarContext } from "@/contexts/dashboard-layout";
@@ -14,6 +15,7 @@ import { PanelLeft } from "lucide-react";
 import { Fragment, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { SideBarMenuProps } from "./types";
+import { useIcon } from "@/hooks/use-icon";
 
 export function SidebarMenuDesktop({
   redirectPaths,
@@ -21,6 +23,7 @@ export function SidebarMenuDesktop({
 }: SideBarMenuProps) {
   const { isSidebarOpen, toggleSidebar } = useContext(SidebarContext);
   const { appLightLogo, appDarkLogo } = useLogo();
+  const icon = useIcon();
   const allowedMenu = useFilteredMenus(navigationMenus);
   const { pathname } = useLocation();
 
@@ -38,12 +41,15 @@ export function SidebarMenuDesktop({
             isSidebarOpen ? "h-[36px] w-[72px]" : "h-8 w-8",
           )}
         >
-          <Logo
-            lightSrc={appLightLogo}
-            darkSrc={appDarkLogo}
-            alt="Logo"
-            className="h-full w-full object-contain"
-          />
+          <RenderAlternatively condition={isSidebarOpen}>
+            <Logo
+              lightSrc={appLightLogo}
+              darkSrc={appDarkLogo}
+              alt="Logo"
+              className="h-full w-full object-contain"
+            />
+            {icon}
+          </RenderAlternatively>
         </Link>
         {isSidebarOpen && (
           <Button
