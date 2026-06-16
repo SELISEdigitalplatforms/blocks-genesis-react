@@ -111,7 +111,7 @@ export class HttpClient {
       }
 
       const queryClient = getQueryClient();
-      useAuthStore.getState().reset();
+      useAuthStore.getState().resetAuthStore();
       useProjectStore.getState().resetProjectStore();
       queryClient.cancelQueries();
       queryClient.clear();
