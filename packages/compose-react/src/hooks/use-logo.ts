@@ -1,4 +1,4 @@
-import { useBlocksAppConfigStore } from "@/layouts";
+import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 
 export function useLogo() {
   const {

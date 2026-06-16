@@ -4,7 +4,7 @@ import {
   PopoverTrigger,
 } from "@/components/core/popover/popover";
 import { useTheme } from "@/hooks/use-theme";
-import { type RuntimeKey } from "@/layouts/blocksapp-layout";
+import { type RuntimeKey } from "@/layouts/blocks-app-layout";
 import { getRuntimeEnv } from "@/lib/runtime-env";
 import { cn, getForwardedToPath } from "@/lib/utils";
 import { Grip } from "lucide-react";
