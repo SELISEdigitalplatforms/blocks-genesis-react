@@ -1,13 +1,9 @@
+import { BlocksAppLayoutContext } from "@/contexts";
 import {
   CreateAppConfigStore,
   type AppConfigStoreState,
 } from "@/store/app-config.store";
-import { createContext, useContext, useState } from "react";
-import { useStore, type StoreApi } from "zustand";
-
-export const BlocksAppLayoutContext = createContext<
-  StoreApi<AppConfigStoreState> | undefined
->(undefined);
+import { useState } from "react";
 
 type BlocksAppLayoutProps = {
   children: React.ReactNode;
@@ -39,6 +35,9 @@ export type RuntimeKey =
   | "BLOCKS_RELEASE_BASE_URL"
   | "BLOCKS_RELEASE_CLIENT_ID"
   | "BLOCKS_RELEASE_CALLBACK_URL"
+  | "BLOCKS_STUDIO_BASE_URL"
+  | "BLOCKS_STUDIO_CLIENT_ID"
+  | "BLOCKS_STUDIO_CALLBACK_URL"
   | "BLOCKS_IAM_CALLBACK_URL"
   | "BLOCKS_IAM_CLIENT_ID"
   | "BLOCKS_IAM_BASE_URL"
@@ -85,17 +84,4 @@ export const BlocksAppLayout = ({ children, config }: BlocksAppLayoutProps) => {
       {children}
     </BlocksAppLayoutContext.Provider>
   );
-};
-
-export const useBlocksAppConfigStore = <T,>(
-  selector: (state: AppConfigStoreState) => T,
-): T => {
-  const context = useContext(BlocksAppLayoutContext);
-
-  if (!context) {
-    throw new Error(
-      "useBlocksAppConfigStore must be used within a BlocksAppLayout",
-    );
-  }
-  return useStore(context, selector);
 };
