@@ -1,6 +1,6 @@
-import type { BaseUser } from "../types/auth.types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { BaseUser } from "@/models";
 
 interface AuthStoreState {
   isAuthenticated: boolean;

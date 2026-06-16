@@ -14,7 +14,7 @@ import {
 } from "@/components/core/popover/popover";
 import { useProjectStore } from "@/store/project.store";
 import { ChevronRight, Settings2 } from "lucide-react";
-import type { IProject } from "@/services/project.service";
+import type { IProject } from "@/models";
 import { useStartImpersonation } from "@/hooks/use-auth-api";
 import { environmentOptions } from "@/constants/environment-options";
 

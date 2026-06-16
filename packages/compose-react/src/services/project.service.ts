@@ -1,41 +1,9 @@
-import { logicClient } from "@/lib/http";
-
-export interface IProject {
-  itemId: string;
-  createdDate: string;
-  lastUpdatedDate: string;
-  createdBy: string;
-  lastUpdatedBy: string;
-  organizationIds: string[];
-  tags: string[];
-  name: string;
-  applicationDomain: string;
-  customDomain: string;
-  isProduction: true;
-  tenantId: string;
-  isCookieEnable: boolean;
-  isDomainVerified: boolean;
-  cookieDomain: string;
-  isDisabled: boolean;
-  environment: string;
-  tenantGroupId: string;
-  tenantSlug: string;
-}
-
-export interface IGetProjectPayload {
-  projectId: string;
-}
-export interface IGetProjectResponse {
-  data: IProject;
-  errors: unknown | null;
-}
-
-export interface IProjectGroup {
-  tenantGroupId: string;
-  projects: IProject[];
-  nonSharedProject: IProject[];
-  isShared: boolean;
-}
+import { logicClient } from "@/lib/http/instances";
+import type {
+  IProjectGroup,
+  IGetProjectPayload,
+  IGetProjectResponse,
+} from "@/models";
 
 const PROJECT_SUBPATH = "Project";
 export const PROJECT_ENDPOINTS = {
