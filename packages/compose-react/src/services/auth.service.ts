@@ -1,4 +1,4 @@
-import { iamClient } from "@/lib/http";
+import { iamClient } from "@/lib/http/instances";
 
 export class AuthService {
   logout() {

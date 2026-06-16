@@ -9,7 +9,7 @@ import {
 import { useGetProject, useGetProjects } from "@/hooks/use-project";
 import { useProjectStore } from "@/store";
 
-import type { IProject } from "@/types";
+import type { IProject } from "@/models";
 import { FolderOpen, Loader } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";

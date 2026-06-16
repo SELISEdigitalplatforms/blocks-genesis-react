@@ -1,4 +1,4 @@
-import type { AuthTokenPair } from "@/types";
+import type { AuthTokenPair } from "@/models";
 
 export type HeadersInitValue =
   | [string, string][]

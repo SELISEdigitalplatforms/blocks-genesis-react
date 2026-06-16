@@ -7,7 +7,7 @@ import {
 } from "@/components/core/tooltip/tooltip";
 import { environmentOptions } from "@/constants/environment-options";
 import { useStartImpersonation } from "@/hooks/use-auth-api";
-import type { IProject } from "@/services/project.service";
+import type { IProject } from "@/models";
 import { useProjectStore } from "@/store/project.store";
 import { ChevronRightIcon, HourglassIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";

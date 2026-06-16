@@ -1,6 +1,6 @@
-import type { IProject } from "@/services/project.service";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { IProject } from "@/models";
 
 export interface ProjectStoreState {
   projects: IProject[];
@@ -23,7 +23,10 @@ export const useProjectStore = create<ProjectStoreState>()(
       selectedTenantGroup: null,
       setSelectedProject(project) {
         set((state) => ({ ...state, selectedProject: project }));
-        set((state) => ({ ...state, selectedTenantGroup: project.tenantGroupId ?? null }));
+        set((state) => ({
+          ...state,
+          selectedTenantGroup: project.tenantGroupId ?? null,
+        }));
       },
       resetSelectedProject() {
         set((state) => ({ ...state, selectedProject: null }));
@@ -35,7 +38,11 @@ export const useProjectStore = create<ProjectStoreState>()(
         set((state) => ({ ...state, projects: [] }));
       },
       reset() {
-        set(() => ({ projects: [], selectedProject: null, selectedTenantGroup: null }));
+        set(() => ({
+          projects: [],
+          selectedProject: null,
+          selectedTenantGroup: null,
+        }));
       },
       setTenantGroup(tenantGroupId) {
         set((state) => ({ ...state, selectedTenantGroup: tenantGroupId }));
@@ -44,6 +51,6 @@ export const useProjectStore = create<ProjectStoreState>()(
         set((state) => ({ ...state, selectedTenantGroup: null }));
       },
     }),
-    { name: "blocks-kit-project-store" },
+    { name: "project-storage" },
   ),
 );

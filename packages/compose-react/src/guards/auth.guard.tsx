@@ -1,12 +1,11 @@
-import { iamClient } from "@/lib/http";
+import { iamClient } from "@/lib/http/instances";
 import { useEffect, useRef } from "react";
 import { useAuthStore } from "../store/auth.store";
-import type { BaseUser } from "@/types";
+import type { BaseUser } from "@/models";
 
 export function AuthResolver({ children }: { children: React.ReactNode }) {
   const { setUser, setAuthenticated, setUnAuthenticated } = useAuthStore();
   const hasResolved = useRef(false);
-  //   const { isMounted, } = useAppState();
 
   useEffect(() => {
     if (hasResolved.current) return;

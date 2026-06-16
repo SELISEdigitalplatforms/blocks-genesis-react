@@ -5,7 +5,7 @@ import {
   MaskedText,
   Skeleton,
 } from "@/index";
-import type { IProject } from "@/services/project.service";
+import type { IProject } from "@/models";
 import { environmentOptions } from "@/constants/environment-options";
 import type { ReactNode } from "react";
 import { getProjectBlocksApiUrl } from "@/lib/domain";

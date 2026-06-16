@@ -3,8 +3,6 @@ import { CookieStorage } from "@/lib/cookie-storage";
 import { create } from "zustand";
 import { persist, type PersistStorage } from "zustand/middleware";
 
-const APP_SETTINGS_STORE_NAME = "app-settings-store";
-
 const resolveCookieDomain = () => {
   const hostname = new URL(window.location.origin).hostname;
   if (!hostname) return undefined;
@@ -52,10 +50,6 @@ const perSistStorage: PersistStorage<AppSettingsPersistedState> = {
 
 const APP_SETTINGS_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 
-// window.addEventListener("visibilitychange", () => {
-//   if (!document.hidden) useAppSettingsStore.persist.rehydrate();
-// });
-
 export const useAppSettingsStore = create<AppSettingsStoreState>()(
   persist(
     (set, get) => ({
@@ -74,7 +68,7 @@ export const useAppSettingsStore = create<AppSettingsStoreState>()(
       },
     }),
     {
-      name: APP_SETTINGS_STORE_NAME,
+      name: "app-settings-storage",
       storage: perSistStorage,
     },
   ),

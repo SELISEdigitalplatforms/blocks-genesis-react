@@ -1,23 +1,9 @@
-import { iamClient } from "@/lib/http";
-
-export interface ImpersonationRequest {
-  targeted_tenant_id: string;
-  orgId?: string;
-  organizationId?: string;
-}
-
-export interface ImpersonationState {
-  rootTenantId: string;
-  targeted_tenant_id: string;
-  orgId: string;
-  startedAtUtc: string;
-}
-
-export interface ImpersonationStatusResponse {
-  impersonated: boolean;
-  originalTenantId: string;
-  impersonatedTenantId: string | null;
-}
+import { iamClient } from "@/lib/http/instances";
+import type {
+  ImpersonationRequest,
+  ImpersonationState,
+  ImpersonationStatusResponse,
+} from "@/models/impersonation.model";
 
 const AUTH_SUBPATH = "/auth";
 const IMPERSONATE_ENDPOINTS = {

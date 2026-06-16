@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/auth.store";
 
-export const useAppState = () => {
+const useAppState = () => {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {

@@ -5,7 +5,7 @@ import {
   useStopImpersonation,
 } from "@/hooks/use-auth-api";
 import { useGetProjects } from "@/hooks/use-project";
-import type { ImpersonationRequest } from "@/services/impersonation.service";
+import type { ImpersonationRequest } from "@/models";
 import { useImpersonateStore, useProjectStore } from "@/store";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { projectService } from "@/services/project.service";

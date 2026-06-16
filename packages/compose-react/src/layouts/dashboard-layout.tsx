@@ -2,7 +2,7 @@ import { DashboardHeader, SidebarMenuDesktop } from "@/components";
 import {
   ImpersonationChecker,
   ImpersonationSynchronizer,
-} from "@/guards/impersonation-guard";
+} from "@/guards/impersonation.guard";
 import type * as React from "react";
 import type { LayoutProps } from "./layout.types";
 import { DashboardLayoutProvider } from "@/contexts/dashboard-layout/dashboard-layout-provider";

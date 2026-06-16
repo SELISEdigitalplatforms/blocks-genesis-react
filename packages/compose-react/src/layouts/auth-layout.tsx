@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type * as React from "react";
-import { PublicGuard } from "../guards/public-guard";
+import { PublicGuard } from "../guards/public.guard";
 
 interface AuthLayoutProps {
   children?: React.ReactNode;
@@ -16,7 +16,9 @@ export function AuthLayout({ children, logo, sidePanel }: AuthLayoutProps) {
           {logo}
           <div className="mt-10 flex w-full max-w-6xl flex-col gap-8 lg:flex-row lg:items-start lg:justify-center">
             <div className="w-full max-w-xl">{children}</div>
-            {sidePanel ? <div className="w-full max-w-xl">{sidePanel}</div> : null}
+            {sidePanel ? (
+              <div className="w-full max-w-xl">{sidePanel}</div>
+            ) : null}
           </div>
         </div>
       </PublicGuard>
