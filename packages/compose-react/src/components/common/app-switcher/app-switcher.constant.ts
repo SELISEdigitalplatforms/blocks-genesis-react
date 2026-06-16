@@ -16,6 +16,8 @@ import ReleaseIconLight from "@/assets/images/apps/release-app-dark.svg";
 import ReleaseIconDark from "@/assets/images/apps/release-app-light.svg";
 import UtilitiesIconLight from "@/assets/images/apps/utilities-app-dark.svg";
 import UtilitiesIconDark from "@/assets/images/apps/utilities-app-light.svg";
+import StudioIconLight from "@/assets/images/apps/studio-app-dark.svg";
+import StudioIconDark from "@/assets/images/apps/studio-app-light.svg";
 import type { BlocksApp } from "./app-switcher";
 
 export const APP_SWITCHER_DATA: BlocksApp[] = [
@@ -142,6 +144,20 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     },
     clientId: "BLOCKS_RELEASE_CLIENT_ID",
     redirectUri: "BLOCKS_RELEASE_CALLBACK_URL",
+    initiateUrl: "",
+    isLoading: false,
+  },
+  {
+    key: "blocks-studio",
+    label: "Studio",
+    description: "Development Platform",
+    url: window.process?.env.BLOCKS_STUDIO_BASE_URL || "",
+    icon: {
+      darkModeIcon: StudioIconDark,
+      lightModeIcon: StudioIconLight,
+    },
+    clientId: "BLOCKS_STUDIO_CLIENT_ID",
+    redirectUri: "BLOCKS_STUDIO_CALLBACK_URL",
     initiateUrl: "",
     isLoading: false,
   },

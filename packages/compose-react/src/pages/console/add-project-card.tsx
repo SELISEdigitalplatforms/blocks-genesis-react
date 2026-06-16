@@ -1,11 +1,11 @@
 import { APP_SWITCHER_DATA } from "@/components";
 import { Card, CardContent } from "@/components/core/card/card";
-import { useBlocksAppConfigStore } from "@/layouts";
 import { getRuntimeEnv } from "@/lib/runtime-env";
 import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib";
+import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 
 export const AddProjectCard = () => {
   const { name } = useBlocksAppConfigStore((state) => state.config);
@@ -14,9 +14,11 @@ export const AddProjectCard = () => {
 
   const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
   const [isFetching, setIsFetching] = useState(false);
+  const hasInitiated = useRef(false);
 
   useEffect(() => {
-    if (name === "blocks-os" || !osApp) return;
+    if (name === "blocks-os" || !osApp || hasInitiated.current) return;
+    hasInitiated.current = true;
 
     const prefetch = async () => {
       try {
@@ -74,7 +76,8 @@ export const AddProjectCard = () => {
           isFetching || (name !== "blocks-os" && !redirectUrl)
             ? "none"
             : "auto",
-      }}>
+      }}
+    >
       <CardContent className="p-0 text-center">
         <div className="flex justify-center">
           <Plus className="text-primary" strokeWidth={2} size={50} />

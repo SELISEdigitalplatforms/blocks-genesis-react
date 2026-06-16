@@ -4,10 +4,7 @@ import {
   PopoverTrigger,
 } from "@/components/core/popover/popover";
 import { useTheme } from "@/hooks/use-theme";
-import {
-  useBlocksAppConfigStore,
-  type RuntimeKey,
-} from "@/layouts/blocksapp-layout";
+import { type RuntimeKey } from "@/layouts/blocksapp-layout";
 import { getRuntimeEnv } from "@/lib/runtime-env";
 import { cn, getForwardedToPath } from "@/lib/utils";
 import { Grip } from "lucide-react";
@@ -15,6 +12,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { APP_SWITCHER_DATA } from "./app-switcher.constant";
 import type { ServiceName } from "@/store";
 import type { ForwardToPaths } from "@/types";
+import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 
 export interface BlocksApp {
   key: ServiceName;
