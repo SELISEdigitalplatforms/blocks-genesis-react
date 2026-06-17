@@ -15,6 +15,7 @@ import { useAuthStore, useProjectStore } from "@/store";
 
 let isRefreshing = false;
 let requestQueue: RequestQueueItem<unknown>[] = [];
+const excludedPaths = ["/login", "/signup"];
 
 export class HttpClient {
   private baseURL: string | (() => string);
@@ -115,11 +116,17 @@ export class HttpClient {
       useProjectStore.getState().resetProjectStore();
       queryClient.cancelQueries();
       queryClient.clear();
-      if (
-        typeof window !== "undefined" &&
-        !window.location.pathname.includes("login")
-      ) {
-        window.location.replace("/login");
+
+      if (typeof window !== "undefined") {
+        const { pathname } = window.location;
+
+        const shouldRedirect = !excludedPaths.some((path) =>
+          pathname.startsWith(path),
+        );
+
+        if (shouldRedirect) {
+          window.location.replace("/login");
+        }
       }
     } finally {
       isRefreshing = false;

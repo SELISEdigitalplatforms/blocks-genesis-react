@@ -41,21 +41,15 @@ export type RuntimeKey =
   | "BLOCKS_IAM_CALLBACK_URL"
   | "BLOCKS_IAM_CLIENT_ID"
   | "BLOCKS_IAM_BASE_URL"
-  | "BLOCKS_OS_API_BASE_URL"
-  | "BLOCKS_API_BASE_URL"
   | "BLOCKS_X_BLOCKS_KEY"
   | "BLOCKS_GOOGLE_SITE_KEY"
   | "BLOCKS_CONSTRUCT_URL"
   | "BLOCKS_GITHUB_SSO_CLIENT_ID"
-  | "BLOCKS_AGENT_API_BASE_URL"
-  | "BLOCKS_EUROLM_API_BASE_URL"
-  | "BLOCKS_UTILITIES_API_BASE_URL"
-  | "BLOCKS_IDP_BASE_URL"
-  | "BLOCKS_UDS_API_BASE_URL"
   | "BLOCKS_OIDC_CLIENT_ID"
+  | "BLOCKS_PUBLIC_API_BASE_URL"
   | "projectBaseUrl"
   | "userBaseUrl"
-  | "BLOCKS_PUBLIC_API_BASE_URL";
+  | "notificationBaseUrl";
 
 declare global {
   interface Window {
@@ -70,13 +64,20 @@ export const BlocksAppLayout = ({ children, config }: BlocksAppLayoutProps) => {
   const [store] = useState(() => CreateAppConfigStore(config));
   if (window && window.process && config) {
     const projectBaseUrlKey =
-      (config.projectBaseUrlKey as RuntimeKey) ?? "BLOCKS_OS_API_BASE_URL";
+      config.name === "blocks-os"
+        ? "BLOCKS_OS_BASE_URL"
+        : "BLOCKS_LOGIC_BASE_URL";
     window.process.env.projectBaseUrl =
       window.process.env[projectBaseUrlKey] ?? "";
 
-    const userBaseUrlKey = config.userBaseUrlKey as RuntimeKey;
+    const userBaseUrlKey = "BLOCKS_IAM_BASE_URL";
     window.process.env["userBaseUrl"] = userBaseUrlKey
       ? window.process?.env[userBaseUrlKey] || ""
+      : "";
+
+    const notificationBaseUrlKey = "BLOCKS_LOGIC_BASE_URL";
+    window.process.env["notificationBaseUrl"] = notificationBaseUrlKey
+      ? window.process?.env[notificationBaseUrlKey] || ""
       : "";
   }
   return (

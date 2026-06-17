@@ -14,13 +14,13 @@ import OsIconLight from "@/assets/images/apps/os-app-dark.svg";
 import OsIconDark from "@/assets/images/apps/os-app-light.svg";
 import ReleaseIconLight from "@/assets/images/apps/release-app-dark.svg";
 import ReleaseIconDark from "@/assets/images/apps/release-app-light.svg";
-import UtilitiesIconLight from "@/assets/images/apps/utilities-app-dark.svg";
-import UtilitiesIconDark from "@/assets/images/apps/utilities-app-light.svg";
 import StudioIconLight from "@/assets/images/apps/studio-app-dark.svg";
 import StudioIconDark from "@/assets/images/apps/studio-app-light.svg";
+import UtilitiesIconLight from "@/assets/images/apps/utilities-app-dark.svg";
+import UtilitiesIconDark from "@/assets/images/apps/utilities-app-light.svg";
 import type { BlocksApp } from "./app-switcher";
 
-export const APP_SWITCHER_DATA: BlocksApp[] = [
+const APP_SWITCHER_DATA: BlocksApp[] = [
   {
     key: "blocks-iam",
     label: "IAM",
@@ -34,6 +34,7 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     redirectUri: "BLOCKS_IAM_CALLBACK_URL",
     initiateUrl: "",
     isLoading: false,
+    isDisabled: false,
   },
   {
     key: "blocks-localization",
@@ -48,6 +49,7 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     redirectUri: "BLOCKS_LOCALIZATION_CALLBACK_URL",
     initiateUrl: "",
     isLoading: false,
+    isDisabled: false,
   },
   {
     key: "blocks-agents",
@@ -62,6 +64,7 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     redirectUri: "BLOCKS_AGENTS_CALLBACK_URL",
     initiateUrl: "",
     isLoading: false,
+    isDisabled: false,
   },
   {
     key: "blocks-data",
@@ -76,6 +79,7 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     redirectUri: "BLOCKS_DATA_CALLBACK_URL",
     initiateUrl: "",
     isLoading: false,
+    isDisabled: false,
   },
   {
     key: "blocks-os",
@@ -90,6 +94,7 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     redirectUri: "BLOCKS_OS_CALLBACK_URL",
     initiateUrl: "",
     isLoading: false,
+    isDisabled: false,
   },
   {
     key: "blocks-utilities",
@@ -104,6 +109,7 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     redirectUri: "BLOCKS_UTILITIES_CALLBACK_URL",
     initiateUrl: "",
     isLoading: false,
+    isDisabled: false,
   },
   {
     key: "blocks-logic",
@@ -118,6 +124,7 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     redirectUri: "BLOCKS_LOGIC_CALLBACK_URL",
     initiateUrl: "",
     isLoading: false,
+    isDisabled: false,
   },
   {
     key: "blocks-monitor",
@@ -132,6 +139,7 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     redirectUri: "BLOCKS_MONITOR_CALLBACK_URL",
     initiateUrl: "",
     isLoading: false,
+    isDisabled: false,
   },
   {
     key: "blocks-release",
@@ -146,6 +154,7 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     redirectUri: "BLOCKS_RELEASE_CALLBACK_URL",
     initiateUrl: "",
     isLoading: false,
+    isDisabled: false,
   },
   {
     key: "blocks-studio",
@@ -160,5 +169,12 @@ export const APP_SWITCHER_DATA: BlocksApp[] = [
     redirectUri: "BLOCKS_STUDIO_CALLBACK_URL",
     initiateUrl: "",
     isLoading: false,
+    isDisabled: () => {
+      return !window.location.origin.includes("dev");
+    },
   },
 ];
+
+export const filteredAppSwitcherData = APP_SWITCHER_DATA.filter((app) =>
+  typeof app.isDisabled === "function" ? !app.isDisabled() : !app.isDisabled,
+);

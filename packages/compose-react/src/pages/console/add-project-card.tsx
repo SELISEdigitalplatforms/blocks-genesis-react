@@ -1,4 +1,4 @@
-import { APP_SWITCHER_DATA } from "@/components";
+import { filteredAppSwitcherData } from "@/components";
 import { Card, CardContent } from "@/components/core/card/card";
 import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { getRuntimeEnv } from "@/lib/runtime-env";
@@ -10,7 +10,7 @@ import { cn } from "@/lib";
 export const AddProjectCard = () => {
   const { name } = useBlocksAppConfigStore((state) => state.config);
   const navigate = useNavigate();
-  const osApp = APP_SWITCHER_DATA.find((app) => app.key === "blocks-os");
+  const osApp = filteredAppSwitcherData.find((app) => app.key === "blocks-os");
 
   const { isFetching, isReady, redirect } = usePrefetchRedirect({
     clientId: osApp ? getRuntimeEnv(osApp.clientId) : "",

@@ -12,7 +12,7 @@ export const logicClient = new HttpClient({
   blocksKey: () => getRuntimeEnv("BLOCKS_X_BLOCKS_KEY"),
 });
 
-export const osClient = new HttpClient({
-  baseURL: () => resolveBaseUrl("os"),
+export const notificationClient = new HttpClient({
+  baseURL: () => resolveBaseUrl("notification"),
   blocksKey: () => getRuntimeEnv("BLOCKS_X_BLOCKS_KEY"),
 });
