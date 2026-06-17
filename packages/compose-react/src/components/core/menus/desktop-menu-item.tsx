@@ -1,4 +1,4 @@
-import { useMemo, isValidElement } from "react";
+import { useMemo, isValidElement, useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -22,7 +22,7 @@ function ChildMenuItem({ menu }: { menu: MenuItemType }) {
     <Link
       to={menu.path}
       className={cn(
-        "flex h-10 items-center px-4 py-1.5 text-base transition-colors hover:text-[hsl(var(--high-emphasis))]",
+        "flex h-10 items-center px-4 py-1.5 text-sm transition-colors hover:text-[hsl(var(--high-emphasis))]",
         isActiveMenu && "!text-primary",
         menu.disabled && "pointer-events-none cursor-not-allowed opacity-50",
       )}
@@ -52,11 +52,27 @@ export function DesktopMenuItem({
     return allPaths.some((item) => pathname.startsWith(item));
   }, [menu.children, menu.path, pathname]);
 
+  // Auto-expand if a child route is currently active
+  const hasActiveChild = useMemo(
+    () =>
+      menu.children?.some(
+        (child) => child.type === "menu" && pathname.startsWith(child.path),
+      ) ?? false,
+    [menu.children, pathname],
+  );
+
+  const [isOpen, setIsOpen] = useState(hasActiveChild);
+
   const hasChildren = Boolean(menu.children?.length);
 
   const baseClasses = cn(
     "relative flex h-10 cursor-pointer items-center gap-3 px-4 py-1.5 text-base text-[hsl(var(--low-emphasis))] hover:text-[hsl(var(--high-emphasis))]",
     isActiveMenu && "!text-primary",
+  );
+
+  const filteredChildren = menu.children?.filter(
+    (subMenu): subMenu is MenuItemType =>
+      subMenu.type === "menu" && !subMenu.disabled,
   );
 
   if (!hasChildren) {
@@ -96,11 +112,38 @@ export function DesktopMenuItem({
     );
   }
 
+  // Collapsed sidebar — keep hover flyout to the right (no chevron visible to click)
+  if (!isSidebarOpen) {
+    return (
+      <div className={cn(baseClasses, "group")}>
+        <div className="flex items-center gap-3">
+          {renderIcon(menu.icon, "h-5 w-5")}
+        </div>
+        <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 rounded bg-gray-300 px-2 py-1 text-xs text-primary opacity-0 transition-opacity group-hover:opacity-100">
+          <span className="whitespace-nowrap">{menu.name}</span>
+        </div>
+        {isActiveMenu ? (
+          <div className="absolute right-0 top-2.5 h-5 w-1 rounded-lg bg-primary" />
+        ) : null}
+        <div className="absolute left-full top-0 z-10 hidden w-64 flex-col rounded-sm border bg-background py-2 group-hover:flex group-hover:text-[hsl(var(--low-emphasis))]">
+          {filteredChildren?.map((subMenu) => (
+            <ChildMenuItem key={subMenu.id} menu={subMenu} />
+          ))}
+        </div>
+        <div className="absolute left-full top-0 hidden h-full w-1 bg-transparent group-hover:block" />
+      </div>
+    );
+  }
+
+  // Expanded sidebar — click-to-toggle accordion below the parent
   return (
-    <div className={cn(baseClasses, "group")}>
-      <div className="flex items-center gap-3">
-        {renderIcon(menu.icon, "h-5 w-5")}
-        {isSidebarOpen ? (
+    <div>
+      <div
+        className={cn(baseClasses, "justify-between")}
+        onClick={() => setIsOpen((prev) => !prev)}
+      >
+        <div className="flex items-center gap-3">
+          {renderIcon(menu.icon, "h-5 w-5")}
           <span className="relative">
             {menu.name}
             {menu.badge ? (
@@ -112,29 +155,25 @@ export function DesktopMenuItem({
               </Badge>
             ) : null}
           </span>
+        </div>
+        <ChevronRight
+          className={cn(
+            "ml-auto h-4 w-4 shrink-0 transition-transform duration-200",
+            isOpen && "rotate-90",
+          )}
+        />
+        {isActiveMenu ? (
+          <div className="absolute right-0 top-2.5 h-5 w-1 rounded-lg bg-primary" />
         ) : null}
       </div>
-      {!isSidebarOpen ? (
-        <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 rounded bg-gray-300 px-2 py-1 text-xs text-primary opacity-0 transition-opacity group-hover:opacity-100">
-          <span className="whitespace-nowrap">{menu.name}</span>
-        </div>
-      ) : null}
-      {isSidebarOpen ? <ChevronRight className="ml-auto h-4 w-4" /> : null}
-      {isActiveMenu ? (
-        <div className="absolute right-0 top-2.5 h-5 w-1 rounded-lg bg-primary" />
-      ) : null}
 
-      <div className="absolute left-full top-0 z-10 hidden w-64 flex-col rounded-sm border bg-background py-2 group-hover:flex group-hover:text-[hsl(var(--low-emphasis))]">
-        {menu.children
-          ?.filter(
-            (subMenu): subMenu is MenuItemType =>
-              subMenu.type === "menu" && !subMenu.disabled,
-          )
-          .map((subMenu) => (
+      {isOpen ? (
+        <div className="ml-4 flex flex-col border-l border-border">
+          {filteredChildren?.map((subMenu) => (
             <ChildMenuItem key={subMenu.id} menu={subMenu} />
           ))}
-      </div>
-      <div className="absolute left-full top-0 hidden h-full w-1 bg-transparent group-hover:block" />
+        </div>
+      ) : null}
     </div>
   );
 }
