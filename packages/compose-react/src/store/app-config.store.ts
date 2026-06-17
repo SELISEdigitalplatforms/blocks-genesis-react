@@ -14,11 +14,7 @@ export type ServiceName =
 
 export interface AppConfig {
   name: ServiceName;
-  envPrefix?: string;
-  loginInitiateUrl?: string;
-  projectBaseUrlKey?: string;
-  userBaseUrlKey?: string;
-  appLogoUrl?:
+  appLogoUrl:
     | {
         dark?: string;
         light?: string;
@@ -35,7 +31,7 @@ export interface AppConfigStoreState {
 
 export const CreateAppConfigStore = (initialConfig?: Partial<AppConfig>) =>
   createStore<AppConfigStoreState>()((set, get) => ({
-    config: { name: "blocks-os", ...initialConfig },
+    config: { name: "blocks-os", appLogoUrl: "", ...initialConfig },
     getConfig: () => get().config,
     setConfig: (nextConfig) => {
       set((state) => ({
@@ -46,7 +42,7 @@ export const CreateAppConfigStore = (initialConfig?: Partial<AppConfig>) =>
     resetConfig: () => {
       set((state) => ({
         ...state,
-        config: { name: "blocks-os", loginInitiateUrl: undefined },
+        config: { name: "blocks-os", appLogoUrl: "", ...initialConfig },
       }));
     },
   }));

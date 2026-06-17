@@ -3,17 +3,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/core/popover/popover";
+import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { useTheme } from "@/hooks/use-theme";
 import { type RuntimeKey } from "@/layouts/blocks-app-layout";
 import { getRuntimeEnv } from "@/lib/runtime-env";
 import { cn, getForwardedToPath } from "@/lib/utils";
-import { Grip } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { APP_SWITCHER_DATA } from "./app-switcher.constant";
+import { initiateService } from "@/services/initiate.service";
 import type { ServiceName } from "@/store";
 import type { ForwardToPaths } from "@/types";
-import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
-import { initiateService } from "@/services/initiate.service";
+import { Grip } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { filteredAppSwitcherData } from "./app-switcher.constant";
 
 export interface BlocksApp {
   key: ServiceName;
@@ -28,6 +28,7 @@ export interface BlocksApp {
   redirectUri: RuntimeKey;
   initiateUrl: string;
   isLoading: boolean;
+  isDisabled: boolean | (() => boolean);
 }
 
 interface AppTileProps {
@@ -98,7 +99,7 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
   );
 
   const filteredApps = useMemo(
-    () => APP_SWITCHER_DATA.filter((app) => app.key !== config.name),
+    () => filteredAppSwitcherData.filter((app) => app.key !== config.name),
     [config.name],
   );
 
