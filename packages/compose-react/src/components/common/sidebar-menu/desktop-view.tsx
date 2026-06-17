@@ -80,7 +80,7 @@ export function SidebarMenuDesktop({
           </div>
         ))}
       <div className="flex-1 overflow-auto">
-        <nav className={cn("grid w-full items-start gap-1 p-2 text-sm")}>
+        <nav className={cn("grid w-full items-start gap-1 text-sm")}>
           {allowedMenu.map((menu) => (
             <Fragment key={menu.id}>
               {menu.type === "menu" ? (
