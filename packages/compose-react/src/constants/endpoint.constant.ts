@@ -44,3 +44,18 @@ export const PROJECT_ENDPOINTS = {
   REPOS_LIST: `${API_BASE}/${DEPLOYMENT_SUBPATH}/GetReposList`,
   REPO_UPDATE: `${API_BASE}/${BUILD_SUBPATH}/repo-update`,
 } as const;
+
+const IAM_SUBPATH = "iam";
+
+export const ORGANIZATION_ENDPOINTS = {
+  GET_ORGANIZATIONS: `${API_BASE}/${IAM_SUBPATH}/organizations`,
+  GET_ORGANIZATION: `${API_BASE}/${IAM_SUBPATH}/organization`,
+  CREATE_ORGANIZATION: `${API_BASE}/${IAM_SUBPATH}/organizations/create`,
+  SAVE_ORGANIZATION: `${API_BASE}/${IAM_SUBPATH}/organizations`,
+  UPDATE_ORGANIZATION: `${API_BASE}/${IAM_SUBPATH}/organizations`,
+  GET_ORGANIZATION_CONFIG: `${API_BASE}/${IAM_SUBPATH}/organizations/config`,
+  SAVE_ORGANIZATION_CONFIG: `${API_BASE}/${IAM_SUBPATH}/organizations/config`,
+  GET_MY_ORGANIZATIONS: `${API_BASE}/${IAM_SUBPATH}/organizations/my`,
+  GET_SIGNUP_SETTING: `${API_BASE}/${IAM_SUBPATH}/signup-settings`,
+  SAVE_SIGNUP_SETTING: `${API_BASE}/${IAM_SUBPATH}/signup-settings`,
+} as const;
