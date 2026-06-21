@@ -30,9 +30,10 @@ export interface RequestOptions extends HttpClientOptions {
 
 export interface RequestQueueItem<T> {
   url: string;
-  requestOption: RequestOptions;
+  retry: () => Promise<T>;
   resolve: (value: T | PromiseLike<T>) => void;
   reject: (reason?: unknown) => void;
+  requestOption?: RequestOptions;
 }
 
 export interface HttpClientConfig {

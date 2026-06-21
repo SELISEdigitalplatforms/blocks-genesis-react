@@ -135,6 +135,8 @@ export function UserDropdownMenu() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
+        <DropdownMenuSeparator className="my-0 bg-border/80" />
+
         {/* Organizations */}
         <DropdownMenuGroup className="p-1.5">
           <DropdownMenuLabel className="flex items-center gap-4 px-4 py-3.5 text-sm font-medium text-muted-foreground/70">
