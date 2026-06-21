@@ -1,22 +1,21 @@
-import { Card, CardTitle } from "@/components/core/card/card";
 import { Button } from "@/components/core/button/button";
-import { useNavigate } from "react-router-dom";
-import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/core/tooltip/tooltip";
+import { Card, CardTitle } from "@/components/core/card/card";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/core/popover/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/core/tooltip/tooltip";
+import { environmentOptions } from "@/constants/environment-options";
+import type { IProject } from "@/models";
 import { useProjectStore } from "@/store/project.store";
 import { ChevronRight, Settings2 } from "lucide-react";
-import type { IProject } from "@/models";
-import { useStartImpersonation } from "@/hooks/use-auth-api";
-import { environmentOptions } from "@/constants/environment-options";
+import { useNavigate } from "react-router-dom";
 
 const INLINE_LIMIT = 3;
 
@@ -26,7 +25,6 @@ type ProjectCardProps = {
 };
 
 export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
-  const { mutateAsync } = useStartImpersonation();
   const navigate = useNavigate();
   const { setTenantGroup, setSelectedProject } = useProjectStore();
 
@@ -36,17 +34,14 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
   };
 
   const onEnvBadgeClick = async (e: React.MouseEvent, envProject: IProject) => {
+    e.stopPropagation();
     try {
-      e.stopPropagation();
-      const _res = await mutateAsync({
-        targeted_tenant_id: envProject.tenantId,
-      });
       setTenantGroup(envProject.tenantGroupId);
       setSelectedProject(envProject);
       navigate("/dashboard");
       window.location.reload();
     } catch (err) {
-      console.log("Failed to switch environment", err);
+      console.error("Failed to switch environment", err);
     }
   };
 
