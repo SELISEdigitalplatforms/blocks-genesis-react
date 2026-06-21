@@ -13,11 +13,12 @@ import { HttpError } from "./error";
 import { getQueryClient } from "@/providers";
 import { useAuthStore, useProjectStore } from "@/store";
 
-let isRefreshing = false;
-let requestQueue: RequestQueueItem<unknown>[] = [];
-const excludedPaths = ["/login", "/signup"];
-
 export class HttpClient {
+  private static isRefreshing = false;
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
+  private static requestQueue: RequestQueueItem<any>[] = [];
+  private static readonly excludedPaths = ["/login", "/signup"];
+
   private baseURL: string | (() => string);
   private blocksKey: string | (() => string);
   private onTokenRefresh?: () => Promise<AuthTokenPair>;
@@ -72,10 +73,10 @@ export class HttpClient {
   }
 
   private async refreshAccessToken() {
-    if (isRefreshing) return;
+    if (HttpClient.isRefreshing) return;
 
     try {
-      isRefreshing = true;
+      HttpClient.isRefreshing = true;
       if (this.onTokenRefresh) await this.onTokenRefresh();
 
       const formData = new URLSearchParams();
@@ -99,16 +100,16 @@ export class HttpClient {
 
       if (!response.ok) throw new Error("Failed to refresh token");
 
-      while (requestQueue.length > 0) {
-        const { url, requestOption, resolve, reject } = requestQueue.shift()!;
-        this.request(url, requestOption).then(resolve).catch(reject);
+      while (HttpClient.requestQueue.length > 0) {
+        const queued = HttpClient.requestQueue.shift()!;
+        queued.retry().then(queued.resolve).catch(queued.reject);
       }
     } catch (error) {
       if (this.onUnauthorized) this.onUnauthorized(error);
 
-      while (requestQueue.length > 0) {
-        const queued = requestQueue.shift();
-        queued?.reject(error);
+      const queuedRequests = HttpClient.requestQueue;
+      for (const queued of queuedRequests) {
+        queued.retry().then(queued.resolve).catch(queued.reject);
       }
 
       const queryClient = getQueryClient();
@@ -120,7 +121,7 @@ export class HttpClient {
       if (typeof window !== "undefined") {
         const { pathname } = window.location;
 
-        const shouldRedirect = !excludedPaths.some((path) =>
+        const shouldRedirect = !HttpClient.excludedPaths.some((path) =>
           pathname.startsWith(path),
         );
 
@@ -129,8 +130,8 @@ export class HttpClient {
         }
       }
     } finally {
-      isRefreshing = false;
-      requestQueue = [];
+      HttpClient.isRefreshing = false;
+      HttpClient.requestQueue = [];
     }
   }
 
@@ -178,13 +179,15 @@ export class HttpClient {
 
       if (response.status === 401 && !skipTokenRotation) {
         return new Promise<T>((resolve, reject) => {
-          requestQueue.push({
+          HttpClient.requestQueue.push({
             url,
             requestOption,
-            resolve: resolve as (value: unknown | PromiseLike<unknown>) => void,
+            retry: () =>
+              this.request(url, { ...requestOption, skipTokenRotation: true }),
+            resolve,
             reject,
           });
-          if (!isRefreshing) this.refreshAccessToken();
+          if (!HttpClient.isRefreshing) this.refreshAccessToken();
         });
       }
 
@@ -285,17 +288,41 @@ export class HttpClient {
       absoluteUrl = false,
       skipBlocksKey = false,
       withCredentials = true,
+      skipTokenRotation = false,
     } = options || {};
 
     const fullUrl = absoluteUrl ? url : `${this.getBaseURL()}${url}`;
     const normalizedHeaders = this.normalizeHeaders(headers, skipBlocksKey);
 
-    const response = await fetch(fullUrl, {
+    const config: RequestInit = {
       method: "POST",
       headers: normalizedHeaders,
       credentials: withCredentials ? "include" : "omit",
       body: typeof body === "string" ? body : JSON.stringify(body),
-    });
+    };
+
+    const response = await fetch(fullUrl, config);
+
+    if (response.status === 401 && !skipTokenRotation) {
+      return new Promise<ReadableStream<Uint8Array>>((resolve, reject) => {
+        HttpClient.requestQueue.push({
+          url,
+          retry: () =>
+            this.stream(url, body, headers, {
+              absoluteUrl,
+              skipBlocksKey,
+              withCredentials,
+              skipTokenRotation: true,
+            }),
+          resolve,
+          reject,
+        });
+
+        if (!HttpClient.isRefreshing) {
+          this.refreshAccessToken();
+        }
+      });
+    }
 
     if (!response.ok) {
       const errorBody = await response.json().catch(() => ({}));
