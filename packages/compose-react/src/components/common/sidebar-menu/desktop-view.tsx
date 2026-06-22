@@ -5,6 +5,7 @@ import {
   Logo,
   ProjectList,
   RenderAlternatively,
+  RenderConditionally,
   Separator,
 } from "@/components";
 import { SidebarContext } from "@/contexts/dashboard-layout";
@@ -51,7 +52,7 @@ export function SidebarMenuDesktop({
             {icon}
           </RenderAlternatively>
         </Link>
-        {isSidebarOpen && (
+        <RenderConditionally condition={isSidebarOpen}>
           <Button
             variant="ghost"
             size="icon"
@@ -60,7 +61,7 @@ export function SidebarMenuDesktop({
           >
             <PanelLeft className="h-6 w-6" />
           </Button>
-        )}
+        </RenderConditionally>
       </div>
       {!isProjectOverviewRoute &&
         (isSidebarOpen ? (

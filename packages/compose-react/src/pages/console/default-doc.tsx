@@ -1,14 +1,17 @@
 import { ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
+import docsImage from "@/assets/images/console/console_timeline.png";
+import codeImage from "@/assets/images/console/console_coding.png";
+import cloudImage from "@/assets/images/console/console_data-center.png";
 
 type DocCardProps = {
   label: string;
-  imageUri: string;
+  image: string;
   description: string;
   url: string;
 };
 
-const DocCard = ({ label, imageUri, description, url }: DocCardProps) => {
+const DocCard = ({ label, image, description, url }: DocCardProps) => {
   return (
     <motion.a
       href={url}
@@ -23,7 +26,7 @@ const DocCard = ({ label, imageUri, description, url }: DocCardProps) => {
       <div className="relative flex items-center justify-center overflow-hidden bg-[hsl(var(--surface-app))] px-8 py-10">
         <div className="absolute inset-0 bg-[radial-gradient(hsl(var(--border-default))_1px,transparent_1px)] opacity-60 [background-size:18px_18px]" />
         <img
-          src={imageUri}
+          src={image}
           width={148}
           height={148}
           alt={label}
@@ -54,21 +57,21 @@ const data = [
     label: "Docs",
     description:
       "Established standards that help project managers and technical leaders minimize project risks.",
-    imageUri: "/assets/images/console/console_timeline.png",
+    image: docsImage,
     url: "https://github.com/SELISEdigitalplatforms/Wiki-BlocksGuideline-Code/wiki",
   },
   {
     label: "Code",
     description:
       "A repository of well-documented, reusable, tried and tested core components for developers.",
-    imageUri: "/assets/images/console/console_coding.png",
+    image: codeImage,
     url: "https://github.com/SELISEdigitalplatforms",
   },
   {
     label: "Cloud",
     description:
       "High-performing, optimized, and 24/7 monitored enterprise cloud deployment.",
-    imageUri: "/assets/images/console/console_data-center.png",
+    image: cloudImage,
     url: "https://selisegroup.com/blocks/",
   },
 ];
