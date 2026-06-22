@@ -31,7 +31,7 @@ export function SidebarMenuDesktop({
 
   return (
     <div
-      className={`hidden h-[calc(100vh)] flex-col border-r bg-background transition-all md:flex ${isSidebarOpen ? "min-w-60" : "w-14"}`}
+      className={`hidden h-screen shrink-0 flex-col border-r bg-background transition-all md:flex ${isSidebarOpen ? "min-w-60" : "w-14"}`}
     >
       <div className="flex h-[60px] shrink-0 items-center justify-between border-b bg-background px-3">
         <Link
@@ -79,7 +79,7 @@ export function SidebarMenuDesktop({
             <EnvironmentList redirectPaths={redirectPaths} collapsed={true} />
           </div>
         ))}
-      <div className="flex-1 overflow-auto">
+      <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
         <nav className={cn("grid w-full items-start gap-1 text-sm")}>
           {allowedMenu.map((menu) => (
             <Fragment key={menu.id}>
