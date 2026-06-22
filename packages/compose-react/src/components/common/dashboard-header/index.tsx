@@ -34,7 +34,7 @@ export function DashboardHeader(props: DashboardHeaderProps) {
 
   return (
     <>
-      <header className="relative z-40 flex h-[60px] items-center justify-between gap-4 border-b bg-background px-5 sm:px-6">
+      <header className="relative z-40 flex h-[60px] shrink-0 items-center justify-between gap-4 border-b bg-background px-5 sm:px-6">
         <div className="md:hidden">
           <SidebarMobileView
             redirectPaths={redirectPaths}
@@ -89,7 +89,7 @@ export function DashboardHeader(props: DashboardHeaderProps) {
 
       {/* Mobile project/environment selectors */}
       {!isProjectOverviewRoute && (projectName || environment) && (
-        <div className="border-b bg-background px-5 py-3 sm:px-6 md:hidden">
+        <div className="shrink-0 border-b bg-background px-5 py-3 sm:px-6 md:hidden">
           <div className="flex flex-col gap-2">
             <SelectedProject />
             <SelectedEnvironment />
