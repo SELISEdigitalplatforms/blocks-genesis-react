@@ -180,10 +180,10 @@ export class HttpClient {
       if (response.status === 401 && !skipTokenRotation) {
         return new Promise<T>((resolve, reject) => {
           HttpClient.requestQueue.push({
+            type: "request",
             url,
             requestOption,
-            retry: () =>
-              this.request(url, { ...requestOption, skipTokenRotation: true }),
+            retry: () => this.request(url, requestOption),
             resolve,
             reject,
           });
@@ -281,8 +281,8 @@ export class HttpClient {
   async stream(
     url: string,
     body: RequestBody,
-    headers?: HeadersInitValue,
     options?: HttpClientOptions,
+    headers?: HeadersInitValue,
   ): Promise<ReadableStream<Uint8Array>> {
     const {
       absoluteUrl = false,
@@ -306,14 +306,10 @@ export class HttpClient {
     if (response.status === 401 && !skipTokenRotation) {
       return new Promise<ReadableStream<Uint8Array>>((resolve, reject) => {
         HttpClient.requestQueue.push({
+          type: "stream",
           url,
-          retry: () =>
-            this.stream(url, body, headers, {
-              absoluteUrl,
-              skipBlocksKey,
-              withCredentials,
-              skipTokenRotation: true,
-            }),
+          requestOption: options,
+          retry: () => this.stream(url, body, options, headers),
           resolve,
           reject,
         });

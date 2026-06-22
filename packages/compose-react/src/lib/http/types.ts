@@ -28,13 +28,24 @@ export interface RequestOptions extends HttpClientOptions {
   body?: RequestBody;
 }
 
-export interface RequestQueueItem<T> {
+type BaseRequestQueueItem<T> = {
   url: string;
   retry: () => Promise<T>;
   resolve: (value: T | PromiseLike<T>) => void;
   reject: (reason?: unknown) => void;
-  requestOption?: RequestOptions;
-}
+};
+
+export type RequestQueueItem<T> = BaseRequestQueueItem<T> &
+  (
+    | {
+        type: "stream";
+        requestOption?: HttpClientOptions;
+      }
+    | {
+        type: "request";
+        requestOption: RequestOptions;
+      }
+  );
 
 export interface HttpClientConfig {
   baseURL: string | (() => string);
