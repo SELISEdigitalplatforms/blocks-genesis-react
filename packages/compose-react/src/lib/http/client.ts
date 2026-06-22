@@ -13,10 +13,10 @@ import { HttpError } from "./error";
 import { getQueryClient } from "@/providers";
 import { useAuthStore, useProjectStore } from "@/store";
 
+let isRefreshing = false;
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+let requestQueue: RequestQueueItem<any>[] = [];
 export class HttpClient {
-  private static isRefreshing = false;
-  /* eslint-disable  @typescript-eslint/no-explicit-any */
-  private static requestQueue: RequestQueueItem<any>[] = [];
   private static readonly excludedPaths = ["/login", "/signup"];
 
   private baseURL: string | (() => string);
@@ -73,10 +73,10 @@ export class HttpClient {
   }
 
   private async refreshAccessToken() {
-    if (HttpClient.isRefreshing) return;
+    if (isRefreshing) return;
 
     try {
-      HttpClient.isRefreshing = true;
+      isRefreshing = true;
       if (this.onTokenRefresh) await this.onTokenRefresh();
 
       const formData = new URLSearchParams();
@@ -100,15 +100,15 @@ export class HttpClient {
 
       if (!response.ok) throw new Error("Failed to refresh token");
 
-      while (HttpClient.requestQueue.length > 0) {
-        const queued = HttpClient.requestQueue.shift()!;
-        queued.retry().then(queued.resolve).catch(queued.reject);
+      while (requestQueue.length > 0) {
+        const { url, requestOption, resolve, reject } = requestQueue.shift()!;
+        this.request(url, requestOption).then(resolve).catch(reject);
       }
     } catch (error) {
       if (this.onUnauthorized) this.onUnauthorized(error);
 
-      while (HttpClient.requestQueue.length > 0) {
-        const queued = HttpClient.requestQueue.shift();
+      while (requestQueue.length > 0) {
+        const queued = requestQueue.shift();
         queued?.reject(error);
       }
 
@@ -130,8 +130,8 @@ export class HttpClient {
         }
       }
     } finally {
-      HttpClient.isRefreshing = false;
-      HttpClient.requestQueue = [];
+      isRefreshing = false;
+      requestQueue = [];
     }
   }
 
@@ -179,15 +179,13 @@ export class HttpClient {
 
       if (response.status === 401 && !skipTokenRotation) {
         return new Promise<T>((resolve, reject) => {
-          HttpClient.requestQueue.push({
-            type: "request",
+          requestQueue.push({
             url,
             requestOption,
-            retry: () => this.request(url, requestOption),
             resolve,
             reject,
           });
-          if (!HttpClient.isRefreshing) this.refreshAccessToken();
+          if (!isRefreshing) this.refreshAccessToken();
         });
       }
 
@@ -288,7 +286,6 @@ export class HttpClient {
       absoluteUrl = false,
       skipBlocksKey = false,
       withCredentials = true,
-      skipTokenRotation = false,
     } = options || {};
 
     const fullUrl = absoluteUrl ? url : `${this.getBaseURL()}${url}`;
@@ -303,22 +300,22 @@ export class HttpClient {
 
     const response = await fetch(fullUrl, config);
 
-    if (response.status === 401 && !skipTokenRotation) {
-      return new Promise<ReadableStream<Uint8Array>>((resolve, reject) => {
-        HttpClient.requestQueue.push({
-          type: "stream",
-          url,
-          requestOption: options,
-          retry: () => this.stream(url, body, options, headers),
-          resolve,
-          reject,
-        });
+    // if (response.status === 401 && !skipTokenRotation) {
+    //   return new Promise<ReadableStream<Uint8Array>>((resolve, reject) => {
+    //     HttpClient.requestQueue.push({
+    //       type: "stream",
+    //       url,
+    //       requestOption: options,
+    //       retry: () => this.stream(url, body, options, headers),
+    //       resolve,
+    //       reject,
+    //     });
 
-        if (!HttpClient.isRefreshing) {
-          this.refreshAccessToken();
-        }
-      });
-    }
+    //     if (!HttpClient.isRefreshing) {
+    //       this.refreshAccessToken();
+    //     }
+    //   });
+    // }
 
     if (!response.ok) {
       const errorBody = await response.json().catch(() => ({}));
