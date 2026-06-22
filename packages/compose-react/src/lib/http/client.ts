@@ -107,9 +107,9 @@ export class HttpClient {
     } catch (error) {
       if (this.onUnauthorized) this.onUnauthorized(error);
 
-      const queuedRequests = HttpClient.requestQueue;
-      for (const queued of queuedRequests) {
-        queued.retry().then(queued.resolve).catch(queued.reject);
+      while (HttpClient.requestQueue.length > 0) {
+        const queued = HttpClient.requestQueue.shift();
+        queued?.reject(error);
       }
 
       const queryClient = getQueryClient();
