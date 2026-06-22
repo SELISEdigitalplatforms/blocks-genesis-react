@@ -17,8 +17,6 @@ let isRefreshing = false;
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 let requestQueue: RequestQueueItem<any>[] = [];
 export class HttpClient {
-  private static readonly excludedPaths = ["/login", "/signup"];
-
   private baseURL: string | (() => string);
   private blocksKey: string | (() => string);
   private onTokenRefresh?: () => Promise<AuthTokenPair>;
@@ -118,10 +116,12 @@ export class HttpClient {
       queryClient.cancelQueries();
       queryClient.clear();
 
+      const excludedPaths = ["/login", "/signup"];
+
       if (typeof window !== "undefined") {
         const { pathname } = window.location;
 
-        const shouldRedirect = !HttpClient.excludedPaths.some((path) =>
+        const shouldRedirect = !excludedPaths.some((path) =>
           pathname.startsWith(path),
         );
 
