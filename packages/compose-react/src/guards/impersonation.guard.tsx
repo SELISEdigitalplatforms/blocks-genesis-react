@@ -21,6 +21,7 @@ export const ImpersonationChecker = ({
 
   useEffect(() => {
     if (!data) return;
+    setInitialized(false);
     setImpersonation(
       data.impersonated,
       data.originalTenantId,

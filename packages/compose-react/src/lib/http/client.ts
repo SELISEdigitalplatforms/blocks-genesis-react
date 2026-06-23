@@ -14,8 +14,9 @@ import { getQueryClient } from "@/providers";
 import { useAuthStore, useProjectStore } from "@/store";
 
 let isRefreshing = false;
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-let requestQueue: RequestQueueItem<any>[] = [];
+let requestQueue: RequestQueueItem<unknown>[] = [];
+const excludedPaths = ["/login", "/signup"];
+
 export class HttpClient {
   private baseURL: string | (() => string);
   private blocksKey: string | (() => string);
@@ -116,13 +117,11 @@ export class HttpClient {
       queryClient.cancelQueries();
       queryClient.clear();
 
-      const excludedPaths = ["/login", "/signup"];
-
       if (typeof window !== "undefined") {
         const { pathname } = window.location;
 
         const shouldRedirect = !excludedPaths.some((path) =>
-          pathname.startsWith(path),
+          pathname.includes(path),
         );
 
         if (shouldRedirect) {
@@ -182,7 +181,7 @@ export class HttpClient {
           requestQueue.push({
             url,
             requestOption,
-            resolve,
+            resolve: resolve as (value: unknown | PromiseLike<unknown>) => void,
             reject,
           });
           if (!isRefreshing) this.refreshAccessToken();
@@ -279,8 +278,8 @@ export class HttpClient {
   async stream(
     url: string,
     body: RequestBody,
-    options?: HttpClientOptions,
     headers?: HeadersInitValue,
+    options?: HttpClientOptions,
   ): Promise<ReadableStream<Uint8Array>> {
     const {
       absoluteUrl = false,
@@ -291,31 +290,12 @@ export class HttpClient {
     const fullUrl = absoluteUrl ? url : `${this.getBaseURL()}${url}`;
     const normalizedHeaders = this.normalizeHeaders(headers, skipBlocksKey);
 
-    const config: RequestInit = {
+    const response = await fetch(fullUrl, {
       method: "POST",
       headers: normalizedHeaders,
       credentials: withCredentials ? "include" : "omit",
       body: typeof body === "string" ? body : JSON.stringify(body),
-    };
-
-    const response = await fetch(fullUrl, config);
-
-    // if (response.status === 401 && !skipTokenRotation) {
-    //   return new Promise<ReadableStream<Uint8Array>>((resolve, reject) => {
-    //     HttpClient.requestQueue.push({
-    //       type: "stream",
-    //       url,
-    //       requestOption: options,
-    //       retry: () => this.stream(url, body, options, headers),
-    //       resolve,
-    //       reject,
-    //     });
-
-    //     if (!HttpClient.isRefreshing) {
-    //       this.refreshAccessToken();
-    //     }
-    //   });
-    // }
+    });
 
     if (!response.ok) {
       const errorBody = await response.json().catch(() => ({}));

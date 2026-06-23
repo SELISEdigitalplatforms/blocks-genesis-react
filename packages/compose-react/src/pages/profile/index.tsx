@@ -5,7 +5,7 @@ export function ProfilePage() {
   const { isLoading, error } = useInitiateRedirect({
     clientId: getRuntimeEnv("BLOCKS_IAM_CLIENT_ID"),
     redirectUri: getRuntimeEnv("BLOCKS_IAM_CALLBACK_URL"),
-    forwardedTo: "/profile",
+    forwardedTo: "profile",
   });
 
   if (error)

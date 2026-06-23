@@ -9,14 +9,14 @@ import {
   Separator,
 } from "@/components";
 import { SidebarContext } from "@/contexts/dashboard-layout";
-import { useFilteredMenus } from "@/hooks/use-filtered-menus";
+import { useIcon } from "@/hooks/use-icon";
 import { useLogo } from "@/hooks/use-logo";
+import { useFilteredMenus, useIsActiveMenu } from "@/hooks/use-menus";
 import { cn } from "@/lib/utils";
 import { PanelLeft } from "lucide-react";
 import { Fragment, useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import type { SideBarMenuProps } from "./types";
-import { useIcon } from "@/hooks/use-icon";
 
 export function SidebarMenuDesktop({
   redirectPaths,
@@ -26,9 +26,10 @@ export function SidebarMenuDesktop({
   const { appLightLogo, appDarkLogo } = useLogo();
   const icon = useIcon();
   const allowedMenu = useFilteredMenus(navigationMenus);
-  const { pathname } = useLocation();
 
-  const isProjectOverviewRoute = pathname.startsWith("/project-overview");
+  const { isActivePath: isProjectOverviewRoute } = useIsActiveMenu(
+    "/app/project-overview",
+  );
 
   return (
     <div
@@ -36,7 +37,7 @@ export function SidebarMenuDesktop({
     >
       <div className="flex h-[60px] shrink-0 items-center justify-between border-b bg-background px-3">
         <Link
-          to="/console"
+          to="console"
           className={cn(
             "relative inline-block cursor-pointer overflow-hidden transition-all",
             isSidebarOpen ? "h-[36px] w-[72px]" : "h-8 w-8",

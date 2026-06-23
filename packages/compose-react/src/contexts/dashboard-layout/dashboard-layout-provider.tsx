@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useIsActiveMenu } from "@/hooks/use-menus";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useLocation } from "react-router-dom";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { SidebarContext } from "./sidebar.context";
 
 // Below this width (but above the mobile breakpoint handled by
@@ -22,7 +22,7 @@ export function DashboardLayoutProvider({
   storageKey?: string;
   persist?: boolean;
 }) {
-  const { pathname } = useLocation();
+  const { isActivePath: isServicesPath } = useIsActiveMenu("/app/services");
   const isMobile = useIsMobile();
   const isMountedRef = useRef(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(isOpen);
@@ -112,10 +112,10 @@ export function DashboardLayoutProvider({
   }, []);
 
   useEffect(() => {
-    if (!isMobile && pathname.startsWith("/services")) {
+    if (!isMobile && isServicesPath) {
       setIsSidebarSubMenuOpen(true);
     }
-  }, [pathname, isMobile]);
+  }, [isServicesPath, isMobile]);
 
   useEffect(() => {
     if (isSidebarOpen && !isMobile) {

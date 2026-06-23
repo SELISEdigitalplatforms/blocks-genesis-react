@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export function BackToConsoleNavigator() {
   return (
-    <Link to="/console">
+    <Link to="console">
       <Button
         variant="outline"
         className="bg-transparent hover:bg-slate-200 dark:hover:bg-gray-800"

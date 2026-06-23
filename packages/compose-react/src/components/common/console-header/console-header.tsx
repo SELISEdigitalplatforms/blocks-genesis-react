@@ -15,7 +15,7 @@ export function ConsoleHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   const isConsoleButtonVisible =
-    pathname.startsWith("/project-overview") || pathname.startsWith("/profile");
+    pathname.includes("project-overview") || pathname.includes("profile");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,13 +29,16 @@ export function ConsoleHeader() {
 
   return (
     <div
-      className={`fixed left-0 right-0 top-0 z-40 ${isScrolled || isConsoleButtonVisible ? "bg-background border-b" : "bg-transparent"}`}>
+      className={`fixed left-0 right-0 top-0 z-40 ${isScrolled || isConsoleButtonVisible ? "bg-background border-b" : "bg-transparent"}`}
+    >
       <header
-        className={`lg:h-14.75 mx-5 flex h-12 items-center gap-4 ${isConsoleButtonVisible ? "sm:ml-1 sm:mr-6" : "sm:mx-10"}`}>
+        className={`lg:h-14.75 mx-5 flex h-12 items-center gap-4 ${isConsoleButtonVisible ? "sm:ml-1 sm:mr-6" : "sm:mx-10"}`}
+      >
         <div
-          className={`mx-0 flex h-full w-full flex-row items-center md:mx-auto`}>
+          className={`mx-0 flex h-full w-full flex-row items-center md:mx-auto`}
+        >
           <div className="w-57 ml-2 flex h-full items-center">
-            <Link to="/console" className="cursor-pointer">
+            <Link to="console" className="cursor-pointer">
               <Logo
                 width={96}
                 height={32}
@@ -55,14 +58,15 @@ export function ConsoleHeader() {
             </SheetTrigger>
             <SheetContent
               side="top"
-              className={`flex w-full flex-wrap items-start gap-3 ${isConsoleButtonVisible ? "justify-between" : "justify-end"}`}>
+              className={`flex w-full flex-wrap items-start gap-3 ${isConsoleButtonVisible ? "justify-between" : "justify-end"}`}
+            >
               {isConsoleButtonVisible && (
                 <div className="min-w-fit shrink"></div>
               )}
               <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-3">
                 <ThemeSwitcher />
                 <Notification />
-                <AppSwitcher forwardedTo="/console" />
+                <AppSwitcher forwardedTo="console" />
                 <UserDropdownMenu />
               </div>
             </SheetContent>
@@ -71,7 +75,7 @@ export function ConsoleHeader() {
         <div className="hidden sm:flex sm:items-center sm:gap-4">
           <ThemeSwitcher />
           <Notification />
-          <AppSwitcher forwardedTo="/console" />
+          <AppSwitcher forwardedTo="console" />
           <UserDropdownMenu />
         </div>
       </header>
