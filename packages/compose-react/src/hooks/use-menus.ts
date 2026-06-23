@@ -1,5 +1,5 @@
 import type { Menu } from "@/types";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 
 const projectOverviewMenuIds = new Set([
@@ -11,12 +11,13 @@ const projectOverviewMenuIds = new Set([
 ]);
 
 export function useFilteredMenus(menus: Menu[]): Menu[] {
-  const { pathname } = useLocation();
+  const { isActivePath: isProjectOverviewRoute } = useIsActiveMenu(
+    "/app/project-overview",
+  );
 
   return useMemo(() => {
     const blockedMenu = import.meta.env.BLOCKS_BLOCKED_MENU || "[]";
     let parsedBlockedMenu: string[] = [];
-    const isProjectOverviewRoute = pathname.startsWith("/project-overview");
 
     try {
       parsedBlockedMenu = JSON.parse(blockedMenu) as string[];
@@ -27,28 +28,23 @@ export function useFilteredMenus(menus: Menu[]): Menu[] {
     const filteredMenus = menus.filter((item) => {
       if (item.type === "separator") return true;
       if (item.disabled) return false;
-      // Hide project menus when NOT on /project-overview
       if (!isProjectOverviewRoute && projectOverviewMenuIds.has(item.id))
         return false;
-      // Hide non-project menus when ON /project-overview
       if (isProjectOverviewRoute && !projectOverviewMenuIds.has(item.id))
         return false;
       return !parsedBlockedMenu.includes(item.id);
     });
 
-    const result = filteredMenus.filter((item, index) => {
+    return filteredMenus.filter((item, index) => {
       if (item.type !== "separator") return true;
 
       const previousItem = filteredMenus[index - 1];
       const nextItem = filteredMenus[index + 1];
       const separatorId = item.id;
 
-      // Hide separator-overview on project overview routes (Overview is hidden there)
       if (separatorId === "separator-overview" && isProjectOverviewRoute) {
         return false;
       }
-
-      // Keep separator-overview if Overview is before it and not on project route
       if (
         separatorId === "separator-overview" &&
         previousItem?.type !== "separator" &&
@@ -56,14 +52,22 @@ export function useFilteredMenus(menus: Menu[]): Menu[] {
       ) {
         return true;
       }
-
       if (!previousItem || !nextItem) return false;
       if (previousItem.type === "separator" || nextItem.type === "separator")
         return false;
 
       return true;
     });
+  }, [menus, isProjectOverviewRoute]);
+}
 
-    return result;
-  }, [menus, pathname]);
+export function useIsActiveMenu(path: string) {
+  const { pathname } = useLocation();
+
+  const checkIsActivePath = useCallback(
+    (candidatePath: string) => pathname.startsWith(candidatePath),
+    [pathname],
+  );
+
+  return { isActivePath: checkIsActivePath(path), checkIsActivePath };
 }

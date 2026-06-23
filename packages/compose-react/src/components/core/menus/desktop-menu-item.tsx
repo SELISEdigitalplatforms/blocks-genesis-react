@@ -3,11 +3,12 @@ import {
   RenderConditionally,
   SidebarCollapsedTooltip,
 } from "@/components";
+import { useIsActiveMenu } from "@/hooks/use-menus";
 import { cn } from "@/lib/utils";
 import type { Menu } from "@/types";
 import { ChevronRight } from "lucide-react";
-import { useLayoutEffect, useMemo, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 type MenuItemType = Extract<Menu, { type: "menu" }>;
 
@@ -37,8 +38,7 @@ const ActiveBadge = () => (
 );
 
 const ChildMenuItem = ({ menu, isSidebarOpen }: ChildMenuItemProps) => {
-  const { pathname } = useLocation();
-  const isActiveMenu = pathname.startsWith(menu.path);
+  const { isActivePath: isActiveMenu } = useIsActiveMenu(menu.path);
 
   return (
     <SidebarCollapsedTooltip label={menu.name} show={!isSidebarOpen}>
@@ -66,8 +66,8 @@ export function DesktopMenuItem({
   menu: MenuItemType;
   isSidebarOpen: boolean;
 }) {
-  const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { checkIsActivePath } = useIsActiveMenu(menu.path);
 
   const filteredChildren = useMemo(
     () =>
@@ -81,8 +81,8 @@ export function DesktopMenuItem({
   const hasChildren = filteredChildren.length > 0;
 
   const hasActiveChild = useMemo(
-    () => filteredChildren.some((child) => pathname.startsWith(child.path)),
-    [filteredChildren, pathname],
+    () => filteredChildren.some((child) => checkIsActivePath(child.path)),
+    [filteredChildren, checkIsActivePath],
   );
 
   const isActiveMenu = useMemo(() => {
@@ -90,12 +90,12 @@ export function DesktopMenuItem({
       menu.path,
       ...filteredChildren.map((child) => child.path),
     ];
-    return allPaths.some((item) => pathname.startsWith(item));
-  }, [filteredChildren, menu.path, pathname]);
+    return allPaths.some((item) => checkIsActivePath(item));
+  }, [filteredChildren, menu.path, checkIsActivePath]);
 
   const [isOpen, setIsOpen] = useState(hasActiveChild);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setIsOpen(hasActiveChild);
   }, [hasActiveChild]);
 

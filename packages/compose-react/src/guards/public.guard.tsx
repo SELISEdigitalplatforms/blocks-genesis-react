@@ -20,7 +20,7 @@ export type PublicGuardProps = {
 
 export function PublicGuard({
   children,
-  defaultProtectedPath = "/console",
+  defaultProtectedPath = "/app/console",
 }: PublicGuardProps) {
   const { isAuthenticated } = useAuthStore();
   const { isMounted } = useAppState();

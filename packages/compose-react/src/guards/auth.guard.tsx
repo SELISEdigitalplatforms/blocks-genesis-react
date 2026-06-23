@@ -1,6 +1,6 @@
 import { iamClient } from "@/lib/http/instances";
 import { useEffect, useRef } from "react";
-import { useAuthStore } from "../store/auth.store";
+import { useAuthStore } from "@/store/auth.store";
 import type { BaseUser } from "@/models";
 
 export function AuthResolver({ children }: { children: React.ReactNode }) {

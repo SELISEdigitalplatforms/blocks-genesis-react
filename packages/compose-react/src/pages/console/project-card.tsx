@@ -30,7 +30,7 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
 
   const onConfigureClick = () => {
     setTenantGroup(project.tenantGroupId);
-    navigate("/project-overview/environments");
+    navigate("/app/project-overview/environments");
   };
 
   const onEnvBadgeClick = async (e: React.MouseEvent, envProject: IProject) => {
@@ -38,8 +38,8 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
     try {
       setTenantGroup(envProject.tenantGroupId);
       setSelectedProject(envProject);
-      navigate("/dashboard");
-      window.location.reload();
+      navigate("/app/dashboard");
+      // window.location.reload();
     } catch (err) {
       console.error("Failed to switch environment", err);
     }

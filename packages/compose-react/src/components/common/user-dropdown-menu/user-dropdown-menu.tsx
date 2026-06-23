@@ -128,7 +128,7 @@ export function UserDropdownMenu() {
             asChild
             className="cursor-pointer rounded-md px-4 py-3.5"
           >
-            <Link to="/profile" className="flex items-center gap-4">
+            <Link to="profile" className="flex items-center gap-4">
               <UserRound className="h-5 w-5 shrink-0 text-foreground/90" />
               <span className="text-sm font-medium">My Profile</span>
             </Link>

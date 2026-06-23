@@ -16,7 +16,7 @@ import {
 } from "@/components";
 import { Logo } from "../logo";
 import type { SideBarMenuProps } from "./types";
-import { useFilteredMenus } from "@/hooks/use-filtered-menus";
+import { useFilteredMenus } from "@/hooks/use-menus";
 
 export function SidebarMobileView({
   redirectPaths,
@@ -41,7 +41,7 @@ export function SidebarMobileView({
       >
         <SheetHeader className="h-[60px] px-4 py-3">
           <SheetTitle className="flex items-center justify-between">
-            <Link to="/console">
+            <Link to="console">
               <Logo width={72} height={36} className="h-9 w-auto" />
             </Link>
             <SheetClose className="!mt-0">
