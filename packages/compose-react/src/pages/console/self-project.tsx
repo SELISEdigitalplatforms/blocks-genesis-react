@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { Card } from "@/components/core/card";
 import { Skeleton } from "@/components/core/skeleton";
-
 import { useGetProjects } from "@/hooks/use-project";
 import { ProjectCard } from "./project-card";
 import { AddProjectCard } from "./add-project-card";
@@ -87,7 +86,8 @@ export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
             variants={cardVariants}
             custom={0}
             initial="hidden"
-            animate="visible">
+            animate="visible"
+          >
             <AddProjectCard />
           </motion.div>
         )}
@@ -97,7 +97,8 @@ export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
             variants={cardVariants}
             custom={projectGroups.length < 10 ? i + 1 : i}
             initial="hidden"
-            animate="visible">
+            animate="visible"
+          >
             {project.projects[0] && (
               <ProjectCard
                 project={project.projects[0]}

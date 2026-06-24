@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Layers, BookOpenText } from "lucide-react";
+import { useCreateProjectRedirect } from "./use-create-project-redirect";
+import { Button } from "@/components";
+
 export default function ConsoleCreateProject() {
+  const { handleClick, isDisabled, isFetching } = useCreateProjectRedirect();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }}
@@ -24,16 +29,18 @@ export default function ConsoleCreateProject() {
           Welcome to SELISE Blocks
         </h3>
         <p className="max-w-md text-sm leading-relaxed text-primary-foreground/70">
-          Explore and manage all your projects in one place. With SELISE Blocks, building and
-          scaling applications has never been easier. Start by creating a project.
+          Explore and manage all your projects in one place. With SELISE Blocks,
+          building and scaling applications has never been easier. Start by
+          creating a project.
         </p>
         <div className="flex flex-wrap justify-center gap-3 pt-1">
-          <Link
-            to="/create-project"
+          <Button
+            onClick={handleClick}
+            disabled={isDisabled}
             className="inline-flex items-center rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-primary shadow-sm transition-colors hover:bg-white/90"
           >
-            Create a project
-          </Link>
+            {isFetching ? "Redirecting..." : "Create a project"}
+          </Button>
           <Link
             to="https://docs.seliseblocks.com/"
             target="_blank"

@@ -33,10 +33,11 @@ export const formatFullDate = (date: Date, withoutTime?: boolean): string => {
 };
 
 const allowedPaths: ForwardToPaths[] = [
-  "console",
-  "dashboard",
-  "profile",
-  "project-overview/environments",
+  "/app/console",
+  "/app/dashboard",
+  "/app/profile",
+  "/app/project-overview/environments",
+  "/app/create-project",
 ];
 /**
  * Get the appropriate forwardedTo path based on the current location
@@ -46,7 +47,7 @@ const allowedPaths: ForwardToPaths[] = [
 export function getForwardedToPath(pathname?: string): ForwardToPaths {
   const currentPath =
     pathname ??
-    (typeof window !== "undefined" ? window.location.pathname : "console");
+    (typeof window !== "undefined" ? window.location.pathname : "/app/console");
 
   // Check if the path is exactly one of the allowed paths
   if (allowedPaths.includes(currentPath as ForwardToPaths)) {
@@ -60,6 +61,6 @@ export function getForwardedToPath(pathname?: string): ForwardToPaths {
     }
   }
 
-  // Fallback to /console
-  return "console";
+  // Fallback to /app/console
+  return "/app/console";
 }
