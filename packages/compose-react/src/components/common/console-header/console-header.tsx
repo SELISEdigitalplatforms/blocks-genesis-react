@@ -66,7 +66,7 @@ export function ConsoleHeader() {
               <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-3">
                 <ThemeSwitcher />
                 <Notification />
-                <AppSwitcher forwardedTo="console" />
+                <AppSwitcher forwardedTo="/app/console" />
                 <UserDropdownMenu />
               </div>
             </SheetContent>
@@ -75,7 +75,7 @@ export function ConsoleHeader() {
         <div className="hidden sm:flex sm:items-center sm:gap-4">
           <ThemeSwitcher />
           <Notification />
-          <AppSwitcher forwardedTo="console" />
+          <AppSwitcher forwardedTo="/app/console" />
           <UserDropdownMenu />
         </div>
       </header>

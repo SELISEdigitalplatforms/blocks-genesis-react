@@ -1,33 +1,10 @@
-import { filteredAppSwitcherData } from "@/components";
 import { Card, CardContent } from "@/components/core/card/card";
-import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
-import { getRuntimeEnv } from "@/lib/runtime-env";
-import { usePrefetchRedirect } from "@/hooks/use-initiate";
-import { Plus } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib";
+import { Plus } from "lucide-react";
+import { useCreateProjectRedirect } from "./use-create-project-redirect";
 
 export const AddProjectCard = () => {
-  const { name } = useBlocksAppConfigStore((state) => state.config);
-  const navigate = useNavigate();
-  const osApp = filteredAppSwitcherData.find((app) => app.key === "blocks-os");
-
-  const { isFetching, isReady, redirect } = usePrefetchRedirect({
-    clientId: osApp ? getRuntimeEnv(osApp.clientId) : "",
-    redirectUri: osApp ? getRuntimeEnv(osApp.redirectUri) : "",
-    forwardedTo: "/create-project",
-    enabled: name !== "blocks-os" && !!osApp,
-  });
-
-  const isDisabled = name !== "blocks-os" && !isReady;
-
-  const handleClick = () => {
-    if (name === "blocks-os") {
-      navigate("/create-project");
-      return;
-    }
-    redirect();
-  };
+  const { handleClick, isDisabled, isFetching } = useCreateProjectRedirect();
 
   return (
     <Card
@@ -43,7 +20,7 @@ export const AddProjectCard = () => {
           <Plus className="text-primary" strokeWidth={2} size={50} />
         </div>
         <p className="text-primary mt-2 font-bold">
-          {isFetching ? "Loading…" : "Add Project"}
+          {isFetching ? "Redirecting..." : "Add Project"}
         </p>
       </CardContent>
     </Card>

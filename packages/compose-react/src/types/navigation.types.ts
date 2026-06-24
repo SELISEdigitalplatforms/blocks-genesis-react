@@ -13,9 +13,10 @@ export interface NavigationMenuSeparator {
 }
 
 export type ForwardToPaths =
-  | "console"
-  | "dashboard"
-  | "profile"
-  | "project-overview/environments";
+  | "/app/console"
+  | "/app/dashboard"
+  | "/app/profile"
+  | "/app/project-overview/environments"
+  | "/app/create-project";
 
 export type NavigationNode = NavigationMenuItem | NavigationMenuSeparator;
