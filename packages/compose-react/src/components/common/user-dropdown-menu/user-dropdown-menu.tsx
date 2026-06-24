@@ -9,6 +9,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  RenderConditionally,
   Skeleton,
 } from "@/components";
 import { useLogout } from "@/hooks/use-auth-api";
@@ -135,60 +136,57 @@ export function UserDropdownMenu() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
-        <DropdownMenuSeparator className="my-0 bg-border/80" />
+        <RenderConditionally condition={organizations.length > 0}>
+          <DropdownMenuSeparator className="my-0 bg-border/80" />
+          {/* Organizations */}
+          <DropdownMenuGroup className="p-1.5">
+            <DropdownMenuLabel className="flex items-center gap-4 px-4 py-3.5 text-sm font-medium text-muted-foreground/70">
+              <Building2 className="h-5 w-5 shrink-0 text-foreground/90" />
+              <span className="text-sm font-medium text-foreground">
+                Organizations
+              </span>
+            </DropdownMenuLabel>
 
-        {/* Organizations */}
-        <DropdownMenuGroup className="p-1.5">
-          <DropdownMenuLabel className="flex items-center gap-4 px-4 py-3.5 text-sm font-medium text-muted-foreground/70">
-            <Building2 className="h-5 w-5 shrink-0 text-foreground/90" />
-            <span className="text-sm font-medium text-foreground">
-              Organizations
-            </span>
-          </DropdownMenuLabel>
-
-          <div className="max-h-56 overflow-y-auto">
-            {isOrgsLoading ? (
-              <div className="space-y-1.5 px-4 py-2">
-                <Skeleton className="h-9 w-full rounded-md" />
-                <Skeleton className="h-9 w-full rounded-md" />
-                <Skeleton className="h-9 w-full rounded-md" />
-              </div>
-            ) : organizations.length === 0 ? (
-              <p className="px-4 py-3 text-xs text-muted-foreground">
-                No organizations found.
-              </p>
-            ) : (
-              organizations.map((org) => {
-                const isActive = org.itemId === activeOrgId;
-                return (
-                  <DropdownMenuItem
-                    key={org.itemId}
-                    className="cursor-pointer rounded-md px-4 py-3.5"
-                  >
-                    <div className="flex w-full min-w-0 items-center gap-4">
-                      <div className="flex h-5 w-5 shrink-0 items-center justify-center text-sm font-medium text-foreground/90">
-                        {org.name?.[0]?.toUpperCase() || (
-                          <Building2 className="h-5 w-5 shrink-0 text-foreground/90" />
+            <div className="max-h-56 overflow-y-auto">
+              {isOrgsLoading ? (
+                <div className="space-y-1.5 px-4 py-2">
+                  <Skeleton className="h-9 w-full rounded-md" />
+                  <Skeleton className="h-9 w-full rounded-md" />
+                  <Skeleton className="h-9 w-full rounded-md" />
+                </div>
+              ) : (
+                organizations.map((org) => {
+                  const isActive = org.itemId === activeOrgId;
+                  return (
+                    <DropdownMenuItem
+                      key={org.itemId}
+                      className="cursor-pointer rounded-md px-4 py-3.5"
+                    >
+                      <div className="flex w-full min-w-0 items-center gap-4">
+                        <div className="flex h-5 w-5 shrink-0 items-center justify-center text-sm font-medium text-foreground/90">
+                          {org.name?.[0]?.toUpperCase() || (
+                            <Building2 className="h-5 w-5 shrink-0 text-foreground/90" />
+                          )}
+                        </div>
+                        <span
+                          className={cn(
+                            "min-w-0 flex-1 truncate text-sm font-medium",
+                            isActive ? "text-foreground" : "text-foreground/90",
+                          )}
+                        >
+                          {org.name}
+                        </span>
+                        {isActive && (
+                          <Check className="h-5 w-5 shrink-0 text-foreground/90" />
                         )}
                       </div>
-                      <span
-                        className={cn(
-                          "min-w-0 flex-1 truncate text-sm font-medium",
-                          isActive ? "text-foreground" : "text-foreground/90",
-                        )}
-                      >
-                        {org.name}
-                      </span>
-                      {isActive && (
-                        <Check className="h-5 w-5 shrink-0 text-foreground/90" />
-                      )}
-                    </div>
-                  </DropdownMenuItem>
-                );
-              })
-            )}
-          </div>
-        </DropdownMenuGroup>
+                    </DropdownMenuItem>
+                  );
+                })
+              )}
+            </div>
+          </DropdownMenuGroup>
+        </RenderConditionally>
 
         <DropdownMenuSeparator className="my-0 bg-border/80" />
 
