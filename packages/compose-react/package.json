@@ -37,6 +37,11 @@
       "import": "./dist/types/index.js",
       "require": "./dist/types/index.cjs"
     },
+    "./hooks": {
+      "types": "./dist/hooks/index.d.ts",
+      "import": "./dist/hooks/index.js",
+      "require": "./dist/hooks/index.cjs"
+    },
     "./http": {
       "types": "./dist/lib/http/index.d.ts",
       "import": "./dist/lib/http/index.js",
