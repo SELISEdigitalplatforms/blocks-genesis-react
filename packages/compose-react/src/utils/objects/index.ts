@@ -1,4 +1,4 @@
-import { isObject } from "./guards";
+import { isObject } from "../type/guards";
 
 /**
  * Deep-merges two objects recursively.
@@ -8,7 +8,10 @@ import { isObject } from "./guards";
  * @param source Source object.
  * @returns Deep-merged object.
  */
-export function deepMerge<T extends Record<string, unknown>>(target: T, source: unknown): T {
+export function deepMerge<T extends Record<string, unknown>>(
+  target: T,
+  source: unknown,
+): T {
   const output = { ...target };
   if (isObject(target) && isObject(source)) {
     Object.keys(source).forEach((key) => {
@@ -52,7 +55,10 @@ export function deepClone<T>(val: T): T {
  * @param keys Keys to include.
  * @returns Object with selected keys only.
  */
-export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
+export function pick<T extends object, K extends keyof T>(
+  obj: T,
+  keys: K[],
+): Pick<T, K> {
   const result = {} as Pick<T, K>;
   keys.forEach((key) => {
     if (key in obj) result[key] = obj[key];
@@ -69,7 +75,10 @@ export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pi
  * @param keys Keys to remove.
  * @returns Object without omitted keys.
  */
-export function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
+export function omit<T extends object, K extends keyof T>(
+  obj: T,
+  keys: K[],
+): Omit<T, K> {
   const result = { ...obj };
   keys.forEach((key) => {
     delete result[key];

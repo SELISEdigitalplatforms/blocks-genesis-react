@@ -13,7 +13,7 @@ import {
   toast,
 } from "@/components";
 import { useGetEnvRepositories, useUpdateProject } from "@/hooks/use-project";
-import { formatFullDate } from "@/lib/utils";
+import { formatFullDate } from "@/utils";
 import type { IProject } from "@/models";
 import { useProjectStore } from "@/store";
 import { useQueryClient } from "@tanstack/react-query";

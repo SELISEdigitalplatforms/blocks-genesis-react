@@ -19,7 +19,10 @@ type StoredValue<T> = {
  * @param options Prefix and TTL configuration.
  * @returns Typed storage adapter.
  */
-export function createStorage(driver: "local" | "session" = "local", options: StorageOptions = {}) {
+export function createStorage(
+  driver: "local" | "session" = "local",
+  options: StorageOptions = {},
+) {
   const { prefix = "", ttlMs } = options;
 
   const withPrefix = (key: string) => (prefix ? `${prefix}:${key}` : key);
@@ -59,7 +62,10 @@ export function createStorage(driver: "local" | "session" = "local", options: St
     set<T>(rawKey: string, value: T, customTtlMs?: number): void {
       const effectiveTtl = customTtlMs ?? ttlMs;
       const expiresAt = effectiveTtl ? Date.now() + effectiveTtl : undefined;
-      store()?.setItem(withPrefix(rawKey), JSON.stringify({ value, expiresAt }));
+      store()?.setItem(
+        withPrefix(rawKey),
+        JSON.stringify({ value, expiresAt }),
+      );
     },
 
     /**

@@ -1,6 +1,6 @@
 import { Button, Dialog, DialogTrigger, toast } from "@/components";
 import { useDisableProject } from "@/hooks/use-project";
-import { isErrorWithErrors } from "@/lib/error";
+import { isErrorWithErrors } from "@/utils/error";
 import { useProjectStore } from "@/store";
 import { Archive } from "lucide-react";
 import { useState } from "react";

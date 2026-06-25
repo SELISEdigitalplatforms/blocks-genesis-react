@@ -5,3 +5,4 @@ export * from "./store/index";
 export * from "./pages/index";
 export * from "./lib/index";
 export * from "./components";
+export * from "./utils";

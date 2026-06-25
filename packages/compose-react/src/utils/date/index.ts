@@ -7,7 +7,10 @@ const pad = (num: number): string => num.toString().padStart(2, "0");
  * @param shouldOmitTime When `true`, omits the `HH:mm` suffix.
  * @returns Formatted date string.
  */
-export const formatFullDate = (date: Date, shouldOmitTime?: boolean): string => {
+export const formatFullDate = (
+  date: Date,
+  shouldOmitTime?: boolean,
+): string => {
   const monthNames = [
     "Jan",
     "Feb",
@@ -63,7 +66,10 @@ export const formatDate = (
  * @param secondDateString Second date string.
  * @returns Negative when first date is earlier; positive when later; zero when equal.
  */
-export function compareDates(firstDateString: string, secondDateString: string): number {
+export function compareDates(
+  firstDateString: string,
+  secondDateString: string,
+): number {
   const dateA = new Date(firstDateString);
   const dateB = new Date(secondDateString);
   return dateA.getTime() - dateB.getTime();
