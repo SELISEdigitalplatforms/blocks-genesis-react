@@ -7,16 +7,7 @@ A package-first monorepo for reusable React building blocks.
 This repository now contains only reusable packages:
 
 - packages/compose-react: React composition package with shadcn-based components and app-shell utilities
-- packages/core: Core runtime/auth/http utilities
-- packages/hooks: Shared React hooks
-- packages/primitives: Framework-agnostic primitives/utilities
-- tooling/*: Shared ESLint, Prettier, and TypeScript configs
-
-Removed from this repo:
-
-- packages/ui
-- packages/cli
-- apps/*
+- tooling/\*: Shared ESLint, Prettier, and TypeScript configs
 
 ## Styling Contract
 
