@@ -34,7 +34,9 @@ export const isUrl = (url: string): boolean => {
  * @returns `true` when valid.
  */
 export const isUuid = (uuid: string): boolean => {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid);
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    uuid,
+  );
 };
 
 /**
@@ -83,7 +85,10 @@ export const isCreditCard = (card: string): boolean => {
  * @param country Country code (`US`, `UK`, or `CA`).
  * @returns `true` when valid for the selected country.
  */
-export const isPostalCode = (code: string, country: "US" | "UK" | "CA" = "US"): boolean => {
+export const isPostalCode = (
+  code: string,
+  country: "US" | "UK" | "CA" = "US",
+): boolean => {
   const patterns = {
     US: /^\d{5}(-\d{4})?$/,
     UK: /^[A-Z]{1,2}\d[A-Z\d]? \d[A-Z]{2}$/i,

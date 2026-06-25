@@ -5,7 +5,9 @@
  * @returns Key-value map of query parameters.
  */
 export function parseQueryString(query: string): Record<string, string> {
-  const searchParams = new URLSearchParams(query.startsWith("?") ? query.slice(1) : query);
+  const searchParams = new URLSearchParams(
+    query.startsWith("?") ? query.slice(1) : query,
+  );
   return Object.fromEntries(searchParams.entries());
 }
 

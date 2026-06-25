@@ -12,7 +12,7 @@ import {
 import { EditProjectForm } from "./edit-project-form";
 import type { IGetProjectResponse } from "@/models";
 import { CnameValidatorProject } from "@/components";
-import { formatFullDate } from "@/lib/utils";
+import { formatFullDate } from "@/utils";
 interface EditProjectProps {
   data?: IGetProjectResponse;
   isLoading?: boolean;

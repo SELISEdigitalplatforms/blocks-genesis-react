@@ -34,7 +34,10 @@ export type CookieStore = {
   /** Writes a cookie value. */
   set: (name: string, value: string, options?: CookieStoreOptions) => void;
   /** Deletes a cookie by writing an expired value. */
-  delete: (name: string, options?: Omit<CookieStoreOptions, "expires" | "maxAge">) => void;
+  delete: (
+    name: string,
+    options?: Omit<CookieStoreOptions, "expires" | "maxAge">,
+  ) => void;
 };
 
 const defaultEncode = (value: string) => encodeURIComponent(value);
@@ -47,7 +50,8 @@ const buildCookieOptions = (options: CookieStoreOptions = {}) => {
   if (options.domain) parts.push(`domain=${options.domain}`);
   if (options.sameSite) parts.push(`samesite=${options.sameSite}`);
   if (options.secure) parts.push("secure");
-  if (typeof options.maxAge === "number") parts.push(`max-age=${Math.floor(options.maxAge)}`);
+  if (typeof options.maxAge === "number")
+    parts.push(`max-age=${Math.floor(options.maxAge)}`);
   if (options.expires) parts.push(`expires=${options.expires.toUTCString()}`);
 
   return parts.length ? `; ${parts.join("; ")}` : "";
@@ -63,11 +67,15 @@ const buildCookieOptions = (options: CookieStoreOptions = {}) => {
  * @param defaultOptions Default options merged into every `set`/`delete` call.
  * @returns Cookie storage adapter.
  */
-export function createCookieStore(defaultOptions: CookieStoreOptions = {}): CookieStore {
+export function createCookieStore(
+  defaultOptions: CookieStoreOptions = {},
+): CookieStore {
   const isBrowser = typeof document !== "undefined";
 
-  const resolveEncode = (options?: CookieStoreOptions) => options?.encode ?? defaultOptions.encode ?? defaultEncode;
-  const resolveDecode = (options?: CookieStoreOptions) => options?.decode ?? defaultOptions.decode ?? defaultDecode;
+  const resolveEncode = (options?: CookieStoreOptions) =>
+    options?.encode ?? defaultOptions.encode ?? defaultEncode;
+  const resolveDecode = (options?: CookieStoreOptions) =>
+    options?.decode ?? defaultOptions.decode ?? defaultDecode;
 
   return {
     get(name) {
@@ -94,14 +102,11 @@ export function createCookieStore(defaultOptions: CookieStoreOptions = {}): Cook
     set(name, value, options = {}) {
       if (!isBrowser) return;
 
-
-
       const mergedOptions: CookieStoreOptions = {
         path: "/",
         sameSite: "Lax",
         ...defaultOptions,
         ...options,
-
       };
 
       const encodedValue = resolveEncode(mergedOptions)(value ?? "");

@@ -7,13 +7,15 @@ import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { useTheme } from "@/hooks/use-theme";
 import { type RuntimeKey } from "@/layouts/blocks-app-layout";
 import { getRuntimeEnv } from "@/lib/runtime-env";
-import { cn, getForwardedToPath } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+
 import { initiateService } from "@/services/initiate.service";
 import type { ServiceName } from "@/store";
 import type { ForwardToPaths } from "@/types";
 import { Grip } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { filteredAppSwitcherData } from "./app-switcher.constant";
+import { getForwardedToPath } from "@/utils";
 
 export interface BlocksApp {
   key: ServiceName;

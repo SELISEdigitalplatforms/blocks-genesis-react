@@ -1,4 +1,4 @@
-import { isValidSubdomain } from "@/lib/domain";
+import { isValidSubdomain } from "@/utils/domain";
 import { z } from "zod";
 
 export const editDomainFormSchema = z.object({

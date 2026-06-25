@@ -1,17 +1,20 @@
 /**
  * Checks whether a value is a string.
  */
-export const isString = (val: unknown): val is string => typeof val === "string";
+export const isString = (val: unknown): val is string =>
+  typeof val === "string";
 
 /**
  * Checks whether a value is a finite number.
  */
-export const isNumber = (val: unknown): val is number => typeof val === "number" && !isNaN(val);
+export const isNumber = (val: unknown): val is number =>
+  typeof val === "number" && !isNaN(val);
 
 /**
  * Checks whether a value is a boolean.
  */
-export const isBoolean = (val: unknown): val is boolean => typeof val === "boolean";
+export const isBoolean = (val: unknown): val is boolean =>
+  typeof val === "boolean";
 
 /**
  * Checks whether a value is `null` or `undefined`.
@@ -38,4 +41,6 @@ export const isPlainObject = (val: unknown): val is Record<string, unknown> => {
  * Checks whether a value is promise-like.
  */
 export const isPromise = <T = unknown>(val: unknown): val is Promise<T> =>
-  isObject(val) && typeof val.then === "function" && typeof val.catch === "function";
+  isObject(val) &&
+  typeof val.then === "function" &&
+  typeof val.catch === "function";

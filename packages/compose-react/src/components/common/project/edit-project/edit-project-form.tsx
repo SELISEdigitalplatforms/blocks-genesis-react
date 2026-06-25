@@ -21,7 +21,7 @@ import {
   TooltipTrigger,
 } from "@/components";
 import { useGetProject, useUpdateProject } from "@/hooks/use-project";
-import { getDomain } from "@/lib/domain";
+import { getDomain } from "@/utils/domain";
 import { useProjectStore } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleHelp, InfoIcon } from "lucide-react";

@@ -7,10 +7,14 @@ import type { ValidationResult, Validator } from "./types";
  * @param schema Field validator map.
  * @returns Validator function for objects matching the schema.
  */
-export const createSchema = <T extends Record<string, Validator<unknown>>>(schema: T) => {
+export const createSchema = <T extends Record<string, Validator<unknown>>>(
+  schema: T,
+) => {
   return (
     data: unknown,
-  ): ValidationResult<{ [K in keyof T]: T[K] extends Validator<infer U> ? U : never }> => {
+  ): ValidationResult<{
+    [K in keyof T]: T[K] extends Validator<infer U> ? U : never;
+  }> => {
     if (typeof data !== "object" || data === null) {
       return { success: false, error: "Expected an object" };
     }
@@ -28,7 +32,9 @@ export const createSchema = <T extends Record<string, Validator<unknown>>>(schem
 
     return {
       success: true,
-      data: result as { [K in keyof T]: T[K] extends Validator<infer U> ? U : never },
+      data: result as {
+        [K in keyof T]: T[K] extends Validator<infer U> ? U : never;
+      },
     };
   };
 };
@@ -42,7 +48,9 @@ export const createSchema = <T extends Record<string, Validator<unknown>>>(schem
 export const string =
   (message = "Expected a string"): Validator<string> =>
   (val) =>
-    typeof val === "string" ? { success: true, data: val } : { success: false, error: message };
+    typeof val === "string"
+      ? { success: true, data: val }
+      : { success: false, error: message };
 
 /**
  * Creates a number validator.
@@ -66,4 +74,6 @@ export const number =
 export const boolean =
   (message = "Expected a boolean"): Validator<boolean> =>
   (val) =>
-    typeof val === "boolean" ? { success: true, data: val } : { success: false, error: message };
+    typeof val === "boolean"
+      ? { success: true, data: val }
+      : { success: false, error: message };

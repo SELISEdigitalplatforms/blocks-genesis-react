@@ -3,7 +3,7 @@ import { Skeleton } from "@/components";
 import { useGetProject } from "@/hooks/use-project";
 import { useProjectStore } from "@/store";
 import { CopyableSnippet } from "@/components";
-import { getProjectBlocksApiUrl } from "@/lib/domain";
+import { getProjectBlocksApiUrl } from "@/utils/domain";
 
 const LoadingSkeleton = () => (
   <Card>

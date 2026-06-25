@@ -1,4 +1,4 @@
-import { isValidDomain } from "@/lib/domain";
+import { isValidDomain } from "@/utils/domain";
 import * as z from "zod";
 
 export const editProjectFormDefaultValue = {

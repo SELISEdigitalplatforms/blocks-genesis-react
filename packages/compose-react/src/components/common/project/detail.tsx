@@ -8,7 +8,7 @@ import {
 import type { IProject } from "@/models";
 import { environmentOptions } from "@/constants/environment-options";
 import type { ReactNode } from "react";
-import { getProjectBlocksApiUrl } from "@/lib/domain";
+import { getProjectBlocksApiUrl } from "@/utils/domain";
 
 interface ProjectDetailItemProps {
   label: string;

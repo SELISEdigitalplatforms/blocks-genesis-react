@@ -11,7 +11,7 @@ const IAM_SUBPATH = "iam";
 export const AUTH_ENDPOINTS = {
   OIDC_TOKEN: `${API_BASE}/oidc/token`,
   LOGOUT: `${API_BASE}/${AUTH_SUBPATH}/Logout`,
-  ME: `${API_BASE}/${AUTH_SUBPATH}/me`,
+  ME: `${API_BASE}/${IAM_SUBPATH}/me`,
 } as const;
 
 export const IAM_ENDPOINTS = {

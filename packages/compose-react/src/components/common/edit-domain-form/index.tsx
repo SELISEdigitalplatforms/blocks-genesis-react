@@ -9,7 +9,7 @@ import {
   FormMessage,
 } from "@/components/core/form/form";
 import { useUpdateRepositories } from "@/hooks/use-project";
-import { getDomain, getSubdomain } from "@/lib/domain";
+import { getDomain, getSubdomain } from "@/utils/domain";
 import { useProjectStore } from "@/store";
 import type { IEnvRepository } from "@/models";
 import { zodResolver } from "@hookform/resolvers/zod";
