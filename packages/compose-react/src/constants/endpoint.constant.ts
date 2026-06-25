@@ -11,13 +11,16 @@ const IAM_SUBPATH = "iam";
 export const AUTH_ENDPOINTS = {
   OIDC_TOKEN: `${API_BASE}/oidc/token`,
   LOGOUT: `${API_BASE}/${AUTH_SUBPATH}/Logout`,
-  ME: `${API_BASE}/${IAM_SUBPATH}/me`,
+  ME: `${API_BASE}/${AUTH_SUBPATH}/me`,
 } as const;
 
 export const IAM_ENDPOINTS = {
   INITIATE: `${API_BASE}/idp/initiate`,
 } as const;
 
+export const PROFILE_ENDPOINTS = {
+  ME: `${API_BASE}/${IAM_SUBPATH}/me`,
+};
 export const IMPERSONATE_ENDPOINTS = {
   IMPERSONATE: `${API_BASE}/${AUTH_SUBPATH}/impersonate`,
   STOP_IMPERSONATION: `${API_BASE}/${AUTH_SUBPATH}/impersonation/stop`,
