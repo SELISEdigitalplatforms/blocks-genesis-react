@@ -1,8 +1,7 @@
-import { useMemo } from "react";
+import type { FuseResult } from "fuse.js";
 import Fuse from "fuse.js";
-import type { FuseResult, IFuseOptions } from "fuse.js";
-
-export type FuseSearchOptions<T> = Partial<IFuseOptions<T>>;
+import { useMemo } from "react";
+import type { FuseSearchOptions } from "./use-fuse/types";
 
 export function useDebouncedFuseFilter<T extends Record<string, unknown>>(
   items: T[],
