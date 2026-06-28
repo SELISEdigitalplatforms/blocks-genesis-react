@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.42
+
+### Patch Changes
+
+- dashboard overview revamp for non-os projects
+
 ## 0.0.41
 
 ### Patch Changes

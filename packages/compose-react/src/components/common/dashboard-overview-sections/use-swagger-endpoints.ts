@@ -1,9 +1,11 @@
+import type { ServiceName } from "@/store";
+import { getServiceBaseUrl, getServiceSwaggerUrl } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
-import { parseSwaggerDocument } from "./util";
 import type {
   ICoreApiEndpoint,
   ISwaggerDocument,
 } from "./core-api-endpoint.model";
+import { parseSwaggerDocument } from "./util";
 
 interface UseSwaggerEndpointsOptions {
   enabled?: boolean;
@@ -29,22 +31,28 @@ const fetchSwaggerDocument = async (
 };
 
 /**
- * Fetches a service's swagger.json and turns it into the flat
- * ICoreApiEndpoint[] shape CoreApiCard expects. This is the one place that
- * needs to know anything about raw OpenAPI/Swagger shape — CoreApiCard never
- * has to.
+ * Fetches a service's swagger.json (URL resolved from runtime config via
+ * `serviceName`) and turns it into the flat ICoreApiEndpoint[] shape
+ * CoreApiCard expects. This is the one place that needs to know anything
+ * about raw OpenAPI/Swagger shape or runtime config keys.
  *
  * Swap the fetcher for your HttpClient wrapper if the swagger endpoint ever
  * needs auth headers; plain fetch assumes it's publicly readable, which is
  * the Swashbuckle default.
  */
 export const useSwaggerEndpoints = (
-  swaggerUrl: string | undefined,
+  serviceName: ServiceName | undefined,
+
   {
     enabled = true,
     staleTime = 5 * 60 * 1000,
   }: UseSwaggerEndpointsOptions = {},
 ): UseSwaggerEndpointsResult => {
+  const baseUrl = serviceName ? getServiceBaseUrl(serviceName) : undefined;
+  const swaggerUrl = serviceName
+    ? getServiceSwaggerUrl(serviceName)
+    : undefined;
+
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["swagger-endpoints", swaggerUrl],
     queryFn: () => fetchSwaggerDocument(swaggerUrl as string),
@@ -53,7 +61,7 @@ export const useSwaggerEndpoints = (
   });
 
   const endpoints =
-    data && swaggerUrl ? parseSwaggerDocument(data, swaggerUrl) : [];
+    data && swaggerUrl ? parseSwaggerDocument(data, swaggerUrl, baseUrl) : [];
 
   return { endpoints, isLoading, isError, error };
 };

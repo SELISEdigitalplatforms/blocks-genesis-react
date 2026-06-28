@@ -1,5 +1,7 @@
+import { Terminal } from "lucide-react";
 import { CopyToClipboardButton } from "@/index";
 import { cn } from "@/lib/utils";
+import { buildCurlCommand } from "./util";
 import type { HttpMethod, ICoreApiEndpoint } from "./core-api-endpoint.model";
 
 const METHOD_BADGE_CLASSES: Record<HttpMethod, string> = {
@@ -10,11 +12,18 @@ const METHOD_BADGE_CLASSES: Record<HttpMethod, string> = {
   DELETE: "bg-red-100 text-red-800",
 };
 
+interface CoreApiEndpointRowProps {
+  endpoint: ICoreApiEndpoint;
+  /** Injected into the copied curl command's X-Blocks-Key header */
+  xBlocksKey?: string;
+}
+
 export const CoreApiEndpointRow = ({
   endpoint,
-}: {
-  endpoint: ICoreApiEndpoint;
-}) => {
+  xBlocksKey,
+}: CoreApiEndpointRowProps) => {
+  const curlCommand = buildCurlCommand(endpoint, xBlocksKey);
+
   return (
     <div className="flex flex-col gap-1 rounded-md border border-border-default px-3 py-2 sm:flex-row sm:items-center sm:gap-3">
       {endpoint.method && (
@@ -31,12 +40,16 @@ export const CoreApiEndpointRow = ({
         <div className="truncate text-sm font-medium text-high-emphasis">
           {endpoint.summary}
         </div>
-        <CopyToClipboardButton textToCopy={endpoint.path} isHoverable>
-          <span className="truncate font-mono text-xs text-low-emphasis">
-            {endpoint.path}
-          </span>
-        </CopyToClipboardButton>
+        <div className="truncate font-mono text-xs text-low-emphasis">
+          {endpoint.path}
+        </div>
       </div>
+      <CopyToClipboardButton textToCopy={curlCommand} isHoverable>
+        <span className="flex shrink-0 items-center gap-1 whitespace-nowrap text-xs text-muted-foreground">
+          <Terminal className="h-3.5 w-3.5" />
+          Copy as cURL
+        </span>
+      </CopyToClipboardButton>
     </div>
   );
 };
