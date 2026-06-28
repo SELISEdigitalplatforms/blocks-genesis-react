@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.40
+
+### Patch Changes
+
+- updated http client
+
 ## 0.0.39
 
 ### Patch Changes
