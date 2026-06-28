@@ -7,7 +7,7 @@ export const ActionsListProject = () => {
   const { data, isLoading, isFetching } = useGetProject({
     projectId: selectedProject?.itemId || "",
   });
-  const isOwner = data?.data?.createdBy === user?.itemId;
+  const isOwner = data?.data?.createdBy === user?.sub;
   return (
     <div className="flex items-center gap-2">
       {!isLoading && !isFetching && !data?.data?.isDisabled && isOwner && (

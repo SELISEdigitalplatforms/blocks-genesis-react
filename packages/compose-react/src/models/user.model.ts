@@ -1,5 +1,17 @@
+import type { Id } from "@/types";
+
 export interface BaseUser {
-  itemId: string;
+  sub: Id;
+  name: string;
+  preferred_username: string;
+  email: string;
+  tenant_id: Id;
+  org_id: "default" | Id;
+  service_access: ["blocks-iam", "blocks-os", "blocks-logic", "blocks-monitor"];
+}
+
+export interface UserDetails extends BaseUser {
+  itemId: Id;
   createdDate: string;
   lastUpdatedDate: string;
   language: string;
@@ -9,8 +21,8 @@ export interface BaseUser {
   email: string;
   userName: string;
   phoneNumber: string;
-  organizationIds: string[];
-  lastUsedOrganizationId: string | null;
+  organizationIds: Id[];
+  lastUsedOrganizationId: Id | null;
   roles: Record<string, string[]>;
   permissions: Record<string, string[]>;
   active: boolean;
@@ -21,7 +33,7 @@ export interface BaseUser {
   emailVerifiedAtUtc: string | null;
   phoneVerifiedAtUtc: string | null;
   profileImageUrl: string;
-  profileImageId: string;
+  profileImageId: Id;
   mfaEnabled: boolean;
   isMfaVerified: boolean;
   userMfaType: number;
@@ -33,13 +45,13 @@ export interface BaseUser {
   externalIdentities: unknown[];
   userCreationType: number;
   department: string | null;
-  employeeId: string | null;
+  employeeId: Id | null;
   isMultiOrgEnabled: boolean;
   organizations: IMembership[];
 }
 
 export interface IMembership {
-  organizationId: string;
+  organizationId: Id;
   roles: string[];
   permissions: string[];
 }

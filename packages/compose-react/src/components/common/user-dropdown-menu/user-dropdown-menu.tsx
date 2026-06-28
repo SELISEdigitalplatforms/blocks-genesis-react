@@ -14,12 +14,19 @@ import {
 } from "@/components";
 import { useLogout } from "@/hooks/use-auth-api";
 import { getQueryClient } from "@/providers";
-import { useAuthStore, useLanguageViewStore, useProjectStore } from "@/store";
+import {
+  useAuthStore,
+  useLanguageViewStore,
+  useProjectStore,
+  useUserStore,
+} from "@/store";
 import { cn } from "@/lib";
 import { useGetMyOrganizations } from "@/hooks/use-organization";
+import { useGetUserInfo } from "@/hooks/use-user";
 
 function UserAvatar({ size = "sm" }: { size?: "sm" | "lg" }) {
-  const { user: userData } = useAuthStore();
+  const { userDetails: userData } = useUserStore();
+
   const initials =
     `${userData?.firstName?.[0] || ""}${userData?.lastName?.[0] || ""}`.toUpperCase();
 
@@ -50,7 +57,7 @@ function UserAvatar({ size = "sm" }: { size?: "sm" | "lg" }) {
 }
 
 export function UserDropdownMenu() {
-  const { user: userData } = useAuthStore();
+  const { data: userData } = useGetUserInfo();
   const { isPending, mutateAsync } = useLogout();
   const { resetProjectStore } = useProjectStore();
   const { setUnAuthenticated, clearTokens } = useAuthStore();
