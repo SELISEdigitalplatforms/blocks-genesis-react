@@ -1,8 +1,322 @@
+//TODO: Need to remove the commented-out code below after testing the new http client and found stable
+// import { getRuntimeEnv } from "@/lib/runtime-env";
+// import { AUTH_ENDPOINTS } from "@/constants/endpoint.constant";
+// import type { AuthTokenPair } from "@/models";
+// import type {
+//   RequestQueueItem,
+//   HttpClientConfig,
+//   HttpClientOptions,
+//   HeadersInitValue,
+//   RequestOptions,
+//   RequestBody,
+// } from "./types";
+// import { HttpError } from "./error";
+// import { getQueryClient } from "@/providers";
+// import { useAuthStore, useProjectStore } from "@/store";
+
+// let isRefreshing = false;
+// let requestQueue: RequestQueueItem<unknown>[] = [];
+// const excludedPaths = ["/login", "/signup"];
+
+// export class HttpClient {
+//   private baseURL: string | (() => string);
+//   private blocksKey: string | (() => string);
+//   private onTokenRefresh?: () => Promise<AuthTokenPair>;
+//   private onUnauthorized?: (error: unknown) => void;
+
+//   constructor(config: HttpClientConfig) {
+//     this.baseURL = config.baseURL;
+//     this.blocksKey = config.blocksKey;
+//     this.onTokenRefresh = config.onTokenRefresh;
+//     this.onUnauthorized = config.onUnauthorized;
+//   }
+
+//   private getBaseURL(): string {
+//     return typeof this.baseURL === "function" ? this.baseURL() : this.baseURL;
+//   }
+
+//   private getBlocksKey(): string {
+//     return typeof this.blocksKey === "function"
+//       ? this.blocksKey()
+//       : this.blocksKey;
+//   }
+
+//   private normalizeHeaders(
+//     headers?: HeadersInitValue,
+//     skipBlocksKey?: boolean,
+//   ): Headers {
+//     const normalizedHeaders = new Headers({
+//       Accept: "application/json",
+//       "Content-Type": "application/json",
+//       ...(!skipBlocksKey && this.getBlocksKey()
+//         ? { "X-Blocks-Key": this.getBlocksKey() }
+//         : {}),
+//     });
+
+//     if (headers instanceof Headers) {
+//       headers.forEach((value, key) => normalizedHeaders.set(key, value));
+//       return normalizedHeaders;
+//     }
+
+//     if (Array.isArray(headers)) {
+//       headers.forEach(([key, value]) => normalizedHeaders.set(key, value));
+//       return normalizedHeaders;
+//     }
+
+//     if (headers) {
+//       Object.entries(headers).forEach(([key, value]) =>
+//         normalizedHeaders.set(key, value),
+//       );
+//     }
+
+//     return normalizedHeaders;
+//   }
+
+//   private async refreshAccessToken() {
+//     if (isRefreshing) return;
+
+//     try {
+//       isRefreshing = true;
+//       if (this.onTokenRefresh) await this.onTokenRefresh();
+
+//       const formData = new URLSearchParams();
+//       formData.append("grant_type", "refresh_token");
+//       formData.append("refresh_token", '""');
+//       formData.append(
+//         "client_id",
+//         getRuntimeEnv("BLOCKS_OIDC_CLIENT_ID") || "",
+//       );
+//       const baseUrl = window?.process?.env.userBaseUrl || "";
+//       const url = `${baseUrl}${AUTH_ENDPOINTS.OIDC_TOKEN}?tenant_id=${this.getBlocksKey()}`;
+//       const response = await fetch(url, {
+//         method: "POST",
+//         body: formData,
+//         headers: {
+//           "Content-Type": "application/x-www-form-urlencoded",
+//           "X-Blocks-Key": this.getBlocksKey(),
+//         },
+//         credentials: "include",
+//       });
+
+//       if (!response.ok) throw new Error("Failed to refresh token");
+
+//       while (requestQueue.length > 0) {
+//         const { url, requestOption, resolve, reject } = requestQueue.shift()!;
+//         this.request(url, requestOption).then(resolve).catch(reject);
+//       }
+//     } catch (error) {
+//       if (this.onUnauthorized) this.onUnauthorized(error);
+
+//       while (requestQueue.length > 0) {
+//         const queued = requestQueue.shift();
+//         queued?.reject(error);
+//       }
+
+//       const queryClient = getQueryClient();
+//       useAuthStore.getState().resetAuthStore();
+//       useProjectStore.getState().resetProjectStore();
+//       queryClient.cancelQueries();
+//       queryClient.clear();
+
+//       if (typeof window !== "undefined") {
+//         const { pathname } = window.location;
+
+//         const shouldRedirect = !excludedPaths.some((path) =>
+//           pathname.includes(path),
+//         );
+
+//         if (shouldRedirect) {
+//           window.location.replace("/login");
+//         }
+//       }
+//     } finally {
+//       isRefreshing = false;
+//       requestQueue = [];
+//     }
+//   }
+
+//   private async request<T = unknown>(
+//     url: string,
+//     requestOption: RequestOptions,
+//   ): Promise<T> {
+//     const {
+//       method,
+//       body,
+//       headers,
+//       absoluteUrl = false,
+//       skipBlocksKey = false,
+//       withCredentials = true,
+//       skipTokenRotation = false,
+//     } = requestOption;
+
+//     const fullUrl = absoluteUrl ? url : `${this.getBaseURL()}${url}`;
+//     const normalizedHeaders = this.normalizeHeaders(headers, skipBlocksKey);
+
+//     const config: RequestInit = {
+//       method,
+//       headers: normalizedHeaders,
+//       credentials: withCredentials ? "include" : "omit",
+//     };
+
+//     if (body !== undefined && body !== null) {
+//       if (
+//         body instanceof FormData ||
+//         body instanceof URLSearchParams ||
+//         body instanceof File ||
+//         body instanceof Blob
+//       ) {
+//         normalizedHeaders.delete("Content-Type");
+//         config.body = body;
+//       } else if (typeof body === "string") {
+//         config.body = body;
+//       } else {
+//         config.body = JSON.stringify(body);
+//       }
+//     }
+
+//     try {
+//       const response = await fetch(fullUrl, config);
+
+//       if (response.status === 401 && !skipTokenRotation) {
+//         return new Promise<T>((resolve, reject) => {
+//           requestQueue.push({
+//             url,
+//             requestOption,
+//             resolve: resolve as (value: unknown | PromiseLike<unknown>) => void,
+//             reject,
+//           });
+//           if (!isRefreshing) this.refreshAccessToken();
+//         });
+//       }
+
+//       if (!response.ok) {
+//         const errorBody = await response.json().catch(() => ({}));
+//         throw new HttpError(response.status, {
+//           errors: errorBody?.errors ||
+//             errorBody || { general: "Request failed" },
+//         });
+//       }
+
+//       const contentType = response.headers.get("content-type")?.toLowerCase();
+//       if (!contentType) return { success: true, status: response.status } as T;
+
+//       if (contentType.includes("text/html")) {
+//         throw new HttpError(response.status, {
+//           errors: { general: "Unexpected HTML response from server" },
+//         });
+//       }
+
+//       if (contentType.includes("text/"))
+//         return (await response.text()) as unknown as T;
+
+//       if (
+//         contentType.includes("image/") ||
+//         contentType.includes("application/octet-stream") ||
+//         contentType.includes("application/pdf")
+//       ) {
+//         return (await response.blob()) as unknown as T;
+//       }
+
+//       return (await response.json()) as T;
+//     } catch (error) {
+//       if (error instanceof HttpError) throw error;
+
+//       if (typeof error === "object" && error !== null) {
+//         throw new HttpError(500, {
+//           errors: error as Record<string, string | string[]>,
+//         });
+//       }
+
+//       throw new HttpError(500, {
+//         errors: { general: "Something went wrong" },
+//       });
+//     }
+//   }
+
+//   get<T = unknown>(
+//     url: string,
+//     headers?: HeadersInitValue,
+//     options?: HttpClientOptions,
+//   ): Promise<T> {
+//     return this.request<T>(url, { method: "GET", headers, ...options });
+//   }
+
+//   post<T = unknown>(
+//     url: string,
+//     body: RequestBody,
+//     headers?: HeadersInitValue,
+//     options?: HttpClientOptions,
+//   ): Promise<T> {
+//     return this.request<T>(url, { method: "POST", body, headers, ...options });
+//   }
+
+//   put<T = unknown>(
+//     url: string,
+//     body: RequestBody,
+//     headers?: HeadersInitValue,
+//     options?: HttpClientOptions,
+//   ): Promise<T> {
+//     return this.request<T>(url, { method: "PUT", body, headers, ...options });
+//   }
+
+//   patch<T = unknown>(
+//     url: string,
+//     body: RequestBody,
+//     headers?: HeadersInitValue,
+//     options?: HttpClientOptions,
+//   ): Promise<T> {
+//     return this.request<T>(url, { method: "PATCH", body, headers, ...options });
+//   }
+
+//   delete<T = unknown>(
+//     url: string,
+//     headers?: HeadersInitValue,
+//     options?: HttpClientOptions,
+//   ): Promise<T> {
+//     return this.request<T>(url, { method: "DELETE", headers, ...options });
+//   }
+
+//   async stream(
+//     url: string,
+//     body: RequestBody,
+//     headers?: HeadersInitValue,
+//     options?: HttpClientOptions,
+//   ): Promise<ReadableStream<Uint8Array>> {
+//     const {
+//       absoluteUrl = false,
+//       skipBlocksKey = false,
+//       withCredentials = true,
+//     } = options || {};
+
+//     const fullUrl = absoluteUrl ? url : `${this.getBaseURL()}${url}`;
+//     const normalizedHeaders = this.normalizeHeaders(headers, skipBlocksKey);
+
+//     const response = await fetch(fullUrl, {
+//       method: "POST",
+//       headers: normalizedHeaders,
+//       credentials: withCredentials ? "include" : "omit",
+//       body: typeof body === "string" ? body : JSON.stringify(body),
+//     });
+
+//     if (!response.ok) {
+//       const errorBody = await response.json().catch(() => ({}));
+//       throw new HttpError(response.status, {
+//         errors: errorBody?.errors || errorBody,
+//       });
+//     }
+
+//     if (!response.body) {
+//       throw new Error("Response body is not readable");
+//     }
+
+//     return response.body;
+//   }
+// }
+
 import { getRuntimeEnv } from "@/lib/runtime-env";
 import { AUTH_ENDPOINTS } from "@/constants/endpoint.constant";
 import type { AuthTokenPair } from "@/models";
 import type {
-  RequestQueueItem,
   HttpClientConfig,
   HttpClientOptions,
   HeadersInitValue,
@@ -13,21 +327,31 @@ import { HttpError } from "./error";
 import { getQueryClient } from "@/providers";
 import { useAuthStore, useProjectStore } from "@/store";
 
-let isRefreshing = false;
-let requestQueue: RequestQueueItem<unknown>[] = [];
-const excludedPaths = ["/login", "/signup"];
+const DEFAULT_EXCLUDED_PATHS = ["/login", "/signup"];
+const DEFAULT_LOGIN_REDIRECT_PATH = "/login";
 
 export class HttpClient {
   private baseURL: string | (() => string);
   private blocksKey: string | (() => string);
   private onTokenRefresh?: () => Promise<AuthTokenPair>;
   private onUnauthorized?: (error: unknown) => void;
+  private excludedPaths: string[];
+  private loginRedirectPath: string;
+  private autoRedirectOnAuthFailure: boolean;
+
+  // Per-instance, not module-level — two HttpClient instances pointed at
+  // different baseURLs/tenants must never share a refresh lock.
+  private refreshPromise: Promise<void> | null = null;
 
   constructor(config: HttpClientConfig) {
     this.baseURL = config.baseURL;
     this.blocksKey = config.blocksKey;
     this.onTokenRefresh = config.onTokenRefresh;
     this.onUnauthorized = config.onUnauthorized;
+    this.excludedPaths = config.excludedPaths ?? DEFAULT_EXCLUDED_PATHS;
+    this.loginRedirectPath =
+      config.loginRedirectPath ?? DEFAULT_LOGIN_REDIRECT_PATH;
+    this.autoRedirectOnAuthFailure = config.autoRedirectOnAuthFailure ?? true;
   }
 
   private getBaseURL(): string {
@@ -71,66 +395,102 @@ export class HttpClient {
     return normalizedHeaders;
   }
 
-  private async refreshAccessToken() {
-    if (isRefreshing) return;
+  // Shared by request() and stream() so binary/form bodies are handled
+  // identically in both — stream() previously JSON.stringify'd
+  // everything unconditionally, silently mangling FormData/Blob/File.
+  private prepareBody(
+    body: RequestBody,
+    normalizedHeaders: Headers,
+  ): BodyInit | undefined {
+    if (body === undefined || body === null) return undefined;
 
+    if (
+      body instanceof FormData ||
+      body instanceof URLSearchParams ||
+      body instanceof File ||
+      body instanceof Blob
+    ) {
+      normalizedHeaders.delete("Content-Type");
+      return body;
+    }
+
+    if (typeof body === "string") return body;
+
+    return JSON.stringify(body);
+  }
+
+  // Ensures only one refresh request is ever in flight per instance.
+  // Concurrent 401s from get/post/.../stream all await this same
+  // promise instead of each independently racing to refresh.
+  private refreshAccessToken(): Promise<void> {
+    if (!this.refreshPromise) {
+      this.refreshPromise = this.performRefresh().finally(() => {
+        this.refreshPromise = null;
+      });
+    }
+    return this.refreshPromise;
+  }
+
+  private async performRefresh(): Promise<void> {
     try {
-      isRefreshing = true;
       if (this.onTokenRefresh) await this.onTokenRefresh();
+
+      const clientId = getRuntimeEnv("BLOCKS_OIDC_CLIENT_ID");
+      const baseUrl = getRuntimeEnv("BLOCKS_IAM_BASE_URL");
+      const blocksKey = this.getBlocksKey();
+
+      if (!clientId || !baseUrl || !blocksKey) {
+        throw new Error("Missing OIDC refresh configuration");
+      }
 
       const formData = new URLSearchParams();
       formData.append("grant_type", "refresh_token");
+      // Placeholder — the real refresh token lives in an HttpOnly
+      // cookie and is sent automatically via credentials: "include".
+      // The OIDC endpoint just requires this field to be present.
       formData.append("refresh_token", '""');
-      formData.append(
-        "client_id",
-        getRuntimeEnv("BLOCKS_OIDC_CLIENT_ID") || "",
-      );
-      const baseUrl = window?.process?.env.userBaseUrl || "";
-      const url = `${baseUrl}${AUTH_ENDPOINTS.OIDC_TOKEN}?tenant_id=${this.getBlocksKey()}`;
+      formData.append("client_id", clientId);
+
+      const url = `${baseUrl.replace(/\/$/, "")}${AUTH_ENDPOINTS.OIDC_TOKEN}?tenant_id=${blocksKey}`;
+
       const response = await fetch(url, {
         method: "POST",
         body: formData,
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-          "X-Blocks-Key": this.getBlocksKey(),
+          "X-Blocks-Key": blocksKey,
         },
         credentials: "include",
       });
 
       if (!response.ok) throw new Error("Failed to refresh token");
-
-      while (requestQueue.length > 0) {
-        const { url, requestOption, resolve, reject } = requestQueue.shift()!;
-        this.request(url, requestOption).then(resolve).catch(reject);
-      }
     } catch (error) {
-      if (this.onUnauthorized) this.onUnauthorized(error);
+      this.handleRefreshFailure(error);
+      throw error;
+    }
+  }
 
-      while (requestQueue.length > 0) {
-        const queued = requestQueue.shift();
-        queued?.reject(error);
-      }
+  // Runs exactly once per failed refresh, regardless of how many
+  // concurrent requests were waiting on it.
+  private handleRefreshFailure(error: unknown): void {
+    if (this.onUnauthorized) this.onUnauthorized(error);
 
-      const queryClient = getQueryClient();
-      useAuthStore.getState().resetAuthStore();
-      useProjectStore.getState().resetProjectStore();
-      queryClient.cancelQueries();
-      queryClient.clear();
+    const queryClient = getQueryClient();
+    useAuthStore.getState().resetAuthStore();
+    useProjectStore.getState().resetProjectStore();
+    queryClient.cancelQueries();
+    queryClient.clear();
 
-      if (typeof window !== "undefined") {
-        const { pathname } = window.location;
+    if (!this.autoRedirectOnAuthFailure) return;
+    if (typeof window === "undefined") return;
 
-        const shouldRedirect = !excludedPaths.some((path) =>
-          pathname.includes(path),
-        );
+    const { pathname } = window.location;
+    const shouldRedirect = !this.excludedPaths.some((path) =>
+      pathname.startsWith(path),
+    );
 
-        if (shouldRedirect) {
-          window.location.replace("/login");
-        }
-      }
-    } finally {
-      isRefreshing = false;
-      requestQueue = [];
+    if (shouldRedirect) {
+      window.location.replace(this.loginRedirectPath);
     }
   }
 
@@ -146,6 +506,7 @@ export class HttpClient {
       skipBlocksKey = false,
       withCredentials = true,
       skipTokenRotation = false,
+      signal,
     } = requestOption;
 
     const fullUrl = absoluteUrl ? url : `${this.getBaseURL()}${url}`;
@@ -155,36 +516,24 @@ export class HttpClient {
       method,
       headers: normalizedHeaders,
       credentials: withCredentials ? "include" : "omit",
+      body: this.prepareBody(body, normalizedHeaders),
+      signal,
     };
-
-    if (body !== undefined && body !== null) {
-      if (
-        body instanceof FormData ||
-        body instanceof URLSearchParams ||
-        body instanceof File ||
-        body instanceof Blob
-      ) {
-        normalizedHeaders.delete("Content-Type");
-        config.body = body;
-      } else if (typeof body === "string") {
-        config.body = body;
-      } else {
-        config.body = JSON.stringify(body);
-      }
-    }
 
     try {
       const response = await fetch(fullUrl, config);
 
       if (response.status === 401 && !skipTokenRotation) {
-        return new Promise<T>((resolve, reject) => {
-          requestQueue.push({
-            url,
-            requestOption,
-            resolve: resolve as (value: unknown | PromiseLike<unknown>) => void,
-            reject,
+        try {
+          await this.refreshAccessToken();
+        } catch {
+          throw new HttpError(401, {
+            errors: { general: "Session expired" },
           });
-          if (!isRefreshing) this.refreshAccessToken();
+        }
+        return this.request<T>(url, {
+          ...requestOption,
+          skipTokenRotation: true,
         });
       }
 
@@ -285,29 +634,63 @@ export class HttpClient {
       absoluteUrl = false,
       skipBlocksKey = false,
       withCredentials = true,
+      skipTokenRotation = false,
+      signal,
     } = options || {};
 
     const fullUrl = absoluteUrl ? url : `${this.getBaseURL()}${url}`;
     const normalizedHeaders = this.normalizeHeaders(headers, skipBlocksKey);
 
-    const response = await fetch(fullUrl, {
-      method: "POST",
-      headers: normalizedHeaders,
-      credentials: withCredentials ? "include" : "omit",
-      body: typeof body === "string" ? body : JSON.stringify(body),
-    });
+    try {
+      const response = await fetch(fullUrl, {
+        method: "POST",
+        headers: normalizedHeaders,
+        credentials: withCredentials ? "include" : "omit",
+        body: this.prepareBody(body, normalizedHeaders),
+        signal,
+      });
 
-    if (!response.ok) {
-      const errorBody = await response.json().catch(() => ({}));
-      throw new HttpError(response.status, {
-        errors: errorBody?.errors || errorBody,
+      if (response.status === 401 && !skipTokenRotation) {
+        try {
+          await this.refreshAccessToken();
+        } catch {
+          throw new HttpError(401, {
+            errors: { general: "Session expired" },
+          });
+        }
+        return this.stream(url, body, headers, {
+          ...options,
+          skipTokenRotation: true,
+        });
+      }
+
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({}));
+        throw new HttpError(response.status, {
+          errors: errorBody?.errors ||
+            errorBody || { general: "Request failed" },
+        });
+      }
+
+      if (!response.body) {
+        throw new HttpError(response.status, {
+          errors: { general: "Response body is not readable" },
+        });
+      }
+
+      return response.body;
+    } catch (error) {
+      if (error instanceof HttpError) throw error;
+
+      if (typeof error === "object" && error !== null) {
+        throw new HttpError(500, {
+          errors: error as Record<string, string | string[]>,
+        });
+      }
+
+      throw new HttpError(500, {
+        errors: { general: "Something went wrong" },
       });
     }
-
-    if (!response.body) {
-      throw new Error("Response body is not readable");
-    }
-
-    return response.body;
   }
 }
