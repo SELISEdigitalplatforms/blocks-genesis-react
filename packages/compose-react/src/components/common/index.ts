@@ -21,3 +21,4 @@ export * from "./actions-list-project";
 export * from "./edit-domain-form";
 export * from "./copyable-snippet";
 export * from "./git-command-snippet";
+export * from "./dashboard-overview-sections";

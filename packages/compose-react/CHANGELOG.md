@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.41
+
+### Patch Changes
+
+- fix delete project button visibility logic
+
 ## 0.0.40
 
 ### Patch Changes
