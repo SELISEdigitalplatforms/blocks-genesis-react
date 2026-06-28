@@ -31,7 +31,6 @@ function UserAvatar({ size = "sm" }: { size?: "sm" | "lg" }) {
     `${userData?.firstName?.[0] || ""}${userData?.lastName?.[0] || ""}`.toUpperCase();
 
   const sizeClass = size === "lg" ? "h-14 w-14 text-xl" : "h-10 w-10 text-base";
-
   if (userData?.profileImageUrl) {
     return (
       <img
@@ -57,7 +56,8 @@ function UserAvatar({ size = "sm" }: { size?: "sm" | "lg" }) {
 }
 
 export function UserDropdownMenu() {
-  const { data: userData } = useGetUserInfo();
+  const { data } = useGetUserInfo();
+  const userData = data?.data;
   const { isPending, mutateAsync } = useLogout();
   const { resetProjectStore } = useProjectStore();
   const { setUnAuthenticated, clearTokens } = useAuthStore();
