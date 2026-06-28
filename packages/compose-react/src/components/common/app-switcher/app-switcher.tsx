@@ -4,28 +4,23 @@ import {
   PopoverTrigger,
 } from "@/components/core/popover/popover";
 import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
-import { useTheme } from "@/hooks/use-theme";
 import { type RuntimeKey } from "@/layouts/blocks-app-layout";
 import { getRuntimeEnv } from "@/lib/runtime-env";
 import { cn } from "@/lib/utils";
-
 import { initiateService } from "@/services/initiate.service";
 import type { ServiceName } from "@/store";
 import type { ForwardToPaths } from "@/types";
+import { getForwardedToPath } from "@/utils";
 import { Grip } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { filteredAppSwitcherData } from "./app-switcher.constant";
-import { getForwardedToPath } from "@/utils";
 
 export interface BlocksApp {
   key: ServiceName;
   label: string;
   description: string;
   url: string;
-  icon: {
-    darkModeIcon: React.ReactNode;
-    lightModeIcon: React.ReactNode;
-  };
+  icon: React.ReactNode;
   clientId: RuntimeKey;
   redirectUri: RuntimeKey;
   initiateUrl: string;
@@ -33,16 +28,24 @@ export interface BlocksApp {
   isDisabled: boolean | (() => boolean);
 }
 
+const AppIcon = ({ icon, label }: { icon: React.ReactNode; label: string }) => {
+  return (
+    <div className="flex h-12 w-12 items-center justify-center overflow-hidden">
+      {typeof icon === "string" ? (
+        <img src={icon} alt={label} className="h-full w-full object-contain" />
+      ) : (
+        icon
+      )}
+    </div>
+  );
+};
+
 interface AppTileProps {
   app: BlocksApp;
   isLoading: boolean;
 }
 
 const AppTile = ({ app, isLoading }: AppTileProps) => {
-  const { resolvedTheme } = useTheme();
-  const icon =
-    resolvedTheme === "dark" ? app.icon.darkModeIcon : app.icon.lightModeIcon;
-
   return (
     <a
       href={isLoading ? undefined : app.initiateUrl}
@@ -53,17 +56,7 @@ const AppTile = ({ app, isLoading }: AppTileProps) => {
         isLoading && "pointer-events-none opacity-50 cursor-default",
       )}
     >
-      <div className="flex h-12 w-12 items-center justify-center overflow-hidden">
-        {typeof icon === "string" ? (
-          <img
-            src={icon}
-            alt={app.label}
-            className="h-full w-full object-contain"
-          />
-        ) : (
-          icon
-        )}
-      </div>
+      <AppIcon icon={app.icon} label={app.label} />
       <span className="text-foreground line-clamp-1 max-w-[90px] text-[12px] font-medium leading-tight">
         {isLoading ? "Loading…" : app.label}
       </span>

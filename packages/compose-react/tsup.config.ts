@@ -3,6 +3,9 @@ import { defineConfig } from "tsup";
 export default defineConfig({
   entry: {
     index: "src/index.ts",
+    "components/index": "src/components/index.ts",
+    "lib/index": "src/lib/index.ts",
+    "pages/index": "src/pages/index.ts",
     "store/index": "src/store/index.ts",
     "providers/index": "src/providers/index.ts",
     "guards/index": "src/guards/index.ts",
@@ -17,7 +20,7 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   treeshake: true,
-  splitting: false,
+  splitting: true,
   loader: {
     ".svg": "dataurl",
     ".png": "dataurl",
