@@ -2,7 +2,6 @@ import { AUTH_ENDPOINTS } from "@/constants/endpoint.constant";
 import { iamClient } from "@/lib/http/instances";
 import type { BaseUser } from "@/models";
 import { useAuthStore } from "@/store/auth.store";
-import type { ApiResponse } from "@/types";
 import { useEffect, useRef } from "react";
 
 export function AuthResolver({ children }: { children: React.ReactNode }) {
@@ -15,10 +14,8 @@ export function AuthResolver({ children }: { children: React.ReactNode }) {
 
     async function resolve() {
       try {
-        const res = await iamClient.get<ApiResponse<BaseUser>>(
-          `${AUTH_ENDPOINTS.ME}`,
-        );
-        setUser(res.data);
+        const res = await iamClient.get<BaseUser>(`${AUTH_ENDPOINTS.ME}`);
+        setUser(res);
         setAuthenticated();
       } catch {
         setUnAuthenticated();
