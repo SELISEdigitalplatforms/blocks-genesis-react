@@ -1,9 +1,9 @@
-import { iamClient } from "@/lib/http/instances";
-import { useEffect, useRef } from "react";
-import { useAuthStore } from "@/store/auth.store";
-import type { BaseUser } from "@/models";
-import type { ApiError, ApiResponse } from "@/types";
 import { AUTH_ENDPOINTS } from "@/constants/endpoint.constant";
+import { iamClient } from "@/lib/http/instances";
+import type { BaseUser } from "@/models";
+import { useAuthStore } from "@/store/auth.store";
+import type { ApiResponse } from "@/types";
+import { useEffect, useRef } from "react";
 
 export function AuthResolver({ children }: { children: React.ReactNode }) {
   const { setUser, setAuthenticated, setUnAuthenticated } = useAuthStore();
@@ -15,7 +15,7 @@ export function AuthResolver({ children }: { children: React.ReactNode }) {
 
     async function resolve() {
       try {
-        const res = await iamClient.get<ApiResponse<BaseUser, ApiError>>(
+        const res = await iamClient.get<ApiResponse<BaseUser>>(
           `${AUTH_ENDPOINTS.ME}`,
         );
         setUser(res.data);
