@@ -8,7 +8,7 @@ export const useGetUserInfo = (options?: { enabled?: boolean }) => {
     queryKey: ["user-info"],
     queryFn: async () => {
       const user = await userService.getUserInfo();
-      userStore.setUserDetails(user);
+      userStore.setUserDetails(user.data);
       return user;
     },
     ...options,

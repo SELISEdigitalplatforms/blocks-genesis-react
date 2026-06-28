@@ -8,5 +8,5 @@ export interface BaseApiResponseError<E> {
 export interface ApiError {
   message: string;
 }
-export type ApiResponse<T, E> = BaseApiResponse<T> &
-  Partial<BaseApiResponseError<E>>;
+export type ApiResponse<T> = BaseApiResponse<T> &
+  Partial<BaseApiResponseError<ApiError>>;
