@@ -1,13 +1,16 @@
 import { Skeleton } from "@/index";
 import { Badge } from "@/components";
-import { CoreApiEndpointRow } from "./core-api-endpoint-row";
-import type { ICoreApiEndpoint } from "./core-api-endpoint.model";
+import { CoreApiGroupSection } from "./core-api-group-section";
 import { DashboardSectionCard } from "./dashboard-section-card";
+import type { ICoreApiEndpoint } from "./core-api-endpoint.model";
+import { groupEndpointsByTag } from "./util";
 
 interface CoreApiCardProps {
   title?: string;
   description?: string;
   endpoints: ICoreApiEndpoint[];
+  /** Forwarded into each endpoint's "Copy as cURL" command */
+  xBlocksKey?: string;
   isLoading?: boolean;
   error?: unknown;
 }
@@ -18,8 +21,8 @@ const CoreApiLoadingSkeleton = () => (
       <Skeleton className="h-4 w-28" />
     </div>
     <div className="flex flex-col gap-1.5 border-t border-border px-2 py-2 sm:px-4 sm:py-3">
-      {Array.from({ length: 3 }).map((_item, index) => (
-        <Skeleton key={index} className="h-12 w-full" />
+      {Array.from({ length: 4 }).map((_item, index) => (
+        <Skeleton key={index} className="h-10 w-full" />
       ))}
     </div>
   </div>
@@ -29,16 +32,19 @@ export const CoreApiCard = ({
   title = "Core APIs",
   description = "Available endpoints for this module",
   endpoints,
+  xBlocksKey,
   isLoading,
   error,
 }: CoreApiCardProps) => {
   if (isLoading) return <CoreApiLoadingSkeleton />;
 
+  const groups = groupEndpointsByTag(endpoints);
+
   return (
     <DashboardSectionCard
       title={title}
       description={description}
-      contentClassName="flex flex-col gap-1.5"
+      contentClassName="flex flex-col gap-2"
       headerRight={
         <>
           <Badge className="hidden rounded-full bg-primary/10 font-mono text-xs text-primary pointer-events-none sm:flex">
@@ -50,15 +56,20 @@ export const CoreApiCard = ({
         </>
       }
     >
-      {endpoints.length === 0 ? (
+      {groups.length === 0 ? (
         <p className="px-1 py-3 text-center text-sm text-muted-foreground">
           {error
             ? "Couldn't load endpoints for this module."
             : "No endpoints available for this module."}
         </p>
       ) : (
-        endpoints.map((endpoint) => (
-          <CoreApiEndpointRow key={endpoint.itemId} endpoint={endpoint} />
+        groups.map((group) => (
+          <CoreApiGroupSection
+            key={group.tag}
+            tag={group.tag}
+            endpoints={group.endpoints}
+            xBlocksKey={xBlocksKey}
+          />
         ))
       )}
     </DashboardSectionCard>
