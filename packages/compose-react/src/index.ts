@@ -6,3 +6,4 @@ export * from "./pages/index";
 export * from "./lib/index";
 export * from "./components/index";
 export * from "./utils/index";
+export * from "./models/index";

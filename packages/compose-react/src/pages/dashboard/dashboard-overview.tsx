@@ -1,6 +1,6 @@
 import {
   ActionsListProject,
-  AppIntegrationCard,
+  // AppIntegrationCard,
   CoreApiCard,
   GitCommandSnippet,
   ProjectCliSnippet,
@@ -12,7 +12,6 @@ import {
 import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { useGetProject } from "@/hooks/use-project";
 import { useProjectStore } from "@/store/project.store";
-import { Puzzle } from "lucide-react";
 
 export const DashboardOverview = () => {
   const { name } = useBlocksAppConfigStore((state) => state.config);
@@ -48,7 +47,7 @@ export const DashboardOverview = () => {
           isLoading={isLoadingEndpoints}
           error={error}
         />
-        <AppIntegrationCard
+        {/* <AppIntegrationCard
           title="Connect Extensions"
           description="Install the UILM browser extension or open it directly"
           links={[
@@ -61,7 +60,7 @@ export const DashboardOverview = () => {
           ]}
           clientId={"dummy-client-id"}
           clientSecret={"dummy-client-secret"}
-        />
+        /> */}
       </RenderConditionally>
     </main>
   );

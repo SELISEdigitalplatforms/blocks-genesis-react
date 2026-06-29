@@ -1,6 +1,6 @@
 {
   "name": "@seliseblocks/blocks-kit",
-  "version": "0.0.42",
+  "version": "0.0.43",
   "description": "React app-shell composition package for blocks-kit",
   "author": "SELISE Blocks",
   "license": "MIT",
@@ -11,6 +11,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js",
+      "require": "./dist/components/index.cjs"
     },
     "./store": {
       "types": "./dist/store/index.d.ts",
@@ -43,14 +48,24 @@
       "require": "./dist/hooks/index.cjs"
     },
     "./http": {
-      "types": "./dist/lib/http/index.d.ts",
-      "import": "./dist/lib/http/index.js",
-      "require": "./dist/lib/http/index.cjs"
+      "types": "./dist/http/index.d.ts",
+      "import": "./dist/http/index.js",
+      "require": "./dist/http/index.cjs"
     },
     "./utils": {
       "types": "./dist/utils/index.d.ts",
       "import": "./dist/utils/index.js",
       "require": "./dist/utils/index.cjs"
+    },
+    "./models": {
+      "types": "./dist/models/index.d.ts",
+      "import": "./dist/models/index.js",
+      "require": "./dist/models/index.cjs"
+    },
+    "./pages": {
+      "types": "./dist/pages/index.d.ts",
+      "import": "./dist/pages/index.js",
+      "require": "./dist/pages/index.cjs"
     },
     "./package.json": "./package.json"
   },

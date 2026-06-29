@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.43
+
+### Patch Changes
+
+- update code splitting
+
 ## 0.0.42
 
 ### Patch Changes

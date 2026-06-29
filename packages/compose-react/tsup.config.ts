@@ -14,6 +14,7 @@ export default defineConfig({
     "http/index": "src/lib/http/index.ts",
     "hooks/index": "src/hooks/index.ts",
     "utils/index": "src/utils/index.ts",
+    "models/index": "src/models/index.ts",
   },
   format: ["esm", "cjs"],
   dts: true,
