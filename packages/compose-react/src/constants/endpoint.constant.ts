@@ -3,6 +3,7 @@ const AUTH_SUBPATH = "auth";
 const NOTIFIER_SUBPATH = "Notifier";
 const NOTIFICATION_SUBPATH = "Notification";
 const PROJECT_SUBPATH = "Project";
+const SERVICE_SUBPATH = "Service";
 const DOMAIN_SUBPATH = "Domain";
 const BUILD_SUBPATH = "Build";
 const DEPLOYMENT_SUBPATH = "Deployment";
@@ -45,6 +46,10 @@ export const PROJECT_ENDPOINTS = {
   CONFIGURE: `${API_BASE}/${DOMAIN_SUBPATH}/Configure`,
   REPOS_LIST: `${API_BASE}/${DEPLOYMENT_SUBPATH}/GetReposList`,
   REPO_UPDATE: `${API_BASE}/${BUILD_SUBPATH}/repo-update`,
+} as const;
+
+export const SERVICE_REGISTRY_ENDPOINTS = {
+  GET_ALL: `${API_BASE}/${SERVICE_SUBPATH}/GetAll`,
 } as const;
 
 export const ORGANIZATION_ENDPOINTS = {

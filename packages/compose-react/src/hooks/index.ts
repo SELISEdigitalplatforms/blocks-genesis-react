@@ -22,4 +22,5 @@ export * from "./use-menus";
 export * from "./use-notifications";
 export * from "./use-organization";
 export * from "./use-project";
+export * from "./use-service-registry";
 export * from "./use-theme";
