@@ -14,7 +14,15 @@ class ImpersonationService {
   }
 
   stopImpersonation(): Promise<void> {
-    return iamClient.post(IMPERSONATE_ENDPOINTS.STOP_IMPERSONATION, {});
+    // Do not run the global 401 → refresh → logout flow for stop. A 401 here
+    // usually means impersonation is already ended server-side while the
+    // session cookie is still valid for other endpoints (me/status).
+    return iamClient.post(
+      IMPERSONATE_ENDPOINTS.STOP_IMPERSONATION,
+      {},
+      undefined,
+      { skipTokenRotation: true },
+    );
   }
 
   impersonationStatus(): Promise<ImpersonationStatusResponse> {
