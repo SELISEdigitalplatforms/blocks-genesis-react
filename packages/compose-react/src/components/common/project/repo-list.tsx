@@ -44,7 +44,7 @@ export const ProjectRepoList = ({
   const [isSetApplicationDomainModalOpen, setIsSetApplicationDomainModalOpen] =
     useState<boolean>(false);
   const [applicationDomain, setApplicationDomain] = useState<string>(
-    project?.applicationDomain || "",
+    project?.customDomain || "",
   );
   const confirmationModalData = {
     dialogTitle: "Set as application domain?",
@@ -172,7 +172,7 @@ export const ProjectRepoList = ({
                             ? repo.customDeploymentUrl
                             : repo.defaultDeploymentUrl;
 
-                          return activeDomain !== project?.applicationDomain ? (
+                          return activeDomain !== project?.customDomain ? (
                             <Button
                               variant="outline"
                               size="xxs"
@@ -247,7 +247,7 @@ export const ProjectRepoList = ({
                         const activeDomain = hasCustomUrl
                           ? repo.customDeploymentUrl
                           : repo.defaultDeploymentUrl;
-                        return activeDomain !== project?.applicationDomain ? (
+                        return activeDomain !== project?.customDomain ? (
                           <Button
                             variant="outline"
                             size="xxs"
