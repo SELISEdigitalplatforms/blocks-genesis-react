@@ -12,7 +12,7 @@ import {
   RenderConditionally,
   Skeleton,
 } from "@/components";
-import { useLogout } from "@/hooks/use-auth-api";
+import { useLogout } from "@/hooks/use-logout";
 import { getQueryClient } from "@/providers";
 import {
   useAuthStore,

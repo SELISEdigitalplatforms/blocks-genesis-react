@@ -7,7 +7,7 @@ import { getProjectBlocksApiUrl } from "@/utils/domain";
 
 const LoadingSkeleton = () => (
   <Card>
-    <CardContent>
+    <CardContent className="p-6">
       <div>
         <Skeleton className="h-8 w-1/4" />
         <Skeleton className="mt-2 h-6 w-full" />
