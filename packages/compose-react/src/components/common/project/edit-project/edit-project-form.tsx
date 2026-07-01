@@ -20,49 +20,38 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components";
-import { useGetProject, useUpdateProject } from "@/hooks/use-project";
-import { getDomain } from "@/utils/domain";
+import { useUpdateProject } from "@/hooks/use-project";
 import { useProjectStore } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleHelp, InfoIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { editProjectFormDefaultValue, editProjectFormSchema } from "./schema";
+import {
+  editProjectFormDefaultValue,
+  editProjectFormSchema,
+  type EditProjectFormSchema,
+} from "./schema";
 type EditProjectFormProps = {
+  formData: EditProjectFormSchema;
   onAfterSubmit: () => void;
 };
-export const EditProjectForm = ({ onAfterSubmit }: EditProjectFormProps) => {
+export const EditProjectForm = ({
+  onAfterSubmit,
+  formData,
+}: EditProjectFormProps) => {
   const { itemId } = useProjectStore().selectedProject || {
     itemId: "",
     tenantId: "",
   };
   const projectKey = useProjectStore().selectedProject?.tenantId || "";
-  const { data } = useGetProject({ projectId: itemId });
   const { mutateAsync, isPending } = useUpdateProject({ projectKey });
   const [customDomainTooltipOpen, setCustomDomainTooltipOpen] = useState(false);
   const form = useForm({
     defaultValues: editProjectFormDefaultValue,
-    values: data?.data
-      ? {
-          ...data.data,
-          useCustomDomain:
-            data.data.customDomain && data.data.customDomain.trim() !== ""
-              ? true
-              : false,
-          customDomain: data.data.customDomain || "",
-          applicationDomain: data.data.applicationDomain
-            ? data.data.applicationDomain.replace(
-                `.${getDomain(data.data.applicationDomain)}`,
-                "",
-              )
-            : "",
-        }
-      : undefined,
+    values: formData,
     resolver: zodResolver(editProjectFormSchema),
   });
-  const onSubmitHandler = async (
-    values: typeof editProjectFormDefaultValue,
-  ) => {
+  const onSubmitHandler = async (values: EditProjectFormSchema) => {
     try {
       if (!itemId || !projectKey) return;
       const res = await mutateAsync({
@@ -88,12 +77,11 @@ export const EditProjectForm = ({ onAfterSubmit }: EditProjectFormProps) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmitHandler)}
-        className="flex flex-col gap-4"
-      >
+        className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <div className="text-sm font-medium">Application Domain</div>
           <div className="text-sm text-muted-foreground">
-            {data?.data.applicationDomain}
+            {formData.applicationDomain || "N/A"}
           </div>
         </div>
         <FormField
@@ -130,8 +118,7 @@ export const EditProjectForm = ({ onAfterSubmit }: EditProjectFormProps) => {
                         className="peer"
                         type="button"
                         onMouseEnter={() => setCustomDomainTooltipOpen(true)}
-                        onMouseLeave={() => setCustomDomainTooltipOpen(false)}
-                      >
+                        onMouseLeave={() => setCustomDomainTooltipOpen(false)}>
                         <CircleHelp className="h-4 w-4" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-96 text-sm font-normal">
@@ -182,13 +169,13 @@ const CNameInstruction = ({
   const apiBaseUrl = "blocksapi." + cookieDomainName;
   return (
     <Card className="h-60 overflow-y-auto rounded-sm px-4 py-3 text-base font-normal text-high-emphasis shadow-none">
-      <CardHeader className="!p-0">
+      <CardHeader className="p-0!">
         <CardTitle className="flex items-center gap-3 text-lg font-semibold">
           <InfoIcon className="h-6 w-6 text-neutral-300" />
           DNS CNAME Record for Domain Validation
         </CardTitle>
       </CardHeader>
-      <CardContent className="my-2.5 !p-0">
+      <CardContent className="my-2.5 p-0!">
         <div>
           <h4>
             Please add the following

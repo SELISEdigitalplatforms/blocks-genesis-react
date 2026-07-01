@@ -1,16 +1,26 @@
-import { Badge, CopyToClipboardButton, MaskedText } from "@/components/core";
+import {
+  Badge,
+  CopyToClipboardButton,
+  MaskedText,
+  Skeleton,
+} from "@/components/core";
 
 type ProjectOverviewProps = {
   name: string;
   environment: string;
   tenantId: string;
+  isFetching?: boolean;
 };
 
 export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
   name,
   environment,
   tenantId,
+  isFetching = false,
 }) => {
+  if (isFetching) {
+    return <ProjectOverviewSkeleton />;
+  }
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
@@ -22,8 +32,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
         <CopyToClipboardButton
           className="text-high-emphasis rounded-lg items-center"
           textToCopy={tenantId || ""}
-          isHoverable
-        >
+          isHoverable>
           <MaskedText
             text={tenantId || ""}
             showFirstN={3}
@@ -31,6 +40,22 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
             length={20}
           />
         </CopyToClipboardButton>
+      </div>
+    </div>
+  );
+};
+
+const ProjectOverviewSkeleton = () => {
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        <Skeleton className="h-8 w-56" />
+        <Skeleton className="h-6 w-20 rounded-full" />
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-4 w-40" />
       </div>
     </div>
   );

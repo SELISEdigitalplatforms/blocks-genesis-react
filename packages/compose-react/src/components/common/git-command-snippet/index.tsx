@@ -13,7 +13,7 @@ import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 const LoadingSkeleton = () => (
   <Card>
-    <CardContent>
+    <CardContent className="p-6">
       <div>
         <Skeleton className="h-8 w-1/4" />
         <Skeleton className="mt-2 h-6 w-full" />
@@ -73,8 +73,7 @@ export const GitCommandSnippet = () => {
             !hasRepository
               ? "pointer-events-none mt-4 select-none opacity-50"
               : ""
-          }
-        >
+          }>
           <CopyableSnippet code={gitCommands} isCopyable={hasRepository} />
         </div>
       </CardContent>

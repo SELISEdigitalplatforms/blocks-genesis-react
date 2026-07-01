@@ -13,7 +13,7 @@ export const CnameValidatorProject = () => {
   const { mutateAsync, isPending } = useValidateCNameProject({ projectKey });
   const cNameValidator = async () => {
     try {
-      if (!data?.data.applicationDomain) return;
+      if (data?.data.isDomainVerified) return;
       const res = await mutateAsync();
       if (res.isValid) return toast.success("CName is validated successfully");
       toast.error(

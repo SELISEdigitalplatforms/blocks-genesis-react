@@ -1,7 +1,6 @@
-import { useState } from "react";
-import { Settings } from "lucide-react";
-import { Button } from "@/components";
 import {
+  Button,
+  CnameValidatorProject,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -9,17 +8,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components";
-import { EditProjectForm } from "./edit-project-form";
-import type { IGetProjectResponse } from "@/models";
-import { CnameValidatorProject } from "@/components";
 import { formatFullDate } from "@/utils";
+import { Settings } from "lucide-react";
+import { useState } from "react";
+import { EditProjectForm } from "./edit-project-form";
+import type { EditProjectFormSchema } from "./schema";
 interface EditProjectProps {
-  data?: IGetProjectResponse;
+  data: EditProjectFormSchema;
+  lastUpdatedDate?: string;
   isLoading?: boolean;
 }
-export const EditProject = ({ data, isLoading }: EditProjectProps) => {
-  const isCNameNotValidated =
-    !isLoading && data?.data && !data?.data.isDomainVerified;
+export const EditProject = ({ data, lastUpdatedDate }: EditProjectProps) => {
   const [open, setOpen] = useState<boolean>(false);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -32,30 +31,24 @@ export const EditProject = ({ data, isLoading }: EditProjectProps) => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Configure domain</DialogTitle>
-          {isCNameNotValidated &&
-            data?.data.cookieDomain !== "seliseblocks.com" && (
-              <div className="flex flex-col items-center justify-between gap-1 rounded-sm border border-base-error bg-blocks-error-100 px-4 py-4 text-base font-normal text-blocks-error-800 md:flex-row">
-                <p>
-                  No servers found for &apos;{data?.data.cookieDomain}&apos;
-                </p>
-                <div className="flex items-center gap-2">
-                  {data?.data.lastUpdatedDate ? (
-                    <p>
-                      Reported on{" "}
-                      {formatFullDate(new Date(data.data.lastUpdatedDate))}
-                    </p>
-                  ) : (
-                    <p>Report date unavailable</p>
-                  )}
-                  <CnameValidatorProject />
-                </div>
+          {data?.cookieDomain !== "blocksdevelopers.com" && (
+            <div className="flex flex-col items-center justify-between gap-1 rounded-sm border border-base-error bg-blocks-error-100 px-4 py-4 text-base font-normal text-blocks-error-800 md:flex-row">
+              <p>No servers found for &apos;{data?.cookieDomain}&apos;</p>
+              <div className="flex items-center gap-2">
+                {lastUpdatedDate ? (
+                  <p>Reported on {formatFullDate(new Date(lastUpdatedDate))}</p>
+                ) : (
+                  <p>Report date unavailable</p>
+                )}
+                <CnameValidatorProject />
               </div>
-            )}
+            </div>
+          )}
           <DialogDescription>
             Configure your domain to point to your application
           </DialogDescription>
         </DialogHeader>
-        <EditProjectForm onAfterSubmit={() => setOpen(false)} />
+        <EditProjectForm formData={data} onAfterSubmit={() => setOpen(false)} />
       </DialogContent>
     </Dialog>
   );

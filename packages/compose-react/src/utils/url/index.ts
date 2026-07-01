@@ -57,7 +57,7 @@ export const SERVICE_BASE_URL_KEY: Record<ServiceName, RuntimeKey> = {
  */
 export const getServiceBaseUrl = (
   serviceName: ServiceName,
-): string | undefined => SERVICE_BASE_URL_KEY[serviceName];
+): RuntimeKey | undefined => SERVICE_BASE_URL_KEY[serviceName];
 
 /**
  * Same, but appended with the standard Swashbuckle swagger.json path —

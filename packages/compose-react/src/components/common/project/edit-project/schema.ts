@@ -51,3 +51,4 @@ export const editProjectFormSchema = z
       path: ["customDomain"],
     },
   );
+export type EditProjectFormSchema = z.infer<typeof editProjectFormSchema>;

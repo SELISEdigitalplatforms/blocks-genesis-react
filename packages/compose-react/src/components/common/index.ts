@@ -17,7 +17,6 @@ export * from "./loader-spinner";
 export * from "./archived-project";
 export * from "./confirmation-modal";
 export * from "./cname-validator-project";
-export * from "./actions-list-project";
 export * from "./edit-domain-form";
 export * from "./copyable-snippet";
 export * from "./git-command-snippet";
