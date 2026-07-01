@@ -3,12 +3,12 @@ import {
   useImpersonationStatusChecker,
   useStartImpersonation,
   useStopImpersonation,
-} from "@/hooks/use-auth-api";
+} from "@/hooks/use-impersonation";
 import { useGetProjects } from "@/hooks/use-project";
-import type { ImpersonationRequest } from "@/models";
 import { useImpersonateStore, useProjectStore } from "@/store";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { projectService } from "@/services/project.service";
+import type { ImpersonationRequest } from "@/models";
 
 export const ImpersonationChecker = ({
   children,
@@ -21,7 +21,6 @@ export const ImpersonationChecker = ({
 
   useEffect(() => {
     if (!data) return;
-    setInitialized(false);
     setImpersonation(
       data.impersonated,
       data.originalTenantId,
@@ -45,6 +44,7 @@ export function ImpersonationTerminator({
 
   useEffect(() => {
     if (isTriggering.current || !isImpersonated) return;
+
     isTriggering.current = true;
     const blocksKey = window.process?.env.BLOCKS_X_BLOCKS_KEY || "";
     mutateAsync(undefined)
@@ -53,9 +53,14 @@ export function ImpersonationTerminator({
         isTriggering.current = false;
       })
       .catch(() => {
+        // Stop can 401 when impersonation is already cleared server-side.
+        // Always clear local state so we do not re-trigger stop on next layout.
+        terminate(blocksKey);
+      })
+      .finally(() => {
         isTriggering.current = false;
       });
-  }, [mutateAsync, terminate, isImpersonated, isTriggering]);
+  }, [mutateAsync, terminate, isImpersonated]);
 
   if (isImpersonated || isTriggering.current) return <AppLoadingSpinner />;
   return <>{children}</>;
@@ -107,7 +112,6 @@ export function ImpersonationSynchronizer({
       }
 
       // need to impersonate for the selected project
-
       const payload: ImpersonationRequest = {
         targeted_tenant_id: selectedProject?.tenantId || "",
       };
