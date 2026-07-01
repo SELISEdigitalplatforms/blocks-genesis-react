@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.44
+
+### Patch Changes
+
+- enable repos list fethching for os
+
 ## 0.0.43
 
 ### Patch Changes
