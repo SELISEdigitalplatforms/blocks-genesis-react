@@ -6,7 +6,7 @@ import {
   TooltipTrigger,
 } from "@/components/core/tooltip/tooltip";
 import { environmentOptions } from "@/constants/environment-options";
-import { useStartImpersonation } from "@/hooks/use-auth-api";
+import { useStartImpersonation } from "@/hooks/use-impersonation";
 import type { IProject } from "@/models";
 import { useProjectStore } from "@/store/project.store";
 import { ChevronRightIcon, HourglassIcon } from "lucide-react";
@@ -35,16 +35,15 @@ export const EnvironmentCard = ({
       navigate("/dashboard");
       window.location.reload();
     } catch (err) {
-      console.log("Failed to switch environment", err);
+      console.error("Failed to switch environment", err);
     }
   };
 
   return (
     <Card
       onClick={handleCardClick}
-      className={`group flex min-h-[70px] cursor-pointer flex-col justify-between rounded-sm p-4 shadow-none transition-shadow duration-200 hover:shadow-md ${className}`}
-    >
-      <CardHeader className="flex flex-row justify-between !p-0">
+      className={`group flex min-h-[70px] cursor-pointer flex-col justify-between rounded-sm p-4 shadow-none transition-shadow duration-200 hover:shadow-md ${className}`}>
+      <CardHeader className="flex flex-row justify-between p-0!">
         <CardTitle className="line-clamp-1 break-all text-lg leading-tight">
           <div className="flex w-fit flex-row items-center gap-1">
             <div className="text-medium-emphasis text-base">

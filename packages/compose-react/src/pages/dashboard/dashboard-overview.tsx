@@ -1,14 +1,14 @@
 import {
-  ActionsListProject,
-  // AppIntegrationCard,
   CoreApiCard,
   GitCommandSnippet,
   ProjectCliSnippet,
-  ProjectDetail,
   ProjectRepoList,
   RenderConditionally,
   useSwaggerEndpoints,
 } from "@/components";
+import { ApplicationsSection } from "@/components/common/dashboard-overview-sections/applications-section";
+import { ProjectActions, ProjectDetail } from "@/components/common/project";
+import { ProjectOverview } from "@/components/common/project";
 import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { useGetProject } from "@/hooks/use-project";
 import { useProjectStore } from "@/store/project.store";
@@ -19,7 +19,7 @@ export const DashboardOverview = () => {
     itemId: "",
     tenantId: "",
   };
-  const { data, isLoading } = useGetProject({ projectId: itemId });
+  const { data, isFetching } = useGetProject({ projectId: itemId });
 
   const {
     endpoints,
@@ -29,15 +29,32 @@ export const DashboardOverview = () => {
 
   return (
     <main className="flex flex-col gap-6 p-6">
-      <div className="flex items-center justify-between gap-2">
-        <h1 className="text-xl font-semibold md:text-2xl">Overview</h1>
-        <RenderConditionally condition={name === "blocks-os"}>
-          <ActionsListProject />
-        </RenderConditionally>
-      </div>
-      <ProjectDetail project={data?.data} isLoading={isLoading} />
       <RenderConditionally condition={name === "blocks-os"}>
-        <ProjectRepoList project={data?.data} isLoading={isLoading} />
+        <div className="flex items-center justify-between">
+          <ProjectOverview
+            name={data?.data?.name || ""}
+            environment={data?.data?.environment || ""}
+            tenantId={data?.data?.tenantId || ""}
+            isFetching={isFetching}
+          />
+          <RenderConditionally condition={name === "blocks-os"}>
+            <ProjectActions
+              isDisabled={!!data?.data?.isDisabled}
+              createdBy={data?.data?.createdBy || ""}
+              isFetching={isFetching}
+            />
+          </RenderConditionally>
+        </div>
+
+        <ApplicationsSection applications={data?.data.applications || []} />
+      </RenderConditionally>
+
+      <RenderConditionally condition={name !== "blocks-os"}>
+        <ProjectDetail isLoading={isFetching} />
+      </RenderConditionally>
+
+      <RenderConditionally condition={name === "blocks-os"}>
+        <ProjectRepoList project={data?.data} isLoading={isFetching} />
         <ProjectCliSnippet />
         <GitCommandSnippet />
       </RenderConditionally>
@@ -47,20 +64,6 @@ export const DashboardOverview = () => {
           isLoading={isLoadingEndpoints}
           error={error}
         />
-        {/* <AppIntegrationCard
-          title="Connect Extensions"
-          description="Install the UILM browser extension or open it directly"
-          links={[
-            {
-              id: "chrome-ext",
-              label: "Install Chrome Extension",
-              href: "https://chromewebstore.google.com/detail/selise-blocks-assistant/ehnhmdghlkaeaiinoahgipdeogkikjem",
-              icon: <Puzzle className="h-4 w-4" />,
-            },
-          ]}
-          clientId={"dummy-client-id"}
-          clientSecret={"dummy-client-secret"}
-        /> */}
       </RenderConditionally>
     </main>
   );

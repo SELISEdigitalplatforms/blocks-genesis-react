@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- enable repos list fethching for os
+- enable repos list fetching for os
 
 ## 0.0.43
 

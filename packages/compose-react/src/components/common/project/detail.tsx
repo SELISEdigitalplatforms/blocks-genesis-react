@@ -1,7 +1,6 @@
-import { DashboardSectionCard } from "@/components";
+import { Badge, DashboardSectionCard } from "@/components";
 import { environmentOptions } from "@/constants/environment-options";
 import {
-  Button,
   CopyToClipboardButton,
   formatFullDate,
   MaskedText,
@@ -62,16 +61,14 @@ export const ProjectDetail = ({
   return (
     <DashboardSectionCard
       title="Project Details"
-      description="Core configuration and metadata for this project"
-    >
+      description="Core configuration and metadata for this project">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
         <ProjectDetailItem label="Name">{project?.name}</ProjectDetailItem>
         <ProjectDetailItem label="X-Blocks-Key">
           <div className="flex h-6 items-center gap-2">
             <CopyToClipboardButton
               textToCopy={project?.tenantId || ""}
-              isHoverable
-            >
+              isHoverable>
               <MaskedText
                 text={project?.tenantId || ""}
                 showFirstN={3}
@@ -81,7 +78,7 @@ export const ProjectDetail = ({
             </CopyToClipboardButton>
           </div>
         </ProjectDetailItem>
-        {project?.tenantSlug && (
+        {/* {project?.tenantSlug && (
           <ProjectDetailItem label="Project Slug">
             <div className="flex h-6 items-center gap-2">
               <CopyToClipboardButton
@@ -92,24 +89,22 @@ export const ProjectDetail = ({
               </CopyToClipboardButton>
             </div>
           </ProjectDetailItem>
-        )}
+        )} */}
         <ProjectDetailItem label="Environment">
           {project?.environment === "prod" ? (
-            <Button className="h-6 rounded-xl" size="sm" variant="default">
+            <Badge className="h-6 rounded-xl" variant="default">
               Production
-            </Button>
+            </Badge>
           ) : (
-            <Button
+            <Badge
               className="h-6 rounded-xl bg-blocks-btn-secondary hover:bg-blocks-btn-secondary/80"
-              size="sm"
-              variant="secondary"
-            >
+              variant="secondary">
               {
                 environmentOptions.find(
                   (option) => option.value === project?.environment,
                 )?.label
               }
-            </Button>
+            </Badge>
           )}
         </ProjectDetailItem>
         {/* <ProjectDetailItem label="Blocks Microservices Url">

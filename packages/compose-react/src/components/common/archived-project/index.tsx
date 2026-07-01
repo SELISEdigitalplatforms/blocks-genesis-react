@@ -30,9 +30,12 @@ export const ArchivedProject = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">
+        <Button
+          variant="destructive"
+          size="sm"
+          className="flex items-center gap-2">
           <Archive className="h-4 w-4" />
-          <span className="sr-only sm:not-sr-only sm:ml-2">Delete</span>
+          <span className="sr-only sm:not-sr-only">Delete</span>
         </Button>
       </DialogTrigger>
       <ConfirmationModal
