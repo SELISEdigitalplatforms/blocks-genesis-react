@@ -1,3 +1,5 @@
+import type { ApplicationAction } from "@/components/common/dashboard-overview-sections/application";
+
 export interface IProject {
   itemId: string;
   createdDate: string;
@@ -47,6 +49,11 @@ export interface IEnvRepository {
 export interface IUpdateTenantGroupPayload {
   name: string;
   tenantGroupId: string;
+}
+export interface IUpdateProjectPayload {
+  action: ApplicationAction;
+  application: IApplication;
+  applicationDomain?: string;
 }
 export interface IUpdateProjectResponse {
   errors: unknown | null;

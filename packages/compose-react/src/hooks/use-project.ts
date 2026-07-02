@@ -2,6 +2,10 @@ import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { projectService } from "@/services/project.service";
 import { useProjectStore } from "@/store/project.store";
+import type {
+  IUpdateProjectPayload,
+  IUpdateTenantGroupPayload,
+} from "@/models";
 
 export const useGetProjects = (options: { tenantGroupId?: string }) => {
   const setProjects = useProjectStore((state) => state.setProjects);
@@ -45,13 +49,27 @@ export const useUpdateRepositories = () => {
     },
   });
 };
+export const useUpdateTenantGroup = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["identifier", "tenant-group-update"],
+    mutationFn: (payload: IUpdateTenantGroupPayload) =>
+      projectService.updateTenantGroup(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["identifier", "tenant-group"],
+      });
+      queryClient.invalidateQueries({ queryKey: ["identifier", "projects"] });
+    },
+  });
+};
 
-export const useUpdateProject = (_: { projectKey: string }) => {
+export const useUpdateProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["identifier", "project-update"],
-    mutationFn: (payload: { name: string; tenantGroupId: string }) =>
-      projectService.updateTenantGroup(payload),
+    mutationFn: (payload: IUpdateProjectPayload) =>
+      projectService.updateProject(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["identifier", "project"] });
       queryClient.invalidateQueries({ queryKey: ["identifier", "projects"] });
