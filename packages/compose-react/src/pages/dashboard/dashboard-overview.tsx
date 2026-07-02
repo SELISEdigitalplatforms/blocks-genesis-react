@@ -50,7 +50,7 @@ export const DashboardOverview = () => {
       </RenderConditionally>
 
       <RenderConditionally condition={name !== "blocks-os"}>
-        <ProjectDetail isLoading={isFetching} />
+        <ProjectDetail isLoading={isFetching} project={data?.data} />
       </RenderConditionally>
 
       <RenderConditionally condition={name === "blocks-os"}>

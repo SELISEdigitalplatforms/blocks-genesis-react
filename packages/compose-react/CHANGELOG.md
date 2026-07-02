@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.47
+
+### Patch Changes
+
+- fix package details issue
+
 ## 0.0.46
 
 ### Patch Changes
