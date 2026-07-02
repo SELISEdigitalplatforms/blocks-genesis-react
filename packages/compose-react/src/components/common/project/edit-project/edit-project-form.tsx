@@ -17,7 +17,7 @@ import {
   TooltipTrigger,
 } from "@/components";
 import { CNameInstruction } from "@/components/common";
-import { useUpdateProject } from "@/hooks/use-project";
+import { useUpdateTenantGroup } from "@/hooks/use-project";
 import { useProjectStore } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleHelp } from "lucide-react";
@@ -40,8 +40,7 @@ export const EditProjectForm = ({
     itemId: "",
     tenantId: "",
   };
-  const projectKey = useProjectStore().selectedProject?.tenantId || "";
-  const { mutateAsync, isPending } = useUpdateProject({ projectKey });
+  const { mutateAsync, isPending } = useUpdateTenantGroup();
   const [customDomainTooltipOpen, setCustomDomainTooltipOpen] = useState(false);
   const form = useForm({
     defaultValues: editProjectFormDefaultValue,
@@ -50,10 +49,10 @@ export const EditProjectForm = ({
   });
   const onSubmitHandler = async (values: EditProjectFormSchema) => {
     try {
-      if (!itemId || !projectKey) return;
+      if (!itemId) return;
       const res = await mutateAsync({
         name: values.name,
-        tenantGroupId: projectKey,
+        tenantGroupId: itemId,
       });
       if (res.isSuccess) {
         toast.success("Project is updated successfully");

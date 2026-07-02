@@ -8,6 +8,7 @@ import type {
   IUpdateTenantGroupPayload,
   IUpdateProjectResponse,
   IEnvRepository,
+  IUpdateProjectPayload,
 } from "@/models";
 import { PROJECT_ENDPOINTS } from "@/constants/endpoint.constant";
 import { getRuntimeEnv, HttpClient } from "@/lib";
@@ -61,6 +62,12 @@ export class ProjectService {
     payload: IUpdateTenantGroupPayload,
   ): Promise<IUpdateProjectResponse> {
     return logicClient.post(PROJECT_ENDPOINTS.UPDATE_TENANT_GROUP, payload);
+  }
+
+  updateProject(
+    payload: IUpdateProjectPayload,
+  ): Promise<IUpdateProjectResponse> {
+    return logicClient.post(PROJECT_ENDPOINTS.UPDATE_PROJECT, payload);
   }
 
   disableProject(

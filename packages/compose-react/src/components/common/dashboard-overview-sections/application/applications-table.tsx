@@ -1,4 +1,8 @@
-import { useState } from "react";
+import { Button, Dialog, RenderConditionally, toast } from "@/components";
+import ConfirmationModal from "@/components/common/confirmation-modal";
+import { useUpdateProject } from "@/hooks/use-project";
+import { cn } from "@/lib/utils";
+import type { IApplication } from "@/models/project.model";
 import {
   createColumnHelper,
   flexRender,
@@ -6,13 +10,11 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Settings, Trash2 } from "lucide-react";
-import { Button, Dialog, RenderConditionally } from "@/components";
-import ConfirmationModal from "@/components/common/confirmation-modal";
-import { cn } from "@/lib/utils";
-import { ApplicationConfigureDialog } from "./application-configure-dialog";
-import type { IApplication } from "@/models/project.model";
+import { useState } from "react";
+import { ApplicationFormDialog } from "./application-form-dialog";
+import { ApplicationAction } from "./application.constant";
 
-// ─── Status badge ────────────────────────────────────────────────────────────
+// ─── Status badge ─────────────────────────────────────────────────────────────
 
 const StatusBadge = ({ verified }: { verified: boolean }) =>
   verified ? (
@@ -25,12 +27,12 @@ const StatusBadge = ({ verified }: { verified: boolean }) =>
     </span>
   );
 
-// ─── Column definitions ───────────────────────────────────────────────────────
+// ─── Column helper ────────────────────────────────────────────────────────────
 
 const columnHelper = createColumnHelper<IApplication>();
 
 const buildColumns = (
-  onConfigure: (app: IApplication) => void,
+  onEdit: (app: IApplication) => void,
   onDeleteRequest: (app: IApplication) => void,
 ) => [
   columnHelper.accessor("domain", {
@@ -65,14 +67,15 @@ const buildColumns = (
           >
             <Trash2 className="h-4 w-4" />
           </Button>
+          {/* Configure — only visible when domain is not yet verified */}
           <RenderConditionally condition={!app.isDomainVerified}>
             <Button
               variant="ghost"
               size="icon"
               title="Configure domain"
-              onClick={() => onConfigure(app)}
+              onClick={() => onEdit(app)}
             >
-              <Settings className="h-4 w-4" />
+              <Settings className="h-4 w-4 text-muted-foreground" />
             </Button>
           </RenderConditionally>
         </div>
@@ -85,40 +88,52 @@ const buildColumns = (
 
 interface ApplicationsTableProps {
   data: IApplication[];
-  /** Called after the user confirms deletion; parent owns the mutation */
-  onDelete?: (application: IApplication) => void;
 }
 
-export const ApplicationsTable = ({
-  data,
-  onDelete,
-}: ApplicationsTableProps) => {
+export const ApplicationsTable = ({ data }: ApplicationsTableProps) => {
+  const { mutateAsync, isPending } = useUpdateProject();
+
+  // ── Edit dialog ────────────────────────────────────────────────────────────
+  const [editTarget, setEditTarget] = useState<IApplication | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+
+  const handleEdit = (app: IApplication) => {
+    setEditTarget(app);
+    setEditDialogOpen(true);
+  };
+
+  // ── Delete dialog ──────────────────────────────────────────────────────────
   const [deleteTarget, setDeleteTarget] = useState<IApplication | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-
-  const [configureTarget, setConfigureTarget] = useState<IApplication | null>(
-    null,
-  );
-  const [configureDialogOpen, setConfigureDialogOpen] = useState(false);
 
   const handleDeleteRequest = (app: IApplication) => {
     setDeleteTarget(app);
     setDeleteDialogOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
-    if (deleteTarget) onDelete?.(deleteTarget);
-    setDeleteDialogOpen(false);
-    setDeleteTarget(null);
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    try {
+      const res = await mutateAsync({
+        action: ApplicationAction.Delete,
+        application: deleteTarget,
+        applicationDomain: deleteTarget.domain,
+      });
+      if (res.isSuccess) {
+        toast.success("Application deleted successfully");
+      } else {
+        toast.error(res.errors as string);
+      }
+    } catch {
+      toast.error("Failed to delete application");
+    } finally {
+      setDeleteDialogOpen(false);
+      setDeleteTarget(null);
+    }
   };
 
-  const handleConfigure = (app: IApplication) => {
-    setConfigureTarget(app);
-    setConfigureDialogOpen(true);
-  };
-
-  const columns = buildColumns(handleConfigure, handleDeleteRequest);
-
+  // ── Table ──────────────────────────────────────────────────────────────────
+  const columns = buildColumns(handleEdit, handleDeleteRequest);
   const table = useReactTable({
     data,
     columns,
@@ -127,7 +142,17 @@ export const ApplicationsTable = ({
 
   return (
     <>
-      {/* ── Delete confirmation ── */}
+      {/* Edit dialog — one instance, target swaps per row */}
+      <ApplicationFormDialog
+        open={editDialogOpen}
+        application={editTarget}
+        onOpenChange={(open) => {
+          setEditDialogOpen(open);
+          if (!open) setEditTarget(null);
+        }}
+      />
+
+      {/* Delete confirmation — one instance, target swaps per row */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <ConfirmationModal
           data={{
@@ -135,8 +160,10 @@ export const ApplicationsTable = ({
             dialogSubtitle: (
               <>
                 Are you sure you want to delete{" "}
-                <span className="font-semibold">{deleteTarget?.domain}</span>?
-                This action cannot be undone.
+                <span className="font-semibold break-all">
+                  {deleteTarget?.domain}
+                </span>
+                ? This action cannot be undone.
               </>
             ),
             confirmButton: "Delete",
@@ -144,20 +171,11 @@ export const ApplicationsTable = ({
           }}
           onCancel={() => setDeleteDialogOpen(false)}
           onConfirm={handleDeleteConfirm}
+          buttonState={{ confirm: { disable: isPending } }}
         />
       </Dialog>
 
-      {/* ── CNAME configure dialog ── */}
-      <ApplicationConfigureDialog
-        application={configureTarget}
-        open={configureDialogOpen}
-        onOpenChange={(open) => {
-          setConfigureDialogOpen(open);
-          if (!open) setConfigureTarget(null);
-        }}
-      />
-
-      {/* ── Table ── */}
+      {/* Table */}
       <div className="relative w-full overflow-auto">
         <table className="w-full text-sm">
           <thead>
@@ -185,7 +203,7 @@ export const ApplicationsTable = ({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="py-8 text-center text-sm text-muted-foreground"
+                  className="py-10 text-center text-sm text-muted-foreground"
                 >
                   No applications configured yet.
                 </td>

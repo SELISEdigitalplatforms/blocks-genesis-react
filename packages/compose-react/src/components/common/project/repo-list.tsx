@@ -12,10 +12,13 @@ import {
   Skeleton,
   toast,
 } from "@/components";
-import { useGetEnvRepositories, useUpdateProject } from "@/hooks/use-project";
-import { formatFullDate } from "@/utils";
+import {
+  useGetEnvRepositories,
+  useUpdateTenantGroup,
+} from "@/hooks/use-project";
 import type { IProject } from "@/models";
 import { useProjectStore } from "@/store";
+import { formatFullDate } from "@/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { Check, Pencil } from "lucide-react";
 import { useState } from "react";
@@ -33,9 +36,7 @@ export const ProjectRepoList = ({
   const queryClient = useQueryClient();
   const itemId = useProjectStore().selectedProject?.itemId || "";
   const [open, setOpen] = useState<boolean>(false);
-  const { mutateAsync, isPending } = useUpdateProject({
-    projectKey: project?.tenantId || "",
-  });
+  const { mutateAsync, isPending } = useUpdateTenantGroup();
   const {
     data: envRepositoriesResponse,
     isLoading: isLoadingEnvRepos,
