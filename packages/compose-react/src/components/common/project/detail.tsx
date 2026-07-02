@@ -1,4 +1,4 @@
-import { Badge, DashboardSectionCard } from "@/components";
+import { Button, DashboardSectionCard } from "@/components";
 import { environmentOptions } from "@/constants/environment-options";
 import {
   CopyToClipboardButton,
@@ -61,14 +61,16 @@ export const ProjectDetail = ({
   return (
     <DashboardSectionCard
       title="Project Details"
-      description="Core configuration and metadata for this project">
+      description="Core configuration and metadata for this project"
+    >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
         <ProjectDetailItem label="Name">{project?.name}</ProjectDetailItem>
         <ProjectDetailItem label="X-Blocks-Key">
           <div className="flex h-6 items-center gap-2">
             <CopyToClipboardButton
               textToCopy={project?.tenantId || ""}
-              isHoverable>
+              isHoverable
+            >
               <MaskedText
                 text={project?.tenantId || ""}
                 showFirstN={3}
@@ -92,19 +94,21 @@ export const ProjectDetail = ({
         )} */}
         <ProjectDetailItem label="Environment">
           {project?.environment === "prod" ? (
-            <Badge className="h-6 rounded-xl" variant="default">
+            <Button className="h-6 rounded-xl" size="sm" variant="default">
               Production
-            </Badge>
+            </Button>
           ) : (
-            <Badge
+            <Button
               className="h-6 rounded-xl bg-blocks-btn-secondary hover:bg-blocks-btn-secondary/80"
-              variant="secondary">
+              size="sm"
+              variant="secondary"
+            >
               {
                 environmentOptions.find(
                   (option) => option.value === project?.environment,
                 )?.label
               }
-            </Badge>
+            </Button>
           )}
         </ProjectDetailItem>
         {/* <ProjectDetailItem label="Blocks Microservices Url">
