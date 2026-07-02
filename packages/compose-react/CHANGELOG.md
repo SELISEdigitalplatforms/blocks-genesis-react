@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.46
+
+### Patch Changes
+
+- complete add, edit, delete feature
+
 ## 0.0.45
 
 ### Patch Changes
