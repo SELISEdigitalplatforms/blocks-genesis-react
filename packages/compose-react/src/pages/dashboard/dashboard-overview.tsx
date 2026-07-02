@@ -1,4 +1,5 @@
 import {
+  ApplicationsSection,
   CoreApiCard,
   GitCommandSnippet,
   ProjectCliSnippet,
@@ -6,7 +7,6 @@ import {
   RenderConditionally,
   useSwaggerEndpoints,
 } from "@/components";
-import { ApplicationsSection } from "@/components/common/dashboard-overview-sections/applications-section";
 import { ProjectActions, ProjectDetail } from "@/components/common/project";
 import { ProjectOverview } from "@/components/common/project";
 import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";

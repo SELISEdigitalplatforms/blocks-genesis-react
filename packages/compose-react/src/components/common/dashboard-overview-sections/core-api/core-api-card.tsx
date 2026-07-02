@@ -1,9 +1,9 @@
 import { Skeleton } from "@/index";
 import { Badge } from "@/components";
 import { CoreApiGroupSection } from "./core-api-group-section";
-import { DashboardSectionCard } from "./dashboard-section-card";
+import { DashboardSectionCard } from "../dashboard-section-card";
 import type { ICoreApiEndpoint } from "./core-api-endpoint.model";
-import { groupEndpointsByTag } from "./util";
+import { groupEndpointsByTag } from "../util";
 
 interface CoreApiCardProps {
   title?: string;

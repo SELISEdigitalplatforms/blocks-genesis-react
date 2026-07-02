@@ -4,6 +4,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  RenderConditionally,
 } from "@/components";
 import { CnameValidatorProject, EditProject } from "@/components";
 import type { IApplication } from "@/models/project.model";
@@ -31,7 +32,8 @@ export const ApplicationConfigureDialog = ({
 }: ApplicationConfigureDialogProps) => {
   if (!application) return null;
 
-  const showCnameBanner = application.cookieDomain !== "blocksdevelopers.com";
+  const showCnameBanner = application.cookieDomain !== "selise.com";
+
   const editFormData = {
     applicationDomain: application.domain,
     cookieDomain: application.cookieDomain,
@@ -46,14 +48,14 @@ export const ApplicationConfigureDialog = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Configure domain</DialogTitle>
-          {showCnameBanner && (
+          <RenderConditionally condition={showCnameBanner}>
             <div className="flex flex-col items-center justify-between gap-1 rounded-sm border border-base-error bg-blocks-error-100 px-4 py-4 text-base font-normal text-blocks-error-800 md:flex-row">
               <p>No servers found for &apos;{application.cookieDomain}&apos;</p>
               <div className="flex items-center gap-2">
                 <CnameValidatorProject />
               </div>
             </div>
-          )}
+          </RenderConditionally>
           <DialogDescription>
             Configure your domain to point to your application
           </DialogDescription>

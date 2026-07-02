@@ -1,10 +1,7 @@
 import type { ServiceName } from "@/store";
 import { getServiceBaseUrl, getServiceSwaggerUrl } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
-import type {
-  ICoreApiEndpoint,
-  ISwaggerDocument,
-} from "./core-api-endpoint.model";
+import type { ICoreApiEndpoint, ISwaggerDocument } from "./core-api";
 import { parseSwaggerDocument } from "./util";
 
 interface UseSwaggerEndpointsOptions {

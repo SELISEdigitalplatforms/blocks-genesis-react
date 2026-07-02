@@ -31,7 +31,7 @@ export const EditProject = ({ data, lastUpdatedDate }: EditProjectProps) => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Configure domain</DialogTitle>
-          {data?.cookieDomain !== "blocksdevelopers.com" && (
+          {data?.cookieDomain !== "selise.com" && (
             <div className="flex flex-col items-center justify-between gap-1 rounded-sm border border-base-error bg-blocks-error-100 px-4 py-4 text-base font-normal text-blocks-error-800 md:flex-row">
               <p>No servers found for &apos;{data?.cookieDomain}&apos;</p>
               <div className="flex items-center gap-2">

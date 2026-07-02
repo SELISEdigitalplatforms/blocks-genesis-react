@@ -6,7 +6,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Settings, Trash2 } from "lucide-react";
-import { Button, Dialog } from "@/components";
+import { Button, Dialog, RenderConditionally } from "@/components";
 import ConfirmationModal from "@/components/common/confirmation-modal";
 import { cn } from "@/lib/utils";
 import { ApplicationConfigureDialog } from "./application-configure-dialog";
@@ -61,18 +61,20 @@ const buildColumns = (
             size="icon"
             title="Delete application"
             className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-            onClick={() => onDeleteRequest(app)}>
+            onClick={() => onDeleteRequest(app)}
+          >
             <Trash2 className="h-4 w-4" />
           </Button>
-          {!app.isDomainVerified && (
+          <RenderConditionally condition={!app.isDomainVerified}>
             <Button
               variant="ghost"
               size="icon"
               title="Configure domain"
-              onClick={() => onConfigure(app)}>
+              onClick={() => onConfigure(app)}
+            >
               <Settings className="h-4 w-4" />
             </Button>
-          )}
+          </RenderConditionally>
         </div>
       );
     },
@@ -167,7 +169,8 @@ export const ApplicationsTable = ({
                     className={cn(
                       "h-12 px-4 text-left text-xs font-semibold uppercase tracking-wide text-medium-emphasis",
                       header.id === "actions" && "w-24",
-                    )}>
+                    )}
+                  >
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext(),
@@ -182,7 +185,8 @@ export const ApplicationsTable = ({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="py-8 text-center text-sm text-muted-foreground">
+                  className="py-8 text-center text-sm text-muted-foreground"
+                >
                   No applications configured yet.
                 </td>
               </tr>
@@ -190,7 +194,8 @@ export const ApplicationsTable = ({
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="border-b border-border last:border-0 hover:bg-muted/50">
+                  className="border-b border-border last:border-0 hover:bg-muted/50"
+                >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="p-2 md:px-4 md:py-3">
                       {flexRender(

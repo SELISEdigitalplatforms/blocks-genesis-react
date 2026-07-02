@@ -1,7 +1,7 @@
 import { Terminal } from "lucide-react";
 import { CopyToClipboardButton } from "@/index";
 import { cn } from "@/lib/utils";
-import { buildCurlCommand } from "./util";
+import { buildCurlCommand } from "../util";
 import type { HttpMethod, ICoreApiEndpoint } from "./core-api-endpoint.model";
 
 const METHOD_BADGE_CLASSES: Record<HttpMethod, string> = {
