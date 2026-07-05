@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { notificationClientService } from "@/services/notification-client.service";
+import { notificationListenerService } from "@/services/notification-listener.service";
 import { notificationService } from "@/services/notification.service";
 import { useGetBlocksNotificationConfig } from "@/hooks/use-notifications";
 import type { IDenormalizedPayload } from "@/models";
@@ -9,12 +9,12 @@ export function useNotificationSocket() {
   const { data: configData } = useGetBlocksNotificationConfig(0, 100);
   const queryClient = useQueryClient();
 
-  notificationClientService.connect();
+  notificationListenerService.connect();
 
   useEffect(() => {
-    notificationClientService.connect();
+    notificationListenerService.connect();
     return () => {
-      notificationClientService.disconnect();
+      notificationListenerService.disconnect();
     };
   }, []);
 
@@ -22,7 +22,7 @@ export function useNotificationSocket() {
     if (!configData?.configurations) return;
 
     configData.configurations.forEach((config) => {
-      notificationClientService.connection.on(
+      notificationListenerService.connection.on(
         config.notifyMethod,
         (message: string) => {
           notificationService.getNotificationConfig(config, message);
