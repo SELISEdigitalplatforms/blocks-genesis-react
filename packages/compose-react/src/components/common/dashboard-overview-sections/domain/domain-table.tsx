@@ -2,7 +2,7 @@ import { Button, Dialog, RenderConditionally, toast } from "@/components";
 import ConfirmationModal from "@/components/common/confirmation-modal";
 import { useUpdateProject } from "@/hooks/use-project";
 import { cn } from "@/lib/utils";
-import type { IApplication } from "@/models/project.model";
+import type { IDomain } from "@/models/project.model";
 import {
   createColumnHelper,
   flexRender,
@@ -11,8 +11,8 @@ import {
 } from "@tanstack/react-table";
 import { Settings, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { ApplicationFormDialog } from "./application-form-dialog";
-import { ApplicationAction } from "./application.constant";
+import { DomainFormDialog } from "./domain-form-dialog";
+import { DomainAction } from "./domain.constant";
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
@@ -29,11 +29,11 @@ const StatusBadge = ({ verified }: { verified: boolean }) =>
 
 // ─── Column helper ────────────────────────────────────────────────────────────
 
-const columnHelper = createColumnHelper<IApplication>();
+const columnHelper = createColumnHelper<IDomain>();
 
 const buildColumns = (
-  onEdit: (app: IApplication) => void,
-  onDeleteRequest: (app: IApplication) => void,
+  onEdit: (app: IDomain) => void,
+  onDeleteRequest: (app: IDomain) => void,
 ) => [
   columnHelper.accessor("domain", {
     header: "Domain",
@@ -86,27 +86,27 @@ const buildColumns = (
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-interface ApplicationsTableProps {
-  data: IApplication[];
+interface DomainTableProps {
+  data: IDomain[];
 }
 
-export const ApplicationsTable = ({ data }: ApplicationsTableProps) => {
+export const DomainTable = ({ data }: DomainTableProps) => {
   const { mutateAsync, isPending } = useUpdateProject();
 
   // ── Edit dialog ────────────────────────────────────────────────────────────
-  const [editTarget, setEditTarget] = useState<IApplication | null>(null);
+  const [editTarget, setEditTarget] = useState<IDomain | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
-  const handleEdit = (app: IApplication) => {
+  const handleEdit = (app: IDomain) => {
     setEditTarget(app);
     setEditDialogOpen(true);
   };
 
   // ── Delete dialog ──────────────────────────────────────────────────────────
-  const [deleteTarget, setDeleteTarget] = useState<IApplication | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<IDomain | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const handleDeleteRequest = (app: IApplication) => {
+  const handleDeleteRequest = (app: IDomain) => {
     setDeleteTarget(app);
     setDeleteDialogOpen(true);
   };
@@ -115,7 +115,7 @@ export const ApplicationsTable = ({ data }: ApplicationsTableProps) => {
     if (!deleteTarget) return;
     try {
       const res = await mutateAsync({
-        action: ApplicationAction.Delete,
+        action: DomainAction.Delete,
         application: deleteTarget,
         applicationDomain: deleteTarget.domain,
       });
@@ -143,7 +143,7 @@ export const ApplicationsTable = ({ data }: ApplicationsTableProps) => {
   return (
     <>
       {/* Edit dialog — one instance, target swaps per row */}
-      <ApplicationFormDialog
+      <DomainFormDialog
         open={editDialogOpen}
         application={editTarget}
         onOpenChange={(open) => {

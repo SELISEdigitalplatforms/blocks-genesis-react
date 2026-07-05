@@ -2,23 +2,21 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components";
 import { DashboardSectionCard } from "../dashboard-section-card";
-import { ApplicationFormDialog } from "./application-form-dialog";
-import { ApplicationsTable } from "./applications-table";
-import type { IApplication } from "@/models/project.model";
+import { DomainFormDialog } from "./domain-form-dialog";
+import { DomainTable } from "./domain-table";
+import type { IDomain } from "@/models/project.model";
 
-interface ApplicationsSectionProps {
-  applications: IApplication[];
+interface DomainsSectionProps {
+  applications: IDomain[];
 }
 
-export const ApplicationsSection = ({
-  applications,
-}: ApplicationsSectionProps) => {
+export const DomainsSection = ({ applications }: DomainsSectionProps) => {
   const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   return (
     <>
       {/* Add dialog — self-contained here, no prop callbacks needed */}
-      <ApplicationFormDialog
+      <DomainFormDialog
         open={addDialogOpen}
         onOpenChange={setAddDialogOpen}
         // No application prop → add mode
@@ -40,7 +38,7 @@ export const ApplicationsSection = ({
           </Button>
         }
       >
-        <ApplicationsTable data={applications} />
+        <DomainTable data={applications} />
       </DashboardSectionCard>
     </>
   );

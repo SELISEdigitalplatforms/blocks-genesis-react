@@ -5,24 +5,24 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components";
-import type { IApplication } from "@/models/project.model";
-import { ApplicationForm } from "./application-form";
+import type { IDomain } from "@/models/project.model";
+import { DomainForm } from "./domain-form";
 
-interface ApplicationFormDialogProps {
+interface DomainFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   /**
    * Pass an existing application to enter edit mode.
    * Omit (or pass null/undefined) for add mode.
    */
-  application?: IApplication | null;
+  application?: IDomain | null;
 }
 
-export const ApplicationFormDialog = ({
+export const DomainFormDialog = ({
   open,
   onOpenChange,
   application,
-}: ApplicationFormDialogProps) => {
+}: DomainFormDialogProps) => {
   const isEditMode = !!application;
 
   return (
@@ -38,7 +38,7 @@ export const ApplicationFormDialog = ({
               : "Add a new application domain to this project."}
           </DialogDescription>
         </DialogHeader>
-        <ApplicationForm
+        <DomainForm
           application={application}
           onAfterSubmit={() => onOpenChange(false)}
         />

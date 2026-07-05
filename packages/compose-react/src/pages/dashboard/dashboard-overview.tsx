@@ -1,5 +1,5 @@
 import {
-  ApplicationsSection,
+  DomainsSection,
   CoreApiCard,
   GitCommandSnippet,
   ProjectCliSnippet,
@@ -46,7 +46,7 @@ export const DashboardOverview = () => {
           </RenderConditionally>
         </div>
 
-        <ApplicationsSection applications={data?.data.applications || []} />
+        <DomainsSection applications={data?.data.applications || []} />
       </RenderConditionally>
 
       <RenderConditionally condition={name !== "blocks-os"}>

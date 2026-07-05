@@ -12,44 +12,41 @@ import {
   toast,
 } from "@/components";
 import { useUpdateProject } from "@/hooks/use-project";
-import type { IApplication } from "@/models/project.model";
+import type { IDomain } from "@/models/project.model";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
-  applicationFormDefaultValues,
-  applicationFormSchema,
-  type ApplicationFormSchema,
-} from "./application-form.schema";
-import { ApplicationAction } from "./application.constant";
+  domainFormDefaultValues,
+  domainFormSchema,
+  type DomainFormSchema,
+} from "./domain-form.schema";
+import { DomainAction } from "./domain.constant";
 
-interface ApplicationFormProps {
+interface DomainFormProps {
   /**
    * Pass an existing application to enter edit mode.
    * Omit (or pass null) for add mode.
    */
-  application?: IApplication | null;
+  application?: IDomain | null;
   onAfterSubmit: () => void;
 }
 
-export const ApplicationForm = ({
-  application,
-  onAfterSubmit,
-}: ApplicationFormProps) => {
+export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
   const isEditMode = !!application;
   const { mutateAsync, isPending } = useUpdateProject();
 
-  const form = useForm<ApplicationFormSchema>({
-    resolver: zodResolver(applicationFormSchema),
+  const form = useForm<DomainFormSchema>({
+    resolver: zodResolver(domainFormSchema),
     defaultValues: isEditMode
       ? { domain: application.domain, cookieDomain: application.cookieDomain }
-      : applicationFormDefaultValues,
+      : domainFormDefaultValues,
     mode: "onChange",
   });
 
-  const onSubmit = async (values: ApplicationFormSchema) => {
+  const onSubmit = async (values: DomainFormSchema) => {
     try {
       const res = await mutateAsync({
-        action: isEditMode ? ApplicationAction.Edit : ApplicationAction.Add,
+        action: isEditMode ? DomainAction.Edit : DomainAction.Add,
         // Sends the original domain so the BE knows which record to update
         ...(isEditMode && { applicationDomain: application.domain }),
         application: {

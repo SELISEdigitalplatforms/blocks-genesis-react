@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const applicationFormSchema = z.object({
+export const domainFormSchema = z.object({
   domain: z
     .string()
     .min(1, "Domain is required")
@@ -14,9 +14,9 @@ export const applicationFormSchema = z.object({
     ),
 });
 
-export type ApplicationFormSchema = z.infer<typeof applicationFormSchema>;
+export type DomainFormSchema = z.infer<typeof domainFormSchema>;
 
-export const applicationFormDefaultValues: ApplicationFormSchema = {
+export const domainFormDefaultValues: DomainFormSchema = {
   domain: "",
   cookieDomain: "",
 };
