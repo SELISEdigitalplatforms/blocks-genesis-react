@@ -1,4 +1,5 @@
 import { Button, Dialog, RenderConditionally, toast } from "@/components";
+import { CnameValidatorDialog } from "@/components/common/cname/dialog";
 import ConfirmationModal from "@/components/common/confirmation-modal";
 import { useUpdateProject } from "@/hooks/use-project";
 import { cn } from "@/lib/utils";
@@ -9,7 +10,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Settings, Trash2 } from "lucide-react";
+import { Settings, ShieldCheck, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { DomainFormDialog } from "./domain-form-dialog";
 import { DomainAction } from "./domain.constant";
@@ -32,8 +33,9 @@ const StatusBadge = ({ verified }: { verified: boolean }) =>
 const columnHelper = createColumnHelper<IDomain>();
 
 const buildColumns = (
-  onEdit: (app: IDomain) => void,
-  onDeleteRequest: (app: IDomain) => void,
+  onEdit: (domain: IDomain) => void,
+  onDeleteRequest: (domain: IDomain) => void,
+  onCname: (domain: IDomain) => void,
 ) => [
   columnHelper.accessor("domain", {
     header: "Domain",
@@ -55,7 +57,7 @@ const buildColumns = (
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const app = row.original;
+      const domain = row.original;
       return (
         <div className="flex items-center gap-1">
           <Button
@@ -63,19 +65,28 @@ const buildColumns = (
             size="icon"
             title="Delete application"
             className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-            onClick={() => onDeleteRequest(app)}
+            onClick={() => onDeleteRequest(domain)}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
-          {/* Configure — only visible when domain is not yet verified */}
-          <RenderConditionally condition={!app.isDomainVerified}>
+
+          {/* Configure + CNAME lookup — only for unverified domains */}
+          <RenderConditionally condition={!domain.isDomainVerified}>
             <Button
               variant="ghost"
               size="icon"
               title="Configure domain"
-              onClick={() => onEdit(app)}
+              onClick={() => onEdit(domain)}
             >
               <Settings className="h-4 w-4 text-muted-foreground" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              title="Validate CNAME"
+              onClick={() => onCname(domain)}
+            >
+              <ShieldCheck className="h-4 w-4 text-muted-foreground" />
             </Button>
           </RenderConditionally>
         </div>
@@ -97,8 +108,8 @@ export const DomainTable = ({ data }: DomainTableProps) => {
   const [editTarget, setEditTarget] = useState<IDomain | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
-  const handleEdit = (app: IDomain) => {
-    setEditTarget(app);
+  const handleEdit = (domain: IDomain) => {
+    setEditTarget(domain);
     setEditDialogOpen(true);
   };
 
@@ -106,8 +117,8 @@ export const DomainTable = ({ data }: DomainTableProps) => {
   const [deleteTarget, setDeleteTarget] = useState<IDomain | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const handleDeleteRequest = (app: IDomain) => {
-    setDeleteTarget(app);
+  const handleDeleteRequest = (domain: IDomain) => {
+    setDeleteTarget(domain);
     setDeleteDialogOpen(true);
   };
 
@@ -132,8 +143,17 @@ export const DomainTable = ({ data }: DomainTableProps) => {
     }
   };
 
+  // ── CNAME dialog ───────────────────────────────────────────────────────────
+  const [cnameTarget, setCnameTarget] = useState<IDomain | null>(null);
+  const [cnameDialogOpen, setCnameDialogOpen] = useState(false);
+
+  const handleCname = (domain: IDomain) => {
+    setCnameTarget(domain);
+    setCnameDialogOpen(true);
+  };
+
   // ── Table ──────────────────────────────────────────────────────────────────
-  const columns = buildColumns(handleEdit, handleDeleteRequest);
+  const columns = buildColumns(handleEdit, handleDeleteRequest, handleCname);
   const table = useReactTable({
     data,
     columns,
@@ -160,7 +180,7 @@ export const DomainTable = ({ data }: DomainTableProps) => {
             dialogSubtitle: (
               <>
                 Are you sure you want to delete{" "}
-                <span className="font-semibold break-all">
+                <span className="break-all font-semibold">
                   {deleteTarget?.domain}
                 </span>
                 ? This action cannot be undone.
@@ -175,6 +195,16 @@ export const DomainTable = ({ data }: DomainTableProps) => {
         />
       </Dialog>
 
+      {/* CNAME validator dialog — one instance, target swaps per row */}
+      <CnameValidatorDialog
+        open={cnameDialogOpen}
+        domain={cnameTarget}
+        onOpenChange={(open) => {
+          setCnameDialogOpen(open);
+          if (!open) setCnameTarget(null);
+        }}
+      />
+
       {/* Table */}
       <div className="relative w-full overflow-auto">
         <table className="w-full text-sm">
@@ -186,7 +216,7 @@ export const DomainTable = ({ data }: DomainTableProps) => {
                     key={header.id}
                     className={cn(
                       "h-12 px-4 text-left text-xs font-semibold uppercase tracking-wide text-medium-emphasis",
-                      header.id === "actions" && "w-24",
+                      header.id === "actions" && "w-32",
                     )}
                   >
                     {flexRender(
