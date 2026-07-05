@@ -63,7 +63,7 @@ export interface IValidateCnameProjectPayload {
   cookieDomain: string;
 }
 export interface IValidateCnameProjectResponse {
-  errors: string | null;
+  errors: Record<string, string> | null;
   isSuccess: boolean;
 }
 export interface IDisableProjectPayload {

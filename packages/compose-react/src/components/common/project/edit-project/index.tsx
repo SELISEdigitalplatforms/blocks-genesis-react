@@ -40,7 +40,10 @@ export const EditProject = ({ data, lastUpdatedDate }: EditProjectProps) => {
                 ) : (
                   <p>Report date unavailable</p>
                 )}
-                <CnameValidatorProject />
+                <CnameValidatorProject
+                  isDomainVerified={data?.applicationDomain === "selise.com"}
+                  cookieDomain={data?.cookieDomain ?? ""}
+                />
               </div>
             </div>
           )}

@@ -17,12 +17,12 @@ export const CnameValidatorProject = ({
     try {
       if (isDomainVerified) return;
       const res = await mutateAsync();
-      if (res.isSuccess) {
+      if (res?.isSuccess) {
         toast.success("CName is validated successfully");
       } else {
         toast.error(
-          res.errors ||
-            "Could not verify the domain. Please make sure it is valid and try again",
+          Object.values(res.errors ?? {})[0] ??
+            "Could not verify the domain. Please make sure it is valid and try again.",
         );
       }
     } catch (error) {
