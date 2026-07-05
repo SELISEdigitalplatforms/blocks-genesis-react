@@ -25,7 +25,7 @@ export const ApplicationsSection = ({
       />
 
       <DashboardSectionCard
-        title="Applications"
+        title="Domains"
         description="Domains and cookie domains configured for this project"
         contentClassName="p-0"
         headerRight={
@@ -36,7 +36,7 @@ export const ApplicationsSection = ({
             onClick={() => setAddDialogOpen(true)}
           >
             <Plus className="h-4 w-4" />
-            Add Application
+            Add Domain
           </Button>
         }
       >

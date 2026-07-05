@@ -8,7 +8,7 @@ import { getRuntimeEnv } from "@/lib/runtime-env";
 const logicOrigin = (): string =>
   getRuntimeEnv("BLOCKS_LOGIC_BASE_URL").trim().replace(/\/$/, "");
 
-export class NotificationClientService {
+export class NotificationListenerService {
   public connection: HubConnection;
 
   constructor() {
@@ -36,4 +36,4 @@ export class NotificationClientService {
   }
 }
 
-export const notificationClientService = new NotificationClientService();
+export const notificationListenerService = new NotificationListenerService();
