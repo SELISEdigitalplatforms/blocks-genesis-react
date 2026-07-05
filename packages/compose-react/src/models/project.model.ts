@@ -1,4 +1,4 @@
-import type { ApplicationAction } from "@/components/common/dashboard-overview-sections/application";
+import type { DomainAction } from "@/components/common/dashboard-overview-sections/domain";
 
 export interface IProject {
   itemId: string;
@@ -9,7 +9,7 @@ export interface IProject {
   organizationIds: string[];
   tags: string[];
   name: string;
-  applications: IApplication[];
+  applications: IDomain[];
   customDomain: string | null;
   cookieDomain: "blocksdevelopers.com";
   isProduction: true;
@@ -51,8 +51,8 @@ export interface IUpdateTenantGroupPayload {
   tenantGroupId: string;
 }
 export interface IUpdateProjectPayload {
-  action: ApplicationAction;
-  application: IApplication;
+  action: DomainAction;
+  application: IDomain;
   applicationDomain?: string;
 }
 export interface IUpdateProjectResponse {
@@ -67,7 +67,7 @@ export interface IDisableProjectResponse {
   isSuccess: boolean;
 }
 
-export interface IApplication {
+export interface IDomain {
   domain: string;
   cookieDomain: string;
   isDomainVerified: boolean;
