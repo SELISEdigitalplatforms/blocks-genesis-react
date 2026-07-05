@@ -5,6 +5,7 @@ import { useProjectStore } from "@/store/project.store";
 import type {
   IUpdateProjectPayload,
   IUpdateTenantGroupPayload,
+  IValidateCnameProjectPayload,
 } from "@/models";
 
 export const useGetProjects = (options: { tenantGroupId?: string }) => {
@@ -77,10 +78,12 @@ export const useUpdateProject = () => {
   });
 };
 
-export const useValidateCNameProject = (options: { projectKey: string }) => {
+export const useValidateCNameProject = (
+  options: IValidateCnameProjectPayload,
+) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationKey: ["identifier", "projects", "validate cname"],
+    mutationKey: ["identifier", "projects", options],
     mutationFn: () => projectService.validateCNameProject(options),
     onSuccess: () => {
       queryClient.invalidateQueries({

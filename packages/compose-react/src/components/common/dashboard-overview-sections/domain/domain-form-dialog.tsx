@@ -29,13 +29,11 @@ export const DomainFormDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>
-            {isEditMode ? "Edit Application" : "Add Application"}
-          </DialogTitle>
+          <DialogTitle>{isEditMode ? "Edit Domain" : "Add Domain"}</DialogTitle>
           <DialogDescription>
             {isEditMode
-              ? "Update the domain configuration for this application."
-              : "Add a new application domain to this project."}
+              ? "Update the domain configuration."
+              : "Add a new domain to this project."}
           </DialogDescription>
         </DialogHeader>
         <DomainForm

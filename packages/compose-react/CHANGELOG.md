@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.50
+
+### Patch Changes
+
+- validate cname feat added
+
 ## 0.0.49
 
 ### Patch Changes

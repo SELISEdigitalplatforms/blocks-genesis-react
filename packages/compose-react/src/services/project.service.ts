@@ -9,6 +9,8 @@ import type {
   IUpdateProjectResponse,
   IEnvRepository,
   IUpdateProjectPayload,
+  IValidateCnameProjectPayload,
+  IValidateCnameProjectResponse,
 } from "@/models";
 import { PROJECT_ENDPOINTS } from "@/constants/endpoint.constant";
 import { getRuntimeEnv, HttpClient } from "@/lib";
@@ -76,9 +78,9 @@ export class ProjectService {
     return logicClient.post(PROJECT_ENDPOINTS.DISABLE, payload);
   }
 
-  validateCNameProject(payload: {
-    projectKey: string;
-  }): Promise<{ isValid: boolean }> {
+  validateCNameProject(
+    payload: IValidateCnameProjectPayload,
+  ): Promise<IValidateCnameProjectResponse> {
     return logicClient.post(PROJECT_ENDPOINTS.CONFIGURE, payload);
   }
 }

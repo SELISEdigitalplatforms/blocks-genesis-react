@@ -1,24 +1,30 @@
-import { LoaderCircle } from "lucide-react";
 import { Button, toast } from "@/components";
-import { useGetProject, useValidateCNameProject } from "@/hooks/use-project";
-import { useProjectStore } from "@/store";
+import { useValidateCNameProject } from "@/hooks/use-project";
+import { LoaderCircle } from "lucide-react";
 
-export const CnameValidatorProject = () => {
-  const projectKey = useProjectStore().selectedProject?.tenantId || "";
-  const { itemId } = useProjectStore().selectedProject || {
-    itemId: "",
-    tenantId: "",
-  };
-  const { data } = useGetProject({ projectId: itemId });
-  const { mutateAsync, isPending } = useValidateCNameProject({ projectKey });
-  const cNameValidator = async () => {
+interface CnameValidatorProjectProps {
+  isDomainVerified: boolean;
+  cookieDomain: string;
+}
+
+export const CnameValidatorProject = ({
+  isDomainVerified,
+  cookieDomain,
+}: CnameValidatorProjectProps) => {
+  const { mutateAsync, isPending } = useValidateCNameProject({ cookieDomain });
+
+  const handleValidate = async () => {
     try {
-      if (data?.data.isDomainVerified) return;
+      if (isDomainVerified) return;
       const res = await mutateAsync();
-      if (res.isValid) return toast.success("CName is validated successfully");
-      toast.error(
-        "Could not verify the domain. Please make sure it is valid and try again",
-      );
+      if (res.isSuccess) {
+        toast.success("CName is validated successfully");
+      } else {
+        toast.error(
+          res.errors ||
+            "Could not verify the domain. Please make sure it is valid and try again",
+        );
+      }
     } catch (error) {
       if (error && typeof error === "object" && "errors" in error) {
         toast.error(
@@ -27,8 +33,13 @@ export const CnameValidatorProject = () => {
       }
     }
   };
+
   return (
-    <Button onClick={cNameValidator} disabled={isPending} size="sm">
+    <Button
+      onClick={handleValidate}
+      disabled={isPending || isDomainVerified}
+      size="sm"
+    >
       {isPending && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
       CNAME Lookup
     </Button>

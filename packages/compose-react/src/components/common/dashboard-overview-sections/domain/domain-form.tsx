@@ -38,7 +38,10 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
   const form = useForm<DomainFormSchema>({
     resolver: zodResolver(domainFormSchema),
     defaultValues: isEditMode
-      ? { domain: application.domain, cookieDomain: application.cookieDomain }
+      ? {
+          domain: application.domain.replace(/^https?:\/\//, ""),
+          cookieDomain: application.cookieDomain,
+        }
       : domainFormDefaultValues,
     mode: "onChange",
   });
@@ -50,7 +53,7 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
         // Sends the original domain so the BE knows which record to update
         ...(isEditMode && { applicationDomain: application.domain }),
         application: {
-          domain: values.domain,
+          domain: `https://${values.domain}`,
           cookieDomain: values.cookieDomain,
           // Preserve existing verification status on edit; false on add
           isDomainVerified: isEditMode ? application.isDomainVerified : false,
@@ -90,7 +93,20 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
                 Domain
               </FormLabel>
               <FormControl>
-                <Input {...field} placeholder="https://your-domain.com" />
+                <div className="flex items-center rounded-md border border-input bg-background px-3 py-2">
+                  <span className="text-muted-foreground">https://</span>
+                  <Input
+                    {...field}
+                    placeholder="your-domain.com"
+                    className="h-auto border-0 bg-transparent p-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                    onChange={(e) => {
+                      field.onChange(e);
+                      if (!form.formState.touchedFields.cookieDomain) {
+                        form.setValue("cookieDomain", e.target.value);
+                      }
+                    }}
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -121,7 +137,9 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
             size="sm"
             className="w-20"
             type="submit"
-            disabled={!form.formState.isValid || isPending}
+            disabled={
+              !form.formState.isValid || isPending || !form.formState.isDirty
+            }
           >
             {isEditMode ? "Update" : "Add"}
           </Button>
