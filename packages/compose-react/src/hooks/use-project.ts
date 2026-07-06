@@ -86,8 +86,11 @@ export const useValidateCNameProject = (
     mutationKey: ["identifier", "projects", options],
     mutationFn: () => projectService.validateCNameProject(options),
     onSuccess: () => {
+      // Prefix match — the project query is keyed by { projectId }, not by
+      // the cname payload, so invalidating with `options` never hit it and
+      // the domains table required a manual reload to show the new status
       queryClient.invalidateQueries({
-        queryKey: ["identifier", "project", options],
+        queryKey: ["identifier", "project"],
       });
     },
   });

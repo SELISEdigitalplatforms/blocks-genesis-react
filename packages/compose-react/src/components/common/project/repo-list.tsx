@@ -42,7 +42,8 @@ export const ProjectRepoList = ({
       <ProjectRepoTable
         data={envRepositoriesResponse?.data ?? []}
         domains={applications}
-        projectName={project?.name}
+        projectKey={project?.tenantId || ""}
+        projectEnv={project?.environment || ""}
       />
     </DashboardSectionCard>
   );
