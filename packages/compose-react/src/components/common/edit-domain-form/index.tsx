@@ -1,4 +1,4 @@
-import { Button, Input, toast } from "@/components";
+import { Button, Input } from "@/components";
 import { DialogClose, DialogFooter } from "@/components/core/dialog/dialog";
 import {
   Form,
@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { editDomainFormSchema } from "./schema";
+import { showErrorToast, showSuccessToast } from "@/utils/toast";
 
 type EditDomainFormProps = {
   customDomain: string;
@@ -70,15 +71,15 @@ export const EditDomainForm = ({
         repoWithDomains: repoWithDomains,
       });
       if (res.isSuccess) {
-        toast.success("Project is updated successfully");
+        showSuccessToast({ description: "Project is updated successfully" });
         form.reset();
         onAfterSubmit();
       } else {
-        toast.error(res.errors as string);
+        showErrorToast({ errors: res.errors });
       }
     } catch (error) {
       if (error && typeof error === "object" && "errors" in error) {
-        toast.error(error.errors as string);
+        showErrorToast({ errors: error.errors });
       }
     }
   };
@@ -86,8 +87,7 @@ export const EditDomainForm = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmitHandler)}
-        className="flex flex-col gap-4"
-      >
+        className="flex flex-col gap-4">
         {repositories.map((repository, index) => (
           <div key={repository.itemId}>
             <FormField

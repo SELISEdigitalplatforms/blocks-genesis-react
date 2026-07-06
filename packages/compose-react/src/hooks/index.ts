@@ -25,3 +25,4 @@ export * from "./use-project";
 export * from "./use-service-registry";
 export * from "./use-theme";
 export * from "./use-impersonation";
+export * from "./use-toast";

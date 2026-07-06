@@ -1,4 +1,4 @@
-import { Button, Dialog, RenderConditionally, toast } from "@/components";
+import { Button, Dialog, RenderConditionally } from "@/components";
 import { CnameValidatorDialog } from "@/components/common/cname/dialog";
 import ConfirmationModal from "@/components/common/confirmation-modal";
 import { useUpdateProject } from "@/hooks/use-project";
@@ -14,6 +14,7 @@ import { Settings, ShieldCheck, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { DomainFormDialog } from "./domain-form-dialog";
 import { DomainAction } from "./domain.constant";
+import { showErrorToast, showSuccessToast } from "@/utils/toast";
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
@@ -65,8 +66,7 @@ const buildColumns = (
             size="icon"
             title="Delete application"
             className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-            onClick={() => onDeleteRequest(domain)}
-          >
+            onClick={() => onDeleteRequest(domain)}>
             <Trash2 className="h-4 w-4" />
           </Button>
 
@@ -76,16 +76,14 @@ const buildColumns = (
               variant="ghost"
               size="icon"
               title="Configure domain"
-              onClick={() => onEdit(domain)}
-            >
+              onClick={() => onEdit(domain)}>
               <Settings className="h-4 w-4 text-muted-foreground" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
               title="Validate CNAME"
-              onClick={() => onCname(domain)}
-            >
+              onClick={() => onCname(domain)}>
               <ShieldCheck className="h-4 w-4 text-muted-foreground" />
             </Button>
           </RenderConditionally>
@@ -131,12 +129,12 @@ export const DomainTable = ({ data }: DomainTableProps) => {
         applicationDomain: deleteTarget.domain,
       });
       if (res.isSuccess) {
-        toast.success("Application deleted successfully");
+        showSuccessToast({ description: "Application deleted successfully" });
       } else {
-        toast.error(res.errors as string);
+        showErrorToast({ errors: res.errors });
       }
     } catch {
-      toast.error("Failed to delete application");
+      showErrorToast({ errors: "Failed to delete application" });
     } finally {
       setDeleteDialogOpen(false);
       setDeleteTarget(null);
@@ -217,8 +215,7 @@ export const DomainTable = ({ data }: DomainTableProps) => {
                     className={cn(
                       "h-12 px-4 text-left text-xs font-semibold uppercase tracking-wide text-medium-emphasis",
                       header.id === "actions" && "w-32",
-                    )}
-                  >
+                    )}>
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext(),
@@ -233,8 +230,7 @@ export const DomainTable = ({ data }: DomainTableProps) => {
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="py-10 text-center text-sm text-muted-foreground"
-                >
+                  className="py-10 text-center text-sm text-muted-foreground">
                   No applications configured yet.
                 </td>
               </tr>
@@ -242,8 +238,7 @@ export const DomainTable = ({ data }: DomainTableProps) => {
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="border-b border-border last:border-0 hover:bg-muted/50"
-                >
+                  className="border-b border-border last:border-0 hover:bg-muted/50">
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="p-2 md:px-4 md:py-3">
                       {flexRender(
