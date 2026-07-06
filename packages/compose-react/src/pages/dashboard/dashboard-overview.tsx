@@ -22,12 +22,13 @@ export const DashboardOverview = () => {
     tenantId: "",
   };
   const { data, isFetching } = useGetProject({ projectId: itemId });
-
   const {
     endpoints,
     isLoading: isLoadingEndpoints,
     error,
   } = useSwaggerEndpoints(name);
+
+  if (!data?.data) return null;
 
   return (
     <main className="flex flex-col gap-6 p-6">
