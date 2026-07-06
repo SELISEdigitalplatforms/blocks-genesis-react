@@ -1,6 +1,5 @@
-import { Button, toast } from "@/components";
+import { LoadingButton, toast } from "@/components";
 import { useValidateCNameProject } from "@/hooks/use-project";
-import { LoaderCircle } from "lucide-react";
 
 interface CnameValidatorProjectProps {
   isDomainVerified: boolean;
@@ -35,13 +34,11 @@ export const CnameValidatorProject = ({
   };
 
   return (
-    <Button
+    <LoadingButton
       onClick={handleValidate}
       disabled={isPending || isDomainVerified}
-      size="sm"
-    >
-      {isPending && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+      isLoading={isPending}>
       CNAME Lookup
-    </Button>
+    </LoadingButton>
   );
 };

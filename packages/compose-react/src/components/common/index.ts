@@ -19,5 +19,6 @@ export * from "./confirmation-modal";
 export * from "./edit-domain-form";
 export * from "./copyable-snippet";
 export * from "./git-command-snippet";
-export * from "./dashboard-overview-sections";
+export * from "./dashboard-section-card";
 export * from "./cname";
+export * from "./loading-button";

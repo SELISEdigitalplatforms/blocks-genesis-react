@@ -28,7 +28,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
         <Badge>{environment}</Badge>
       </div>
       <div className="flex items-center gap-2 font-mono text-xs">
-        <p className="font-medium text-medium-emphasis">{"X-Blocks-Key:"}</p>
+        <h2 className="font-medium text-medium-emphasis">{"X-Blocks-Key:"}</h2>
         <CopyToClipboardButton
           className="text-high-emphasis rounded-lg items-center"
           textToCopy={tenantId || ""}
