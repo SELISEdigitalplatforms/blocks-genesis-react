@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.51
+
+### Patch Changes
+
+- updated dashboard overview ui for os, exported http error, fixed impersonation stop 401 error, remove projectkey from query params
+
 ## 0.0.50
 
 ### Patch Changes
