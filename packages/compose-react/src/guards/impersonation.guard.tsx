@@ -5,6 +5,7 @@ import {
   useStopImpersonation,
 } from "@/hooks/use-impersonation";
 import { useGetProjects } from "@/hooks/use-project";
+import { HttpError } from "@/lib/http/error";
 import { useImpersonateStore, useProjectStore } from "@/store";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { projectService } from "@/services/project.service";
@@ -41,28 +42,35 @@ export function ImpersonationTerminator({
   const { terminate, isImpersonated } = useImpersonateStore();
   const { mutateAsync } = useStopImpersonation();
   const isTriggering = useRef(false);
+  const [isTerminating, setIsTerminating] = useState(false);
 
   useEffect(() => {
     if (isTriggering.current || !isImpersonated) return;
 
     isTriggering.current = true;
+    setIsTerminating(true);
     const blocksKey = window.process?.env.BLOCKS_X_BLOCKS_KEY || "";
-    mutateAsync(undefined)
-      .then(() => {
-        terminate(blocksKey);
-        isTriggering.current = false;
-      })
-      .catch(() => {
+
+    const stopImpersonation = async () => {
+      try {
+        await mutateAsync(undefined);
+      } catch (error) {
         // Stop can 401 when impersonation is already cleared server-side.
         // Always clear local state so we do not re-trigger stop on next layout.
+        if (!(error instanceof HttpError) || error.status !== 401) {
+          console.error("Error stopping impersonation:", error);
+        }
+      } finally {
         terminate(blocksKey);
-      })
-      .finally(() => {
         isTriggering.current = false;
-      });
+        setIsTerminating(false);
+      }
+    };
+
+    void stopImpersonation();
   }, [mutateAsync, terminate, isImpersonated]);
 
-  if (isImpersonated || isTriggering.current) return <AppLoadingSpinner />;
+  if (isImpersonated || isTerminating) return <AppLoadingSpinner />;
   return <>{children}</>;
 }
 
