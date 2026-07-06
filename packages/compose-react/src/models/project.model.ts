@@ -1,4 +1,4 @@
-import type { DomainAction } from "@/components/common/dashboard-overview-sections/domain";
+import type { DomainAction } from "@/pages/dashboard/dashboard-overview-sections/domain";
 
 export interface IProject {
   itemId: string;

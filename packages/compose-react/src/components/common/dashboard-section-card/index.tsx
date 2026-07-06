@@ -47,8 +47,7 @@ export const DashboardSectionCard = ({
         className={cn(
           "border-t border-border px-2 py-2 sm:px-4 sm:py-3",
           contentClassName,
-        )}
-      >
+        )}>
         {children}
       </div>
     </div>

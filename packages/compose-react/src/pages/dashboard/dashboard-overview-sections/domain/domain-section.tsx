@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components";
-import { DashboardSectionCard } from "../dashboard-section-card";
+import { DashboardSectionCard } from "@/components/common/dashboard-section-card";
 import { DomainFormDialog } from "./domain-form-dialog";
 import { DomainTable } from "./domain-table";
 import type { IDomain } from "@/models/project.model";
@@ -31,13 +31,11 @@ export const DomainsSection = ({ applications }: DomainsSectionProps) => {
             variant="outline"
             size="sm"
             className="gap-1.5"
-            onClick={() => setAddDialogOpen(true)}
-          >
+            onClick={() => setAddDialogOpen(true)}>
             <Plus className="h-4 w-4" />
             Add Domain
           </Button>
-        }
-      >
+        }>
         <DomainTable data={applications} />
       </DashboardSectionCard>
     </>

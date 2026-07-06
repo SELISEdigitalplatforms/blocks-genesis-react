@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { CopyToClipboardButton, MaskedText, Skeleton } from "@/index";
-import { DashboardSectionCard } from "./dashboard-section-card";
+import { DashboardSectionCard } from "@/components/common/dashboard-section-card";
 
 export interface AppIntegrationLink {
   id: string;
@@ -64,15 +64,13 @@ export const AppIntegrationCard = ({
                 rel="noopener noreferrer"
                 title={link.label}
                 aria-label={link.label}
-                className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-              >
+                className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
                 {link.icon}
               </a>
             ))}
           </div>
         ) : undefined
-      }
-    >
+      }>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {clientId && (
           <div className="space-y-1.5">

@@ -1,7 +1,7 @@
 import { Skeleton } from "@/index";
 import { Badge } from "@/components";
 import { CoreApiGroupSection } from "./core-api-group-section";
-import { DashboardSectionCard } from "../dashboard-section-card";
+import { DashboardSectionCard } from "@/components/common/dashboard-section-card";
 import type { ICoreApiEndpoint } from "./core-api-endpoint.model";
 import { groupEndpointsByTag } from "../util";
 
@@ -54,8 +54,7 @@ export const CoreApiCard = ({
             {endpoints.length}
           </span>
         </>
-      }
-    >
+      }>
       {groups.length === 0 ? (
         <p className="px-1 py-3 text-center text-sm text-muted-foreground">
           {error

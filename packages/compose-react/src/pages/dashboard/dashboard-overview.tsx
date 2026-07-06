@@ -1,17 +1,19 @@
 import {
-  DomainsSection,
-  CoreApiCard,
   GitCommandSnippet,
   ProjectCliSnippet,
   ProjectRepoList,
   RenderConditionally,
-  useSwaggerEndpoints,
 } from "@/components";
 import { ProjectActions, ProjectDetail } from "@/components/common/project";
 import { ProjectOverview } from "@/components/common/project";
 import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { useGetProject } from "@/hooks/use-project";
 import { useProjectStore } from "@/store/project.store";
+import {
+  useSwaggerEndpoints,
+  DomainsSection,
+  CoreApiCard,
+} from "./dashboard-overview-sections";
 
 export const DashboardOverview = () => {
   const { name } = useBlocksAppConfigStore((state) => state.config);
