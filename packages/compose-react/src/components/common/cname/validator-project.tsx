@@ -1,5 +1,6 @@
-import { LoadingButton, toast } from "@/components";
+import { LoadingButton } from "@/components";
 import { useValidateCNameProject } from "@/hooks/use-project";
+import { showErrorToast, showSuccessToast } from "@/utils/toast";
 
 interface CnameValidatorProjectProps {
   isDomainVerified: boolean;
@@ -17,18 +18,17 @@ export const CnameValidatorProject = ({
       if (isDomainVerified) return;
       const res = await mutateAsync();
       if (res?.isSuccess) {
-        toast.success("CName is validated successfully");
+        showSuccessToast({ description: "CName is validated successfully" });
       } else {
-        toast.error(
-          Object.values(res.errors ?? {})[0] ??
+        showErrorToast({
+          errors:
+            res?.errors ??
             "Could not verify the domain. Please make sure it is valid and try again.",
-        );
+        });
       }
     } catch (error) {
       if (error && typeof error === "object" && "errors" in error) {
-        toast.error(
-          (error as unknown as { errors: unknown[] }).errors[0] as string,
-        );
+        showErrorToast({ errors: error.errors });
       }
     }
   };

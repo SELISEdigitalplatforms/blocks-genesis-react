@@ -9,7 +9,6 @@ import {
   FormLabel,
   FormMessage,
   Input,
-  toast,
 } from "@/components";
 import { useUpdateProject } from "@/hooks/use-project";
 import type { IDomain } from "@/models/project.model";
@@ -21,6 +20,7 @@ import {
   type DomainFormSchema,
 } from "./domain-form.schema";
 import { DomainAction } from "./domain.constant";
+import { showErrorToast, showSuccessToast } from "@/utils/toast";
 
 interface DomainFormProps {
   /**
@@ -61,19 +61,21 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
       });
 
       if (res.isSuccess) {
-        toast.success(
-          isEditMode
+        showSuccessToast({
+          description: isEditMode
             ? "Application updated successfully"
             : "Application added successfully",
-        );
+        });
         form.reset();
         onAfterSubmit();
       } else {
-        toast.error(res.errors as string);
+        showErrorToast({ errors: res.errors });
       }
     } catch (error) {
       if (error && typeof error === "object" && "errors" in error) {
-        toast.error((error as { errors: unknown }).errors as string);
+        showErrorToast({
+          errors: (error as { errors: unknown }).errors as string,
+        });
       }
     }
   };
@@ -82,8 +84,7 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4"
-      >
+        className="flex flex-col gap-4">
         <FormField
           control={form.control}
           name="domain"
@@ -139,8 +140,7 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
             type="submit"
             disabled={
               !form.formState.isValid || isPending || !form.formState.isDirty
-            }
-          >
+            }>
             {isEditMode ? "Update" : "Add"}
           </Button>
         </DialogFooter>

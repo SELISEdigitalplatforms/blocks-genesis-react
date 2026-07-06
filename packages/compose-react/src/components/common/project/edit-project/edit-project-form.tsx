@@ -10,7 +10,6 @@ import {
   FormMessage,
   Input,
   Switch,
-  toast,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -28,6 +27,7 @@ import {
   editProjectFormSchema,
   type EditProjectFormSchema,
 } from "./schema";
+import { showSuccessToast, showErrorToast } from "@/utils/toast";
 type EditProjectFormProps = {
   formData: EditProjectFormSchema;
   onAfterSubmit: () => void;
@@ -55,15 +55,17 @@ export const EditProjectForm = ({
         tenantGroupId: itemId,
       });
       if (res.isSuccess) {
-        toast.success("Project is updated successfully");
+        showSuccessToast({ description: "Project is updated successfully" });
         form.reset();
         onAfterSubmit();
       } else {
-        toast.error(res.errors as string);
+        showErrorToast({ errors: res.errors });
       }
     } catch (error) {
       if (error && typeof error === "object" && "errors" in error) {
-        toast.error((error as unknown as { errors: unknown }).errors as string);
+        showErrorToast({
+          errors: (error as { errors: unknown }).errors as string,
+        });
       }
     }
   };
@@ -73,8 +75,7 @@ export const EditProjectForm = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmitHandler)}
-        className="flex flex-col gap-4"
-      >
+        className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <div className="text-sm font-medium">Application Domain</div>
           <div className="text-sm text-muted-foreground">
@@ -115,8 +116,7 @@ export const EditProjectForm = ({
                         className="peer"
                         type="button"
                         onMouseEnter={() => setCustomDomainTooltipOpen(true)}
-                        onMouseLeave={() => setCustomDomainTooltipOpen(false)}
-                      >
+                        onMouseLeave={() => setCustomDomainTooltipOpen(false)}>
                         <CircleHelp className="h-4 w-4" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-96 text-sm font-normal">

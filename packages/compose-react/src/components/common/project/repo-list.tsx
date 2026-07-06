@@ -10,7 +10,6 @@ import {
   DialogTrigger,
   EditDomainForm,
   Skeleton,
-  toast,
 } from "@/components";
 import {
   useGetEnvRepositories,
@@ -24,6 +23,7 @@ import { Check, Pencil } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ConfirmationModal from "../confirmation-modal";
+import { showErrorToast, showSuccessToast } from "@/utils/toast";
 
 export const ProjectRepoList = ({
   project,
@@ -68,17 +68,19 @@ export const ProjectRepoList = ({
         tenantGroupId: project?.tenantId || "",
       });
       if (res.isSuccess) {
-        toast.success("Application Domain is updated successfully");
+        showSuccessToast({
+          description: "Application Domain is updated successfully",
+        });
         queryClient.invalidateQueries({
           queryKey: ["identifier", "project", { projectId: itemId }],
         });
         setIsSetApplicationDomainModalOpen(false);
       } else {
-        toast.error(res.errors as string);
+        showErrorToast({ errors: res.errors });
       }
     } catch (error) {
       if (error && typeof error === "object" && "errors" in error) {
-        toast.error(error.errors as string);
+        showErrorToast({ errors: error.errors });
       }
     }
   };
@@ -108,8 +110,7 @@ export const ProjectRepoList = ({
                 !project?.customDomain ||
                 project?.customDomain === ""
               }
-              variant="outline"
-            >
+              variant="outline">
               <Pencil className="mr-2 h-3.5 w-3.5" />
               Edit domain
             </Button>
@@ -141,8 +142,7 @@ export const ProjectRepoList = ({
                 return (
                   <div
                     key={index}
-                    className="mt-4 space-y-3 rounded-sm border border-border p-4"
-                  >
+                    className="mt-4 space-y-3 rounded-sm border border-border p-4">
                     <div>
                       <div className="text-xs font-medium text-medium-emphasis">
                         Name
@@ -181,8 +181,7 @@ export const ProjectRepoList = ({
                               onClick={() => {
                                 setApplicationDomain(activeDomain);
                                 setIsSetApplicationDomainModalOpen(true);
-                              }}
-                            >
+                              }}>
                               <span className="px-2">Set</span>
                             </Button>
                           ) : (
@@ -205,8 +204,7 @@ export const ProjectRepoList = ({
                           className="cursor-pointer text-sm text-blue-600 hover:text-blue-800 hover:underline"
                           onClick={() =>
                             navigate(`/devops/repo/${repo.itemId}`)
-                          }
-                        >
+                          }>
                           {!repo.lastDeploymentDate || isDefaultDate
                             ? "Not deployed"
                             : formatFullDate(new Date(repo.lastDeploymentDate))}
@@ -256,8 +254,7 @@ export const ProjectRepoList = ({
                             onClick={() => {
                               setApplicationDomain(activeDomain);
                               setIsSetApplicationDomainModalOpen(true);
-                            }}
-                          >
+                            }}>
                             <span className="px-2">Set</span>
                           </Button>
                         ) : (
@@ -268,8 +265,7 @@ export const ProjectRepoList = ({
                     <div className="text-sm text-medium-emphasis">
                       <div
                         className="cursor-pointer text-blue-600 hover:text-blue-800 hover:underline"
-                        onClick={() => navigate(`/devops/repo/${repo.itemId}`)}
-                      >
+                        onClick={() => navigate(`/devops/repo/${repo.itemId}`)}>
                         {!repo.lastDeploymentDate || isDefaultDate
                           ? "Not deployed"
                           : formatFullDate(new Date(repo.lastDeploymentDate))}
@@ -288,8 +284,7 @@ export const ProjectRepoList = ({
       </div>
       <Dialog
         open={isSetApplicationDomainModalOpen}
-        onOpenChange={setIsSetApplicationDomainModalOpen}
-      >
+        onOpenChange={setIsSetApplicationDomainModalOpen}>
         <ConfirmationModal
           onCancel={() => setIsSetApplicationDomainModalOpen(false)}
           onConfirm={saveApplicationDomain}

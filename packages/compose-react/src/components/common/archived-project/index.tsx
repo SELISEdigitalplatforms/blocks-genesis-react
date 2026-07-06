@@ -1,11 +1,12 @@
-import { Button, Dialog, DialogTrigger, toast } from "@/components";
+import { Button, Dialog, DialogTrigger } from "@/components";
 import { useDisableProject } from "@/hooks/use-project";
 import { isErrorWithErrors } from "@/utils/error";
 import { useProjectStore } from "@/store";
 import { Archive } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ConfirmationModal from "../confirmation-modal";
+import ConfirmationModal from "@/components/common/confirmation-modal";
+import { showErrorToast, showSuccessToast } from "@/utils/toast";
 
 export const ArchivedProject = () => {
   const navigate = useNavigate();
@@ -15,14 +16,17 @@ export const ArchivedProject = () => {
     try {
       const res = await mutateAsync();
       if (res.isSuccess) {
-        toast.success("Project deleted successfully");
+        showSuccessToast({
+          title: "Project delete",
+          description: "Successfully deleted",
+        });
         navigate("/app/console");
       } else {
-        toast.error(res.errors);
+        showErrorToast({ errors: res.errors });
       }
     } catch (error) {
       if (isErrorWithErrors(error)) {
-        toast.error(error.errors[0]);
+        showErrorToast({ errors: error.errors });
       }
     }
   };
