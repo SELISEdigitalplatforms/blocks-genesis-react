@@ -101,7 +101,9 @@ export const EditProjectForm = ({
             size="sm"
             className="w-20"
             type="submit"
-            disabled={!form.formState.isValid || isPending}
+            disabled={
+              !form.formState.isValid || isPending || !form.formState.isDirty
+            }
           >
             Save
           </Button>
