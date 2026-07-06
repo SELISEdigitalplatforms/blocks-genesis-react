@@ -27,12 +27,13 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
         <h1 className="text-xl font-semibold md:text-2xl">{name}</h1>
         <Badge>{environment}</Badge>
       </div>
-      <div className="flex items-center gap-2 font-mono text-xs">
-        <h2 className="font-medium text-medium-emphasis">{"X-Blocks-Key:"}</h2>
+      <div className="flex items-center gap-2 font-mono text-sm">
+        <p className="font-semibold text-high-emphasis">{"X-Blocks-Key:"}</p>
         <CopyToClipboardButton
           className="text-high-emphasis rounded-lg items-center"
           textToCopy={tenantId || ""}
-          isHoverable>
+          isHoverable
+        >
           <MaskedText
             text={tenantId || ""}
             showFirstN={3}

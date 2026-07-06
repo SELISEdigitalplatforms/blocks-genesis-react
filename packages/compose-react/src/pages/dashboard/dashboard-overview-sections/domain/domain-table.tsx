@@ -21,7 +21,7 @@ import { showErrorToast, showSuccessToast } from "@/utils/toast";
 const StatusBadge = ({ verified }: { verified: boolean }) =>
   verified ? (
     <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
-      ✓ Verified
+      Verified
     </span>
   ) : (
     <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
@@ -64,9 +64,10 @@ const buildColumns = (
           <Button
             variant="ghost"
             size="icon"
-            title="Delete application"
+            title="Delete domain"
             className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-            onClick={() => onDeleteRequest(domain)}>
+            onClick={() => onDeleteRequest(domain)}
+          >
             <Trash2 className="h-4 w-4" />
           </Button>
 
@@ -76,14 +77,16 @@ const buildColumns = (
               variant="ghost"
               size="icon"
               title="Configure domain"
-              onClick={() => onEdit(domain)}>
+              onClick={() => onEdit(domain)}
+            >
               <Settings className="h-4 w-4 text-muted-foreground" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
               title="Validate CNAME"
-              onClick={() => onCname(domain)}>
+              onClick={() => onCname(domain)}
+            >
               <ShieldCheck className="h-4 w-4 text-muted-foreground" />
             </Button>
           </RenderConditionally>
@@ -129,12 +132,12 @@ export const DomainTable = ({ data }: DomainTableProps) => {
         applicationDomain: deleteTarget.domain,
       });
       if (res.isSuccess) {
-        showSuccessToast({ description: "Application deleted successfully" });
+        showSuccessToast({ description: "Domain deleted successfully" });
       } else {
         showErrorToast({ errors: res.errors });
       }
     } catch {
-      showErrorToast({ errors: "Failed to delete application" });
+      showErrorToast({ errors: "Failed to delete domain" });
     } finally {
       setDeleteDialogOpen(false);
       setDeleteTarget(null);
@@ -174,7 +177,7 @@ export const DomainTable = ({ data }: DomainTableProps) => {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <ConfirmationModal
           data={{
-            dialogTitle: "Delete Application",
+            dialogTitle: "Delete Domain",
             dialogSubtitle: (
               <>
                 Are you sure you want to delete{" "}
@@ -215,7 +218,8 @@ export const DomainTable = ({ data }: DomainTableProps) => {
                     className={cn(
                       "h-12 px-4 text-left text-xs font-semibold uppercase tracking-wide text-medium-emphasis",
                       header.id === "actions" && "w-32",
-                    )}>
+                    )}
+                  >
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext(),
@@ -230,15 +234,17 @@ export const DomainTable = ({ data }: DomainTableProps) => {
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="py-10 text-center text-sm text-muted-foreground">
-                  No applications configured yet.
+                  className="py-10 text-center text-sm text-muted-foreground"
+                >
+                  No domains configured yet.
                 </td>
               </tr>
             ) : (
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="border-b border-border last:border-0 hover:bg-muted/50">
+                  className="border-b border-border last:border-0 hover:bg-muted/50"
+                >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="p-2 md:px-4 md:py-3">
                       {flexRender(

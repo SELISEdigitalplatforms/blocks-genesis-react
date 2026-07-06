@@ -23,19 +23,19 @@ import { CircleHelp } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
-  editProjectFormDefaultValue,
-  editProjectFormSchema,
-  type EditProjectFormSchema,
+  editDomainFormDefaultValue,
+  editDomainFormSchema,
+  type EditDomainFormSchema,
 } from "./schema";
 import { showSuccessToast, showErrorToast } from "@/utils/toast";
-type EditProjectFormProps = {
-  formData: EditProjectFormSchema;
+type EditDomainFormProps = {
+  formData: EditDomainFormSchema;
   onAfterSubmit: () => void;
 };
-export const EditProjectForm = ({
+export const EditDomainForm = ({
   onAfterSubmit,
   formData,
-}: EditProjectFormProps) => {
+}: EditDomainFormProps) => {
   const { itemId } = useProjectStore().selectedProject || {
     itemId: "",
     tenantId: "",
@@ -43,11 +43,11 @@ export const EditProjectForm = ({
   const { mutateAsync, isPending } = useUpdateTenantGroup();
   const [customDomainTooltipOpen, setCustomDomainTooltipOpen] = useState(false);
   const form = useForm({
-    defaultValues: editProjectFormDefaultValue,
+    defaultValues: editDomainFormDefaultValue,
     values: formData,
-    resolver: zodResolver(editProjectFormSchema),
+    resolver: zodResolver(editDomainFormSchema),
   });
-  const onSubmitHandler = async (values: EditProjectFormSchema) => {
+  const onSubmitHandler = async (values: EditDomainFormSchema) => {
     try {
       if (!itemId) return;
       const res = await mutateAsync({
@@ -75,7 +75,8 @@ export const EditProjectForm = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmitHandler)}
-        className="flex flex-col gap-4">
+        className="flex flex-col gap-4"
+      >
         <div className="flex flex-col gap-1">
           <div className="text-sm font-medium">Application Domain</div>
           <div className="text-sm text-muted-foreground">
@@ -116,7 +117,8 @@ export const EditProjectForm = ({
                         className="peer"
                         type="button"
                         onMouseEnter={() => setCustomDomainTooltipOpen(true)}
-                        onMouseLeave={() => setCustomDomainTooltipOpen(false)}>
+                        onMouseLeave={() => setCustomDomainTooltipOpen(false)}
+                      >
                         <CircleHelp className="h-4 w-4" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-96 text-sm font-normal">

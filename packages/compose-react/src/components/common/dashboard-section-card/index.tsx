@@ -28,11 +28,11 @@ export const DashboardSectionCard = ({
     <div className={cn("rounded-lg border border-border bg-card", className)}>
       <div className="flex items-center gap-2 px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3">
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-sm font-semibold leading-snug text-high-emphasis sm:text-base">
+          <h3 className="truncate text-lg font-semibold leading-snug text-high-emphasis sm:text-base">
             {title}
           </h3>
           {description && (
-            <p className="truncate text-[10px] text-muted-foreground sm:text-[11px]">
+            <p className="truncate text-[14px] text-muted-foreground sm:text-[15px]">
               {description}
             </p>
           )}
@@ -47,7 +47,8 @@ export const DashboardSectionCard = ({
         className={cn(
           "border-t border-border px-2 py-2 sm:px-4 sm:py-3",
           contentClassName,
-        )}>
+        )}
+      >
         {children}
       </div>
     </div>
