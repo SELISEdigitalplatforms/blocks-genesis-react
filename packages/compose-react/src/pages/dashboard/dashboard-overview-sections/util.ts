@@ -3,7 +3,8 @@ import type {
   HttpMethod,
   ICoreApiEndpoint,
   ISwaggerDocument,
-} from "./core-api-endpoint.model";
+} from "./core-api";
+import type { RuntimeKey } from "@/layouts";
 
 const METHODS: HttpMethod[] = ["GET", "POST", "PUT", "PATCH", "DELETE"];
 
@@ -16,7 +17,7 @@ const METHODS: HttpMethod[] = ["GET", "POST", "PUT", "PATCH", "DELETE"];
 const resolveBaseUrl = (
   swagger: ISwaggerDocument,
   swaggerUrl: string,
-  explicitBaseUrl?: string,
+  explicitBaseUrl?: RuntimeKey,
 ): string => {
   if (explicitBaseUrl) {
     return getRuntimeEnv(explicitBaseUrl).replace(/\/+$/, "");
@@ -63,7 +64,7 @@ const humanizeFromPath = (path: string): string => {
 export const parseSwaggerDocument = (
   swagger: ISwaggerDocument,
   swaggerUrl: string,
-  explicitBaseUrl?: string,
+  explicitBaseUrl?: RuntimeKey,
 ): ICoreApiEndpoint[] => {
   const baseUrl = resolveBaseUrl(swagger, swaggerUrl, explicitBaseUrl);
   const endpoints: ICoreApiEndpoint[] = [];
