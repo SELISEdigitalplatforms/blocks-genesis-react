@@ -36,12 +36,12 @@ export class ProjectService {
     return logicClient.get(url);
   }
 
-  getEnvRepositories(projectKey: string): Promise<{
+  getEnvRepositories(): Promise<{
     data: IEnvRepository[];
     errors: unknown | null;
     isSuccess: boolean;
   }> {
-    const url = `${PROJECT_ENDPOINTS.REPOS_LIST}?projectkey=${projectKey}`;
+    const url = `${PROJECT_ENDPOINTS.REPOS_LIST}`;
     return logicClientForOS.get(url);
   }
 

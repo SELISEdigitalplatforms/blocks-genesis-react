@@ -1,6 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { notificationService } from "@/services/notification.service";
-import { getRuntimeEnv } from "@/lib/runtime-env";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useGetNotifications = (pageNumber: number, pageSize: number) => {
   return useQuery({
@@ -34,11 +33,6 @@ export const useGetBlocksNotificationConfig = (
 ) => {
   return useQuery({
     queryKey: ["blocksNotificationConfigs", page, pageSize],
-    queryFn: () =>
-      notificationService.getNotificationConfigs(
-        page,
-        pageSize,
-        getRuntimeEnv("BLOCKS_X_BLOCKS_KEY"),
-      ),
+    queryFn: () => notificationService.getNotificationConfigs(page, pageSize),
   });
 };

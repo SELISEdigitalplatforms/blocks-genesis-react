@@ -69,14 +69,13 @@ export class NotificationService {
   getNotificationConfigs = (
     page: number = 0,
     pageSize: number = 10,
-    projectKey: string,
   ): Promise<{
     configurations: INotificationConfig[];
     totalCount: number;
     errors: null | unknown;
     isSuccess: boolean;
   }> => {
-    const url = `${NOTIFICATION_CONFIG_ENDPOINTS.GET_CONFIGS}?page=${page}&pageSize=${pageSize}&projectKey=${projectKey}`;
+    const url = `${NOTIFICATION_CONFIG_ENDPOINTS.GET_CONFIGS}?page=${page}&pageSize=${pageSize}`;
     return this.notificationService.get(url);
   };
 }

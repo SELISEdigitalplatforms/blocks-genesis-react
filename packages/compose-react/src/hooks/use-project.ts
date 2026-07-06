@@ -35,7 +35,7 @@ export const useGetProject = (options: { projectId: string }) => {
 export const useGetEnvRepositories = (projectKey: string) => {
   return useQuery({
     queryKey: ["env-repositories", projectKey],
-    queryFn: () => projectService.getEnvRepositories(projectKey),
+    queryFn: () => projectService.getEnvRepositories(),
     enabled: !!projectKey,
   });
 };
