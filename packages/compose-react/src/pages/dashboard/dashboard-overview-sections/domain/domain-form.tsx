@@ -46,6 +46,11 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
     mode: "onChange",
   });
 
+  // formState.isValid lags behind autofill and programmatic setValue calls,
+  // which left the submit button disabled with visibly valid values. Validate
+  // the live values directly so the button always reflects what's on screen.
+  const isFormValid = domainFormSchema.safeParse(form.watch()).success;
+
   const onSubmit = async (values: DomainFormSchema) => {
     try {
       const res = await mutateAsync({
@@ -84,7 +89,8 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4">
+        className="flex flex-col gap-4"
+      >
         <FormField
           control={form.control}
           name="domain"
@@ -103,7 +109,14 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
                     onChange={(e) => {
                       field.onChange(e);
                       if (!form.formState.touchedFields.cookieDomain) {
-                        form.setValue("cookieDomain", e.target.value);
+                        // Without shouldValidate/shouldDirty the mirrored
+                        // cookieDomain never re-validates, leaving isValid
+                        // false (Add button disabled) even though both
+                        // fields visibly hold valid values
+                        form.setValue("cookieDomain", e.target.value, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        });
                       }
                     }}
                   />
@@ -138,9 +151,8 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
             size="sm"
             className="w-20"
             type="submit"
-            disabled={
-              !form.formState.isValid || isPending || !form.formState.isDirty
-            }>
+            disabled={!isFormValid || isPending}
+          >
             {isEditMode ? "Update" : "Add"}
           </Button>
         </DialogFooter>

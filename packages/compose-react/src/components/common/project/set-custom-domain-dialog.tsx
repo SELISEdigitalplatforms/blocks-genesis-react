@@ -12,9 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components";
-import { useUpdateTenantGroup } from "@/hooks/use-project";
-import { useQueryClient } from "@tanstack/react-query";
-import { useProjectStore } from "@/store";
+import { useUpdateRepositories } from "@/hooks/use-project";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import type { IDomain } from "@/models/project.model";
 import type { IEnvRepository } from "@/models";
@@ -24,7 +22,10 @@ interface SetCustomDomainDialogProps {
   onOpenChange: (open: boolean) => void;
   repo: IEnvRepository | null;
   domains: IDomain[];
-  projectName?: string;
+  /** Tenant id of the project — sent as `projectKey` */
+  projectKey: string;
+  /** Environment of the project (e.g. "dev") — sent as `projectEnv` */
+  projectEnv: string;
 }
 
 export const SetCustomDomainDialog = ({
@@ -32,12 +33,18 @@ export const SetCustomDomainDialog = ({
   onOpenChange,
   repo,
   domains,
-  projectName,
+  projectKey,
+  projectEnv,
 }: SetCustomDomainDialogProps) => {
-  const queryClient = useQueryClient();
-  const itemId = useProjectStore().selectedProject?.itemId || "";
-  const { mutateAsync, isPending } = useUpdateTenantGroup();
+  const { mutateAsync, isPending } = useUpdateRepositories();
   const [selectedDomain, setSelectedDomain] = useState<string>("");
+
+  // Only verified domains are assignable, and applications can contain the
+  // same domain several times — dedupe, because duplicate Radix Select values
+  // make SelectValue render every matching item's text concatenated
+  const verifiedDomains = Array.from(
+    new Set(domains.filter((d) => d.isDomainVerified).map((d) => d.domain)),
+  );
 
   useEffect(() => {
     if (open) {
@@ -48,16 +55,19 @@ export const SetCustomDomainDialog = ({
   const handleSave = async () => {
     if (!repo || !selectedDomain) return;
     try {
-      // NOTE: placeholder mutation shape — logic/endpoint will change later
       const res = await mutateAsync({
-        name: projectName ?? "",
-        tenantGroupId: itemId,
+        projectKey,
+        projectEnv,
+        repoWithDomains: [
+          {
+            repoId: repo.itemId,
+            repoUrl: repo.repoUrl,
+            customDeploymentDomain: selectedDomain,
+          },
+        ],
       });
       if (res.isSuccess) {
         showSuccessToast({ description: "Custom domain updated successfully" });
-        queryClient.invalidateQueries({
-          queryKey: ["identifier", "project", { projectId: itemId }],
-        });
         onOpenChange(false);
       } else {
         showErrorToast({ errors: res.errors });
@@ -80,14 +90,26 @@ export const SetCustomDomainDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        <Select value={selectedDomain} onValueChange={setSelectedDomain}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select a domain" />
+        <Select
+          value={selectedDomain}
+          onValueChange={setSelectedDomain}
+          disabled={verifiedDomains.length === 0}
+        >
+          <SelectTrigger className="[&>span]:truncate [&>span]:text-left">
+            <SelectValue
+              placeholder={
+                verifiedDomains.length === 0
+                  ? "No verified domains available"
+                  : "Select a domain"
+              }
+            />
           </SelectTrigger>
-          <SelectContent>
-            {domains.map((d) => (
-              <SelectItem key={d.domain} value={d.domain}>
-                {d.domain}
+          {/* Cap the popover to the viewport and wrap long domains so the
+              dropdown stays usable on small screens */}
+          <SelectContent className="max-w-[calc(100vw-2rem)]">
+            {verifiedDomains.map((domain) => (
+              <SelectItem key={domain} value={domain} className="break-all">
+                {domain}
               </SelectItem>
             ))}
           </SelectContent>

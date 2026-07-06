@@ -22,12 +22,14 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
     return <ProjectOverviewSkeleton />;
   }
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-2">
-        <h1 className="text-xl font-semibold md:text-2xl">{name}</h1>
-        <Badge>{environment}</Badge>
+    <div className="flex min-w-0 flex-col gap-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <h1 className="min-w-0 break-words text-xl font-semibold md:text-2xl">
+          {name}
+        </h1>
+        <Badge className="shrink-0">{environment}</Badge>
       </div>
-      <div className="flex items-center gap-2 font-mono text-sm">
+      <div className="flex flex-wrap items-center gap-2 font-mono text-sm">
         <p className="font-semibold text-high-emphasis">{"X-Blocks-Key:"}</p>
         <CopyToClipboardButton
           className="text-high-emphasis rounded-lg items-center"
