@@ -1,7 +1,7 @@
 import { isValidDomain } from "@/utils/domain";
 import * as z from "zod";
 
-export const editProjectFormDefaultValue = {
+export const editDomainFormDefaultValue = {
   name: "",
   applicationDomain: "https://",
   isCookieEnable: true,
@@ -10,7 +10,7 @@ export const editProjectFormDefaultValue = {
   customDomain: "",
 };
 
-export const editProjectFormSchema = z
+export const editDomainFormSchema = z
   .object({
     name: z
       .string()
@@ -51,4 +51,4 @@ export const editProjectFormSchema = z
       path: ["customDomain"],
     },
   );
-export type EditProjectFormSchema = z.infer<typeof editProjectFormSchema>;
+export type EditDomainFormSchema = z.infer<typeof editDomainFormSchema>;

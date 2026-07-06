@@ -11,14 +11,14 @@ import {
 import { formatFullDate } from "@/utils";
 import { Settings } from "lucide-react";
 import { useState } from "react";
-import { EditProjectForm } from "./edit-project-form";
-import type { EditProjectFormSchema } from "./schema";
-interface EditProjectProps {
-  data: EditProjectFormSchema;
+import { EditDomainForm } from "./edit-domain-form";
+import type { EditDomainFormSchema } from "./schema";
+interface EditDomainProps {
+  data: EditDomainFormSchema;
   lastUpdatedDate?: string;
   isLoading?: boolean;
 }
-export const EditProject = ({ data, lastUpdatedDate }: EditProjectProps) => {
+export const EditDomain = ({ data, lastUpdatedDate }: EditDomainProps) => {
   const [open, setOpen] = useState<boolean>(false);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -51,7 +51,7 @@ export const EditProject = ({ data, lastUpdatedDate }: EditProjectProps) => {
             Configure your domain to point to your application
           </DialogDescription>
         </DialogHeader>
-        <EditProjectForm formData={data} onAfterSubmit={() => setOpen(false)} />
+        <EditDomainForm formData={data} onAfterSubmit={() => setOpen(false)} />
       </DialogContent>
     </Dialog>
   );

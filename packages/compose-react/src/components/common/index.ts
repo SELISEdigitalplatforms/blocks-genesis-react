@@ -14,7 +14,7 @@ export * from "./error-boundary";
 export * from "./error-display";
 export * from "./logo";
 export * from "./loader-spinner";
-export * from "./archived-project";
+export * from "./archive-project";
 export * from "./confirmation-modal";
 export * from "./edit-domain-form";
 export * from "./copyable-snippet";

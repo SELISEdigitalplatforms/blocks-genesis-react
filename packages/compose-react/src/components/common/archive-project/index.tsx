@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import ConfirmationModal from "@/components/common/confirmation-modal";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 
-export const ArchivedProject = () => {
+export const ArchiveProject = () => {
   const navigate = useNavigate();
   const projectKey = useProjectStore().selectedProject?.tenantId || "";
   const { mutateAsync, isPending } = useDisableProject({ projectKey });
@@ -37,7 +37,8 @@ export const ArchivedProject = () => {
         <Button
           variant="destructive"
           size="sm"
-          className="flex items-center gap-2">
+          className="flex items-center gap-2"
+        >
           <Archive className="h-4 w-4" />
           <span className="sr-only sm:not-sr-only">Delete</span>
         </Button>
