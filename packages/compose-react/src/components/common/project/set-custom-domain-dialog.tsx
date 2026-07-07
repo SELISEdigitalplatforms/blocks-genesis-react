@@ -48,8 +48,25 @@ export const SetCustomDomainDialog = ({
 
   useEffect(() => {
     if (open) {
-      setSelectedDomain(repo?.customDeploymentUrl || "");
+      // Preselect the repo's current custom domain. Radix Select only shows a
+      // selection when the value matches an option string exactly, and stored
+      // urls can differ from the domain entries by protocol, case, or a
+      // trailing slash — so resolve to the matching option's exact value.
+      const normalize = (value: string) =>
+        value
+          .trim()
+          .replace(/^https?:\/\//i, "")
+          .replace(/\/+$/, "")
+          .toLowerCase();
+      const current = repo?.customDeploymentUrl || "";
+      const matched = current
+        ? verifiedDomains.find((d) => normalize(d) === normalize(current))
+        : undefined;
+      setSelectedDomain(matched ?? "");
     }
+    // verifiedDomains is derived from `domains` and rebuilt each render;
+    // keying the effect on it would reset an in-progress selection
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, repo]);
 
   const handleSave = async () => {
