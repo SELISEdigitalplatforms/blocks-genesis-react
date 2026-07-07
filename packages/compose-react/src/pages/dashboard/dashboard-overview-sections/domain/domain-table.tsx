@@ -41,11 +41,13 @@ const buildColumns = (
   columnHelper.accessor("domain", {
     header: "Domain",
     cell: (info) => (
-      <span className="text-sm text-high-emphasis">{info.getValue()}</span>
+      <span className="break-all text-sm text-high-emphasis">
+        {info.getValue()}
+      </span>
     ),
   }),
   columnHelper.accessor("isDomainVerified", {
-    header: "Status",
+    header: "DNS Status",
     cell: (info) => <StatusBadge verified={info.getValue()} />,
   }),
   columnHelper.accessor("cookieDomain", {
@@ -196,19 +198,25 @@ export const DomainTable = ({ data }: DomainTableProps) => {
         />
       </Dialog>
 
-      {/* CNAME validator dialog — one instance, target swaps per row */}
+      {/* CNAME validator dialog — one instance, target swaps per row.
+          Re-resolve the target from `data` so the open dialog reflects the
+          refetched verification status instead of a stale click-time snapshot */}
       <CnameValidatorDialog
         open={cnameDialogOpen}
-        domain={cnameTarget}
+        domain={
+          (cnameTarget && data.find((d) => d.domain === cnameTarget.domain)) ||
+          cnameTarget
+        }
         onOpenChange={(open) => {
           setCnameDialogOpen(open);
           if (!open) setCnameTarget(null);
         }}
       />
 
-      {/* Table */}
-      <div className="relative w-full overflow-auto">
-        <table className="w-full text-sm">
+      {/* Table — min width keeps columns readable and scrolls horizontally
+          on narrow screens, matching the repo table's behavior */}
+      <div className="relative w-full overflow-x-auto">
+        <table className="w-full min-w-[640px] text-sm">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="border-b border-border">

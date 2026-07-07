@@ -5,7 +5,6 @@ const NOTIFICATION_SUBPATH = "Notification";
 const PROJECT_SUBPATH = "Project";
 const SERVICE_SUBPATH = "Service";
 const DOMAIN_SUBPATH = "Domain";
-const BUILD_SUBPATH = "Build";
 const DEPLOYMENT_SUBPATH = "Deployment";
 const IAM_SUBPATH = "iam";
 
@@ -46,7 +45,7 @@ export const PROJECT_ENDPOINTS = {
   UPDATE_TENANT_GROUP: `${API_BASE}/${PROJECT_SUBPATH}/UpdateTenantGroup`,
   CONFIGURE: `${API_BASE}/${DOMAIN_SUBPATH}/Configure`,
   REPOS_LIST: `${API_BASE}/${DEPLOYMENT_SUBPATH}/GetReposList`,
-  REPO_UPDATE: `${API_BASE}/${BUILD_SUBPATH}/repo-update`,
+  REPO_UPDATE: `${API_BASE}/${DEPLOYMENT_SUBPATH}/UpdateRepoDomain`,
 } as const;
 
 export const SERVICE_REGISTRY_ENDPOINTS = {

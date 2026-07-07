@@ -57,7 +57,7 @@ export class ProjectService {
     errors: unknown | null;
     isSuccess: boolean;
   }> {
-    return logicClient.post(PROJECT_ENDPOINTS.REPO_UPDATE, payload);
+    return logicClientForOS.post(PROJECT_ENDPOINTS.REPO_UPDATE, payload);
   }
 
   updateTenantGroup(

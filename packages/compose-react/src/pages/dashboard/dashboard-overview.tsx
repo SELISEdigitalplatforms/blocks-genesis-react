@@ -33,7 +33,7 @@ export const DashboardOverview = () => {
   return (
     <main className="flex flex-col gap-6 p-6">
       <RenderConditionally condition={name === "blocks-os"}>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <ProjectOverview
             name={data?.data?.name || ""}
             environment={data?.data?.environment || ""}
