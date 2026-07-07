@@ -1,5 +1,4 @@
 import { Button, Dialog, RenderConditionally } from "@/components";
-import { CnameValidatorDialog } from "@/components/common/cname/dialog";
 import ConfirmationModal from "@/components/common/confirmation-modal";
 import { useUpdateProject } from "@/hooks/use-project";
 import { cn } from "@/lib/utils";
@@ -15,6 +14,7 @@ import { useState } from "react";
 import { DomainFormDialog } from "./domain-form-dialog";
 import { DomainAction } from "./domain.constant";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
+import { CnameValidatorDialog } from "../cname/dialog";
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 

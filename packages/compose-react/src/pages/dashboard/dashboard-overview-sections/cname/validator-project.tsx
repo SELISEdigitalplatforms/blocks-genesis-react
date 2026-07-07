@@ -37,7 +37,8 @@ export const CnameValidatorProject = ({
     <LoadingButton
       onClick={handleValidate}
       disabled={isPending || isDomainVerified}
-      isLoading={isPending}>
+      isLoading={isPending}
+    >
       CNAME Lookup
     </LoadingButton>
   );

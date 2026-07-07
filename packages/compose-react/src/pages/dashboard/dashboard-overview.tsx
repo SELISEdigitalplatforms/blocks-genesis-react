@@ -1,5 +1,4 @@
 import {
-  GitCommandSnippet,
   ProjectCliSnippet,
   ProjectRepoList,
   RenderConditionally,
@@ -13,6 +12,7 @@ import {
   useSwaggerEndpoints,
   DomainsSection,
   CoreApiCard,
+  GitCommandSnippet,
 } from "./dashboard-overview-sections";
 
 export const DashboardOverview = () => {
