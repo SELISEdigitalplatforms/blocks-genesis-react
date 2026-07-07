@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.52
+
+### Patch Changes
+
+- update domain verification and custom domain setting for repos in os
+
 ## 0.0.51
 
 ### Patch Changes
