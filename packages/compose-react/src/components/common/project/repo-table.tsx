@@ -9,7 +9,7 @@ import {
 import { Pencil } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SetCustomDomainDialog } from "./set-custom-domain-dialog";
+import { SetCustomDomainDialog } from "./set-custom-domain/dialog";
 import type { IDomain } from "@/models/project.model";
 import type { IEnvRepository } from "@/models";
 import { cn } from "@/lib";
@@ -97,9 +97,7 @@ const buildColumns = (
 interface ProjectRepoTableProps {
   data: IEnvRepository[];
   domains: IDomain[];
-  /** Tenant id of the project — forwarded as `projectKey` */
   projectKey: string;
-  /** Environment of the project (e.g. "dev") — forwarded as `projectEnv` */
   projectEnv: string;
 }
 
