@@ -103,13 +103,17 @@ const buildColumns = (
 interface ProjectRepoTableProps {
   data: IEnvRepository[];
   domains: IDomain[];
-  projectName?: string;
+  /** Tenant id of the project — forwarded as `projectKey` */
+  projectKey: string;
+  /** Environment of the project (e.g. "dev") — forwarded as `projectEnv` */
+  projectEnv: string;
 }
 
 export const ProjectRepoTable = ({
   data,
   domains,
-  projectName,
+  projectKey,
+  projectEnv,
 }: ProjectRepoTableProps) => {
   const navigate = useNavigate();
 
@@ -145,7 +149,8 @@ export const ProjectRepoTable = ({
         }}
         repo={setTarget}
         domains={domains}
-        projectName={projectName}
+        projectKey={projectKey}
+        projectEnv={projectEnv}
       />
 
       {/* Table */}
