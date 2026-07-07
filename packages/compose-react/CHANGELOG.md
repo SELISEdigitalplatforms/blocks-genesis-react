@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.53
+
+### Patch Changes
+
+- update repositories table ui/ux
+
 ## 0.0.52
 
 ### Patch Changes
