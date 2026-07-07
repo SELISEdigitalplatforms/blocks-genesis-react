@@ -30,17 +30,11 @@ const buildColumns = (
       </span>
     ),
   }),
-  columnHelper.display({
-    id: "deploymentDomain",
+  columnHelper.accessor("defaultDeploymentUrl", {
     header: "Deployment Domain",
-    cell: ({ row }) => {
-      const repo = row.original;
-      const value =
-        repo.customDeploymentUrl && repo.customDeploymentUrl !== ""
-          ? repo.customDeploymentUrl
-          : repo.defaultDeploymentUrl;
-      return <span className="text-sm text-medium-emphasis">{value}</span>;
-    },
+    cell: (info) => (
+      <span className="text-sm text-medium-emphasis">{info.getValue()}</span>
+    ),
   }),
   columnHelper.accessor("customDeploymentUrl", {
     header: "Custom Domain",
