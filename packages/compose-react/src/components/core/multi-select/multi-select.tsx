@@ -1,6 +1,10 @@
 import { CheckIcon, PlusCircledIcon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/core/popover/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/core/popover/popover";
 import { Button } from "@/components/core/button/button";
 import { Separator } from "@/components/core/separator/separator";
 import { Badge } from "@/components/core/badge/badge";
@@ -13,7 +17,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/core/command/command";
-import usePopoverWidth from "@/hooks/use-popover-width";
+import { usePopoverWidth } from "@/hooks/use-popover-width";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface MultiSelectProps {
@@ -23,7 +27,12 @@ interface MultiSelectProps {
   onChange: (selected: string[]) => void;
 }
 
-export function MultiSelect({ label, options, onChange, value: selectedValues }: MultiSelectProps) {
+export function MultiSelect({
+  label,
+  options,
+  onChange,
+  value: selectedValues,
+}: MultiSelectProps) {
   const [buttonRef, popoverWidth] = usePopoverWidth();
 
   const onSelectHandler = (value: string) => {
@@ -39,7 +48,12 @@ export function MultiSelect({ label, options, onChange, value: selectedValues }:
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button ref={buttonRef} variant="outline" size="sm" className="h-8 border-dashed">
+        <Button
+          ref={buttonRef}
+          variant="outline"
+          size="sm"
+          className="h-8 border-dashed"
+        >
           <div className="flex w-full items-center justify-between">
             <div className="flex items-center">
               <PlusCircledIcon className="mr-2 h-4 w-4" />
@@ -48,11 +62,17 @@ export function MultiSelect({ label, options, onChange, value: selectedValues }:
             </div>
             {selectedValues?.length > 0 && (
               <>
-                <Separator orientation="vertical" className="hidden h-4 sm:mx-2 sm:block" />
+                <Separator
+                  orientation="vertical"
+                  className="hidden h-4 sm:mx-2 sm:block"
+                />
 
                 <div className="flex space-x-1">
                   {selectedValues.length > 2 ? (
-                    <Badge variant="secondary" className="rounded-sm px-1 font-normal">
+                    <Badge
+                      variant="secondary"
+                      className="rounded-sm px-1 font-normal"
+                    >
                       {selectedValues.length} selected
                     </Badge>
                   ) : (
@@ -77,7 +97,11 @@ export function MultiSelect({ label, options, onChange, value: selectedValues }:
       <PopoverContent
         className="w-auto p-0 sm:w-full"
         align="start"
-        style={isMobile ? { width: popoverWidth ? `${popoverWidth}px` : "auto" } : undefined}
+        style={
+          isMobile
+            ? { width: popoverWidth ? `${popoverWidth}px` : "auto" }
+            : undefined
+        }
       >
         <Command>
           <CommandInput placeholder={label} />
@@ -87,7 +111,10 @@ export function MultiSelect({ label, options, onChange, value: selectedValues }:
               {options.map((option) => {
                 const isSelected = selectedValues.includes(option.value);
                 return (
-                  <CommandItem key={option.value} onSelect={() => onSelectHandler(option.value)}>
+                  <CommandItem
+                    key={option.value}
+                    onSelect={() => onSelectHandler(option.value)}
+                  >
                     <div
                       className={cn(
                         "border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
