@@ -1,4 +1,4 @@
-import type { RuntimeKey } from "@/layouts";
+import type { RuntimeKey } from "@/types";
 import { getRuntimeEnv } from "@/lib";
 import type { ServiceName } from "@/store";
 

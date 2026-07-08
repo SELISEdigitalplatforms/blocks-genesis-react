@@ -4,5 +4,4 @@ export * from "./dashboard-layout";
 export * from "./oidc-layout";
 export * from "./project-overview-layout";
 export * from "./public-layout";
-export * from "./blocks-app-layout";
 export * from "./layout.types";
