@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/core/toaster/toaster";
 import { BlocksAppLayoutContext } from "@/contexts";
 import {
   CreateAppConfigStore,
@@ -84,6 +85,11 @@ export const BlocksAppLayout = ({ children, config }: BlocksAppLayoutProps) => {
   return (
     <BlocksAppLayoutContext.Provider value={store}>
       {children}
+      {/* Renders the kit's internal use-toast store. Without this, toasts
+          fired by kit components (showErrorToast/showSuccessToast) are
+          written to a store nothing displays — consumer apps mounting their
+          own Toaster render a *different* module instance's store. */}
+      <Toaster />
     </BlocksAppLayoutContext.Provider>
   );
 };
