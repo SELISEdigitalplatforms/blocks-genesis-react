@@ -66,6 +66,7 @@ Everything exported from the main entry:
 | **Pages**      | `CallbackPage`, `ConsolePage`, `DashboardOverviewPage`                                                                     |
 | **Lib**        | `HttpClient`, `cookieStorage`, `motionPresets`, `runtimeEnv`                                                               |
 | **Components** | (Check `./components` subpath export)                                                                                      |
+| **Hooks**      | (Check `./hooks` subpath export for full list, or import directly from main entry)                                         |
 | **Utils**      | (Check `./utils` subpath export)                                                                                           |
 | **Models**     | (Check `./models` subpath export)                                                                                          |
 
