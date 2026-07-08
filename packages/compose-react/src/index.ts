@@ -5,5 +5,6 @@ export * from "./store/index";
 export * from "./pages/index";
 export * from "./lib/index";
 export * from "./components/index";
+export * from "./hooks/index";
 export * from "./utils/index";
 export * from "./models/index";
