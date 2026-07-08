@@ -1,7 +1,12 @@
 import { useState, useEffect, useRef, type RefObject } from "react";
 
-function usePopoverWidth(): [RefObject<HTMLButtonElement>, number | undefined] {
-  const [popoverWidth, setPopoverWidth] = useState<number | undefined>(undefined);
+export function usePopoverWidth(): [
+  RefObject<HTMLButtonElement>,
+  number | undefined,
+] {
+  const [popoverWidth, setPopoverWidth] = useState<number | undefined>(
+    undefined,
+  );
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
@@ -19,5 +24,3 @@ function usePopoverWidth(): [RefObject<HTMLButtonElement>, number | undefined] {
 
   return [buttonRef, popoverWidth];
 }
-
-export default usePopoverWidth;
