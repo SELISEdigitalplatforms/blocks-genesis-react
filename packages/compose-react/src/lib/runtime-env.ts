@@ -1,4 +1,4 @@
-import type { RuntimeKey } from "@/layouts";
+import type { RuntimeKey } from "@/types";
 
 const PLACEHOLDER_PREFIX = "__BLOCKS_";
 
