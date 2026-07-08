@@ -12,6 +12,7 @@ import {
   TooltipTrigger,
 } from "@/components/core/tooltip/tooltip";
 import { environmentOptions } from "@/constants/environment-options";
+import { useStartImpersonation } from "@/hooks/use-impersonation";
 import type { IProject } from "@/models";
 import { useProjectStore } from "@/store/project.store";
 import { ChevronRight, Settings2 } from "lucide-react";
@@ -27,19 +28,26 @@ type ProjectCardProps = {
 export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
   const navigate = useNavigate();
   const { setTenantGroup, setSelectedProject } = useProjectStore();
+  const { mutateAsync: startImpersonation } = useStartImpersonation();
 
   const onConfigureClick = () => {
     setTenantGroup(project.tenantGroupId);
-    navigate("/app/project-overview/environments");
+    navigate(`/app/project-overview/${project.tenantGroupId}/environments`);
   };
 
   const onEnvBadgeClick = async (e: React.MouseEvent, envProject: IProject) => {
     e.stopPropagation();
     try {
+      // Start impersonation for the target env (a clean start — this card lives
+      // on the console where impersonation is terminated). The dashboard's
+      // ImpersonationChecker/Synchronizer hydrate the impersonated context after
+      // navigation, so no full page reload is needed. Reloading here can abort
+      // an in-flight refresh-token rotation, orphaning the rotating RT cookie
+      // and 401'ing the later `stop` call.
+      await startImpersonation({ targeted_tenant_id: envProject.tenantId });
       setTenantGroup(envProject.tenantGroupId);
       setSelectedProject(envProject);
-      navigate("/app/dashboard");
-      // window.location.reload();
+      navigate(`/app/${envProject.itemId}/dashboard`);
     } catch (err) {
       console.error("Failed to switch environment", err);
     }
