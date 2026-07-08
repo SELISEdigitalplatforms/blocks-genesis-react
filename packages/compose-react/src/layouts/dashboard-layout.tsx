@@ -5,7 +5,7 @@ import {
 } from "@/guards/impersonation.guard";
 import type * as React from "react";
 import type { LayoutProps } from "./layout.types";
-import { DashboardLayoutProvider } from "@/contexts/dashboard-layout/dashboard-layout-provider";
+import { DashboardLayoutProvider } from "@/providers/dashboard-layout.provider";
 
 export interface DashboardLayoutProps extends LayoutProps {
   children?: React.ReactNode;
