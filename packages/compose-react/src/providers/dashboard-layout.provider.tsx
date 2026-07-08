@@ -1,7 +1,7 @@
+import { SidebarContext } from "@/contexts";
 import { useIsActiveMenu } from "@/hooks/use-menus";
 import { useIsMobile } from "@/hooks/use-mobile";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { SidebarContext } from "./sidebar.context";
 
 // Below this width (but above the mobile breakpoint handled by
 // useIsMobile), the sidebar auto-collapses to icon-only. At/above it,
