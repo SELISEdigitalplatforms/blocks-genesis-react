@@ -1,4 +1,4 @@
-import { Toaster } from "@/components";
+import { Toaster } from "@/components/core";
 import { BlocksAppLayoutContext } from "@/contexts";
 import {
   CreateAppConfigStore,
