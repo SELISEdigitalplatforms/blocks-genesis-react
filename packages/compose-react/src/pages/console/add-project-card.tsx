@@ -10,7 +10,7 @@ export const AddProjectCard = () => {
     <Card
       onClick={handleClick}
       className={cn(
-        "border-primary/30 hover:border-primary/70 flex h-[160px] items-center justify-center rounded-xl border bg-transparent shadow-sm transition-all duration-200 hover:shadow-md md:py-4",
+        "border-primary/30 hover:border-primary/70 flex h-40 items-center justify-center rounded-xl border bg-transparent shadow-sm transition-all duration-200 hover:shadow-md md:py-4",
         isDisabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
       )}
       style={{ pointerEvents: isDisabled ? "none" : "auto" }}

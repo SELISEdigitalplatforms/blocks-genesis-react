@@ -1,6 +1,6 @@
-import { HttpClient } from "@/lib/http";
+import { HttpClient } from "@/lib/http/client";
 import { getRuntimeEnv } from "@/lib/runtime-env";
-import { resolveBaseUrl } from "./util";
+import { resolveBaseUrl } from "@/lib/http/util";
 
 export const iamClient = new HttpClient({
   baseURL: () => resolveBaseUrl("user"),

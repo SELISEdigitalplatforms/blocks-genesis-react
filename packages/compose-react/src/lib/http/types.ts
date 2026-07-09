@@ -1,4 +1,4 @@
-import type { AuthTokenPair } from "@/models";
+import type { AuthTokenPair } from "@/models/auth.model";
 
 export type HeadersInitValue =
   | [string, string][]
@@ -14,13 +14,6 @@ export type RequestBody =
   | File
   | null
   | undefined;
-//TODO: Need to remove the commented-out code below after testing the new http client and found stable
-// export interface HttpClientOptions {
-//   skipBlocksKey?: boolean;
-//   withCredentials?: boolean;
-//   absoluteUrl?: boolean;
-//   skipTokenRotation?: boolean;
-// }
 
 export interface HttpClientOptions {
   skipBlocksKey?: boolean;
@@ -46,13 +39,6 @@ export type RequestQueueItem<T> = BaseRequestQueueItem<T> & {
   requestOption: RequestOptions;
 };
 
-//TODO: Need to remove the commented-out code below after testing the new http client and found stable
-// export interface HttpClientConfig {
-//   baseURL: string | (() => string);
-//   blocksKey: string | (() => string);
-//   onTokenRefresh?: () => Promise<AuthTokenPair>;
-//   onUnauthorized?: (error: unknown) => void;
-// }
 export interface HttpClientConfig {
   baseURL: string | (() => string);
   blocksKey: string | (() => string);
