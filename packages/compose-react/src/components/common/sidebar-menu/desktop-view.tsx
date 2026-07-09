@@ -39,7 +39,7 @@ export function SidebarMenuDesktop({
           to="console"
           className={cn(
             "relative inline-block cursor-pointer overflow-hidden transition-all",
-            isSidebarOpen ? "h-[36px] w-[72px]" : "h-8 w-8",
+            isSidebarOpen ? "h-9 w-[72px]" : "h-8 w-8",
           )}
         >
           <RenderAlternatively condition={isSidebarOpen}>
