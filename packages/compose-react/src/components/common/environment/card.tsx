@@ -29,11 +29,15 @@ export const EnvironmentCard = ({
 
   const handleCardClick = async (): Promise<void> => {
     try {
+      // Clean start (this card lives where impersonation is terminated). The
+      // dashboard's ImpersonationChecker/Synchronizer hydrate the impersonated
+      // context after navigation — no full page reload. A reload here can abort
+      // an in-flight refresh-token rotation, orphaning the rotating RT cookie
+      // and 401'ing the later `stop` call.
       await mutateAsync({ targeted_tenant_id: project.tenantId });
       setTenantGroup(project.tenantGroupId);
       setSelectedProject(project);
-      navigate("/dashboard");
-      window.location.reload();
+      navigate(`/app/${project.itemId}/dashboard`);
     } catch (err) {
       console.error("Failed to switch environment", err);
     }
