@@ -1,4 +1,9 @@
-import { Button, Dialog, RenderConditionally } from "@/components";
+import {
+  Button,
+  CopyToClipboardButton,
+  Dialog,
+  RenderConditionally,
+} from "@/components";
 import ConfirmationModal from "@/components/common/confirmation-modal";
 import { useUpdateProject } from "@/hooks/use-project";
 import { cn } from "@/lib/utils";
@@ -33,6 +38,25 @@ const StatusBadge = ({ verified }: { verified: boolean }) =>
 
 const columnHelper = createColumnHelper<IDomain>();
 
+const CopyableDomainValue = ({
+  value,
+  muted = false,
+}: {
+  value: string;
+  muted?: boolean;
+}) => (
+  <CopyToClipboardButton textToCopy={value} isHoverable className="min-w-0">
+    <span
+      className={cn(
+        "break-all text-sm",
+        muted ? "text-muted-foreground" : "text-high-emphasis",
+      )}
+    >
+      {value}
+    </span>
+  </CopyToClipboardButton>
+);
+
 const buildColumns = (
   onEdit: (domain: IDomain) => void,
   onDeleteRequest: (domain: IDomain) => void,
@@ -40,11 +64,7 @@ const buildColumns = (
 ) => [
   columnHelper.accessor("domain", {
     header: "Domain",
-    cell: (info) => (
-      <span className="break-all text-sm text-high-emphasis">
-        {info.getValue()}
-      </span>
-    ),
+    cell: (info) => <CopyableDomainValue value={info.getValue()} />,
   }),
   columnHelper.accessor("isDomainVerified", {
     header: "DNS Status",
@@ -52,9 +72,7 @@ const buildColumns = (
   }),
   columnHelper.accessor("cookieDomain", {
     header: "Cookie Domain",
-    cell: (info) => (
-      <span className="text-sm text-muted-foreground">{info.getValue()}</span>
-    ),
+    cell: (info) => <CopyableDomainValue value={info.getValue()} muted />,
   }),
   columnHelper.display({
     id: "actions",

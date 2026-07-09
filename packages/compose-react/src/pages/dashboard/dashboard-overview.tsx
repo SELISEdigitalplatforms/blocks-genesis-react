@@ -1,18 +1,16 @@
+import { ProjectRepoList, RenderConditionally } from "@/components";
 import {
-  ProjectCliSnippet,
-  ProjectRepoList,
-  RenderConditionally,
-} from "@/components";
-import { ProjectActions, ProjectDetail } from "@/components/common/project";
-import { ProjectOverview } from "@/components/common/project";
+  ProjectActions,
+  ProjectDetail,
+  ProjectOverview,
+} from "@/components/common/project";
 import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { useGetProject } from "@/hooks/use-project";
 import { useProjectStore } from "@/store/project.store";
 import {
-  useSwaggerEndpoints,
-  DomainsSection,
   CoreApiCard,
-  GitCommandSnippet,
+  DomainsSection,
+  useSwaggerEndpoints,
 } from "./dashboard-overview-sections";
 
 export const DashboardOverview = () => {
@@ -58,8 +56,6 @@ export const DashboardOverview = () => {
 
       <RenderConditionally condition={name === "blocks-os"}>
         <ProjectRepoList project={data?.data} isLoading={isFetching} />
-        <ProjectCliSnippet />
-        <GitCommandSnippet />
       </RenderConditionally>
       <RenderConditionally condition={name !== "blocks-os"}>
         <CoreApiCard
