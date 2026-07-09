@@ -27,9 +27,8 @@ export function SidebarMenuDesktop({
   const icon = useIcon();
   const allowedMenu = useFilteredMenus(navigationMenus);
 
-  const { isActivePath: isProjectOverviewRoute } = useIsActiveMenu(
-    "/app/project-overview",
-  );
+  const { isActivePath: isProjectOverviewRoute } =
+    useIsActiveMenu("/app/project");
 
   return (
     <div

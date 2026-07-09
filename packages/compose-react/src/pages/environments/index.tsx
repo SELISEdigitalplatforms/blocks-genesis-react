@@ -5,7 +5,7 @@ export const EnvironmentsPage = () => {
   const { isLoading, error } = useInitiateRedirect({
     clientId: getRuntimeEnv("BLOCKS_OS_CLIENT_ID"),
     redirectUri: getRuntimeEnv("BLOCKS_OS_CALLBACK_URL"),
-    forwardedTo: "/app/project-overview/environments",
+    forwardedTo: "/app/project/environments",
   });
 
   if (error)

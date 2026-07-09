@@ -16,7 +16,7 @@ export type ForwardToPaths =
   | "/app/console"
   | "/app/dashboard"
   | "/app/profile"
-  | "/app/project-overview/environments"
+  | "/app/project/environments"
   | "/app/create-project";
 
 export type NavigationNode = NavigationMenuItem | NavigationMenuSeparator;
