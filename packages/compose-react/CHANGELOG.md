@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.57
+
+### Patch Changes
+
+- update: dashboar overview ui and domain table
+
 ## 0.0.56
 
 ### Patch Changes
