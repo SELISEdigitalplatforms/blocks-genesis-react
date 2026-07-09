@@ -1,4 +1,4 @@
-import { ArchiveProject, EditProject, RenderConditionally } from "@/components";
+import { ArchiveProject, RenderConditionally } from "@/components";
 import { Skeleton } from "@/components/core";
 import { useAuthStore } from "@/store";
 
@@ -23,7 +23,7 @@ export const ProjectActions = ({
   return (
     <RenderConditionally condition={isOwner && !isDisabled}>
       <div className="flex items-center gap-2">
-        <EditProject />
+        {/* <EditProject /> */}
         <ArchiveProject />
       </div>
     </RenderConditionally>
@@ -33,7 +33,7 @@ export const ProjectActions = ({
 const ProjectActionsSkeleton = () => {
   return (
     <div className="flex items-center gap-2">
-      <Skeleton className="h-10 w-20 rounded-md" />
+      {/* <Skeleton className="h-10 w-20 rounded-md" /> */}
       <Skeleton className="h-10 w-32 rounded-md" />
     </div>
   );

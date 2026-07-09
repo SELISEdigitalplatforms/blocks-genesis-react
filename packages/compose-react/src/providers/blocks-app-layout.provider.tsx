@@ -1,3 +1,4 @@
+import { Toaster } from "@/components";
 import { BlocksAppLayoutContext } from "@/contexts";
 import {
   CreateAppConfigStore,
@@ -43,6 +44,7 @@ export const BlocksAppLayout = ({ children, config }: BlocksAppLayoutProps) => {
   return (
     <BlocksAppLayoutContext.Provider value={store}>
       {children}
+      <Toaster />
     </BlocksAppLayoutContext.Provider>
   );
 };
