@@ -8,7 +8,7 @@ import type { LayoutProps } from "./layout.types";
 // Menu paths owned by another scope (handled by their own route wrapper) that
 // must NOT be rewritten with this subtree's itemId. Everything else under
 // `/app/` is scoped by default, so new sections need no config.
-const DEFAULT_EXCLUDE_PREFIXES = ["/app/project-overview"];
+const DEFAULT_EXCLUDE_PREFIXES = ["/app/project"];
 
 export type DashboardRouteProps = LayoutProps & {
   /** Where to redirect when the itemId is missing or does not resolve. */
@@ -16,7 +16,7 @@ export type DashboardRouteProps = LayoutProps & {
   /** Route param that holds the project itemId. */
   paramName?: string;
   /**
-   * Menu path prefixes owned by another scope (e.g. project-overview) or global
+   * Menu path prefixes owned by another scope (e.g. project) or global
    * routes, which should NOT carry this subtree's itemId. Every other `/app/*`
    * menu path is scoped automatically.
    */

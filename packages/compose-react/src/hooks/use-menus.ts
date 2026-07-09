@@ -11,9 +11,8 @@ const projectOverviewMenuIds = new Set([
 ]);
 
 export function useFilteredMenus(menus: Menu[]): Menu[] {
-  const { isActivePath: isProjectOverviewRoute } = useIsActiveMenu(
-    "/app/project-overview",
-  );
+  const { isActivePath: isProjectOverviewRoute } =
+    useIsActiveMenu("/app/project");
 
   return useMemo(() => {
     const blockedMenu = import.meta.env.BLOCKS_BLOCKED_MENU || "[]";

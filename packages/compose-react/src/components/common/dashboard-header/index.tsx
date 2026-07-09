@@ -30,7 +30,7 @@ export function DashboardHeader(props: DashboardHeaderProps) {
   const { selectedProject } = useProjectStore();
   const projectName = selectedProject?.name;
   const environment = selectedProject?.environment;
-  const isProjectOverviewRoute = pathname.includes("project-overview");
+  const isProjectOverviewRoute = pathname.includes("/project");
 
   return (
     <>

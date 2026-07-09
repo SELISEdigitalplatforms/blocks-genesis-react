@@ -52,7 +52,7 @@ export function ProjectOverviewRoute({
   redirectPaths,
   navigationMenus,
   forwardedTo,
-  basePath = "/app/project-overview",
+  basePath = "/app/project",
   consolePath = "/app/console",
   paramName = "tenantGroupId",
 }: ProjectOverviewRouteProps) {
