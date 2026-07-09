@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.56
+
+### Patch Changes
+
+- logo update for smaller screens
+
 ## 0.0.55
 
 ### Patch Changes
