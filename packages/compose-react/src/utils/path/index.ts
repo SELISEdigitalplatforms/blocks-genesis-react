@@ -1,34 +1,58 @@
-import type { ForwardToPaths } from "@/types";
+import type { ForwardToPaths, ForwardToStaticPath } from "@/types";
 
-const allowedPaths: ForwardToPaths[] = [
+const DEFAULT_PATH: ForwardToPaths = "/app/console";
+
+/**
+ * Segments directly under `/app/` that name an app page rather than a project
+ * itemId. Anything else in that position is a project id, because project
+ * routes are `/app/<itemId>/...`.
+ */
+const RESERVED_APP_SEGMENTS = new Set([
+  "console",
+  "profile",
+  "create-project",
+  "data-migration",
+  "callback",
+  "dashboard",
+  "project",
+]);
+
+/** App pages that can be forwarded to as-is. */
+const STATIC_PATHS: ForwardToStaticPath[] = [
   "/app/console",
   "/app/dashboard",
   "/app/profile",
-  "/app/project/environments",
   "/app/create-project",
 ];
+
 /**
- * Get the appropriate forwardedTo path based on the current location
- * @param pathname - Optional: The current pathname (useLocation().pathname), defaults to window.location.pathname
- * @returns A valid ForwardToPaths value
+ * Resolve the `forwardedTo` path to hand to the IAM initiate endpoint when
+ * switching between Blocks apps.
+ *
+ * Project routes carry the project id (`/app/<itemId>/...`), so a plain prefix
+ * match against id-less paths never matches and would drop the user on the
+ * console. Instead, detect the project id and forward to that project's
+ * dashboard, which every Blocks app exposes.
+ *
+ * @param pathname Optional current pathname; defaults to `window.location.pathname`.
  */
 export function getForwardedToPath(pathname?: string): ForwardToPaths {
   const currentPath =
     pathname ??
-    (typeof window !== "undefined" ? window.location.pathname : "/app/console");
+    (typeof window !== "undefined" ? window.location.pathname : DEFAULT_PATH);
 
-  // Check if the path is exactly one of the allowed paths
-  if (allowedPaths.includes(currentPath as ForwardToPaths)) {
-    return currentPath as ForwardToPaths;
+  const [appSegment, secondSegment] = currentPath.split("/").filter(Boolean);
+  if (appSegment !== "app" || !secondSegment) return DEFAULT_PATH;
+
+  // `/app/<itemId>/...` — keep the project and land on its dashboard.
+  if (!RESERVED_APP_SEGMENTS.has(secondSegment)) {
+    return `/app/${secondSegment}/dashboard`;
   }
 
-  // If not, check if it starts with any of the allowed paths (for nested paths)
-  for (const allowedPath of allowedPaths) {
-    if (currentPath.startsWith(allowedPath)) {
-      return allowedPath;
-    }
-  }
+  // Project-overview (`/app/project/<tenantGroupId>/...`) is owned by blocks-os;
+  // other apps have no such route, so send them to the console.
+  if (secondSegment === "project") return DEFAULT_PATH;
 
-  // Fallback to /app/console
-  return "/app/console";
+  const staticPath = `/app/${secondSegment}` as ForwardToStaticPath;
+  return STATIC_PATHS.includes(staticPath) ? staticPath : DEFAULT_PATH;
 }
