@@ -83,7 +83,10 @@ export function DashboardRoute({
         itemId,
         excludePrefixes,
       )}
-      forwardedTo={forwardedTo}
+      // Keep the active project when switching Blocks apps. Without this the
+      // app switcher falls back to inferring the path from window.location and
+      // lands on the console, since `/app/<itemId>/...` matches no static path.
+      forwardedTo={forwardedTo ?? `/app/${itemId}/dashboard`}
     >
       <Outlet />
     </DashboardLayout>
