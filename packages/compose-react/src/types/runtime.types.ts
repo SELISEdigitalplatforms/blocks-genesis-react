@@ -36,6 +36,7 @@ export type RuntimeKey =
   | "BLOCKS_GITHUB_SSO_CLIENT_ID"
   | "BLOCKS_OIDC_CLIENT_ID"
   | "BLOCKS_PUBLIC_API_BASE_URL"
+  | "BLOCKS_BASE_DOMAIN"
   | "projectBaseUrl"
   | "userBaseUrl"
   | "notificationBaseUrl";
