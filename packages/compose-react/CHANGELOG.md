@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.58
+
+### Patch Changes
+
+- update: profile route update
+
 ## 0.0.57
 
 ### Patch Changes
