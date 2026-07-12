@@ -17,6 +17,7 @@ import type { IProject } from "@/models";
 import { useProjectStore } from "@/store/project.store";
 import { ChevronRight, Settings2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useProjectOverviewRedirect } from "./use-project-overview-redirect";
 
 const INLINE_LIMIT = 3;
 
@@ -29,10 +30,13 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
   const navigate = useNavigate();
   const { setTenantGroup, setSelectedProject } = useProjectStore();
   const { mutateAsync: startImpersonation } = useStartImpersonation();
+  const { handleClick, isDisabled, isFetching } = useProjectOverviewRedirect({
+    tenantGroupId: project.tenantGroupId,
+  });
 
   const onConfigureClick = () => {
     setTenantGroup(project.tenantGroupId);
-    navigate(`/app/project/${project.tenantGroupId}/environments`);
+    handleClick();
   };
 
   const onEnvBadgeClick = async (e: React.MouseEvent, envProject: IProject) => {
@@ -89,6 +93,7 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
                   size="icon"
                   variant="ghost"
                   className="text-primary hover:bg-primary/10 h-8 w-8 shrink-0 transition-colors"
+                  disabled={isDisabled || isFetching}
                   onClick={onConfigureClick}
                 >
                   <Settings2 size={16} />

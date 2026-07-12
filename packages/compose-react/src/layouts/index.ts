@@ -3,7 +3,5 @@ export * from "./console-layout";
 export * from "./dashboard-layout";
 export * from "./dashboard-route";
 export * from "./oidc-layout";
-export * from "./project-overview-layout";
-export * from "./project-overview-route";
 export * from "./public-layout";
 export * from "./layout.types";

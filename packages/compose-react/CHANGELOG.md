@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.59
+
+### Patch Changes
+
+- fix project overview routing issue
+
 ## 0.0.58
 
 ### Patch Changes
