@@ -47,10 +47,10 @@
       "import": "./dist/hooks/index.js",
       "require": "./dist/hooks/index.cjs"
     },
-    "./http": {
-      "types": "./dist/http/index.d.ts",
-      "import": "./dist/http/index.js",
-      "require": "./dist/http/index.cjs"
+    "./lib": {
+      "types": "./dist/lib/index.d.ts",
+      "import": "./dist/lib/index.js",
+      "require": "./dist/lib/index.cjs"
     },
     "./utils": {
       "types": "./dist/utils/index.d.ts",

@@ -11,7 +11,6 @@ export default defineConfig({
     "guards/index": "src/guards/index.ts",
     "layouts/index": "src/layouts/index.ts",
     "types/index": "src/types/index.ts",
-    "http/index": "src/lib/http/index.ts",
     "hooks/index": "src/hooks/index.ts",
     "utils/index": "src/utils/index.ts",
     "models/index": "src/models/index.ts",
