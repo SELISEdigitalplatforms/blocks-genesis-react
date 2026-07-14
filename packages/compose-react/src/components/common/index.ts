@@ -19,3 +19,6 @@ export * from "./confirmation-modal";
 export * from "./copyable-snippet";
 export * from "./dashboard-section-card";
 export * from "./loading-button";
+export * from "./info-tool-tip";
+export * from "./filter-toolbar";
+export * from "./data-table";

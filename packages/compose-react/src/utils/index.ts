@@ -15,3 +15,4 @@ export * from "./type";
 export * from "./url";
 export * from "./validators";
 export * from "./toast";
+export * from "./equal";

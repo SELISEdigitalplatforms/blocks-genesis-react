@@ -1,4 +1,7 @@
 import { Button } from "@/components";
+import { cn } from "@/lib";
+import type { IEnvRepository } from "@/models";
+import type { IDomain } from "@/models/project.model";
 import { formatFullDate } from "@/utils";
 import {
   createColumnHelper,
@@ -8,20 +11,13 @@ import {
 } from "@tanstack/react-table";
 import { Pencil } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { SetCustomDomainDialog } from "./set-custom-domain/dialog";
-import type { IDomain } from "@/models/project.model";
-import type { IEnvRepository } from "@/models";
-import { cn } from "@/lib";
 
 // ─── Column helper ────────────────────────────────────────────────────────────
 
 const columnHelper = createColumnHelper<IEnvRepository>();
 
-const buildColumns = (
-  onSet: (repo: IEnvRepository) => void,
-  onNavigate: (repoId: string) => void,
-) => [
+const buildColumns = (onSet: (repo: IEnvRepository) => void) => [
   columnHelper.accessor("repoName", {
     header: "Name",
     cell: (info) => (
@@ -58,10 +54,7 @@ const buildColumns = (
       const repo = row.original;
       const isDefaultDate = repo.lastDeploymentDate === "0001-01-01T00:00:00";
       return (
-        <div
-          className="cursor-pointer text-sm text-blue-600 hover:text-blue-800 hover:underline"
-          onClick={() => onNavigate(repo.itemId)}
-        >
+        <div className="text-sm text-medium-emphasis">
           {!repo.lastDeploymentDate || isDefaultDate
             ? "Not deployed"
             : formatFullDate(new Date(repo.lastDeploymentDate))}
@@ -82,8 +75,7 @@ const buildColumns = (
             size="icon"
             title="Edit custom domain"
             disabled={!hasCustomDomain}
-            onClick={() => onSet(repo)}
-          >
+            onClick={() => onSet(repo)}>
             <Pencil className="h-4 w-4 text-muted-foreground" />
           </Button>
         </div>
@@ -107,8 +99,6 @@ export const ProjectRepoTable = ({
   projectKey,
   projectEnv,
 }: ProjectRepoTableProps) => {
-  const navigate = useNavigate();
-
   // ── Set custom domain dialog ────────────────────────────────────────────────
   const [setTarget, setSetTarget] = useState<IEnvRepository | null>(null);
   const [setDialogOpen, setSetDialogOpen] = useState(false);
@@ -118,12 +108,8 @@ export const ProjectRepoTable = ({
     setSetDialogOpen(true);
   };
 
-  const handleNavigate = (repoId: string) => {
-    navigate(`/devops/repo/${repoId}`);
-  };
-
   // ── Table ──────────────────────────────────────────────────────────────────
-  const columns = buildColumns(handleSet, handleNavigate);
+  const columns = buildColumns(handleSet);
   const table = useReactTable({
     data,
     columns,
@@ -157,8 +143,7 @@ export const ProjectRepoTable = ({
                     className={cn(
                       "h-12 px-4 text-left text-xs font-semibold uppercase tracking-wide text-medium-emphasis",
                       header.id === "actions" && "w-32",
-                    )}
-                  >
+                    )}>
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext(),
@@ -173,8 +158,7 @@ export const ProjectRepoTable = ({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="py-10 text-center text-sm text-muted-foreground"
-                >
+                  className="py-10 text-center text-sm text-muted-foreground">
                   No repositories found for this project.
                 </td>
               </tr>
@@ -182,8 +166,7 @@ export const ProjectRepoTable = ({
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="border-b border-border last:border-0 hover:bg-muted/50"
-                >
+                  className="border-b border-border last:border-0 hover:bg-muted/50">
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="p-2 md:px-4 md:py-3">
                       {flexRender(

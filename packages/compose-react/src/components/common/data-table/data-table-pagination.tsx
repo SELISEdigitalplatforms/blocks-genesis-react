@@ -1,5 +1,10 @@
 import * as React from "react";
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/core/button";
@@ -51,8 +56,7 @@ const TablePagination = React.forwardRef<HTMLDivElement, TablePaginationProps>(
           "flex flex-col-reverse items-stretch gap-3 px-2 py-2 sm:flex-row sm:items-center sm:justify-between",
           className,
         )}
-        {...props}
-      >
+        {...props}>
         <div className="text-sm text-muted-foreground">{summary}</div>
 
         <div className="flex flex-wrap items-center gap-4">
@@ -60,8 +64,7 @@ const TablePagination = React.forwardRef<HTMLDivElement, TablePaginationProps>(
             <p className="text-sm font-medium">Rows per page</p>
             <Select
               value={`${pageSize}`}
-              onValueChange={(value) => onPageSizeChange(Number(value))}
-            >
+              onValueChange={(value) => onPageSizeChange(Number(value))}>
               <SelectTrigger className="h-8 w-[78px]">
                 <SelectValue placeholder={pageSize} />
               </SelectTrigger>
@@ -86,8 +89,7 @@ const TablePagination = React.forwardRef<HTMLDivElement, TablePaginationProps>(
               className="hidden size-8 lg:flex"
               onClick={() => onPageChange(0)}
               disabled={!canPrev}
-              aria-label="Go to first page"
-            >
+              aria-label="Go to first page">
               <ChevronsLeft className="size-4" />
             </Button>
             <Button
@@ -96,8 +98,7 @@ const TablePagination = React.forwardRef<HTMLDivElement, TablePaginationProps>(
               className="size-8"
               onClick={() => onPageChange(pageIndex - 1)}
               disabled={!canPrev}
-              aria-label="Go to previous page"
-            >
+              aria-label="Go to previous page">
               <ChevronLeft className="size-4" />
             </Button>
             <Button
@@ -106,8 +107,7 @@ const TablePagination = React.forwardRef<HTMLDivElement, TablePaginationProps>(
               className="size-8"
               onClick={() => onPageChange(pageIndex + 1)}
               disabled={!canNext}
-              aria-label="Go to next page"
-            >
+              aria-label="Go to next page">
               <ChevronRight className="size-4" />
             </Button>
             <Button
@@ -116,8 +116,7 @@ const TablePagination = React.forwardRef<HTMLDivElement, TablePaginationProps>(
               className="hidden size-8 lg:flex"
               onClick={() => onPageChange(pageCount - 1)}
               disabled={!canNext}
-              aria-label="Go to last page"
-            >
+              aria-label="Go to last page">
               <ChevronsRight className="size-4" />
             </Button>
           </div>
