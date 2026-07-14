@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.60
+
+### Patch Changes
+
+- added new common components, env resolving logic, fixed cookie domain for domain form
+
 ## 0.0.59
 
 ### Patch Changes
