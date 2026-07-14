@@ -65,8 +65,7 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
       <button
         key={envProject.environment}
         onClick={(e) => onEnvBadgeClick(e, envProject)}
-        className="group/chip border-primary bg-primary text-primary-foreground hover:text-primary inline-flex cursor-pointer items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium transition-all duration-150 hover:border-blocks-primary-50 hover:bg-blocks-primary-25 active:scale-95"
-      >
+        className="group/chip border-primary bg-primary text-primary-foreground hover:text-primary inline-flex cursor-pointer items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium transition-all duration-150 hover:border-blocks-primary-50 hover:bg-blocks-primary-25 active:scale-95">
         {label}
         <ChevronRight className="h-3 w-3 transition-all duration-150 group-hover/chip:translate-x-0.5" />
       </button>
@@ -94,8 +93,7 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
                   variant="ghost"
                   className="text-primary hover:bg-primary/10 h-8 w-8 shrink-0 transition-colors"
                   disabled={isDisabled || isFetching}
-                  onClick={onConfigureClick}
-                >
+                  onClick={onConfigureClick}>
                   <Settings2 size={16} />
                 </Button>
               </TooltipTrigger>
@@ -117,16 +115,14 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
                 <PopoverTrigger asChild>
                   <button
                     onClick={(e) => e.stopPropagation()}
-                    className="border-border/60 bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground inline-flex cursor-pointer items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors"
-                  >
+                    className="border-border/60 bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground inline-flex cursor-pointer items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors">
                     +{overflowCount} more
                   </button>
                 </PopoverTrigger>
                 <PopoverContent
                   className="w-52 p-1.5"
                   align="start"
-                  onClick={(e) => e.stopPropagation()}
-                >
+                  onClick={(e) => e.stopPropagation()}>
                   <p className="text-muted-foreground px-2 pb-1.5 pt-1 text-[10px] font-semibold uppercase tracking-wider">
                     All environments
                   </p>
@@ -138,8 +134,7 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
                       <button
                         key={p.environment}
                         onClick={(e) => onEnvBadgeClick(e, p)}
-                        className="group/item hover:bg-accent flex w-full items-center justify-between rounded-md px-2 py-1.5 text-sm transition-colors"
-                      >
+                        className="group/item hover:bg-accent flex w-full items-center justify-between rounded-md px-2 py-1.5 text-sm transition-colors">
                         <span className="font-medium">
                           {opt?.label ?? p.environment}
                         </span>

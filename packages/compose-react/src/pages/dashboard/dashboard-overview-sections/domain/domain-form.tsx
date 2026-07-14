@@ -22,6 +22,16 @@ import {
 import { DomainAction } from "./domain.constant";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 
+const getCookieDomain = (domain: string) => {
+  try {
+    const parts = new URL(`https://${domain}`).host.split(".");
+
+    return parts.length > 2 ? parts.slice(1).join(".") : parts.join(".");
+  } catch {
+    return domain;
+  }
+};
+
 interface DomainFormProps {
   /**
    * Pass an existing application to enter edit mode.
@@ -89,8 +99,7 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4"
-      >
+        className="flex flex-col gap-4">
         <FormField
           control={form.control}
           name="domain"
@@ -113,10 +122,14 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
                         // cookieDomain never re-validates, leaving isValid
                         // false (Add button disabled) even though both
                         // fields visibly hold valid values
-                        form.setValue("cookieDomain", e.target.value, {
-                          shouldValidate: true,
-                          shouldDirty: true,
-                        });
+                        form.setValue(
+                          "cookieDomain",
+                          getCookieDomain(e.target.value),
+                          {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          },
+                        );
                       }
                     }}
                   />
@@ -151,8 +164,7 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
             size="sm"
             className="w-20"
             type="submit"
-            disabled={!isFormValid || isPending}
-          >
+            disabled={!isFormValid || isPending}>
             {isEditMode ? "Update" : "Add"}
           </Button>
         </DialogFooter>

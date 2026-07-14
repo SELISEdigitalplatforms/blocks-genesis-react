@@ -52,7 +52,6 @@ export * from "./command";
 export * from "./radio-group";
 export * from "./select";
 export * from "./breadcrumb";
-export * from "./table-pagination";
 export * from "./sheet";
 export * from "./timeline";
 export * from "./import-file-modal";
