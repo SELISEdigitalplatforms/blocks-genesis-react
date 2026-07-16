@@ -1,4 +1,18 @@
 const pad = (num: number): string => num.toString().padStart(2, "0");
+const monthNames = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 /**
  * Formats a date into `Mon DD, YYYY` (with optional time).
@@ -11,20 +25,6 @@ export const formatFullDate = (
   date: Date,
   shouldOmitTime?: boolean,
 ): string => {
-  const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
   const dateStr = `${monthNames[date.getMonth()]} ${pad(date.getDate())}, ${date.getFullYear()}`;
   const timeStr = `${pad(date.getHours())}:${pad(date.getMinutes())}`;
   if (shouldOmitTime) return dateStr;

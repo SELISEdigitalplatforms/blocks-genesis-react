@@ -5,7 +5,7 @@ import { useProjectStore } from "@/store";
 import { Archive } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ConfirmationModal from "@/components/common/confirmation-modal";
+import { ConfirmationModal } from "@/components/common/confirmation-modal";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 
 export const ArchiveProject = () => {

@@ -55,7 +55,7 @@ export const CnameValidatorDialog = ({
           {/* Error banner — only relevant while the domain is unverified */}
           {domain && !domain.isDomainVerified && (
             <div className="flex min-w-0 flex-col gap-1 rounded-sm border border-base-error bg-blocks-error-100 px-4 py-3 text-sm font-normal text-blocks-error-800">
-              <p className="break-words [overflow-wrap:anywhere]">
+              <p className="wrap-break-word">
                 No servers found for &apos;{domain.cookieDomain}&apos;. Run a
                 CNAME lookup to check your DNS configuration.
               </p>
@@ -66,7 +66,7 @@ export const CnameValidatorDialog = ({
           {domain && domain.isDomainVerified && (
             <div className="flex min-w-0 items-center gap-2 rounded-sm border border-green-200 bg-green-50 px-4 py-3 text-sm font-normal text-green-800">
               <CheckCircle2 className="h-4 w-4 shrink-0" />
-              <p className="break-words [overflow-wrap:anywhere]">
+              <p className="wrap-break-word">
                 This domain is verified and ready to use.
               </p>
             </div>
