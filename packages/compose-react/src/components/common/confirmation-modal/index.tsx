@@ -21,7 +21,7 @@ interface ConfirmationModalProps {
     confirm: { disable: boolean };
   };
 }
-const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
+export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   data,
   onConfirm,
   buttonState,
@@ -44,10 +44,10 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       <Button
         size="sm"
         onClick={onConfirm}
-        disabled={buttonState?.confirm.disable}>
+        disabled={buttonState?.confirm.disable}
+      >
         {data.confirmButton || "Yes"}
       </Button>
     </DialogFooter>
   </DialogContent>
 );
-export default ConfirmationModal;

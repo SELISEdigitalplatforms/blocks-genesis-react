@@ -4,7 +4,7 @@ import {
   Dialog,
   RenderConditionally,
 } from "@/components";
-import ConfirmationModal from "@/components/common/confirmation-modal";
+import { ConfirmationModal } from "@/components/common/confirmation-modal";
 import { useUpdateProject } from "@/hooks/use-project";
 import { cn } from "@/lib/utils";
 import type { IDomain } from "@/models/project.model";
