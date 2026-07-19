@@ -42,15 +42,18 @@ export function SidebarMenuDesktop({
             isSidebarOpen ? "h-9 w-[72px]" : "h-8 w-8",
           )}
         >
-          <RenderAlternatively condition={isSidebarOpen}>
-            <Logo
-              lightSrc={appLightLogo}
-              darkSrc={appDarkLogo}
-              alt="Logo"
-              className="h-full w-full object-contain"
-            />
-            {icon}
-          </RenderAlternatively>
+          <RenderAlternatively
+            condition={isSidebarOpen}
+            whenTrue={
+              <Logo
+                lightSrc={appLightLogo}
+                darkSrc={appDarkLogo}
+                alt="Logo"
+                className="h-full w-full object-contain"
+              />
+            }
+            whenFalse={icon}
+          />
         </Link>
         <RenderConditionally condition={isSidebarOpen}>
           <Button

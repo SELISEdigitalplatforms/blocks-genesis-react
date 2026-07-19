@@ -1,10 +1,9 @@
-import { motion } from "framer-motion";
-import { Card } from "@/components/core/card";
-import { Skeleton } from "@/components/core/skeleton";
+import { ProjectCardLoadingSkeleton } from "@/components/common/project";
 import { useGetProjects } from "@/hooks/use-project";
-import { ProjectCard } from "./project-card";
+import { motion } from "framer-motion";
 import { AddProjectCard } from "./add-project-card";
 import ConsoleCreateProject from "./console-create";
+import { ProjectCard } from "./project-card";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.97 },
@@ -20,31 +19,13 @@ const cardVariants = {
   }),
 };
 
-export const ProjectCardLoading = () => {
-  return (
-    <Card className="border-border/60 flex h-[160px] flex-col overflow-hidden rounded-xl border p-4 shadow-sm">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1">
-          <Skeleton className="h-4 w-4/5" />
-          <Skeleton className="mt-1.5 h-4 w-3/5" />
-        </div>
-        <Skeleton className="h-8 w-8 flex-shrink-0 rounded-md" />
-      </div>
-      <div className="mt-auto flex flex-wrap gap-1.5">
-        <Skeleton className="h-5 w-16 rounded-full" />
-        <Skeleton className="h-5 w-16 rounded-full" />
-      </div>
-    </Card>
-  );
-};
-
 const SelfProjectLoading = () => {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {Array(8)
         .fill(null)
         .map((_item, index) => (
-          <ProjectCardLoading key={index} />
+          <ProjectCardLoadingSkeleton key={index} />
         ))}
     </div>
   );

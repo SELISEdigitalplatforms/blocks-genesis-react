@@ -102,9 +102,6 @@ export function EnvironmentList({
           className="group relative flex h-10 w-full items-center justify-center rounded-lg"
         >
           <Globe className="h-5 w-5 text-muted-foreground" />
-          {environment && (
-            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[hsl(var(--blocks-primary-50))] ring-1 ring-background" />
-          )}
           <div className="pointer-events-none absolute left-full top-0 z-20 ml-2 min-w-max whitespace-nowrap rounded bg-gray-300 px-2 py-1 text-xs text-primary opacity-0 transition-opacity group-hover:opacity-100">
             {environment
               ? `${environment}${applicationDomain ? ` · ${applicationDomain}` : ""}`
@@ -127,9 +124,6 @@ export function EnvironmentList({
                   <span className="shrink-0 rounded-sm bg-[hsl(var(--blocks-primary-50))] px-1.5 py-0.5 text-[11px] font-semibold leading-none text-[hsl(var(--high-emphasis))]">
                     {environment}
                   </span>
-                  {/* <span className="min-w-0 truncate text-xs text-muted-foreground">
-                    {applicationDomain || ""}
-                  </span> */}
                 </div>
               ) : (
                 <span className="text-sm leading-tight">
@@ -137,7 +131,6 @@ export function EnvironmentList({
                 </span>
               )}
             </div>
-            {/* <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" /> */}
           </div>
         </DropdownMenuTrigger>
       )}
