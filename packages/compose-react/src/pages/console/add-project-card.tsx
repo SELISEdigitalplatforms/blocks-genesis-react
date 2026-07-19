@@ -2,6 +2,8 @@ import { Card, CardContent } from "@/components/core/card/card";
 import { cn } from "@/lib";
 import { Plus } from "lucide-react";
 import { useCreateProjectRedirect } from "./use-create-project-redirect";
+import { RenderAlternatively } from "@/components/core/render-elements";
+import { ProjectCardLoadingSkeleton } from "@/components";
 
 export const AddProjectCard = () => {
   const { handleClick, isDisabled, isFetching } = useCreateProjectRedirect();
@@ -19,9 +21,13 @@ export const AddProjectCard = () => {
         <div className="flex justify-center">
           <Plus className="text-primary" strokeWidth={2} size={50} />
         </div>
-        <p className="text-primary mt-2 font-bold">
-          {isFetching ? "Redirecting..." : "Add Project"}
-        </p>
+        <RenderAlternatively
+          condition={isFetching}
+          whenTrue={<ProjectCardLoadingSkeleton />}
+          whenFalse={
+            <p className="text-primary mt-2 font-bold">{"Add Project"}</p>
+          }
+        />
       </CardContent>
     </Card>
   );
