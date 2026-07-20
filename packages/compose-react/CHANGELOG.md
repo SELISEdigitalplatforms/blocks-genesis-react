@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.61
+
+### Patch Changes
+
+- fix console to dashboard impersonation glitch issue
+
 ## 0.0.60
 
 ### Patch Changes
