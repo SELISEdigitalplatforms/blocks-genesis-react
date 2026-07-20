@@ -82,7 +82,7 @@ export function ImpersonationSynchronizer({
   const { impersonate, isImpersonated, impersonatedTenantId } =
     useImpersonateStore();
   const { mutateAsync } = useStartImpersonation();
-  const { data: _data } = useGetProjects({});
+  const { data: _data } = useGetProjects({ enabled: true });
 
   const { selectedProject, setSelectedProject, projects, setTenantGroup } =
     useProjectStore();

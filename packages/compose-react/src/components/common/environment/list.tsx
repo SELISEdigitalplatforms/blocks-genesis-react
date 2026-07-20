@@ -29,7 +29,7 @@ export function EnvironmentList({
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { data: projectGroups = [], isLoading } = useGetProjects({
-    tenantGroupId: "",
+    enabled: true,
   });
   const { selectedProject, setSelectedProject } = useProjectStore();
   const { data: projectData } = useGetProject({

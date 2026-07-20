@@ -82,7 +82,7 @@ export function SidebarMenuDesktop({
         <div className="border-b py-1">
           <ProjectList redirectPaths={redirectPaths} collapsed={true} />
           <RenderConditionally condition={!isProjectOverviewRoute}>
-            <EnvironmentList redirectPaths={redirectPaths} />
+            <EnvironmentList redirectPaths={redirectPaths} collapsed={true} />
           </RenderConditionally>
         </div>
       )}
