@@ -8,11 +8,15 @@ import type {
   IValidateCnameProjectPayload,
 } from "@/models";
 
-export const useGetProjects = (options: { tenantGroupId?: string }) => {
+export const useGetProjects = (options: {
+  tenantGroupId?: string;
+  enabled?: boolean;
+}) => {
   const setProjects = useProjectStore((state) => state.setProjects);
   const query = useQuery({
     queryKey: ["identifier", "projects", options?.tenantGroupId],
     queryFn: () => projectService.getProjects(0, 100, options?.tenantGroupId),
+    enabled: !!options?.enabled,
   });
 
   useEffect(() => {

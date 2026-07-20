@@ -36,7 +36,7 @@ export type SelfProjectProps = {
 };
 
 export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
-  const { data, isLoading, isFetching } = useGetProjects({});
+  const { data, isLoading, isFetching } = useGetProjects({ enabled: true });
 
   if (isLoading || isFetching) return <SelfProjectLoading />;
   const projectGroups = data || [];
