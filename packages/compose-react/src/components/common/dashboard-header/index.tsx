@@ -4,7 +4,6 @@ import { useContext } from "react";
 import { useLocation } from "react-router-dom";
 import {
   AppSwitcher,
-  Button,
   ThemeSwitcher,
   UserDropdownMenu,
   Notification,
@@ -14,10 +13,11 @@ import {
   LanguageSelector,
   SidebarMobileView,
   type SideBarMenuProps,
-} from "@/components";
+} from "@/components/common";
 import { useProjectStore } from "@/store";
 import { SidebarContext } from "@/contexts/dashboard-layout/sidebar.context";
 import type { ForwardToPaths } from "@/types";
+import { Button } from "@/components/core/button";
 
 type DashboardHeaderProps = SideBarMenuProps & {
   forwardedTo?: ForwardToPaths;

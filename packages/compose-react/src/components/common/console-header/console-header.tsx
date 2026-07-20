@@ -1,15 +1,15 @@
 import { AppSwitcher } from "@/components/common/app-switcher";
+import { LanguageSelector } from "@/components/common/language-selector";
 import { Logo } from "@/components/common/logo";
+import { Notification } from "@/components/common/notification";
 import { ThemeSwitcher } from "@/components/common/theme-switcher";
+import { UserDropdownMenu } from "@/components/common/user-dropdown-menu";
 import { Button } from "@/components/core/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/core/sheet";
 import { useLogo } from "@/hooks/use-logo";
 import { MenuIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Notification } from "../notification";
-import { UserDropdownMenu } from "../user-dropdown-menu/user-dropdown-menu";
-import { LanguageSelector } from "../language-selector";
 
 export function ConsoleHeader() {
   const { pathname } = useLocation();
@@ -74,9 +74,10 @@ export function ConsoleHeader() {
             </SheetContent>
           </Sheet>
         </div>
-        <div className="hidden sm:flex sm:items-center sm:gap-4">
+        <div className="hidden sm:flex sm:items-center sm:gap-4 pointer-events-auto">
           <ThemeSwitcher />
           <Notification />
+          <LanguageSelector />
           <AppSwitcher forwardedTo="/app/console" />
           <UserDropdownMenu />
         </div>
