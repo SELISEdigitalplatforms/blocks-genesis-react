@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Notification } from "../notification";
 import { UserDropdownMenu } from "../user-dropdown-menu/user-dropdown-menu";
+import { LanguageSelector } from "../language-selector";
 
 export function ConsoleHeader() {
   const { pathname } = useLocation();
@@ -66,6 +67,7 @@ export function ConsoleHeader() {
               <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-3">
                 <ThemeSwitcher />
                 <Notification />
+                <LanguageSelector />
                 <AppSwitcher forwardedTo="/app/console" />
                 <UserDropdownMenu />
               </div>
