@@ -24,8 +24,6 @@ export * from "./use-organization";
 export * from "./use-project";
 export * from "./use-scoped-path";
 export * from "./use-service-registry";
-export * from "./use-sync-selected-project-from-route";
-export * from "./use-sync-tenant-group-from-route";
 export * from "./use-theme";
 export * from "./use-impersonation";
 export * from "./use-toast";

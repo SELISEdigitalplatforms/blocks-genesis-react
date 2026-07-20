@@ -1,7 +1,5 @@
-import { Navigate, Outlet } from "react-router-dom";
-import { AppLoadingSpinner } from "@/components/common/loader-spinner";
 import type { Menu } from "@/types";
-import { useSyncSelectedProjectFromRoute } from "@/hooks";
+import { Navigate, Outlet, useParams } from "react-router-dom";
 import { DashboardLayout } from "./dashboard-layout";
 import type { LayoutProps } from "./layout.types";
 
@@ -12,7 +10,7 @@ const DEFAULT_EXCLUDE_PREFIXES = ["/app/project"];
 
 export type DashboardRouteProps = LayoutProps & {
   /** Where to redirect when the itemId is missing or does not resolve. */
-  consolePath?: string;
+  consolePath?: "/app/console";
   /** Route param that holds the project itemId. */
   paramName?: string;
   /**
@@ -50,16 +48,6 @@ const withScopedItemId = (
     return { ...menu, path, children };
   });
 
-/**
- * Route element for the impersonated subtree `/app/:itemId/*` (dashboard,
- * secret-management, idp, lmt, api-settings).
- *
- * Makes the URL the source of truth for the impersonated project: hydrates
- * `selectedProject` from the `:itemId` param by fetching it (see
- * {@link useSyncSelectedProjectFromRoute}), redirects to the console when the
- * id is missing or does not resolve, and feeds id-scoped menu paths to the
- * shared layout. Child routes render through its `<Outlet />`.
- */
 export function DashboardRoute({
   redirectPaths,
   navigationMenus,
@@ -68,12 +56,10 @@ export function DashboardRoute({
   paramName = "itemId",
   excludePrefixes = DEFAULT_EXCLUDE_PREFIXES,
 }: DashboardRouteProps) {
-  const { itemId, project, isLoading, isError } =
-    useSyncSelectedProjectFromRoute(paramName);
+  const params = useParams();
+  const itemId = params[paramName] ?? null;
 
   if (!itemId) return <Navigate to={consolePath} replace />;
-  if (isLoading) return <AppLoadingSpinner />;
-  if (isError || !project) return <Navigate to={consolePath} replace />;
 
   return (
     <DashboardLayout
