@@ -1,5 +1,5 @@
+import { type Theme } from "@/lib/theme";
 import { useAppSettingsStore } from "@/store";
-import { applyTheme } from "@/lib/theme";
 
 export function useTheme() {
   const {
@@ -9,19 +9,16 @@ export function useTheme() {
     setSystemTheme,
   } = useAppSettingsStore();
 
-  const resolvedTheme: Exclude<import("@/lib/theme").Theme, "system"> =
+  const resolvedTheme: Exclude<Theme, "system"> =
     theme === "system" ? systemTheme : theme;
 
-  const setTheme = (newTheme: import("@/lib/theme").Theme) => {
-    // Resolve before applying so applyTheme always receives "light" | "dark"
-    const resolved = newTheme === "system" ? systemTheme : newTheme;
+  const setTheme = (newTheme: Theme) => {
     setSettings({ theme: newTheme });
-    applyTheme(resolved);
-    // If switching to system, sync systemTheme from app immediately
+    // applyTheme(resolved) ← remove this; ThemeProvider's useEffect handles it
     if (newTheme === "system") {
       const current = window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? ("dark" as const)
-        : ("light" as const);
+        ? "dark"
+        : "light";
       setSystemTheme(current);
     }
   };

@@ -8,5 +8,13 @@ export function getSystemTheme(): Exclude<Theme, "system"> {
 }
 
 export function applyTheme(resolvedTheme: Exclude<Theme, "system">) {
-  document.documentElement.classList.toggle("dark", resolvedTheme === "dark");
+  const root = document.documentElement;
+  const apply = () => root.classList.toggle("dark", resolvedTheme === "dark");
+
+  if (!document.startViewTransition) {
+    apply();
+    return;
+  }
+
+  document.startViewTransition(apply);
 }

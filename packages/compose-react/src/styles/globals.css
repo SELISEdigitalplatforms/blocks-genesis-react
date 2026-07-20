@@ -410,3 +410,29 @@
     outline: none;
   }
 }
+
+::view-transition-old(root) {
+  /* Old state stays frozen as a static screenshot — no animation */
+  animation: none;
+}
+
+::view-transition-new(root) {
+  /* New fully-rendered theme wipes in — old colors never blend with new */
+  animation: theme-wipe-in 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes theme-wipe-in {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0% 0 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}

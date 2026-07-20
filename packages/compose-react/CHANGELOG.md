@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.62
+
+### Patch Changes
+
+- fix theme changes
+
 ## 0.0.61
 
 ### Patch Changes
