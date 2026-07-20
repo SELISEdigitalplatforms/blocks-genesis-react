@@ -66,23 +66,26 @@ export function SidebarMenuDesktop({
           </Button>
         </RenderConditionally>
       </div>
-      {!isProjectOverviewRoute &&
-        (isSidebarOpen ? (
-          <div className="border-b px-2 pb-2 pt-2">
-            <p className="mb-1 px-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              Workspace
-            </p>
-            <div className="space-y-0.5">
-              <ProjectList redirectPaths={redirectPaths} />
+      {isSidebarOpen ? (
+        <div className="border-b px-2 pb-2 pt-2">
+          <p className="mb-1 px-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Workspace
+          </p>
+          <div className="space-y-0.5">
+            <ProjectList redirectPaths={redirectPaths} />
+            <RenderConditionally condition={!isProjectOverviewRoute}>
               <EnvironmentList redirectPaths={redirectPaths} />
-            </div>
+            </RenderConditionally>
           </div>
-        ) : (
-          <div className="border-b py-1">
-            <ProjectList redirectPaths={redirectPaths} collapsed={true} />
-            <EnvironmentList redirectPaths={redirectPaths} collapsed={true} />
-          </div>
-        ))}
+        </div>
+      ) : (
+        <div className="border-b py-1">
+          <ProjectList redirectPaths={redirectPaths} collapsed={true} />
+          <RenderConditionally condition={!isProjectOverviewRoute}>
+            <EnvironmentList redirectPaths={redirectPaths} />
+          </RenderConditionally>
+        </div>
+      )}
       <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
         <nav className={cn("grid w-full items-start gap-1 text-sm")}>
           {allowedMenu.map((menu) => (
