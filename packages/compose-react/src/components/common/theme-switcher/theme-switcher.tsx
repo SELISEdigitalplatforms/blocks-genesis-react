@@ -15,11 +15,11 @@ const OPTIONS: Array<{
 ];
 
 export function ThemeSwitcher() {
-  const { resolvedTheme, setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
   return (
     <Tabs
-      value={resolvedTheme}
+      value={theme}
       onValueChange={(value) => setTheme(value as ThemeOption)}
     >
       <TabsList className="h-auto gap-0.5 rounded-md !bg-transparent p-0.5">
