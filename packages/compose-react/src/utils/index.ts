@@ -17,3 +17,4 @@ export * from "./validators";
 export * from "./toast";
 export * from "./equal";
 export * from "./params";
+export * from "./time";
