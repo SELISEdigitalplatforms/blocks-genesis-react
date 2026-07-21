@@ -1,7 +1,7 @@
 import type { FuseResult } from "fuse.js";
 import Fuse from "fuse.js";
 import { useMemo } from "react";
-import type { FuseSearchOptions } from "./use-fuse/types";
+import type { FuseSearchOptions } from "./types";
 
 export function useDebouncedFuseFilter<T extends Record<string, unknown>>(
   items: T[],
