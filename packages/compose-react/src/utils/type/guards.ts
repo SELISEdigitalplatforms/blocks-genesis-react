@@ -1,35 +1,47 @@
 /**
  * Checks whether a value is a string.
+ * @param val Value to check.
+ * @returns Whether the value is a string.
  */
 export const isString = (val: unknown): val is string =>
   typeof val === "string";
 
 /**
  * Checks whether a value is a finite number.
+ * @param val Value to check.
+ * @returns Whether the value is a finite number.
  */
 export const isNumber = (val: unknown): val is number =>
   typeof val === "number" && !isNaN(val);
 
 /**
  * Checks whether a value is a boolean.
+ * @param val Value to check.
+ * @returns Whether the value is a boolean.
  */
 export const isBoolean = (val: unknown): val is boolean =>
   typeof val === "boolean";
 
 /**
  * Checks whether a value is `null` or `undefined`.
+ * @param val Value to check.
+ * @returns Whether the value is `null` or `undefined`.
  */
 export const isNullish = (val: unknown): val is null | undefined =>
   val === null || val === undefined;
 
 /**
  * Checks whether a value is a non-array object.
+ * @param val Value to check.
+ * @returns Whether the value is a non-array object.
  */
 export const isObject = (val: unknown): val is Record<string, unknown> =>
   val !== null && typeof val === "object" && !Array.isArray(val);
 
 /**
  * Checks whether a value is a plain object (`{}` or `Object.create(null)`).
+ * @param val Value to check.
+ * @returns Whether the value is a plain object.
  */
 export const isPlainObject = (val: unknown): val is Record<string, unknown> => {
   if (!isObject(val)) return false;
@@ -39,6 +51,8 @@ export const isPlainObject = (val: unknown): val is Record<string, unknown> => {
 
 /**
  * Checks whether a value is promise-like.
+ * @param val Value to check.
+ * @returns Whether the value is promise-like.
  */
 export const isPromise = <T = unknown>(val: unknown): val is Promise<T> =>
   isObject(val) &&

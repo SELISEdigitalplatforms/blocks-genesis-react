@@ -103,7 +103,7 @@ export const isPostalCode = (
  * @param date Date input.
  * @returns `true` when valid and above lower-bound date.
  */
-export const checkValidDate = (date: string | Date) => {
+export const isValidDate = (date: string | Date) => {
   const isValidDate = isValid(new Date(date));
   if (!isValidDate) return false;
   const targetDate = new Date("1900-01-01");
