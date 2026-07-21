@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.64
+
+### Patch Changes
+
+- completed adding common utils
+
 ## 0.0.63
 
 ### Patch Changes
