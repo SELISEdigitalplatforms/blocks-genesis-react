@@ -1,5 +1,11 @@
 # @seliseblocks/blocks-kit
 
+## 0.0.65
+
+### Patch Changes
+
+- enabled studio in app switcher and added some common hooks
+
 ## 0.0.64
 
 ### Patch Changes

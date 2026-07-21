@@ -5,5 +5,6 @@ export const useGetMyOrganizations = () => {
   return useQuery({
     queryKey: ["organizations", "my"],
     queryFn: () => iamService.organization.getMyOrganizations(),
+    enabled: false,
   });
 };

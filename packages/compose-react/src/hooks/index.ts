@@ -13,7 +13,7 @@ export * from "./use-popover-width";
 export * from "./utils/fuse-search";
 export * from "./use-logout";
 export * from "./use-blocks-app-config-store";
-export * from "./use-debounced-fuse-filter";
+export * from "./use-fuse/use-debounced-fuse-filter";
 export * from "./use-icon";
 export * from "./use-initiate";
 export * from "./use-language-switcher";

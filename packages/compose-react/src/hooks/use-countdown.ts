@@ -19,7 +19,7 @@ export type UseCountdownOptions = {
  * @param options Countdown behavior options.
  * @returns Countdown state and control actions.
  */
-export const useCountdown = (
+export const useCountDown = (
   initialSeconds: number,
   options: UseCountdownOptions = {},
 ) => {
@@ -60,8 +60,3 @@ export const useCountdown = (
     reset,
   };
 };
-
-/**
- * Backward-compatible alias for `useCountdown`.
- */
-export const useCountDown = useCountdown;

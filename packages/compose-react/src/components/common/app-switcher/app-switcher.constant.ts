@@ -129,9 +129,7 @@ const APP_SWITCHER_DATA: BlocksApp[] = [
     redirectUri: "BLOCKS_STUDIO_CALLBACK_URL",
     initiateUrl: "",
     isLoading: false,
-    isDisabled: () => {
-      return !window.location.origin.includes("dev");
-    },
+    isDisabled: false,
   },
 ];
 
