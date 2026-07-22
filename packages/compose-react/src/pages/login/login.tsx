@@ -1,7 +1,8 @@
 import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { useState } from "react";
-import { BlocksLoginPage, type LoginCarouselItem } from "./blocks-login";
+import { BlocksLoginPage } from "./blocks-login";
 import { BLOCKS_PRODUCTS } from "./login.constant";
+import type { LoginCarouselItem } from "./login.types";
 
 export const LoginPage = () => {
   const config = useBlocksAppConfigStore((state) => state.getConfig());

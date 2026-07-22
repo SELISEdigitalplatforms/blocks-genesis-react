@@ -1,5 +1,5 @@
 import { type ReactNode, useRef } from "react";
-import { FilterControls } from ".";
+import { FilterControls } from "./filter-controls";
 import { ResetButton } from "./reset-button/reset-button";
 import {
   Sheet,
@@ -82,7 +82,8 @@ export const FilterToolBarMobileView = ({
             <Button
               variant="outline"
               size="sm"
-              className="relative h-8 w-8 p-0">
+              className="relative h-8 w-8 p-0"
+            >
               <Filter className="h-4 w-4" />
               {/* {activeFilter > 0 && (
               <Badge className="absolute -right-2 -top-2 h-4 w-4 px-1 text-xs font-medium">
@@ -94,7 +95,8 @@ export const FilterToolBarMobileView = ({
           <SheetContent
             side="right"
             className="w-full"
-            aria-describedby="filter-description">
+            aria-describedby="filter-description"
+          >
             <SheetTitle className="mb-4">Filter</SheetTitle>
             <SheetDescription></SheetDescription>
             <div className="flex flex-col space-y-4">

@@ -4,49 +4,11 @@ import { Button } from "@/components/core/button";
 import { LoginHeader } from "@/components/common/login-header/login-header";
 import { blocksLoginStyles } from "./login.styles";
 import { DEFAULT_BLOCKS_PRODUCTS } from "./login.constant";
-
-export interface BlocksProduct {
-  name: string;
-  appName: string;
-  badge: string;
-  tagline: string;
-  descriptionTitle: string;
-  keywords: string[];
-  shortDescription: string;
-  description: string;
-  featureChips: string[];
-  url: string;
-  cta: string;
-}
-
-export interface LoginCarouselStack {
-  name: string;
-  available: boolean;
-  links: { label: string; to: string }[];
-}
-
-export interface LoginCarouselItem extends BlocksProduct {
-  badge: string;
-  title: string;
-  description: string;
-  features: string[];
-  url: string;
-  cta: string;
-  stacks?: LoginCarouselStack[];
-}
-
-export interface BlocksLoginPageProps {
-  name: string;
-  onLogin: () => void | Promise<void>;
-  isLoading?: boolean;
-  eyebrow?: string;
-  keywords?: string[];
-  keywordPrefix?: string;
-  loginLabel?: string;
-  docsUrl?: string;
-  footerLink?: { label: string; url: string };
-  carouselItems?: LoginCarouselItem[];
-}
+import type {
+  BlocksLoginPageProps,
+  BlocksProduct,
+  LoginCarouselItem,
+} from "./login.types";
 
 /** Split "blocks IAM" -> ["blocks", "IAM"] so the hero can render two lines. */
 function splitAppName(appName: string): [string, string] {
