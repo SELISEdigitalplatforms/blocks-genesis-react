@@ -31,37 +31,31 @@ export const useGetProjects = (options: {
 
 export const useGetProject = () => {
   const selectedProject = useProjectStore((state) => state.selectedProject);
-  const {
-    isInitialized,
-    isImpersonated,
-    impersonatedTenantId,
-    originalTenantId,
-  } = useImpersonateStore();
+  const { isImpersonated, impersonatedTenantId, originalTenantId } =
+    useImpersonateStore();
 
   // The endpoint answers "the project of whoever I am", so the tenant the token is
   // scoped to identifies the response — key the cache on that, not on an id the
-  // server never reads.
-  //
-  // Compared case-insensitively: the store is written from the impersonation
-  // status endpoint, and tenant ids reach us in inconsistent case (some projects
-  // report `A8D3007A…`, others `Dd2394ff2…`). A case-only difference here would
-  // silently disable the query and blank the dashboard, so do not tighten this
-  // to `===` without first confirming both sides agree byte-for-byte.
+  // server never reads. All consumers mount inside ImpersonationChecker, which
+  // renders nothing until the store is populated, so this is resolved by the time
+  // the query runs.
   const tokenTenantId = isImpersonated
     ? impersonatedTenantId
     : originalTenantId;
-  const sameTenant =
-    Boolean(tokenTenantId) &&
-    selectedProject?.tenantId?.toLowerCase() === tokenTenantId?.toLowerCase();
 
   return useQuery({
     queryKey: ["identifier", "project", tokenTenantId],
     queryFn: () => projectService.getProject(),
-    // Only ask when the token's tenant IS the selected project. This preserves the
-    // old `enabled: Boolean(projectId)` guard: on routes where impersonation has
-    // been terminated no project is selected, so the query must stay idle rather
-    // than fetch — and render — the root tenant's project.
-    enabled: isInitialized && sameTenant,
+    // Deliberately unchanged from the previous `Boolean(options.projectId)`, which
+    // was fed `selectedProject?.itemId`. It is load-bearing: on project-overview
+    // routes ImpersonationTerminator drops the token to root and no project is
+    // selected, and this keeps the query idle there. Tightening it to also require
+    // the token's tenant to match the selected project is the stricter, more
+    // correct rule — but it depends on `selectedProject.tenantId` and the
+    // impersonation status endpoint agreeing byte-for-byte, which is unverified.
+    // Getting that wrong disables the query permanently and blanks
+    // dashboard-overview (`if (!data?.data) return null`).
+    enabled: Boolean(selectedProject?.itemId),
   });
 };
 
