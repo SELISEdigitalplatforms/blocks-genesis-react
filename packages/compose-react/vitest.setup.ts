@@ -48,6 +48,10 @@ if (!Element.prototype.scrollIntoView) {
   Element.prototype.scrollIntoView = () => {};
 }
 
+if (!Element.prototype.scrollTo) {
+  Element.prototype.scrollTo = () => {};
+}
+
 // The app reads runtime configuration from window.__BLOCKS_ENV__ first (see
 // src/lib/runtime-env.ts). Provide benign test values so modules that resolve
 // service base URLs at import time do not throw when import.meta.env is absent.
