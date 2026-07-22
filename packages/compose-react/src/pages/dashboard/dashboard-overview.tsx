@@ -1,7 +1,6 @@
 import { ProjectDetail } from "@/components/common/project";
 import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { useGetProject } from "@/hooks/use-project";
-import { useProjectStore } from "@/store/project.store";
 import {
   CoreApiCard,
   useSwaggerEndpoints,
@@ -9,11 +8,7 @@ import {
 
 export const DashboardOverview = () => {
   const { name } = useBlocksAppConfigStore((state) => state.config);
-  const { itemId } = useProjectStore().selectedProject || {
-    itemId: "",
-    tenantId: "",
-  };
-  const { data, isFetching } = useGetProject({ projectId: itemId });
+  const { data, isFetching } = useGetProject();
   const {
     endpoints,
     isLoading: isLoadingEndpoints,
