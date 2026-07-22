@@ -1,10 +1,19 @@
 import { Button } from "@/components/core/button";
-import { useLogout } from "@/hooks/use-auth-api";
+import { useLogout } from "@/hooks/use-logout";
 import { getQueryClient } from "@/providers/query.provider";
 import { useAppSettingsStore } from "@/store";
 import { useAuthStore } from "@/store/auth.store";
 import { useProjectStore } from "@/store/project.store";
 
+/**
+ * Renders a "Logout" button that fully tears down the authenticated session.
+ *
+ * On click it calls the logout mutation, then clears the project store,
+ * auth state, and tokens, resets the language setting, empties the query
+ * cache, and finally redirects to the login page. The button is disabled
+ * while the logout request is in flight. Any failure is logged and leaves
+ * the user on the current page (no redirect).
+ */
 export function LogOutButton() {
   const queryClient = getQueryClient();
   const { resetProjectStore } = useProjectStore();
