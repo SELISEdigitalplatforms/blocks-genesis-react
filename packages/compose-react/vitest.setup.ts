@@ -48,6 +48,21 @@ if (!Element.prototype.scrollIntoView) {
   Element.prototype.scrollIntoView = () => {};
 }
 
+// The app reads runtime configuration from window.__BLOCKS_ENV__ first (see
+// src/lib/runtime-env.ts). Provide benign test values so modules that resolve
+// service base URLs at import time do not throw when import.meta.env is absent.
+if (!(window as unknown as { __BLOCKS_ENV__?: unknown }).__BLOCKS_ENV__) {
+  (window as unknown as { __BLOCKS_ENV__: Record<string, string> }).__BLOCKS_ENV__ =
+    new Proxy(
+      {},
+      {
+        get: (_target, prop) =>
+          typeof prop === "string" ? "https://test.local" : undefined,
+        has: () => true,
+      },
+    ) as Record<string, string>;
+}
+
 if (!Element.prototype.hasPointerCapture) {
   Element.prototype.hasPointerCapture = () => false;
   Element.prototype.setPointerCapture = () => {};
