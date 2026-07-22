@@ -1,15 +1,15 @@
-# @seliseblocks/blocks-kit
+# @selisedigitalplatforms/blocks-kit
 
 A comprehensive React app-shell composition package with reusable components, hooks, layouts, and utilities for building blocks applications.
 
 ## Installation
 
 ```bash
-npm install @seliseblocks/blocks-kit
+npm install @selisedigitalplatforms/blocks-kit
 # or
-yarn add @seliseblocks/blocks-kit
+yarn add @selisedigitalplatforms/blocks-kit
 # or
-pnpm add @seliseblocks/blocks-kit
+pnpm add @selisedigitalplatforms/blocks-kit
 ```
 
 ## Peer Dependencies
@@ -38,7 +38,7 @@ This package intentionally does **not** ship CSS files. Host applications are re
 ## Quick Start
 
 ```tsx
-import { BlocksAppLayout, AuthGuard, useToast, Button } from "@seliseblocks/blocks-kit";
+import { BlocksAppLayout, AuthGuard, useToast, Button } from "@selisedigitalplatforms/blocks-kit";
 
 function App() {
   return (
@@ -53,7 +53,7 @@ function App() {
 
 ## Package Exports
 
-### Main Entry Point (`@seliseblocks/blocks-kit`)
+### Main Entry Point (`@selisedigitalplatforms/blocks-kit`)
 
 Everything exported from the main entry:
 
@@ -72,7 +72,7 @@ Everything exported from the main entry:
 
 ### Subpath Exports
 
-#### `@seliseblocks/blocks-kit/components`
+#### `@selisedigitalplatforms/blocks-kit/components`
 
 All UI components organized into:
 
@@ -82,21 +82,21 @@ All UI components organized into:
 - **Common Components**:
   - `AppSwitcher`, `ArchiveProject`, `BackToConsoleNavigator`, `ConfirmationModal`, `ConsoleHeader`, `CopyableSnippet`, `DashboardHeader`, `DashboardSectionCard`, `EnvironmentCard`, `EnvironmentList`, `EnvironmentSelected`, `ErrorBoundary`, `ErrorDisplay`, `LanguageSelector`, `LoaderSpinner`, `LoadingButton`, `LoginHeader`, `Logo`, `LogoutButton`, `ModeToggle`, `Notification`, `NotificationBell`, `NotificationHeader`, `NotificationItem`, `NotificationList`, `ProjectList`, `ProjectDetail`, `ProjectEdit`, `ProjectActions`, `SidebarMenu`, `ThemeSwitcher`, `UserDropdownMenu`, and more
 
-#### `@seliseblocks/blocks-kit/hooks`
+#### `@selisedigitalplatforms/blocks-kit/hooks`
 
 ```tsx
-import { useBoolean, useCopyToClipboard, useCountdown, useDebounced, useDebouncedFuseFilter, useFuseIndex, useFuseSearch, useLanguage, useLanguageSwitcher, useLogo, useLogout, useMediaQuery, useMenus, useMobile, useNotifications, useOrganization, usePathSegments, usePopoverWidth, useProject, useQueryClientKit, useQueryStatesKit, useServiceRegistry, useTheme, useImpersonation, useToast, useIcon, useInitiate, useBlocksAppConfigStore } from "@seliseblocks/blocks-kit/hooks";
+import { useBoolean, useCopyToClipboard, useCountdown, useDebounced, useDebouncedFuseFilter, useFuseIndex, useFuseSearch, useLanguage, useLanguageSwitcher, useLogo, useLogout, useMediaQuery, useMenus, useMobile, useNotifications, useOrganization, usePathSegments, usePopoverWidth, useProject, useQueryClientKit, useQueryStatesKit, useServiceRegistry, useTheme, useImpersonation, useToast, useIcon, useInitiate, useBlocksAppConfigStore } from "@selisedigitalplatforms/blocks-kit/hooks";
 ```
 
-#### `@seliseblocks/blocks-kit/store`
+#### `@selisedigitalplatforms/blocks-kit/store`
 
 Zustand store for blocks app configuration.
 
-#### `@seliseblocks/blocks-kit/providers`
+#### `@selisedigitalplatforms/blocks-kit/providers`
 
 React context providers for app state.
 
-#### `@seliseblocks/blocks-kit/guards`
+#### `@selisedigitalplatforms/blocks-kit/guards`
 
 Route guard components:
 
@@ -105,7 +105,7 @@ Route guard components:
 - `ProtectedGuard`
 - `PublicGuard`
 
-#### `@seliseblocks/blocks-kit/layouts`
+#### `@selisedigitalplatforms/blocks-kit/layouts`
 
 Layout components:
 
@@ -117,7 +117,7 @@ Layout components:
 - `ProjectOverviewLayout`
 - `PublicLayout`
 
-#### `@seliseblocks/blocks-kit/http`
+#### `@selisedigitalplatforms/blocks-kit/http`
 
 HTTP client utilities:
 
@@ -126,21 +126,21 @@ HTTP client utilities:
 - `createHttpClient`
 - `httpClient` (default instance)
 
-#### `@seliseblocks/blocks-kit/utils`
+#### `@selisedigitalplatforms/blocks-kit/utils`
 
 Utility functions for common operations.
 
-#### `@seliseblocks/blocks-kit/models`
+#### `@selisedigitalplatforms/blocks-kit/models`
 
 TypeScript interfaces and types:
 
 - `IAuth`, `IImpersonation`, `INotification`, `IOrganization`, `IProject`, `IServiceRegistry`, `IUser`
 
-#### `@seliseblocks/blocks-kit/types`
+#### `@selisedigitalplatforms/blocks-kit/types`
 
 Shared TypeScript types.
 
-#### `@seliseblocks/blocks-kit/pages`
+#### `@selisedigitalplatforms/blocks-kit/pages`
 
 Pre-built page components:
 
@@ -153,7 +153,7 @@ Pre-built page components:
 ### Using a Core Component
 
 ```tsx
-import { Button, Card } from "@seliseblocks/blocks-kit/components";
+import { Button, Card } from "@selisedigitalplatforms/blocks-kit/components";
 
 function MyComponent() {
   return (
@@ -167,7 +167,7 @@ function MyComponent() {
 ### Using Hooks
 
 ```tsx
-import { useToast, useBoolean } from "@seliseblocks/blocks-kit/hooks";
+import { useToast, useBoolean } from "@selisedigitalplatforms/blocks-kit/hooks";
 
 function MyComponent() {
   const { toast } = useToast();
@@ -189,7 +189,7 @@ function MyComponent() {
 ### Using Layouts and Guards
 
 ```tsx
-import { BlocksAppLayout, DashboardLayout, ProtectedGuard } from "@seliseblocks/blocks-kit";
+import { BlocksAppLayout, DashboardLayout, ProtectedGuard } from "@selisedigitalplatforms/blocks-kit";
 
 function App() {
   return (
@@ -207,7 +207,7 @@ function App() {
 ### Using HTTP Client
 
 ```tsx
-import { httpClient } from "@seliseblocks/blocks-kit/http";
+import { httpClient } from "@selisedigitalplatforms/blocks-kit/http";
 
 async function fetchData() {
   const data = await httpClient.get("/api/resource");
