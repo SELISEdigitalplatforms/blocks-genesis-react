@@ -33,9 +33,7 @@ export function ProjectList({
     enabled: true,
   });
   const { selectedProject, setSelectedProject } = useProjectStore();
-  const { data: projectData } = useGetProject({
-    projectId: selectedProject?.itemId || "",
-  });
+  const { data: projectData } = useGetProject();
   const pendingProjectRef = useRef<IProject | null>(null);
 
   const redirectRegexMap = useMemo(

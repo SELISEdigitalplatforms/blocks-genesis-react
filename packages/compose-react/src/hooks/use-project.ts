@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { projectService } from "@/services/project.service";
 import { useProjectStore } from "@/store/project.store";
+import { useImpersonateStore } from "@/store/impersonate.store";
 import type {
   IUpdateProjectPayload,
   IUpdateTenantGroupPayload,
@@ -28,11 +29,39 @@ export const useGetProjects = (options: {
   return query;
 };
 
-export const useGetProject = (options: { projectId: string }) => {
+export const useGetProject = () => {
+  const selectedProject = useProjectStore((state) => state.selectedProject);
+  const {
+    isInitialized,
+    isImpersonated,
+    impersonatedTenantId,
+    originalTenantId,
+  } = useImpersonateStore();
+
+  // The endpoint answers "the project of whoever I am", so the tenant the token is
+  // scoped to identifies the response — key the cache on that, not on an id the
+  // server never reads.
+  //
+  // Compared case-insensitively: the store is written from the impersonation
+  // status endpoint, and tenant ids reach us in inconsistent case (some projects
+  // report `A8D3007A…`, others `Dd2394ff2…`). A case-only difference here would
+  // silently disable the query and blank the dashboard, so do not tighten this
+  // to `===` without first confirming both sides agree byte-for-byte.
+  const tokenTenantId = isImpersonated
+    ? impersonatedTenantId
+    : originalTenantId;
+  const sameTenant =
+    Boolean(tokenTenantId) &&
+    selectedProject?.tenantId?.toLowerCase() === tokenTenantId?.toLowerCase();
+
   return useQuery({
-    queryKey: ["identifier", "project", options],
-    queryFn: () => projectService.getProject(options),
-    enabled: Boolean(options.projectId),
+    queryKey: ["identifier", "project", tokenTenantId],
+    queryFn: () => projectService.getProject(),
+    // Only ask when the token's tenant IS the selected project. This preserves the
+    // old `enabled: Boolean(projectId)` guard: on routes where impersonation has
+    // been terminated no project is selected, so the query must stay idle rather
+    // than fetch — and render — the root tenant's project.
+    enabled: isInitialized && sameTenant,
   });
 };
 
