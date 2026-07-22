@@ -1,25 +1,44 @@
-import { Bell } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/core/popover/popover";
+import { useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components";
+import { useNotificationSocket } from "./use-notification-socket";
+import { useNotificationFeed } from "./use-notification-feed";
+import { NotificationBell } from "./notification-bell";
+import { NotificationHeader } from "./notification-header";
+import { NotificationList } from "./notification-list";
 
 export function Notification() {
+  const [open, setOpen] = useState(false);
+
+  useNotificationSocket();
+
+  const {
+    notifications,
+    isLoading,
+    isFetching,
+    listRef,
+    unreadCount,
+    handleScroll,
+    handleMarkAsRead,
+    handleMarkAllAsRead,
+  } = useNotificationFeed(open);
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button
-          type="button"
-          className="text-muted-foreground hover:text-primary transition-colors"
-          aria-label="Notifications"
-        >
-          <Bell className="h-5 w-5" />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent align="end" className="w-80">
-        <div className="space-y-1">
-          <div className="text-primary text-sm font-semibold">Notifications</div>
-          <div className="text-muted-foreground text-sm">
-            Real-time notifications are being ported into the standalone client.
-          </div>
+        <div>
+          <NotificationBell unreadCount={unreadCount} />
         </div>
+      </PopoverTrigger>
+      <PopoverContent className="w-[370px] p-0">
+        <NotificationHeader onMarkAllAsRead={handleMarkAllAsRead} />
+        <NotificationList
+          notifications={notifications}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          listRef={listRef}
+          onScroll={handleScroll}
+          onMarkAsRead={handleMarkAsRead}
+        />
       </PopoverContent>
     </Popover>
   );

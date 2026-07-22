@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { Check, Copy } from "lucide-react"
-import { AnimatePresence, motion } from "framer-motion"
-import { useState, type MouseEvent, type ReactNode } from "react"
+import { Check, Copy } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState, type MouseEvent, type ReactNode } from "react";
 
-import { Button } from "@/components/core/button"
-import { cn } from "@/lib/utils"
-import { fadeTransition } from "@/lib/motion-presets"
+import { Button } from "@/components/core/button";
+import { cn } from "@/lib/utils";
+import { fadeTransition } from "@/lib/motion-presets";
 
 export type CopyToClipboardButtonProps = {
-  textToCopy: string
-  children: ReactNode
-  isHoverable?: boolean
-  copyLabel?: string
-  copiedLabel?: string
-  className?: string
-}
+  textToCopy: string;
+  children: ReactNode;
+  isHoverable?: boolean;
+  copyLabel?: string;
+  copiedLabel?: string;
+  className?: string;
+};
 
 export const CopyToClipboardButton = ({
   textToCopy,
@@ -25,38 +25,38 @@ export const CopyToClipboardButton = ({
   copiedLabel = "Copied!",
   className,
 }: CopyToClipboardButtonProps) => {
-  const [isCopying, setIsCopying] = useState(false)
+  const [isCopying, setIsCopying] = useState(false);
 
   const handleCopy = async (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    event.stopPropagation()
-    if (isCopying) return
+    event.preventDefault();
+    event.stopPropagation();
+    if (isCopying) return;
 
-    setIsCopying(true)
+    setIsCopying(true);
 
     try {
       if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(textToCopy)
+        await navigator.clipboard.writeText(textToCopy);
       } else {
-        const textArea = document.createElement("textarea")
-        textArea.value = textToCopy
-        textArea.style.position = "fixed"
-        textArea.style.left = "-999999px"
-        textArea.style.top = "-999999px"
-        document.body.appendChild(textArea)
-        textArea.focus()
-        textArea.select()
-        document.execCommand("copy")
-        document.body.removeChild(textArea)
+        const textArea = document.createElement("textarea");
+        textArea.value = textToCopy;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
       }
     } catch (error) {
-      console.error("Failed to copy:", error)
-      setIsCopying(false)
-      return
+      console.error("Failed to copy:", error);
+      setIsCopying(false);
+      return;
     }
 
-    window.setTimeout(() => setIsCopying(false), 1000)
-  }
+    window.setTimeout(() => setIsCopying(false), 1000);
+  };
 
   return (
     <div className={cn("group flex items-center gap-2", className)}>
@@ -69,16 +69,14 @@ export const CopyToClipboardButton = ({
         )}
         initial={false}
         animate={{ opacity: isHoverable ? undefined : 1 }}
-        transition={fadeTransition}
-      >
+        transition={fadeTransition}>
         <Button
           type="button"
           variant="ghost"
           className="peer h-auto p-1 transition-colors hover:bg-muted"
           onClick={handleCopy}
           disabled={isCopying}
-          aria-label={isCopying ? copiedLabel : copyLabel}
-        >
+          aria-label={isCopying ? copiedLabel : copyLabel}>
           <AnimatePresence mode="wait" initial={false}>
             {isCopying ? (
               <motion.span
@@ -86,9 +84,11 @@ export const CopyToClipboardButton = ({
                 initial={{ scale: 0.6, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.6, opacity: 0 }}
-                transition={fadeTransition}
-              >
-                <Check className="size-4 text-green-600 dark:text-green-500" aria-hidden />
+                transition={fadeTransition}>
+                <Check
+                  className="size-4 text-green-600 dark:text-green-500"
+                  aria-hidden
+                />
               </motion.span>
             ) : (
               <motion.span
@@ -96,8 +96,7 @@ export const CopyToClipboardButton = ({
                 initial={{ scale: 0.6, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.6, opacity: 0 }}
-                transition={fadeTransition}
-              >
+                transition={fadeTransition}>
                 <Copy className="size-4 text-muted-foreground" aria-hidden />
               </motion.span>
             )}
@@ -107,11 +106,10 @@ export const CopyToClipboardButton = ({
           layout
           className="pointer-events-none absolute left-8 top-1/2 z-10 hidden -translate-y-1/2 whitespace-nowrap rounded bg-popover px-2 py-1 text-xs text-popover-foreground shadow-md peer-hover:block"
           animate={{ opacity: isCopying ? 1 : 0.9 }}
-          transition={fadeTransition}
-        >
+          transition={fadeTransition}>
           {isCopying ? copiedLabel : copyLabel}
         </motion.span>
       </motion.div>
     </div>
-  )
-}
+  );
+};

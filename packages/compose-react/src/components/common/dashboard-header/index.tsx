@@ -4,7 +4,6 @@ import { useContext } from "react";
 import { useLocation } from "react-router-dom";
 import {
   AppSwitcher,
-  Button,
   ThemeSwitcher,
   UserDropdownMenu,
   Notification,
@@ -14,10 +13,11 @@ import {
   LanguageSelector,
   SidebarMobileView,
   type SideBarMenuProps,
-} from "@/components";
+} from "@/components/common";
 import { useProjectStore } from "@/store";
 import { SidebarContext } from "@/contexts/dashboard-layout/sidebar.context";
 import type { ForwardToPaths } from "@/types";
+import { Button } from "@/components/core/button";
 
 type DashboardHeaderProps = SideBarMenuProps & {
   forwardedTo?: ForwardToPaths;
@@ -30,11 +30,11 @@ export function DashboardHeader(props: DashboardHeaderProps) {
   const { selectedProject } = useProjectStore();
   const projectName = selectedProject?.name;
   const environment = selectedProject?.environment;
-  const isProjectOverviewRoute = pathname.startsWith("/project-overview");
+  const isProjectOverviewRoute = pathname.includes("/project");
 
   return (
     <>
-      <header className="relative z-40 flex h-[60px] items-center justify-between gap-4 border-b bg-background px-5 sm:px-6">
+      <header className="relative z-40 flex h-[60px] shrink-0 items-center justify-between gap-4 border-b bg-background px-5 sm:px-6">
         <div className="md:hidden">
           <SidebarMobileView
             redirectPaths={redirectPaths}
@@ -89,7 +89,7 @@ export function DashboardHeader(props: DashboardHeaderProps) {
 
       {/* Mobile project/environment selectors */}
       {!isProjectOverviewRoute && (projectName || environment) && (
-        <div className="border-b bg-background px-5 py-3 sm:px-6 md:hidden">
+        <div className="shrink-0 border-b bg-background px-5 py-3 sm:px-6 md:hidden">
           <div className="flex flex-col gap-2">
             <SelectedProject />
             <SelectedEnvironment />

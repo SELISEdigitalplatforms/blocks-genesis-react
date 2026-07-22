@@ -1,4 +1,4 @@
-import { Monitor, Moon, Sun } from "lucide-react";
+import { Monitor, Moon, Sun, type LucideIcon } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/core/tabs/tabs";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -6,12 +6,12 @@ type ThemeOption = "light" | "dark" | "system";
 
 const OPTIONS: Array<{
   value: ThemeOption;
-  Icon: any;
+  Icon: LucideIcon;
   label: string;
 }> = [
-  { value: "system", Icon: Monitor as any, label: "Auto" },
-  { value: "light", Icon: Sun as any, label: "Light" },
-  { value: "dark", Icon: Moon as any, label: "Dark" },
+  { value: "system", Icon: Monitor, label: "Auto" },
+  { value: "light", Icon: Sun, label: "Light" },
+  { value: "dark", Icon: Moon, label: "Dark" },
 ];
 
 export function ThemeSwitcher() {

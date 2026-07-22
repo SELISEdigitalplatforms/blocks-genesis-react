@@ -2,10 +2,10 @@ import { DashboardHeader, SidebarMenuDesktop } from "@/components";
 import {
   ImpersonationChecker,
   ImpersonationSynchronizer,
-} from "@/guards/impersonation-guard";
+} from "@/guards/impersonation.guard";
 import type * as React from "react";
 import type { LayoutProps } from "./layout.types";
-import { DashboardLayoutProvider } from "@/contexts/dashboard-layout/dashboard-layout-provider";
+import { DashboardLayoutProvider } from "@/providers/dashboard-layout.provider";
 
 export interface DashboardLayoutProps extends LayoutProps {
   children?: React.ReactNode;
@@ -21,20 +21,22 @@ export function DashboardLayout({
 }: DashboardLayoutProps) {
   const content = (
     <DashboardLayoutProvider isOpen={true} persist>
-      <div className="relative flex h-screen bg-[hsl(var(--surface-app))]">
+      <div className="flex w-full overflow-hidden">
         <SidebarMenuDesktop
           redirectPaths={redirectPaths}
           navigationMenus={navigationMenus}
         />
-        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        <div className="flex h-screen min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <DashboardHeader
             redirectPaths={redirectPaths}
             navigationMenus={navigationMenus}
             forwardedTo={forwardedTo}
           />
-          <main className="flex-1 overflow-y-auto overflow-x-hidden">
-            {children}
-          </main>
+          <div className="relative flex min-h-0 w-full flex-1 overflow-hidden bg-[hsl(var(--surface-app))]">
+            <div className="min-h-0 w-full flex-1 overflow-y-auto overflow-x-hidden">
+              {children}
+            </div>
+          </div>
         </div>
       </div>
     </DashboardLayoutProvider>

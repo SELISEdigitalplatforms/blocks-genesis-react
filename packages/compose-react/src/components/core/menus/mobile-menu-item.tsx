@@ -1,9 +1,6 @@
-import { useMemo, isValidElement } from "react";
-import { ChevronRight, X } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
-import { Badge } from "@/components";
-import { Separator } from "@/components";
 import {
+  Badge,
+  Separator,
   Sheet,
   SheetClose,
   SheetContent,
@@ -11,8 +8,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components";
+import { useIsActiveMenu } from "@/hooks/use-menus";
 import { cn } from "@/lib/utils";
 import type { Menu } from "@/types";
+import { ChevronRight, X } from "lucide-react";
+import { isValidElement, useMemo } from "react";
+import { Link } from "react-router-dom";
 
 type MenuItemType = Extract<Menu, { type: "menu" }>;
 
@@ -30,8 +31,7 @@ function ChildMenuItem({
   menu: MenuItemType;
   onClick?: () => void;
 }) {
-  const { pathname } = useLocation();
-  const isActiveMenu = pathname.startsWith(menu.path);
+  const isActiveMenu = useIsActiveMenu(menu.path);
 
   return (
     <Link
@@ -56,7 +56,7 @@ export function MobileMenuItem({
   menu: MenuItemType;
   onClick?: () => void;
 }) {
-  const { pathname } = useLocation();
+  const { checkIsActivePath } = useIsActiveMenu(menu.path);
 
   const isActiveMenu = useMemo(() => {
     const allPaths = [menu.path];
@@ -65,8 +65,8 @@ export function MobileMenuItem({
         if (child.type === "menu") allPaths.push(child.path);
       });
     }
-    return allPaths.some((item) => pathname.startsWith(item));
-  }, [menu.children, menu.path, pathname]);
+    return allPaths.some((item) => checkIsActivePath(item));
+  }, [menu.children, menu.path, checkIsActivePath]);
 
   const hasChildren = Boolean(menu.children?.length);
 

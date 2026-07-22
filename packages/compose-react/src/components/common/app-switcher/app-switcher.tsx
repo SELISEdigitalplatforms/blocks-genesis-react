@@ -3,33 +3,41 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/core/popover/popover";
-import { useTheme } from "@/hooks/use-theme";
-import {
-  useBlocksAppConfigStore,
-  type RuntimeKey,
-} from "@/layouts/blocksapp-layout";
+import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { getRuntimeEnv } from "@/lib/runtime-env";
-import { cn, getForwardedToPath } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { initiateService } from "@/services/initiate.service";
+import type { ServiceName } from "@/store";
+import type { ForwardToPaths, RuntimeKey } from "@/types";
+import { getForwardedToPath } from "@/utils";
 import { Grip } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { APP_SWITCHER_DATA } from "./app-switcher.constant";
-import type { ServiceName } from "@/store";
-import type { ForwardToPaths } from "@/types";
+import { filteredAppSwitcherData } from "./app-switcher.constant";
 
 export interface BlocksApp {
   key: ServiceName;
   label: string;
   description: string;
   url: string;
-  icon: {
-    darkModeIcon: React.ReactNode;
-    lightModeIcon: React.ReactNode;
-  };
+  icon: React.ReactNode;
   clientId: RuntimeKey;
   redirectUri: RuntimeKey;
   initiateUrl: string;
   isLoading: boolean;
+  isDisabled: boolean | (() => boolean);
 }
+
+const AppIcon = ({ icon, label }: { icon: React.ReactNode; label: string }) => {
+  return (
+    <div className="flex h-12 w-12 items-center justify-center overflow-hidden">
+      {typeof icon === "string" ? (
+        <img src={icon} alt={label} className="h-full w-full object-contain" />
+      ) : (
+        icon
+      )}
+    </div>
+  );
+};
 
 interface AppTileProps {
   app: BlocksApp;
@@ -37,10 +45,6 @@ interface AppTileProps {
 }
 
 const AppTile = ({ app, isLoading }: AppTileProps) => {
-  const { resolvedTheme } = useTheme();
-  const icon =
-    resolvedTheme === "dark" ? app.icon.darkModeIcon : app.icon.lightModeIcon;
-
   return (
     <a
       href={isLoading ? undefined : app.initiateUrl}
@@ -51,17 +55,7 @@ const AppTile = ({ app, isLoading }: AppTileProps) => {
         isLoading && "pointer-events-none opacity-50 cursor-default",
       )}
     >
-      <div className="flex h-12 w-12 items-center justify-center overflow-hidden">
-        {typeof icon === "string" ? (
-          <img
-            src={icon}
-            alt={app.label}
-            className="h-full w-full object-contain"
-          />
-        ) : (
-          icon
-        )}
-      </div>
+      <AppIcon icon={app.icon} label={app.label} />
       <span className="text-foreground line-clamp-1 max-w-[90px] text-[12px] font-medium leading-tight">
         {isLoading ? "Loading…" : app.label}
       </span>
@@ -81,36 +75,25 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
   const config = useBlocksAppConfigStore((state) => state.getConfig());
 
   const getRedirectUrl = useCallback(
-    async (app: BlocksApp) => {
-      try {
-        const blocksKey = getRuntimeEnv("BLOCKS_X_BLOCKS_KEY");
-        const iamBaseUrl = getRuntimeEnv("userBaseUrl");
-        const clientId = getRuntimeEnv(app.clientId);
-        const redirectUri = getRuntimeEnv(app.redirectUri);
-
-        const initiateUrl = `${iamBaseUrl}/api/idp/initiate?x-blocks-key=${blocksKey}&clientId=${clientId}&redirectUri=${redirectUri}&forwardedTo=${resolvedForwardedTo}`;
-        const headers: Record<string, string> = {};
-        if (blocksKey) headers["X-Blocks-Key"] = blocksKey;
-
-        const response = await fetch(initiateUrl, { headers });
-        const data = await response.json();
-        if (data.redirect_uri) {
-          return data.redirect_uri as string;
-        }
-      } catch (error) {
-        console.error(
-          `[AppSwitcher] Failed to get redirect URL for ${app.key}:`,
-          error,
-        );
-      }
-
-      return null;
-    },
+    (app: BlocksApp) =>
+      initiateService
+        .fetchRedirectUrl({
+          clientId: getRuntimeEnv(app.clientId),
+          redirectUri: getRuntimeEnv(app.redirectUri),
+          forwardedTo: resolvedForwardedTo,
+        })
+        .catch((err) => {
+          console.error(
+            `[AppSwitcher] Failed to get redirect URL for ${app.key}:`,
+            err,
+          );
+          return null;
+        }),
     [resolvedForwardedTo],
   );
 
   const filteredApps = useMemo(
-    () => APP_SWITCHER_DATA.filter((app) => app.key !== config.name),
+    () => filteredAppSwitcherData.filter((app) => app.key !== config.name),
     [config.name],
   );
 

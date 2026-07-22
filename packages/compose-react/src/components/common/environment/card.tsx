@@ -6,8 +6,8 @@ import {
   TooltipTrigger,
 } from "@/components/core/tooltip/tooltip";
 import { environmentOptions } from "@/constants/environment-options";
-import { useStartImpersonation } from "@/hooks/use-auth-api";
-import type { IProject } from "@/services/project.service";
+import { useStartImpersonation } from "@/hooks/use-impersonation";
+import type { IProject } from "@/models";
 import { useProjectStore } from "@/store/project.store";
 import { ChevronRightIcon, HourglassIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -29,13 +29,17 @@ export const EnvironmentCard = ({
 
   const handleCardClick = async (): Promise<void> => {
     try {
+      // Clean start (this card lives where impersonation is terminated). The
+      // dashboard's ImpersonationChecker/Synchronizer hydrate the impersonated
+      // context after navigation — no full page reload. A reload here can abort
+      // an in-flight refresh-token rotation, orphaning the rotating RT cookie
+      // and 401'ing the later `stop` call.
       await mutateAsync({ targeted_tenant_id: project.tenantId });
       setTenantGroup(project.tenantGroupId);
       setSelectedProject(project);
-      navigate("/dashboard");
-      window.location.reload();
+      navigate(`/app/${project.itemId}/dashboard`);
     } catch (err) {
-      console.log("Failed to switch environment", err);
+      console.error("Failed to switch environment", err);
     }
   };
 
@@ -44,7 +48,7 @@ export const EnvironmentCard = ({
       onClick={handleCardClick}
       className={`group flex min-h-[70px] cursor-pointer flex-col justify-between rounded-sm p-4 shadow-none transition-shadow duration-200 hover:shadow-md ${className}`}
     >
-      <CardHeader className="flex flex-row justify-between !p-0">
+      <CardHeader className="flex flex-row justify-between p-0">
         <CardTitle className="line-clamp-1 break-all text-lg leading-tight">
           <div className="flex w-fit flex-row items-center gap-1">
             <div className="text-medium-emphasis text-base">
