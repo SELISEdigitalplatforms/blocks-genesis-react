@@ -4,10 +4,10 @@ import { Loader } from "lucide-react";
 import { useAuthStore } from "@/store";
 
 type CallbackPageProps = {
-  redirectUrl?: string;
+  defaultRedirectUrl?: string;
 };
 
-export const CallbackPage = ({ redirectUrl }: CallbackPageProps) => {
+export const CallbackPage = ({ defaultRedirectUrl }: CallbackPageProps) => {
   const [searchParams] = useSearchParams();
   const hasProcessed = useRef(false);
   const { setAuthenticated } = useAuthStore();
@@ -25,7 +25,7 @@ export const CallbackPage = ({ redirectUrl }: CallbackPageProps) => {
       const idpBaseUrl = window.process?.env.userBaseUrl;
       const callbackUrl = new URL(`${idpBaseUrl}/api/idp/callback`);
       const tenantId = window.process?.env.BLOCKS_X_BLOCKS_KEY;
-      const appRedirectUrl = forwardTo || redirectUrl || "/";
+      const appRedirectUrl = forwardTo || defaultRedirectUrl || "/";
 
       // Forward the callback parameters to backend
       if (code) callbackUrl.searchParams.set("code", code);
@@ -39,7 +39,6 @@ export const CallbackPage = ({ redirectUrl }: CallbackPageProps) => {
         .then((res) => {
           if (res.ok) {
             setAuthenticated();
-
             window.location.href = appRedirectUrl;
           } else {
             window.location.href = "/login?error=callback_failed";
@@ -49,14 +48,13 @@ export const CallbackPage = ({ redirectUrl }: CallbackPageProps) => {
           window.location.href = "/login?error=callback_error";
         });
     } catch (err) {
-      console.log("Error processing callback:", err);
+      console.error("Error processing callback:", err);
     }
-  }, [code, state, error, setAuthenticated, redirectUrl, forwardTo]);
+  }, [code, state, error, setAuthenticated, defaultRedirectUrl, forwardTo]);
 
-  const LoaderIcon = Loader as any;
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <LoaderIcon className="h-12 w-12 animate-spin text-gray-500" />
+      <Loader className="h-12 w-12 animate-spin text-gray-500" />
     </div>
   );
 };

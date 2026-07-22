@@ -1,26 +1,22 @@
-import { useEffect, useState } from "react";
-import { Menu } from "lucide-react";
-import { useLocation, Link } from "react-router-dom";
+import { AppSwitcher } from "@/components/common/app-switcher";
+import { LanguageSelector } from "@/components/common/language-selector";
 import { Logo } from "@/components/common/logo";
+import { Notification } from "@/components/common/notification";
+import { ThemeSwitcher } from "@/components/common/theme-switcher";
+import { UserDropdownMenu } from "@/components/common/user-dropdown-menu";
 import { Button } from "@/components/core/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/core/sheet";
-import { ThemeSwitcher } from "@/components/common/theme-switcher";
-import { AppSwitcher, type BlocksApp } from "@/components/common/app-switcher";
-import { UserDropdownMenu } from "../user-dropdown-menu/user-dropdown-menu";
-import { Notification } from "../notification";
-import { useBlocksAppConfigStore } from "@/index";
+import { useLogo } from "@/hooks/use-logo";
+import { MenuIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 export function ConsoleHeader() {
-  const LinkComponent = Link as any;
-  const MenuIcon = Menu as any;
-  const {
-    config: { appLogoUrl },
-  } = useBlocksAppConfigStore((state) => state);
   const { pathname } = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
 
   const isConsoleButtonVisible =
-    pathname.startsWith("/project-overview") || pathname.startsWith("/profile");
+    pathname.includes("/project") || pathname.includes("profile");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,17 +26,7 @@ export function ConsoleHeader() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const appLightLogo = appLogoUrl
-    ? typeof appLogoUrl === "string"
-      ? appLogoUrl
-      : appLogoUrl.light
-    : undefined;
-
-  const appDarkLogo = appLogoUrl
-    ? typeof appLogoUrl === "string"
-      ? appLogoUrl
-      : appLogoUrl.dark
-    : undefined;
+  const { appLightLogo, appDarkLogo } = useLogo();
 
   return (
     <div
@@ -49,9 +35,11 @@ export function ConsoleHeader() {
       <header
         className={`lg:h-14.75 mx-5 flex h-12 items-center gap-4 ${isConsoleButtonVisible ? "sm:ml-1 sm:mr-6" : "sm:mx-10"}`}
       >
-        <div className={`mx-0 flex h-full w-full flex-row items-center md:mx-auto`}>
+        <div
+          className={`mx-0 flex h-full w-full flex-row items-center md:mx-auto`}
+        >
           <div className="w-57 ml-2 flex h-full items-center">
-            <LinkComponent to="/console" className="cursor-pointer">
+            <Link to="console" className="cursor-pointer">
               <Logo
                 width={96}
                 height={32}
@@ -59,7 +47,7 @@ export function ConsoleHeader() {
                 lightSrc={appLightLogo}
                 darkSrc={appDarkLogo}
               />
-            </LinkComponent>
+            </Link>
           </div>
         </div>
         <div className="block sm:hidden">
@@ -70,27 +58,27 @@ export function ConsoleHeader() {
               </Button>
             </SheetTrigger>
             <SheetContent
-              //   hideClose
               side="top"
               className={`flex w-full flex-wrap items-start gap-3 ${isConsoleButtonVisible ? "justify-between" : "justify-end"}`}
             >
               {isConsoleButtonVisible && (
-                <div className="min-w-fit shrink">{/* <BackToConsoleNavigator /> */}</div>
+                <div className="min-w-fit shrink"></div>
               )}
               <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-3">
                 <ThemeSwitcher />
                 <Notification />
-                <AppSwitcher forwardedTo="/console" />
+                <LanguageSelector />
+                <AppSwitcher forwardedTo="/app/console" />
                 <UserDropdownMenu />
               </div>
             </SheetContent>
           </Sheet>
         </div>
-        <div className="hidden sm:flex sm:items-center sm:gap-4">
-          {/* {isConsoleButtonVisible && <BackToConsoleNavigator />} */}
+        <div className="hidden sm:flex sm:items-center sm:gap-4 pointer-events-auto">
           <ThemeSwitcher />
           <Notification />
-          <AppSwitcher forwardedTo="/console" />
+          <LanguageSelector />
+          <AppSwitcher forwardedTo="/app/console" />
           <UserDropdownMenu />
         </div>
       </header>

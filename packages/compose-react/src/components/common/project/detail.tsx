@@ -1,14 +1,13 @@
+import { Button, DashboardSectionCard } from "@/components";
+import { environmentOptions } from "@/constants/environment-options";
 import {
-  Button,
   CopyToClipboardButton,
   formatFullDate,
   MaskedText,
   Skeleton,
 } from "@/index";
-import type { IProject } from "@/services/project.service";
-import { environmentOptions } from "@/constants/environment-options";
+import type { IProject } from "@/models";
 import type { ReactNode } from "react";
-import { getProjectBlocksApiUrl } from "@/lib/domain";
 
 interface ProjectDetailItemProps {
   label: string;
@@ -17,30 +16,31 @@ interface ProjectDetailItemProps {
 
 const ProjectDetailItem = ({ label, children }: ProjectDetailItemProps) => (
   <div className="space-y-1.5">
-    <div className="text-sm text-muted-foreground">{label}</div>
-    <div className="text-base">{children}</div>
+    <div className="text-sm font-medium text-medium-emphasis">{label}</div>
+    <div className="text-sm text-high-emphasis sm:text-base">{children}</div>
   </div>
 );
 
-const RenderProjectUrl = ({ project }: { project?: IProject }) => {
-  if (!project) return null;
-  const url = getProjectBlocksApiUrl(project);
-  return (
-    <div>
-      <CopyToClipboardButton textToCopy={url || ""} isHoverable>
-        {url}
-      </CopyToClipboardButton>
-    </div>
-  );
-};
+// const RenderProjectUrl = ({ project }: { project?: IProject }) => {
+//   if (!project) return null;
+//   const url = getProjectBlocksApiUrl(project);
+//   return (
+//     <CopyToClipboardButton textToCopy={url || ""} isHoverable>
+//       {url}
+//     </CopyToClipboardButton>
+//   );
+// };
 
 const LoadingSkeleton = () => {
   return (
-    <div className="mt-6 rounded-lg border bg-card px-2 py-2 shadow-sm md:mt-0">
-      <div className="grid-col-1 grid gap-3 px-2 py-4 md:grid-cols-2 md:gap-4 lg:gap-6">
+    <div className="rounded-lg border border-border bg-card">
+      <div className="px-3 py-2.5 sm:px-4 sm:py-3">
+        <Skeleton className="h-4 w-32" />
+      </div>
+      <div className="grid grid-cols-1 gap-4 border-t border-border px-2 py-2 sm:px-4 sm:py-3 md:grid-cols-2 md:gap-6">
         {Array.from({ length: 6 }).map((_item, index) => (
           <div key={index}>
-            <Skeleton className="h-5 w-1/2" />
+            <Skeleton className="h-4 w-1/2" />
             <Skeleton className="mt-2 h-5 w-full" />
           </div>
         ))}
@@ -59,8 +59,11 @@ export const ProjectDetail = ({
   if (isLoading) return <LoadingSkeleton />;
 
   return (
-    <div className="rounded-sm border bg-card px-2 py-2 shadow-sm">
-      <div className="grid-col-1 grid gap-4 px-2 py-4 md:gap-6 lg:grid-cols-2">
+    <DashboardSectionCard
+      title="Project Details"
+      description="Core configuration and metadata for this project"
+    >
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
         <ProjectDetailItem label="Name">{project?.name}</ProjectDetailItem>
         <ProjectDetailItem label="X-Blocks-Key">
           <div className="flex h-6 items-center gap-2">
@@ -77,7 +80,7 @@ export const ProjectDetail = ({
             </CopyToClipboardButton>
           </div>
         </ProjectDetailItem>
-        {project?.tenantSlug && (
+        {/* {project?.tenantSlug && (
           <ProjectDetailItem label="Project Slug">
             <div className="flex h-6 items-center gap-2">
               <CopyToClipboardButton
@@ -88,10 +91,10 @@ export const ProjectDetail = ({
               </CopyToClipboardButton>
             </div>
           </ProjectDetailItem>
-        )}
+        )} */}
         <ProjectDetailItem label="Environment">
           {project?.environment === "prod" ? (
-            <Button className="mr-4 h-6 rounded-xl" size="sm" variant="default">
+            <Button className="h-6 rounded-xl" size="sm" variant="default">
               Production
             </Button>
           ) : (
@@ -108,11 +111,9 @@ export const ProjectDetail = ({
             </Button>
           )}
         </ProjectDetailItem>
-        <ProjectDetailItem label="Blocks Microservices Url">
-          <div className="flex h-auto items-center gap-2">
-            <RenderProjectUrl project={project} />
-          </div>
-        </ProjectDetailItem>
+        {/* <ProjectDetailItem label="Blocks Microservices Url">
+          <RenderProjectUrl project={project} />
+        </ProjectDetailItem> */}
         <ProjectDetailItem label="Last updated Date">
           {project?.lastUpdatedDate &&
             formatFullDate(new Date(project.lastUpdatedDate))}
@@ -122,6 +123,6 @@ export const ProjectDetail = ({
             formatFullDate(new Date(project.createdDate))}
         </ProjectDetailItem>
       </div>
-    </div>
+    </DashboardSectionCard>
   );
 };

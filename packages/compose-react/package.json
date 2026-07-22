@@ -1,7 +1,8 @@
 {
   "name": "@seliseblocks/blocks-kit",
-  "version": "0.0.23",
+  "version": "0.0.65",
   "description": "React app-shell composition package for blocks-kit",
+  "author": "SELISE Blocks",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -10,6 +11,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js",
+      "require": "./dist/components/index.cjs"
     },
     "./store": {
       "types": "./dist/store/index.d.ts",
@@ -36,10 +42,30 @@
       "import": "./dist/types/index.js",
       "require": "./dist/types/index.cjs"
     },
-    "./http": {
-      "types": "./dist/lib/http/index.d.ts",
-      "import": "./dist/lib/http/index.js",
-      "require": "./dist/lib/http/index.cjs"
+    "./hooks": {
+      "types": "./dist/hooks/index.d.ts",
+      "import": "./dist/hooks/index.js",
+      "require": "./dist/hooks/index.cjs"
+    },
+    "./lib": {
+      "types": "./dist/lib/index.d.ts",
+      "import": "./dist/lib/index.js",
+      "require": "./dist/lib/index.cjs"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.cjs"
+    },
+    "./models": {
+      "types": "./dist/models/index.d.ts",
+      "import": "./dist/models/index.js",
+      "require": "./dist/models/index.cjs"
+    },
+    "./pages": {
+      "types": "./dist/pages/index.d.ts",
+      "import": "./dist/pages/index.js",
+      "require": "./dist/pages/index.cjs"
     },
     "./package.json": "./package.json"
   },
@@ -47,7 +73,9 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsup",
@@ -62,6 +90,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^3.10.0",
+    "@microsoft/signalr": "^10.0.0",
     "@radix-ui/react-accordion": "^1.2.13",
     "@radix-ui/react-alert-dialog": "^1.1.16",
     "@radix-ui/react-aspect-ratio": "^1.1.9",
@@ -88,6 +117,7 @@
     "@radix-ui/react-tabs": "^1.1.14",
     "@radix-ui/react-toggle": "^1.1.11",
     "@radix-ui/react-toggle-group": "^1.1.12",
+    "@radix-ui/react-toast": "^1.2.2",
     "@radix-ui/react-tooltip": "^1.2.9",
     "@tanstack/react-table": "8.21.3",
     "class-variance-authority": "^0.7.1",
@@ -105,18 +135,23 @@
     "react-hook-form": "^7.78.0",
     "react-resizable-panels": "^2.1.9",
     "recharts": "2.15.4",
-    "sonner": "^1.7.4",
     "tailwind-merge": "^2.6.1",
     "vaul": "^1.1.2",
     "zod": "^3.25.76"
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.0.0",
+    "@types/react": ">=18.3.31",
     "nuqs": "^2.0.0",
     "react": "^18.3.1 || ^19.0.0",
     "react-dom": "^18.3.1 || ^19.0.0",
     "react-router-dom": "^6.0.0",
     "zustand": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@blocks-kit/eslint-config": "workspace:*",
@@ -124,9 +159,11 @@
     "@blocks-kit/tsconfig": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "eslint": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "react-syntax-highlighter": "^16.1.1",
     "tsup": "catalog:",
     "typescript": "catalog:"
   },

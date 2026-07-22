@@ -1,74 +1,32 @@
-import { HttpClient } from "@/lib/http";
-
-export interface ImpersonationRequest {
-  targeted_tenant_id: string;
-  orgId?: string;
-  organizationId?: string;
-}
-
-export interface ImpersonationState {
-  rootTenantId: string;
-  targeted_tenant_id: string;
-  orgId: string;
-  startedAtUtc: string;
-}
-
-export interface ImpersonationStatusResponse {
-  impersonated: boolean;
-  originalTenantId: string;
-  impersonatedTenantId: string | null;
-}
+import { IMPERSONATE_ENDPOINTS } from "@/constants/endpoint.constant";
+import { iamClient } from "@/lib/http/instances";
+import type {
+  ImpersonationRequest,
+  ImpersonationState,
+  ImpersonationStatusResponse,
+} from "@/models/impersonation.model";
 
 class ImpersonationService {
-  startImpersonation(request: ImpersonationRequest): Promise<ImpersonationState> {
-    const http = new HttpClient({
-      baseURL: window?.process?.env?.BLOCKS_API_BASE_URL || "",
-      blocksKey: window?.process?.env?.BLOCKS_X_BLOCKS_KEY,
-    });
-
-    const AUTH_SUBPATH = "/auth";
-    const IMPERSONATE_ENDPOINTS = {
-      IMPERSONATE: `${window.process?.env.userBaseUrl}/api${AUTH_SUBPATH}/impersonate`,
-      STOP_IMPERSONATION: `${window.process?.env.userBaseUrl}/api${AUTH_SUBPATH}/impersonation/stop`,
-      IMPERSONATION_STATUS: `${window.process?.env.userBaseUrl}/api${AUTH_SUBPATH}/impersonation/status`,
-    } as const;
-    return http.post(`${IMPERSONATE_ENDPOINTS.IMPERSONATE}`, request, undefined, {
-      absoluteUrl: true,
-    });
+  startImpersonation(
+    request: ImpersonationRequest,
+  ): Promise<ImpersonationState> {
+    return iamClient.post(IMPERSONATE_ENDPOINTS.IMPERSONATE, request);
   }
 
   stopImpersonation(): Promise<void> {
-    const http = new HttpClient({
-      baseURL: window?.process?.env?.BLOCKS_API_BASE_URL || "",
-      blocksKey: window?.process?.env?.BLOCKS_X_BLOCKS_KEY,
-    });
-
-    const AUTH_SUBPATH = "/auth";
-    const IMPERSONATE_ENDPOINTS = {
-      IMPERSONATE: `${window.process?.env.userBaseUrl}/api${AUTH_SUBPATH}/impersonate`,
-      STOP_IMPERSONATION: `${window.process?.env.userBaseUrl}/api${AUTH_SUBPATH}/impersonation/stop`,
-      IMPERSONATION_STATUS: `${window.process?.env.userBaseUrl}/api${AUTH_SUBPATH}/impersonation/status`,
-    } as const;
-    return http.post(`${IMPERSONATE_ENDPOINTS.STOP_IMPERSONATION}`, {}, undefined, {
-      absoluteUrl: true,
-    });
+    // Do not run the global 401 → refresh → logout flow for stop. A 401 here
+    // usually means impersonation is already ended server-side while the
+    // session cookie is still valid for other endpoints (me/status).
+    return iamClient.post(
+      IMPERSONATE_ENDPOINTS.STOP_IMPERSONATION,
+      {},
+      undefined,
+      { skipTokenRotation: true },
+    );
   }
 
   impersonationStatus(): Promise<ImpersonationStatusResponse> {
-    const http = new HttpClient({
-      baseURL: window?.process?.env?.BLOCKS_API_BASE_URL || "",
-      blocksKey: window?.process?.env?.BLOCKS_X_BLOCKS_KEY,
-    });
-
-    const AUTH_SUBPATH = "/auth";
-    const IMPERSONATE_ENDPOINTS = {
-      IMPERSONATE: `${window.process?.env.userBaseUrl}/api${AUTH_SUBPATH}/impersonate`,
-      STOP_IMPERSONATION: `${window.process?.env.userBaseUrl}/api${AUTH_SUBPATH}/impersonation/stop`,
-      IMPERSONATION_STATUS: `${window.process?.env.userBaseUrl}/api${AUTH_SUBPATH}/impersonation/status`,
-    } as const;
-    return http.post(`${IMPERSONATE_ENDPOINTS.IMPERSONATION_STATUS}`, null, undefined, {
-      absoluteUrl: true,
-    });
+    return iamClient.post(IMPERSONATE_ENDPOINTS.IMPERSONATION_STATUS, null);
   }
 }
 

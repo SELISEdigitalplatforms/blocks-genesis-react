@@ -1,10 +1,11 @@
 export function RenderAlternatively({
   condition,
-  children,
+  whenTrue,
+  whenFalse,
 }: {
   condition: boolean;
-  children: [React.ReactNode, React.ReactNode];
+  whenTrue: React.ReactNode;
+  whenFalse: React.ReactNode;
 }) {
-  const [trueElement, falseElement] = children;
-  return <>{condition ? trueElement : falseElement}</>;
+  return <>{condition ? whenTrue : whenFalse}</>;
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { showErrorToast } from "@/utils/toast";
+import { Trash2 as RemoveIcon } from "lucide-react";
 import * as React from "react";
 import {
   createContext,
@@ -18,12 +20,10 @@ import {
   type DropzoneState,
   type FileRejection,
 } from "react-dropzone";
-import { toast } from "sonner";
-import { Trash2 as RemoveIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils";
-import { Input } from "@/components/core/input";
 import { buttonVariants } from "@/components/core/button";
+import { Input } from "@/components/core/input";
+import { cn } from "@/lib/utils";
 
 type DirectionOptions = "rtl" | "ltr" | undefined;
 
@@ -100,7 +100,7 @@ export const FileUploader = forwardRef<
 
     useEffect(() => {
       if (isFileTooBig) {
-        toast.error("The file size is more than 5MB");
+        showErrorToast({ errors: "The file size is more than 5MB" });
       }
     }, [isFileTooBig]);
 
@@ -109,7 +109,7 @@ export const FileUploader = forwardRef<
         const files = acceptedFiles;
 
         if (!files) {
-          toast.error("file error , probably too big");
+          showErrorToast({ errors: "file error , probably too big" });
           return;
         }
 
@@ -133,15 +133,17 @@ export const FileUploader = forwardRef<
             const firstError = rejection?.errors[0];
             if (!firstError) continue;
             if (firstError.code === "file-too-large") {
-              toast.error(`File is too large. Max size is ${maxSize / 1024 / 1024}MB`);
+              showErrorToast({
+                errors: `File is too large. Max size is ${maxSize / 1024 / 1024}MB`,
+              });
               break;
             }
             if (firstError.code === "file-invalid-type") {
-              toast.error("Invalid file type");
+              showErrorToast({ errors: "Invalid file type" });
               break;
             }
             if (firstError.message) {
-              toast.error(firstError.message);
+              showErrorToast({ errors: firstError.message });
               break;
             }
           }
@@ -160,7 +162,9 @@ export const FileUploader = forwardRef<
       setIsLOF(false);
     }, [value, maxFiles]);
 
-    const opts = dropzoneOptions ? dropzoneOptions : { accept, maxFiles, maxSize, multiple };
+    const opts = dropzoneOptions
+      ? dropzoneOptions
+      : { accept, maxFiles, maxSize, multiple };
 
     const dropzoneState = useDropzone({
       ...opts,
@@ -235,18 +239,20 @@ export const FileUploader = forwardRef<
           setActiveIndex,
           orientation,
           direction,
-        }}
-      >
+        }}>
         <div
           ref={ref}
           tabIndex={0}
           onKeyDownCapture={handleKeyDown}
-          className={cn("grid w-full overflow-hidden focus:outline-none", className, {
-            "gap-2": value && value.length > 0,
-          })}
+          className={cn(
+            "grid w-full overflow-hidden focus:outline-none",
+            className,
+            {
+              "gap-2": value && value.length > 0,
+            },
+          )}
           dir={dir}
-          {...props}
-        >
+          {...props}>
           {children}
         </div>
       </FileUploaderContext.Provider>
@@ -264,7 +270,10 @@ export const FileUploaderContent = forwardRef<
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className={cn("w-full px-1")} ref={containerRef} aria-description="content file holder">
+    <div
+      className={cn("w-full px-1")}
+      ref={containerRef}
+      aria-description="content file holder">
       <div
         {...props}
         ref={ref}
@@ -272,8 +281,7 @@ export const FileUploaderContent = forwardRef<
           "flex gap-1 rounded-xl",
           orientation === "horizontal" ? "flex-raw flex-wrap" : "flex-col",
           className,
-        )}
-      >
+        )}>
         {children}
       </div>
     </div>
@@ -297,16 +305,17 @@ export const FileUploaderItem = forwardRef<
         className,
         isSelected ? "bg-muted" : "",
       )}
-      {...props}
-    >
+      {...props}>
       <div className="flex h-full w-full items-center gap-1.5 font-medium leading-none tracking-tight">
         {children}
       </div>
       <button
         type="button"
-        className={cn("absolute", direction === "rtl" ? "left-1 top-1" : "right-1 top-1")}
-        onClick={() => removeFileFromSet(index)}
-      >
+        className={cn(
+          "absolute",
+          direction === "rtl" ? "left-1 top-1" : "right-1 top-1",
+        )}
+        onClick={() => removeFileFromSet(index)}>
         <span className="sr-only">remove item {index}</span>
         <RemoveIcon className="h-4 w-4 duration-200 ease-in-out hover:stroke-destructive" />
       </button>
@@ -316,40 +325,39 @@ export const FileUploaderItem = forwardRef<
 
 FileUploaderItem.displayName = "FileUploaderItem";
 
-export const FileInput = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, children, ...props }, ref) => {
-    const { dropzoneState, isFileTooBig, isLOF } = useFileUpload();
-    const rootProps = isLOF ? {} : dropzoneState.getRootProps();
-    return (
+export const FileInput = forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, children, ...props }, ref) => {
+  const { dropzoneState, isFileTooBig, isLOF } = useFileUpload();
+  const rootProps = isLOF ? {} : dropzoneState.getRootProps();
+  return (
+    <div
+      ref={ref}
+      {...props}
+      className={`relative w-full ${isLOF ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}>
       <div
-        ref={ref}
-        {...props}
-        className={`relative w-full ${isLOF ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
-      >
-        <div
-          className={cn(
-            `w-full rounded-lg duration-300 ease-in-out ${
-              dropzoneState.isDragAccept
-                ? "border-green-500"
-                : dropzoneState.isDragReject || isFileTooBig
-                  ? "border-red-500"
-                  : "border-gray-300"
-            }`,
-            className,
-          )}
-          {...rootProps}
-        >
-          {children}
-        </div>
-        <Input
-          ref={dropzoneState.inputRef}
-          disabled={isLOF}
-          {...dropzoneState.getInputProps()}
-          className={`${isLOF ? "cursor-not-allowed" : ""}`}
-        />
+        className={cn(
+          `w-full rounded-lg duration-300 ease-in-out ${
+            dropzoneState.isDragAccept
+              ? "border-green-500"
+              : dropzoneState.isDragReject || isFileTooBig
+                ? "border-red-500"
+                : "border-gray-300"
+          }`,
+          className,
+        )}
+        {...rootProps}>
+        {children}
       </div>
-    );
-  },
-);
+      <Input
+        ref={dropzoneState.inputRef}
+        disabled={isLOF}
+        {...dropzoneState.getInputProps()}
+        className={`${isLOF ? "cursor-not-allowed" : ""}`}
+      />
+    </div>
+  );
+});
 
 FileInput.displayName = "FileInput";

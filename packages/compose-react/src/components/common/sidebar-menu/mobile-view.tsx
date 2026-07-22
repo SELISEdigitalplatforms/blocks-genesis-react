@@ -16,13 +16,16 @@ import {
 } from "@/components";
 import { Logo } from "../logo";
 import type { SideBarMenuProps } from "./types";
-import { useFilteredMenus } from "@/hooks/use-filtered-menus";
+import { useFilteredMenus } from "@/hooks/use-menus";
+import { useLogo } from "@/hooks/use-logo";
 
 export function SidebarMobileView({
   redirectPaths,
   navigationMenus,
 }: SideBarMenuProps) {
   const [open, setOpen] = useState(false);
+  const { appLightLogo, appDarkLogo } = useLogo();
+
   const allowedMenu = useFilteredMenus(navigationMenus);
 
   return (
@@ -41,25 +44,28 @@ export function SidebarMobileView({
       >
         <SheetHeader className="h-[60px] px-4 py-3">
           <SheetTitle className="flex items-center justify-between">
-            <Link to="/console">
-              <Logo width={72} height={36} className="h-9 w-auto" />
+            <Link to="console">
+              <Logo
+                width={72}
+                height={36}
+                className="h-9 w-auto"
+                lightSrc={appLightLogo}
+                darkSrc={appDarkLogo}
+                alt="Logo"
+              />
             </Link>
-            <SheetClose className="!mt-0">
+            <SheetClose className="mt-0!">
               <X className="h-4 w-4" />
             </SheetClose>
           </SheetTitle>
         </SheetHeader>
         <Separator />
         <div className="mt-3 flex w-full flex-col items-start px-6">
-          <div className="ml-1 text-sm text-[hsl(var(--low-emphasis))]">
-            Project
-          </div>
+          <div className="ml-1 text-sm text-low-emphasis">Project</div>
           <ProjectList redirectPaths={redirectPaths} />
         </div>
         <div className="my-3 flex w-full flex-col items-start px-6">
-          <div className="ml-1 text-sm text-[hsl(var(--low-emphasis))]">
-            Environment
-          </div>
+          <div className="ml-1 text-sm text-low-emphasis">Environment</div>
           <EnvironmentList redirectPaths={redirectPaths} />
         </div>
         <Separator />

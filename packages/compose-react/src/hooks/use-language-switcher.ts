@@ -1,20 +1,13 @@
-import { useEffect, useState } from "react";
+import { useAppSettingsStore } from "@/store";
 
 export function useLanguageSwitcher() {
-  const [language, setLanguage] = useState<string>(() => {
-    if (typeof window === "undefined") return "en";
-    return localStorage.getItem("language") || "en";
-  });
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    localStorage.setItem("language", language);
-    document.documentElement.lang = language;
-  }, [language]);
+  const {
+    settings: { language },
+    setSettings,
+  } = useAppSettingsStore();
 
   const changeLanguage = (newLanguage: string) => {
-    setLanguage(newLanguage);
+    setSettings({ language: newLanguage });
   };
-
   return { language, changeLanguage };
 }

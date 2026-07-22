@@ -1,68 +1,87 @@
-import { HttpClient } from "@/lib/http";
+import { logicClient } from "@/lib/http/instances";
+import type {
+  IProjectGroup,
+  IGetProjectPayload,
+  IGetProjectResponse,
+  IDisableProjectPayload,
+  IDisableProjectResponse,
+  IUpdateTenantGroupPayload,
+  IUpdateProjectResponse,
+  IEnvRepository,
+  IUpdateProjectPayload,
+  IValidateCnameProjectPayload,
+  IValidateCnameProjectResponse,
+} from "@/models";
+import { PROJECT_ENDPOINTS } from "@/constants/endpoint.constant";
+import { getRuntimeEnv, HttpClient } from "@/lib";
 
-export interface IProject {
-  itemId: string;
-  createdDate: string;
-  lastUpdatedDate: string;
-  createdBy: string;
-  lastUpdatedBy: string;
-  organizationIds: string[];
-  tags: string[];
-  name: string;
-  applicationDomain: string;
-  customDomain: string;
-  isProduction: true;
-  tenantId: string;
-  isCookieEnable: boolean;
-  isDomainVerified: boolean;
-  cookieDomain: string;
-  isDisabled: boolean;
-  environment: string;
-  tenantGroupId: string;
-  tenantSlug: string;
-}
-
-export interface IGetProjectPayload {
-  projectId: string;
-}
-export interface IGetProjectResponse {
-  data: IProject;
-  errors: unknown | null;
-}
-
-export interface IProjectGroup {
-  tenantGroupId: string;
-  projects: IProject[];
-  nonSharedProject: IProject[];
-  isShared: boolean;
-}
-
-const http = new HttpClient({
-  baseURL: window?.process?.env?.BLOCKS_API_BASE_URL || "",
-  blocksKey: window?.process?.env?.BLOCKS_X_BLOCKS_KEY || "",
+//Exception only for OS.
+const logicClientForOS = new HttpClient({
+  baseURL: () => getRuntimeEnv("BLOCKS_LOGIC_BASE_URL"),
+  blocksKey: () => getRuntimeEnv("BLOCKS_X_BLOCKS_KEY"),
 });
-
-const PROJECT_SUBPATH = "Project";
-export const PROJECT_ENDPOINTS = {
-  GETS: `api/${PROJECT_SUBPATH}/Gets`,
-  GET: `api/${PROJECT_SUBPATH}/Get`,
-  DISABLE: `api/${PROJECT_SUBPATH}/Disable`,
-};
 
 export class ProjectService {
   getProjects(
-    projectBaseUrl = "",
     page = 0,
     pageSize = 100,
     tenantGroupId = "",
   ): Promise<IProjectGroup[]> {
-    const url = `${projectBaseUrl}/${PROJECT_ENDPOINTS.GETS}?page=${page}&pageSize=${pageSize}&tenantGroupId=${tenantGroupId}`;
-    return http.get(url, undefined, { absoluteUrl: true });
+    const url = `${PROJECT_ENDPOINTS.GETS}?page=${page}&pageSize=${pageSize}&tenantGroupId=${tenantGroupId}`;
+    return logicClient.get(url);
   }
 
   getProject(payload: IGetProjectPayload): Promise<IGetProjectResponse> {
     const url = `${PROJECT_ENDPOINTS.GET}?projectId=${payload.projectId}`;
-    return http.get(url, undefined, { absoluteUrl: true });
+    return logicClient.get(url);
+  }
+
+  getEnvRepositories(): Promise<{
+    data: IEnvRepository[];
+    errors: unknown | null;
+    isSuccess: boolean;
+  }> {
+    const url = `${PROJECT_ENDPOINTS.REPOS_LIST}`;
+    return logicClientForOS.get(url);
+  }
+
+  repoUpdate(payload: {
+    projectKey: string;
+    projectEnv: string;
+    repoWithDomains: {
+      repoId: string;
+      repoUrl: string;
+      customDeploymentDomain: string;
+    }[];
+  }): Promise<{
+    errors: unknown | null;
+    isSuccess: boolean;
+  }> {
+    return logicClientForOS.post(PROJECT_ENDPOINTS.REPO_UPDATE, payload);
+  }
+
+  updateTenantGroup(
+    payload: IUpdateTenantGroupPayload,
+  ): Promise<IUpdateProjectResponse> {
+    return logicClient.post(PROJECT_ENDPOINTS.UPDATE_TENANT_GROUP, payload);
+  }
+
+  updateProject(
+    payload: IUpdateProjectPayload,
+  ): Promise<IUpdateProjectResponse> {
+    return logicClient.post(PROJECT_ENDPOINTS.UPDATE_PROJECT, payload);
+  }
+
+  disableProject(
+    payload: IDisableProjectPayload,
+  ): Promise<IDisableProjectResponse> {
+    return logicClient.post(PROJECT_ENDPOINTS.DISABLE, payload);
+  }
+
+  validateCNameProject(
+    payload: IValidateCnameProjectPayload,
+  ): Promise<IValidateCnameProjectResponse> {
+    return logicClient.post(PROJECT_ENDPOINTS.CONFIGURE, payload);
   }
 }
 

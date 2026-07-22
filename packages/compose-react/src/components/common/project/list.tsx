@@ -9,7 +9,7 @@ import {
 import { useGetProject, useGetProjects } from "@/hooks/use-project";
 import { useProjectStore } from "@/store";
 
-import type { IProject } from "@/types";
+import type { IProject } from "@/models";
 import { FolderOpen, Loader } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -30,7 +30,7 @@ export function ProjectList({
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { data: projectGroups = [], isLoading } = useGetProjects({
-    tenantGroupId: "",
+    enabled: true,
   });
   const { selectedProject, setSelectedProject } = useProjectStore();
   const { data: projectData } = useGetProject({

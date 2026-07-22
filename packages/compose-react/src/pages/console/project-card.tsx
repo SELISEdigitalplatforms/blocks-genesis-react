@@ -1,22 +1,22 @@
-import { Card, CardTitle } from "@/components/core/card/card";
 import { Button } from "@/components/core/button/button";
-import { useNavigate } from "react-router-dom";
-import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/core/tooltip/tooltip";
+import { Card, CardTitle } from "@/components/core/card/card";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/core/popover/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/core/tooltip/tooltip";
+import { environmentOptions } from "@/constants/environment-options";
+import type { IProject } from "@/models";
 import { useProjectStore } from "@/store/project.store";
 import { ChevronRight, Settings2 } from "lucide-react";
-import type { IProject } from "@/services/project.service";
-import { useStartImpersonation } from "@/hooks/use-auth-api";
-import { environmentOptions } from "@/constants/environment-options";
+import { useNavigate } from "react-router-dom";
+import { useProjectOverviewRedirect } from "./use-project-overview-redirect";
 
 const INLINE_LIMIT = 3;
 
@@ -26,27 +26,25 @@ type ProjectCardProps = {
 };
 
 export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
-  const { mutateAsync } = useStartImpersonation();
   const navigate = useNavigate();
   const { setTenantGroup, setSelectedProject } = useProjectStore();
+  const { handleClick, isDisabled, isFetching } = useProjectOverviewRedirect({
+    tenantGroupId: project.tenantGroupId,
+  });
 
   const onConfigureClick = () => {
     setTenantGroup(project.tenantGroupId);
-    navigate("/project-overview/environments");
+    handleClick();
   };
 
   const onEnvBadgeClick = async (e: React.MouseEvent, envProject: IProject) => {
+    e.stopPropagation();
     try {
-      e.stopPropagation();
-      const _res = await mutateAsync({
-        targeted_tenant_id: envProject.tenantId,
-      });
       setTenantGroup(envProject.tenantGroupId);
       setSelectedProject(envProject);
-      navigate("/dashboard");
-      window.location.reload();
+      navigate(`/app/${envProject.itemId}/dashboard`);
     } catch (err) {
-      console.log("Failed to switch environment", err);
+      console.error("Failed to switch environment", err);
     }
   };
 
@@ -58,7 +56,7 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
       <button
         key={envProject.environment}
         onClick={(e) => onEnvBadgeClick(e, envProject)}
-        className="group/chip border-primary bg-primary text-primary-foreground hover:text-primary inline-flex cursor-pointer items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium transition-all duration-150 hover:border-[hsl(var(--blocks-primary-50))] hover:bg-[hsl(var(--blocks-primary-25))] active:scale-95"
+        className="group/chip border-primary bg-primary text-primary-foreground hover:text-primary inline-flex cursor-pointer items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium transition-all duration-150 hover:border-blocks-primary-50 hover:bg-blocks-primary-25 active:scale-95"
       >
         {label}
         <ChevronRight className="h-3 w-3 transition-all duration-150 group-hover/chip:translate-x-0.5" />
@@ -73,7 +71,7 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
   const overflowCount = projects.length - INLINE_LIMIT;
 
   return (
-    <Card className="border-border/60 bg-card hover:border-primary/30 group flex h-[160px] flex-col overflow-hidden rounded-xl border p-4 shadow-sm transition-all duration-200 hover:shadow-md">
+    <Card className="border-border/60 bg-card hover:border-primary/30 group flex h-40 flex-col overflow-hidden rounded-xl border p-4 shadow-sm transition-all duration-200 hover:shadow-md">
       <div className="relative flex items-start justify-between gap-2">
         <CardTitle className="line-clamp-3 flex-1 break-all pr-2 text-base font-semibold leading-snug">
           {project.name}
@@ -85,7 +83,8 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="text-primary hover:bg-primary/10 h-8 w-8 flex-shrink-0 transition-colors"
+                  className="text-primary hover:bg-primary/10 h-8 w-8 shrink-0 transition-colors"
+                  disabled={isDisabled || isFetching}
                   onClick={onConfigureClick}
                 >
                   <Settings2 size={16} />

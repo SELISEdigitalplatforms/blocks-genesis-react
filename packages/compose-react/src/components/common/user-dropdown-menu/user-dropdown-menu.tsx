@@ -1,26 +1,36 @@
 import { Button } from "@/components/core/button";
-import { LogOut, UserRound } from "lucide-react";
+import { Building2, Check, LogOut, UserRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/core/dropdown-menu";
-import { useLogout } from "@/hooks/use-auth-api";
+  RenderConditionally,
+  Skeleton,
+} from "@/components";
+import { useLogout } from "@/hooks/use-logout";
 import { getQueryClient } from "@/providers";
-import { useAuthStore, useLanguageViewStore, useProjectStore } from "@/store";
+import {
+  useAuthStore,
+  useLanguageViewStore,
+  useProjectStore,
+  useUserStore,
+} from "@/store";
 import { cn } from "@/lib";
+import { useGetMyOrganizations } from "@/hooks/use-organization";
+import { useGetUserInfo } from "@/hooks/use-user";
 
 function UserAvatar({ size = "sm" }: { size?: "sm" | "lg" }) {
-  const { user: userData } = useAuthStore();
+  const { userDetails: userData } = useUserStore();
+
   const initials =
     `${userData?.firstName?.[0] || ""}${userData?.lastName?.[0] || ""}`.toUpperCase();
 
   const sizeClass = size === "lg" ? "h-14 w-14 text-xl" : "h-10 w-10 text-base";
-
   if (userData?.profileImageUrl) {
     return (
       <img
@@ -46,21 +56,26 @@ function UserAvatar({ size = "sm" }: { size?: "sm" | "lg" }) {
 }
 
 export function UserDropdownMenu() {
-  const { user: userData } = useAuthStore();
+  const { data } = useGetUserInfo();
+  const userData = data?.data;
   const { isPending, mutateAsync } = useLogout();
-  const { reset } = useProjectStore();
+  const { resetProjectStore } = useProjectStore();
   const { setUnAuthenticated, clearTokens } = useAuthStore();
   const { resetSelectedLanguages } = useLanguageViewStore();
+  const { data: myOrgsData, isLoading: isOrgsLoading } =
+    useGetMyOrganizations();
 
   const fullName =
     [userData?.firstName, userData?.lastName].filter(Boolean).join(" ") || "—";
   const email = userData?.email || "";
   const roles = Object.values(userData?.roles || {}).flat();
+  const organizations = myOrgsData?.organizations ?? [];
+  const activeOrgId = userData?.lastUsedOrganizationId ?? null;
 
   const handleLogout = async () => {
     try {
       await mutateAsync();
-      reset();
+      resetProjectStore();
       setUnAuthenticated();
       clearTokens();
       resetSelectedLanguages();
@@ -121,12 +136,64 @@ export function UserDropdownMenu() {
             asChild
             className="cursor-pointer rounded-md px-4 py-3.5"
           >
-            <Link to="/profile" className="flex items-center gap-4">
+            <Link to="/app/profile" className="flex items-center gap-4">
               <UserRound className="h-5 w-5 shrink-0 text-foreground/90" />
               <span className="text-sm font-medium">My Profile</span>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
+
+        <RenderConditionally condition={organizations.length > 0}>
+          <DropdownMenuSeparator className="my-0 bg-border/80" />
+          {/* Organizations */}
+          <DropdownMenuGroup className="p-1.5">
+            <DropdownMenuLabel className="flex items-center gap-4 px-4 py-3.5 text-sm font-medium text-muted-foreground/70">
+              <Building2 className="h-5 w-5 shrink-0 text-foreground/90" />
+              <span className="text-sm font-medium text-foreground">
+                Organizations
+              </span>
+            </DropdownMenuLabel>
+
+            <div className="max-h-56 overflow-y-auto">
+              {isOrgsLoading ? (
+                <div className="space-y-1.5 px-4 py-2">
+                  <Skeleton className="h-9 w-full rounded-md" />
+                  <Skeleton className="h-9 w-full rounded-md" />
+                  <Skeleton className="h-9 w-full rounded-md" />
+                </div>
+              ) : (
+                organizations.map((org) => {
+                  const isActive = org.itemId === activeOrgId;
+                  return (
+                    <DropdownMenuItem
+                      key={org.itemId}
+                      className="cursor-pointer rounded-md px-4 py-3.5"
+                    >
+                      <div className="flex w-full min-w-0 items-center gap-4">
+                        <div className="flex h-5 w-5 shrink-0 items-center justify-center text-sm font-medium text-foreground/90">
+                          {org.name?.[0]?.toUpperCase() || (
+                            <Building2 className="h-5 w-5 shrink-0 text-foreground/90" />
+                          )}
+                        </div>
+                        <span
+                          className={cn(
+                            "min-w-0 flex-1 truncate text-sm font-medium",
+                            isActive ? "text-foreground" : "text-foreground/90",
+                          )}
+                        >
+                          {org.name}
+                        </span>
+                        {isActive && (
+                          <Check className="h-5 w-5 shrink-0 text-foreground/90" />
+                        )}
+                      </div>
+                    </DropdownMenuItem>
+                  );
+                })
+              )}
+            </div>
+          </DropdownMenuGroup>
+        </RenderConditionally>
 
         <DropdownMenuSeparator className="my-0 bg-border/80" />
 

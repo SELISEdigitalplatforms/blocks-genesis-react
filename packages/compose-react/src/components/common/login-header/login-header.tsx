@@ -1,4 +1,4 @@
-import { useBlocksAppConfigStore } from "@/index";
+import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { ThemeSwitcher } from "..";
 import { Logo } from "../logo";
 
@@ -46,14 +46,16 @@ export const LoginHeader = ({
           href={blocksUrl}
           target="_blank"
           rel="noreferrer"
-          className="nav-link">
+          className="nav-link"
+        >
           Blocks
         </a>
         <a
           href={githubUrl}
           target="_blank"
           rel="noreferrer"
-          className="nav-link">
+          className="nav-link"
+        >
           GitHub
         </a>
         <ThemeSwitcher />
