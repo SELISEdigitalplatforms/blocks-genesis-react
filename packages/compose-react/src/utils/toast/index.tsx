@@ -45,7 +45,7 @@ export const showErrorToast = ({
     variant: "destructive",
     title,
     description: Array.isArray(message)
-      ? message.map((item, index) => <div key={index}>{item}</div>)
+      ? message.map((item) => <div key={item}>{item}</div>)
       : message,
   });
 };

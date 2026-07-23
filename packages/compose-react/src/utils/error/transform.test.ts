@@ -52,4 +52,21 @@ describe("ErrorTransformer", () => {
       }),
     ).toEqual({ email: ["too short", "invalid"] });
   });
+
+  it("appends further entries onto an existing array of messages", () => {
+    expect(ErrorTransformer({ errors: { detail: ["a", "b", "c"] } })).toEqual({
+      non_field_error: ["a", "b", "c"],
+    });
+    expect(
+      ErrorTransformer({
+        errors: {
+          detail: [
+            { loc: ["body", "email"], msg: "one" },
+            { loc: ["body", "email"], msg: "two" },
+            { loc: ["body", "email"], msg: "three" },
+          ],
+        },
+      }),
+    ).toEqual({ email: ["one", "two", "three"] });
+  });
 });

@@ -30,9 +30,7 @@ export const getRuntimeEnv = <K extends RuntimeKey>(key: K): string => {
   }
 
   // 3. Check import.meta.env
-  const metaEnvValue = (import.meta.env as Record<string, string | undefined>)[
-    key
-  ];
+  const metaEnvValue = import.meta.env[key];
   return metaEnvValue ?? "";
 };
 

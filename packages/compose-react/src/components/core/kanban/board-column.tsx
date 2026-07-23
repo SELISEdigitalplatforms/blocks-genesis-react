@@ -68,12 +68,21 @@ export const KanbanBoardColumn = ({
     }
   )
 
+  let draggingState: "overlay" | "over" | undefined;
+  if (isOverlay) {
+    draggingState = "overlay";
+  } else if (isDragging) {
+    draggingState = "over";
+  } else {
+    draggingState = undefined;
+  }
+
   return (
     <Card
       ref={setNodeRef}
       style={style}
       className={variants({
-        dragging: isOverlay ? "overlay" : isDragging ? "over" : undefined,
+        dragging: draggingState,
       })}
     >
       <CardHeader className="flex flex-row items-center justify-between border-b border-border bg-muted/50 p-4 text-left font-semibold text-card-foreground">

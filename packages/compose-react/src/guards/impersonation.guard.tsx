@@ -89,9 +89,11 @@ export function ImpersonationSynchronizer({
   const isTriggering = useRef(false);
   const [isImpersonating, setIsImpersonating] = useState(false);
 
-  const getProject = async (tenantId: string) => {
+  // Only safe to call once the token is already impersonated into the tenant we
+  // want — the endpoint resolves the project from the token, not from an argument.
+  const getImpersonatedProject = async () => {
     try {
-      const res = projectService.getProject({ projectId: tenantId });
+      const res = projectService.getProject();
       return (await res).data;
     } catch (error) {
       console.error("Error fetching projects:", error);
@@ -106,7 +108,7 @@ export function ImpersonationSynchronizer({
         let project = projects.find(
           (project) => project.tenantId === impersonatedTenantId,
         );
-        if (!project) project = await getProject(impersonatedTenantId);
+        if (!project) project = await getImpersonatedProject();
         if (!project) {
           isTriggering.current = false;
           setIsImpersonating(false);

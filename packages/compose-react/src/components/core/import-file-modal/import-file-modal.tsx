@@ -140,7 +140,7 @@ export const ImportFileModalContent = ({
                 <AnimatePresence>
                   {files?.map((file, index) => (
                     <motion.div
-                      key={`${file.name}-${index}`}
+                      key={`${file.name}-${file.lastModified}-${file.size}`}
                       layout
                       initial={{ opacity: 0, x: -8 }}
                       animate={{ opacity: 1, x: 0 }}
