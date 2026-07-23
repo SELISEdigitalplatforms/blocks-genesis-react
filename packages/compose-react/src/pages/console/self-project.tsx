@@ -22,11 +22,11 @@ const cardVariants = {
 const SelfProjectLoading = () => {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {Array(8)
-        .fill(null)
-        .map((_item, index) => (
-          <ProjectCardLoadingSkeleton key={index} />
-        ))}
+      {["sk-1", "sk-2", "sk-3", "sk-4", "sk-5", "sk-6", "sk-7", "sk-8"].map(
+        (itemKey) => (
+          <ProjectCardLoadingSkeleton key={itemKey} />
+        ),
+      )}
     </div>
   );
 };

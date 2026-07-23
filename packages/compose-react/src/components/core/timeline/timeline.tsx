@@ -94,7 +94,7 @@ export const Timeline = <TEvent extends TimelineEventBase>({
     >
       {events.map((event, index) => (
         <motion.div
-          key={index}
+          key={`${event.date ?? ""}|${event.time ?? ""}|${event.description ?? ""}`}
           variants={staggerItem}
           transition={fadeTransition}
           className="flex min-h-[66px] w-full"

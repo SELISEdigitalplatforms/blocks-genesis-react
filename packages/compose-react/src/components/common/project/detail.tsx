@@ -29,8 +29,8 @@ const LoadingSkeleton = () => {
         <Skeleton className="h-4 w-32" />
       </div>
       <div className="grid grid-cols-1 gap-4 border-t border-border px-2 py-2 sm:px-4 sm:py-3 md:grid-cols-2 md:gap-6">
-        {Array.from({ length: 6 }).map((_item, index) => (
-          <div key={index}>
+        {["sk-1", "sk-2", "sk-3", "sk-4", "sk-5", "sk-6"].map((itemKey) => (
+          <div key={itemKey}>
             <Skeleton className="h-4 w-1/2" />
             <Skeleton className="mt-2 h-5 w-full" />
           </div>
