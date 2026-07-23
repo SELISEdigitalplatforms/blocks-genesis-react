@@ -1,7 +1,6 @@
 import { logicClient } from "@/lib/http/instances";
 import type {
   IProjectGroup,
-  IGetProjectPayload,
   IGetProjectResponse,
   IDisableProjectPayload,
   IDisableProjectResponse,
@@ -31,9 +30,10 @@ export class ProjectService {
     return logicClient.get(url);
   }
 
-  getProject(payload: IGetProjectPayload): Promise<IGetProjectResponse> {
-    const url = `${PROJECT_ENDPOINTS.GET}?projectId=${payload.projectId}`;
-    return logicClient.get(url);
+  // Resolves the project from the caller's auth context — there is no parameter
+  // to pass; the token's tenant selects the project.
+  getProject(): Promise<IGetProjectResponse> {
+    return logicClient.get(PROJECT_ENDPOINTS.GET);
   }
 
   getEnvRepositories(): Promise<{

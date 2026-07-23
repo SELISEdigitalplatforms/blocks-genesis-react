@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { projectService } from "@/services/project.service";
 import { useProjectStore } from "@/store/project.store";
+import { useImpersonateStore } from "@/store/impersonate.store";
 import type {
   IUpdateProjectPayload,
   IUpdateTenantGroupPayload,
@@ -28,11 +29,33 @@ export const useGetProjects = (options: {
   return query;
 };
 
-export const useGetProject = (options: { projectId: string }) => {
+export const useGetProject = () => {
+  const selectedProject = useProjectStore((state) => state.selectedProject);
+  const { isImpersonated, impersonatedTenantId, originalTenantId } =
+    useImpersonateStore();
+
+  // The endpoint answers "the project of whoever I am", so the tenant the token is
+  // scoped to identifies the response — key the cache on that, not on an id the
+  // server never reads. All consumers mount inside ImpersonationChecker, which
+  // renders nothing until the store is populated, so this is resolved by the time
+  // the query runs.
+  const tokenTenantId = isImpersonated
+    ? impersonatedTenantId
+    : originalTenantId;
+
   return useQuery({
-    queryKey: ["identifier", "project", options],
-    queryFn: () => projectService.getProject(options),
-    enabled: Boolean(options.projectId),
+    queryKey: ["identifier", "project", tokenTenantId],
+    queryFn: () => projectService.getProject(),
+    // Deliberately unchanged from the previous `Boolean(options.projectId)`, which
+    // was fed `selectedProject?.itemId`. It is load-bearing: on project-overview
+    // routes ImpersonationTerminator drops the token to root and no project is
+    // selected, and this keeps the query idle there. Tightening it to also require
+    // the token's tenant to match the selected project is the stricter, more
+    // correct rule — but it depends on `selectedProject.tenantId` and the
+    // impersonation status endpoint agreeing byte-for-byte, which is unverified.
+    // Getting that wrong disables the query permanently and blanks
+    // dashboard-overview (`if (!data?.data) return null`).
+    enabled: Boolean(selectedProject?.itemId),
   });
 };
 
