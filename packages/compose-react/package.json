@@ -1,0 +1,185 @@
+{
+  "name": "@seliseblocks/blocks-kit",
+  "version": "0.0.68",
+  "description": "React app-shell composition package for blocks-kit",
+  "author": "SELISE Blocks",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js",
+      "require": "./dist/components/index.cjs"
+    },
+    "./store": {
+      "types": "./dist/store/index.d.ts",
+      "import": "./dist/store/index.js",
+      "require": "./dist/store/index.cjs"
+    },
+    "./providers": {
+      "types": "./dist/providers/index.d.ts",
+      "import": "./dist/providers/index.js",
+      "require": "./dist/providers/index.cjs"
+    },
+    "./guards": {
+      "types": "./dist/guards/index.d.ts",
+      "import": "./dist/guards/index.js",
+      "require": "./dist/guards/index.cjs"
+    },
+    "./layouts": {
+      "types": "./dist/layouts/index.d.ts",
+      "import": "./dist/layouts/index.js",
+      "require": "./dist/layouts/index.cjs"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js",
+      "require": "./dist/types/index.cjs"
+    },
+    "./hooks": {
+      "types": "./dist/hooks/index.d.ts",
+      "import": "./dist/hooks/index.js",
+      "require": "./dist/hooks/index.cjs"
+    },
+    "./lib": {
+      "types": "./dist/lib/index.d.ts",
+      "import": "./dist/lib/index.js",
+      "require": "./dist/lib/index.cjs"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.cjs"
+    },
+    "./models": {
+      "types": "./dist/models/index.d.ts",
+      "import": "./dist/models/index.js",
+      "require": "./dist/models/index.cjs"
+    },
+    "./pages": {
+      "types": "./dist/pages/index.d.ts",
+      "import": "./dist/pages/index.js",
+      "require": "./dist/pages/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm run build",
+    "clean": "rm -rf dist node_modules .turbo",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:cov": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@hookform/resolvers": "^3.10.0",
+    "@microsoft/signalr": "^10.0.0",
+    "@radix-ui/react-accordion": "^1.2.13",
+    "@radix-ui/react-alert-dialog": "^1.1.16",
+    "@radix-ui/react-aspect-ratio": "^1.1.9",
+    "@radix-ui/react-avatar": "^1.1.12",
+    "@radix-ui/react-checkbox": "^1.3.4",
+    "@radix-ui/react-collapsible": "^1.1.13",
+    "@radix-ui/react-context-menu": "^2.3.0",
+    "@radix-ui/react-dialog": "^1.1.16",
+    "@radix-ui/react-dropdown-menu": "^2.1.17",
+    "@radix-ui/react-hover-card": "^1.1.16",
+    "@radix-ui/react-icons": "^1.3.2",
+    "@radix-ui/react-label": "^2.1.9",
+    "@radix-ui/react-menubar": "^1.1.17",
+    "@radix-ui/react-navigation-menu": "^1.2.15",
+    "@radix-ui/react-popover": "^1.1.16",
+    "@radix-ui/react-progress": "^1.1.9",
+    "@radix-ui/react-radio-group": "^1.4.0",
+    "@radix-ui/react-scroll-area": "^1.2.11",
+    "@radix-ui/react-select": "^2.3.0",
+    "@radix-ui/react-separator": "^1.1.9",
+    "@radix-ui/react-slider": "^1.4.0",
+    "@radix-ui/react-slot": "^1.2.5",
+    "@radix-ui/react-switch": "^1.3.0",
+    "@radix-ui/react-tabs": "^1.1.14",
+    "@radix-ui/react-toast": "^1.2.2",
+    "@radix-ui/react-toggle": "^1.1.11",
+    "@radix-ui/react-toggle-group": "^1.1.12",
+    "@radix-ui/react-tooltip": "^1.2.9",
+    "@tanstack/react-table": "8.21.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
+    "date-fns": "^4.4.0",
+    "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^11.18.2",
+    "fuse.js": "^7.4.2",
+    "input-otp": "^1.4.2",
+    "lucide-react": "^0.445.0",
+    "next-themes": "^0.4.6",
+    "react-day-picker": "8.10.1",
+    "react-dropzone": "^14.4.1",
+    "react-hook-form": "^7.78.0",
+    "react-resizable-panels": "^2.1.9",
+    "recharts": "2.15.4",
+    "tailwind-merge": "^2.6.1",
+    "vaul": "^1.1.2",
+    "zod": "^3.25.76"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "@types/react": ">=18.3.31",
+    "nuqs": "^2.0.0",
+    "react": "^18.3.1 || ^19.0.0",
+    "react-dom": "^18.3.1 || ^19.0.0",
+    "react-router-dom": "^6.0.0",
+    "zustand": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@blocks-kit/eslint-config": "workspace:*",
+    "@blocks-kit/prettier-config": "workspace:*",
+    "@blocks-kit/tsconfig": "workspace:*",
+    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "@vitejs/plugin-react": "^6.0.3",
+    "@vitest/coverage-v8": "^3.2.7",
+    "eslint": "catalog:",
+    "jsdom": "^29.1.1",
+    "msw": "^2.15.0",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-syntax-highlighter": "^16.1.1",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^3.2.7"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

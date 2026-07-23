@@ -9,17 +9,32 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,md,css,json}\" --ignore-path .gitignore",
-    "ui:add": "pnpm --filter @blocks/ui exec shadcn@latest add",
-    "blocks": "pnpm --filter @blocks/cli exec blocks",
-    "cli:dev": "pnpm --filter @blocks/cli exec tsx src/index.ts",
-    "cli:build": "pnpm --filter @blocks/cli build"
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo build && changeset publish",
+    "prepare": "husky"
   },
   "devDependencies": {
-    "prettier": "^3.4.2",
-    "prettier-plugin-tailwindcss": "^0.6.11",
-    "shadcn": "^4.7.0",
-    "turbo": "^2.3.3",
-    "typescript": "^5.7.3"
+    "@changesets/cli": "^2.31.0",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "eslint": "catalog:",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.2",
+    "prettier": "catalog:",
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "shadcn": "^4.10.0",
+    "turbo": "^2.9.16",
+    "typescript": "^5.9.3"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "pnpm exec eslint --fix --max-warnings 0",
+      "pnpm exec prettier --write"
+    ],
+    "*.{json,md,yaml,yml,css}": [
+      "pnpm exec prettier --write"
+    ]
   },
   "engines": {
     "node": ">=20"
