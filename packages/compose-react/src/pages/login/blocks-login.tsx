@@ -393,9 +393,7 @@ export const BlocksLoginPage = ({
                   ? item.featureChips
                   : item.features;
                 const url = item.url;
-                const cta = isCarouselProduct
-                  ? item.cta
-                  : item.cta;
+                const cta = item.cta;
 
                 return (
                   <div className="sdk-card" key={cardKey}>
