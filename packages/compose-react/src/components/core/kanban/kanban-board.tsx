@@ -227,7 +227,7 @@ export const KanbanBoard = () => {
 
     if (!isActiveATask) return
 
-    if (isActiveATask && isOverATask) {
+    if (isOverATask) {
       setTasks((prev) => {
         const activeIndex = prev.findIndex((t) => t.id === activeId)
         const overIndex = prev.findIndex((t) => t.id === overId)
@@ -247,7 +247,7 @@ export const KanbanBoard = () => {
 
     const isOverAColumn = overData?.type === "Column"
 
-    if (isActiveATask && isOverAColumn) {
+    if (isOverAColumn) {
       setTasks((prev) => {
         const activeIndex = prev.findIndex((t) => t.id === activeId)
         const activeTaskItem = prev[activeIndex]
