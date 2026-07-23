@@ -49,12 +49,21 @@ export const KanbanTaskCard = ({ task, isOverlay }: KanbanTaskCardProps) => {
     },
   })
 
+  let draggingState: "overlay" | "over" | undefined;
+  if (isOverlay) {
+    draggingState = "overlay";
+  } else if (isDragging) {
+    draggingState = "over";
+  } else {
+    draggingState = undefined;
+  }
+
   return (
     <Card
       ref={setNodeRef}
       style={style}
       className={variants({
-        dragging: isOverlay ? "overlay" : isDragging ? "over" : undefined,
+        dragging: draggingState,
       })}
     >
       <CardHeader className="relative flex flex-row justify-between border-b border-border bg-muted/30 px-3 py-3">

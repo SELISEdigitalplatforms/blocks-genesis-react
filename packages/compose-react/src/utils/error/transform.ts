@@ -33,11 +33,14 @@ export function ErrorTransformer(error: unknown): ErrorRecord {
   const result: ErrorRecord = {};
   for (const entry of detail) {
     if (typeof entry === "string") {
-      result.non_field_error = result.non_field_error
-        ? Array.isArray(result.non_field_error)
-          ? [...result.non_field_error, entry]
-          : [result.non_field_error, entry]
-        : entry;
+      const existingNonField = result.non_field_error;
+      if (!existingNonField) {
+        result.non_field_error = entry;
+      } else if (Array.isArray(existingNonField)) {
+        result.non_field_error = [...existingNonField, entry];
+      } else {
+        result.non_field_error = [existingNonField, entry];
+      }
       continue;
     }
 
