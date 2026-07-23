@@ -24,8 +24,8 @@ const AppIntegrationLoadingSkeleton = () => (
       <Skeleton className="h-4 w-36" />
     </div>
     <div className="grid grid-cols-1 gap-4 border-t border-border px-2 py-2 sm:grid-cols-2 sm:px-4 sm:py-3">
-      {Array.from({ length: 2 }).map((_item, index) => (
-        <div key={index}>
+      {["sk-1", "sk-2"].map((itemKey) => (
+        <div key={itemKey}>
           <Skeleton className="h-4 w-1/3" />
           <Skeleton className="mt-2 h-5 w-full" />
         </div>

@@ -9,8 +9,8 @@ export const TableLoadingSkeleton = <TData,>({
   table,
 }: TableLoadingSkeletonProps<TData>) => (
   <TableBody>
-    {Array.from({ length: 5 }).map((_, index) => (
-      <TableRow key={index}>
+    {["sk-1", "sk-2", "sk-3", "sk-4", "sk-5"].map((rowKey) => (
+      <TableRow key={rowKey}>
         <TableCell colSpan={table.getVisibleLeafColumns().length}>
           <Skeleton className="h-12 w-full rounded-xl" />
         </TableCell>

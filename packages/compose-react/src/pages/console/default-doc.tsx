@@ -79,8 +79,8 @@ const data = [
 export const DefaultDoc = () => {
   return (
     <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-      {data.map((item, index) => (
-        <DocCard key={index} {...item} />
+      {data.map((item) => (
+        <DocCard key={item.url} {...item} />
       ))}
     </div>
   );
