@@ -3,7 +3,7 @@ on:
   push:
     branches: [inception]
   pull_request:
-    branches: [inception]
+    branches: [inception, dev, main]
 jobs:
   repo-hygiene:
     runs-on: ubuntu-latest
