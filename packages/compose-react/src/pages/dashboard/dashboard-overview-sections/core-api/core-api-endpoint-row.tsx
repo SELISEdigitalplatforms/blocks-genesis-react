@@ -1,8 +1,8 @@
 import { Terminal } from "lucide-react";
-import { CopyToClipboardButton } from "@/index";
 import { cn } from "@/lib/utils";
-import { buildCurlCommand } from "../util";
+import { buildCurlCommand } from "./util";
 import type { HttpMethod, ICoreApiEndpoint } from "./core-api-endpoint.model";
+import { CopyToClipboardButton } from "@/components/core/copy-to-clipboard-button";
 
 const METHOD_BADGE_CLASSES: Record<HttpMethod, string> = {
   GET: "bg-blue-50 text-blue-700",

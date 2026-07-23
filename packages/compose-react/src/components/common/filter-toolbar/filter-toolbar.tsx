@@ -1,7 +1,15 @@
 import { type ReactNode, useRef } from "react";
-import { FilterControls } from ".";
+import { FilterControls } from "./filter-controls";
 import { ResetButton } from "./reset-button/reset-button";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle, SheetTrigger, Button } from "@/components/core";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+  SheetTrigger,
+  Button,
+} from "@/components/core";
 import { Filter } from "lucide-react";
 import { deepEqual } from "@/utils/equal";
 
@@ -74,14 +82,16 @@ export const FilterToolBarMobileView = ({
             <Button
               variant="outline"
               size="sm"
-              className="relative h-8 w-8 p-0">
+              className="relative h-8 w-8 p-0"
+            >
               <Filter className="h-4 w-4" />
             </Button>
           </SheetTrigger>
           <SheetContent
             side="right"
             className="w-full"
-            aria-describedby="filter-description">
+            aria-describedby="filter-description"
+          >
             <SheetTitle className="mb-4">Filter</SheetTitle>
             <SheetDescription></SheetDescription>
             <div className="flex flex-col space-y-4">
@@ -131,9 +141,7 @@ export const FilterToolbar = <T extends Record<string, unknown>>({
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-expect-error
         value={values[item.key]}
-        onChange={(val: unknown) =>
-          changeHandler(item.key, val as T[keyof T])
-        }
+        onChange={(val: unknown) => changeHandler(item.key, val as T[keyof T])}
         {...item.props}
         key={String(item.key)}
       />

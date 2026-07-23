@@ -1,4 +1,4 @@
-import type { BlocksProduct } from "./blocks-login";
+import type { BlocksProduct } from "./login.types";
 
 export const BLOCKS_PRODUCTS: BlocksProduct[] = [
   {
