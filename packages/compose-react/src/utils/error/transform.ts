@@ -7,6 +7,50 @@ function formatFieldName(fieldPath: string): string {
   );
 }
 
+function appendNonFieldError(result: ErrorRecord, entry: string): void {
+  const existing = result.non_field_error;
+  if (!existing) {
+    result.non_field_error = entry;
+  } else if (Array.isArray(existing)) {
+    result.non_field_error = [...existing, entry];
+  } else {
+    result.non_field_error = [existing, entry];
+  }
+}
+
+function appendFieldError(
+  result: ErrorRecord,
+  fieldPath: string,
+  message: string,
+): void {
+  const existing = result[fieldPath];
+  if (!existing) {
+    result[fieldPath] = message;
+  } else if (Array.isArray(existing)) {
+    existing.push(message);
+  } else {
+    result[fieldPath] = [existing, message];
+  }
+}
+
+function applyDetailEntry(result: ErrorRecord, entry: unknown): void {
+  if (!entry || typeof entry !== "object") return;
+  const loc = (entry as { loc?: unknown }).loc;
+  const msg = (entry as { msg?: unknown }).msg;
+  if (!Array.isArray(loc) || typeof msg !== "string") return;
+
+  const fieldPath = loc
+    .filter((item) => !["body", "query", "path"].includes(String(item)))
+    .join(".");
+  if (!fieldPath) return;
+
+  const normalizedMessage =
+    msg === "field required"
+      ? `${formatFieldName(fieldPath)} is required`
+      : msg;
+  appendFieldError(result, fieldPath, normalizedMessage);
+}
+
 export function ErrorTransformer(error: unknown): ErrorRecord {
   const fallback = { non_field_error: "Something went wrong" };
 
@@ -33,38 +77,10 @@ export function ErrorTransformer(error: unknown): ErrorRecord {
   const result: ErrorRecord = {};
   for (const entry of detail) {
     if (typeof entry === "string") {
-      const existingNonField = result.non_field_error;
-      if (!existingNonField) {
-        result.non_field_error = entry;
-      } else if (Array.isArray(existingNonField)) {
-        result.non_field_error = [...existingNonField, entry];
-      } else {
-        result.non_field_error = [existingNonField, entry];
-      }
+      appendNonFieldError(result, entry);
       continue;
     }
-
-    if (!entry || typeof entry !== "object") continue;
-    const loc = (entry as { loc?: unknown }).loc;
-    const msg = (entry as { msg?: unknown }).msg;
-    if (!Array.isArray(loc) || typeof msg !== "string") continue;
-
-    const fieldPath = loc
-      .filter((item) => !["body", "query", "path"].includes(String(item)))
-      .join(".");
-    if (!fieldPath) continue;
-
-    const normalizedMessage =
-      msg === "field required"
-        ? `${formatFieldName(fieldPath)} is required`
-        : msg;
-    if (!result[fieldPath]) {
-      result[fieldPath] = normalizedMessage;
-    } else if (Array.isArray(result[fieldPath])) {
-      result[fieldPath].push(normalizedMessage);
-    } else {
-      result[fieldPath] = [result[fieldPath], normalizedMessage];
-    }
+    applyDetailEntry(result, entry);
   }
 
   return Object.keys(result).length ? result : fallback;
