@@ -231,18 +231,31 @@ export const FileUploader = forwardRef<
       [value, activeIndex, removeFileFromSet],
     );
 
+    const fileUploaderContextValue = React.useMemo(
+      () => ({
+        dropzoneState,
+        isLOF,
+        isFileTooBig,
+        removeFileFromSet,
+        activeIndex,
+        setActiveIndex,
+        orientation,
+        direction,
+      }),
+      [
+        dropzoneState,
+        isLOF,
+        isFileTooBig,
+        removeFileFromSet,
+        activeIndex,
+        setActiveIndex,
+        orientation,
+        direction,
+      ],
+    );
+
     return (
-      <FileUploaderContext.Provider
-        value={{
-          dropzoneState,
-          isLOF,
-          isFileTooBig,
-          removeFileFromSet,
-          activeIndex,
-          setActiveIndex,
-          orientation,
-          direction,
-        }}>
+      <FileUploaderContext.Provider value={fileUploaderContextValue}>
         <div
           ref={ref}
           tabIndex={0}
