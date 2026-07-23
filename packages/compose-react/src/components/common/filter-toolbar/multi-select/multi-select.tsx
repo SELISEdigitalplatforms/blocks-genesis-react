@@ -1,19 +1,7 @@
 import { CheckIcon, PlusCircledIcon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
 import { useIsMobile, usePopoverWidth } from "@/hooks";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/core";
-import { Button } from "@/components/core";
-import { Separator } from "@/components/core";
-import { Badge } from "@/components/core";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from "@/components/core";
+import { Popover, PopoverContent, PopoverTrigger, Button, Separator, Badge, Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/core";
 
 interface MultiSelectProps {
   label?: string;

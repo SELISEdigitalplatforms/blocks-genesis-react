@@ -1,15 +1,7 @@
 import { type ReactNode, useRef } from "react";
 import { FilterControls } from ".";
 import { ResetButton } from "./reset-button/reset-button";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/core";
-import { Button } from "@/components/core";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle, SheetTrigger, Button } from "@/components/core";
 import { Filter } from "lucide-react";
 import { deepEqual } from "@/utils/equal";
 
