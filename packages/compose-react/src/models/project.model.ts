@@ -22,9 +22,6 @@ export interface IProject {
   tenantSlug: string;
 }
 
-export interface IGetProjectPayload {
-  projectId: string;
-}
 export interface IGetProjectResponse {
   data: IProject;
   errors: unknown | null;
