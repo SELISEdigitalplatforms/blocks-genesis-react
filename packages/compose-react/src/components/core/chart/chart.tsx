@@ -43,8 +43,10 @@ const ChartContainer = React.forwardRef<
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`
   const ResponsiveContainer = RechartsPrimitive.ResponsiveContainer as any
 
+  const chartContextValue = React.useMemo(() => ({ config }), [config])
+
   return (
-    <ChartContext.Provider value={{ config }}>
+    <ChartContext.Provider value={chartContextValue}>
       <div
         data-chart={chartId}
         ref={ref}
