@@ -1,8 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components";
-import { Skeleton } from "@/components";
+import { Card, CardContent, CardHeader, CardTitle, Skeleton, CopyableSnippet } from "@/components";
 import { useGetProject } from "@/hooks/use-project";
 import { useProjectStore } from "@/store";
-import { CopyableSnippet } from "@/components";
 import { getProjectBlocksApiUrl } from "@/utils/domain";
 
 const LoadingSkeleton = () => (

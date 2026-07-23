@@ -1,11 +1,6 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { Badge } from "@/components";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components";
+import { Badge, Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components";
 import { cn } from "@/lib/utils";
 import { CoreApiEndpointRow } from "./core-api-endpoint-row";
 import type { ICoreApiEndpoint } from "./core-api-endpoint.model";

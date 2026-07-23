@@ -1,15 +1,7 @@
 import { type ReactNode, useRef } from "react";
 import { FilterControls } from ".";
 import { ResetButton } from "./reset-button/reset-button";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/core";
-import { Button } from "@/components/core";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle, SheetTrigger, Button } from "@/components/core";
 import { Filter } from "lucide-react";
 import { deepEqual } from "@/utils/equal";
 
@@ -84,11 +76,6 @@ export const FilterToolBarMobileView = ({
               size="sm"
               className="relative h-8 w-8 p-0">
               <Filter className="h-4 w-4" />
-              {/* {activeFilter > 0 && (
-              <Badge className="absolute -right-2 -top-2 h-4 w-4 px-1 text-xs font-medium">
-                {activeFilter}
-              </Badge>
-            )} */}
             </Button>
           </SheetTrigger>
           <SheetContent
@@ -145,7 +132,7 @@ export const FilterToolbar = <T extends Record<string, unknown>>({
         //@ts-expect-error
         value={values[item.key]}
         onChange={(val: unknown) =>
-          changeHandler(item.key as keyof T, val as T[keyof T])
+          changeHandler(item.key, val as T[keyof T])
         }
         {...item.props}
         key={String(item.key)}

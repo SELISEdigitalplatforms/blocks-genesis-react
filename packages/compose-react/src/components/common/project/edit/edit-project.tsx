@@ -1,6 +1,5 @@
-import { Dialog, DialogTrigger } from "@/components";
+import { Dialog, DialogTrigger, Button } from "@/components";
 import { Edit } from "lucide-react";
-import { Button } from "@/components";
 import { EditProjectDialog } from "./edit-project-dialog";
 import { useState } from "react";
 import { useProjectStore } from "@/store";
