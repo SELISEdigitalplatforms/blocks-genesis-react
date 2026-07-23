@@ -1,7 +1,7 @@
 import type {
   ToastActionElement,
   ToastProps,
-} from "@/components/core/toaster/toast";
+} from "@/components/core/toaster/toast.types";
 import * as React from "react";
 
 const TOAST_LIMIT = 1;

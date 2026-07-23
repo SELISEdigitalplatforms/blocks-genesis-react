@@ -7,25 +7,12 @@ import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { getRuntimeEnv } from "@/lib/runtime-env";
 import { cn } from "@/lib/utils";
 import { initiateService } from "@/services/initiate.service";
-import type { ServiceName } from "@/store";
-import type { ForwardToPaths, RuntimeKey } from "@/types";
+import type { ForwardToPaths } from "@/types";
 import { getForwardedToPath } from "@/utils";
 import { Grip } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { filteredAppSwitcherData } from "./app-switcher.constant";
-
-export interface BlocksApp {
-  key: ServiceName;
-  label: string;
-  description: string;
-  url: string;
-  icon: React.ReactNode;
-  clientId: RuntimeKey;
-  redirectUri: RuntimeKey;
-  initiateUrl: string;
-  isLoading: boolean;
-  isDisabled: boolean | (() => boolean);
-}
+import type { BlocksApp } from "./app-switcher.types";
 
 const AppIcon = ({ icon, label }: { icon: React.ReactNode; label: string }) => {
   return (
