@@ -21,27 +21,33 @@ export function NotificationList({
 }: NotificationListProps) {
   const isEmpty = notifications.length === 0;
 
+  const renderNotifications = () => {
+    if (isLoading && isEmpty) {
+      return <div className="p-4 text-center text-sm text-muted-foreground" />;
+    }
+    if (isEmpty) {
+      return (
+        <div className="p-4 text-center text-sm text-muted-foreground">
+          No notifications
+        </div>
+      );
+    }
+    return notifications.map((notification, idx) => (
+      <NotificationItem
+        key={notification.id || idx}
+        notification={notification}
+        onMarkAsRead={onMarkAsRead}
+      />
+    ));
+  };
+
   return (
     <div
       className="max-h-[400px] overflow-y-auto"
       ref={listRef}
       onScroll={onScroll}
     >
-      {isLoading && isEmpty ? (
-        <div className="p-4 text-center text-sm text-muted-foreground" />
-      ) : isEmpty ? (
-        <div className="p-4 text-center text-sm text-muted-foreground">
-          No notifications
-        </div>
-      ) : (
-        notifications.map((notification, idx) => (
-          <NotificationItem
-            key={notification.id || idx}
-            notification={notification}
-            onMarkAsRead={onMarkAsRead}
-          />
-        ))
-      )}
+      {renderNotifications()}
       {isFetching && !isEmpty && (
         <div className="p-2 text-center text-xs text-muted-foreground">
           Loading...
