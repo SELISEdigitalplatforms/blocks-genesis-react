@@ -1,30 +1,66 @@
+# Node modules
 node_modules
-.turbo
+
+# Build output
 dist
-.DS_Store
-*.log
+
+#Build info
+*.tsbuildinfo
+
+# Environment variables
 .env
 .env.local
 .env.*.local
+
+# VS Code
 .vscode/*
 !.vscode/extensions.json
-.idea
-coverage
 
-#docs 
+# Documentation
 docs/
 
 #graphify
 graphify-out/
 
-
 #cursor
 .cursor/
-
 
 #change
 change.md
 
-
 #AGENTS
 AGENTS.md
+
+# Miscellaneous
+.idea
+coverage
+.turbo
+.DS_Store
+*.log
+registry.json
+
+# --- AI assistant artifacts: never track ---
+.claude/
+.cursor/
+.codex/
+.hermes/
+.aider*
+.windsurf/
+.gemini/
+.kiro/
+.trae/
+graphify-out/
+CLAUDE.md
+GEMINI.md
+AGENTS.md
+.cursorrules
+.mcp.json
+copilot-instructions.md
+
+# --- markdown policy: only standard docs tracked ---
+*.md
+!README.md
+!LICENSE.md
+!CONTRIBUTING.md
+!SECURITY.md
+!CODE_OF_CONDUCT.md

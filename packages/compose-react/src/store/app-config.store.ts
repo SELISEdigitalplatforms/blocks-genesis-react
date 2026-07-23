@@ -1,0 +1,48 @@
+import { createStore } from "zustand";
+
+export type ServiceName =
+  | "blocks-os"
+  | "blocks-utilities"
+  | "blocks-logic"
+  | "blocks-monitor"
+  | "blocks-release"
+  | "blocks-iam"
+  | "blocks-studio"
+  | "blocks-agents"
+  | "blocks-data"
+  | "blocks-localization";
+
+export interface AppConfig {
+  name: ServiceName;
+  appLogoUrl:
+    | {
+        dark?: string;
+        light?: string;
+      }
+    | string;
+}
+
+export interface AppConfigStoreState {
+  config: AppConfig;
+  getConfig: () => AppConfig;
+  setConfig: (nextConfig: Partial<AppConfig>) => void;
+  resetConfig: () => void;
+}
+
+export const CreateAppConfigStore = (initialConfig?: Partial<AppConfig>) =>
+  createStore<AppConfigStoreState>()((set, get) => ({
+    config: { name: "blocks-os", appLogoUrl: "", ...initialConfig },
+    getConfig: () => get().config,
+    setConfig: (nextConfig) => {
+      set((state) => ({
+        ...state,
+        config: { ...state.config, ...nextConfig },
+      }));
+    },
+    resetConfig: () => {
+      set((state) => ({
+        ...state,
+        config: { name: "blocks-os", appLogoUrl: "", ...initialConfig },
+      }));
+    },
+  }));
