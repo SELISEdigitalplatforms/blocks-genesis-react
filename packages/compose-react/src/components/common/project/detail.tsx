@@ -21,15 +21,6 @@ const ProjectDetailItem = ({ label, children }: ProjectDetailItemProps) => (
   </div>
 );
 
-// const RenderProjectUrl = ({ project }: { project?: IProject }) => {
-//   if (!project) return null;
-//   const url = getProjectBlocksApiUrl(project);
-//   return (
-//     <CopyToClipboardButton textToCopy={url || ""} isHoverable>
-//       {url}
-//     </CopyToClipboardButton>
-//   );
-// };
 
 const LoadingSkeleton = () => {
   return (
@@ -80,18 +71,6 @@ export const ProjectDetail = ({
             </CopyToClipboardButton>
           </div>
         </ProjectDetailItem>
-        {/* {project?.tenantSlug && (
-          <ProjectDetailItem label="Project Slug">
-            <div className="flex h-6 items-center gap-2">
-              <CopyToClipboardButton
-                textToCopy={project?.tenantSlug || ""}
-                isHoverable
-              >
-                {project?.tenantSlug}
-              </CopyToClipboardButton>
-            </div>
-          </ProjectDetailItem>
-        )} */}
         <ProjectDetailItem label="Environment">
           {project?.environment === "prod" ? (
             <Button className="h-6 rounded-xl" size="sm" variant="default">
