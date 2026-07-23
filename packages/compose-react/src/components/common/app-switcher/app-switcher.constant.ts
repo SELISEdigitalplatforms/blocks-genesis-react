@@ -8,7 +8,7 @@ import OsIcon from "@/assets/images/apps/v2/OS.svg";
 import ReleaseIcon from "@/assets/images/apps/v2/Release.svg";
 import StudioIcon from "@/assets/images/apps/v2/Studio.svg";
 import UtilitiesIcon from "@/assets/images/apps/v2/Utilities.svg";
-import type { BlocksApp } from "./app-switcher";
+import type { BlocksApp } from "./app-switcher.types";
 
 const APP_SWITCHER_DATA: BlocksApp[] = [
   {

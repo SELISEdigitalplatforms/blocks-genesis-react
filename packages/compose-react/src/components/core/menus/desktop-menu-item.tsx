@@ -59,6 +59,49 @@ const ChildMenuItem = ({ menu, isSidebarOpen }: ChildMenuItemProps) => {
   );
 };
 
+function DesktopLeafMenuItem({
+  menu,
+  isSidebarOpen,
+  isActiveMenu,
+}: {
+  menu: MenuItemType;
+  isSidebarOpen: boolean;
+  isActiveMenu: boolean;
+}) {
+  return (
+    <SidebarCollapsedTooltip label={menu.name} show={!isSidebarOpen}>
+      <div className={parentClasses(isSidebarOpen, isActiveMenu)}>
+        <Link
+          to={menu.path}
+          className={cn(
+            "flex items-center gap-3",
+            !isSidebarOpen && "justify-center",
+            menu.disabled && "pointer-events-none opacity-50",
+          )}
+        >
+          {menu.icon ? <menu.icon className="h-5 w-5 shrink-0" /> : null}
+          {isSidebarOpen ? (
+            <span className="relative">
+              {menu.name}
+              {menu.badge ? (
+                <Badge
+                  variant="secondary"
+                  className="absolute -top-2 left-full ml-1 h-4 px-1 text-[9px] font-semibold uppercase text-primary"
+                >
+                  {menu.badge}
+                </Badge>
+              ) : null}
+            </span>
+          ) : null}
+        </Link>
+        {isActiveMenu ? (
+          <div className="absolute right-0 top-2.5 h-5 w-1 rounded-lg bg-primary" />
+        ) : null}
+      </div>
+    </SidebarCollapsedTooltip>
+  );
+}
+
 export function DesktopMenuItem({
   menu,
   isSidebarOpen,
@@ -124,36 +167,11 @@ export function DesktopMenuItem({
 
   if (!hasChildren) {
     return (
-      <SidebarCollapsedTooltip label={menu.name} show={!isSidebarOpen}>
-        <div className={parentClasses(isSidebarOpen, isActiveMenu)}>
-          <Link
-            to={menu.path}
-            className={cn(
-              "flex items-center gap-3",
-              !isSidebarOpen && "justify-center",
-              menu.disabled && "pointer-events-none opacity-50",
-            )}
-          >
-            {menu.icon ? <menu.icon className="h-5 w-5 shrink-0" /> : null}
-            {isSidebarOpen ? (
-              <span className="relative">
-                {menu.name}
-                {menu.badge ? (
-                  <Badge
-                    variant="secondary"
-                    className="absolute -top-2 left-full ml-1 h-4 px-1 text-[9px] font-semibold uppercase text-primary"
-                  >
-                    {menu.badge}
-                  </Badge>
-                ) : null}
-              </span>
-            ) : null}
-          </Link>
-          {isActiveMenu ? (
-            <div className="absolute right-0 top-2.5 h-5 w-1 rounded-lg bg-primary" />
-          ) : null}
-        </div>
-      </SidebarCollapsedTooltip>
+      <DesktopLeafMenuItem
+        menu={menu}
+        isSidebarOpen={isSidebarOpen}
+        isActiveMenu={isActiveMenu}
+      />
     );
   }
 

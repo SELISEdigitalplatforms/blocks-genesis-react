@@ -1,8 +1,12 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components";
-import { Skeleton } from "@/components";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CopyableSnippet,
+  Skeleton,
+} from "@/components";
 import { useGetProject } from "@/hooks/use-project";
-import { useProjectStore } from "@/store";
-import { CopyableSnippet } from "@/components";
 import { getProjectBlocksApiUrl } from "@/utils/domain";
 
 const LoadingSkeleton = () => (
@@ -21,11 +25,7 @@ const LoadingSkeleton = () => (
 );
 
 export const ProjectCliSnippet = () => {
-  const { itemId } = useProjectStore().selectedProject || {
-    itemId: "",
-    tenantId: "",
-  };
-  const { data, isLoading } = useGetProject({ projectId: itemId });
+  const { data, isLoading } = useGetProject();
   const cliSetupCommand = "npm install -g @seliseblocks/cli";
   const blocksMicroservicesUrl = getProjectBlocksApiUrl(data?.data);
   const projectSetupCommand =

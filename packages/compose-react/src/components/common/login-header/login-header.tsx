@@ -17,17 +17,14 @@ export const LoginHeader = ({
     config: { appLogoUrl },
   } = useBlocksAppConfigStore((state) => state);
 
-  const appLightLogo = appLogoUrl
-    ? typeof appLogoUrl === "string"
-      ? appLogoUrl
-      : appLogoUrl.light
-    : undefined;
+  const resolveLogo = (variant: "light" | "dark") => {
+    if (!appLogoUrl) return undefined;
+    if (typeof appLogoUrl === "string") return appLogoUrl;
+    return appLogoUrl[variant];
+  };
 
-  const appDarkLogo = appLogoUrl
-    ? typeof appLogoUrl === "string"
-      ? appLogoUrl
-      : appLogoUrl.dark
-    : undefined;
+  const appLightLogo = resolveLogo("light");
+  const appDarkLogo = resolveLogo("dark");
   return (
     <nav className="site-nav">
       <Logo

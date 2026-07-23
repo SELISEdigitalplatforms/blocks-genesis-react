@@ -20,7 +20,9 @@ import type { DataTableProps } from "./data-table.types";
 import { TableLoadingSkeleton } from "./data-table-skeleton";
 
 // Stable no-op avoids creating a new function reference on every render
-const noop = () => {};
+const noop = () => {
+  /* intentional no-op */
+};
 
 export function DataTable<TData>(props: DataTableProps<TData>) {
   const {
