@@ -6,16 +6,8 @@ import {
   type ReactNode,
 } from "react";
 import { X } from "lucide-react";
-import { Button } from "@/components/core";
-import { Input } from "@/components/core";
+import { Button, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/core";
 import { debounce } from "@/utils/functions";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/core";
 import { cn } from "@/lib/utils";
 
 type ValueType = { selected: string; value: string };

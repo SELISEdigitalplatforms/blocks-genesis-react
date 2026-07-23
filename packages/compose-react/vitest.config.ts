@@ -22,7 +22,7 @@ export default defineConfig({
     exclude: ["**/*.test-d.ts", "node_modules", "dist"],
     coverage: {
       provider: "v8",
-      reporter: ["text-summary", "json-summary"],
+      reporter: ["text-summary", "json-summary", "lcov"],
       include: ["src/**/*.{ts,tsx}"],
       exclude: [
         "src/**/*.d.ts",

@@ -20,6 +20,14 @@ export const WizardStepIndicator = ({
   className,
 }: WizardStepIndicatorProps) => {
   const CheckIcon = Check as any
+
+  let indicatorColor = "hsl(var(--muted-foreground))"
+  if (isCompleted) {
+    indicatorColor = "hsl(var(--primary-foreground))"
+  } else if (isCurrent) {
+    indicatorColor = "hsl(var(--foreground))"
+  }
+
   return (
     <motion.span
       layout
@@ -28,12 +36,7 @@ export const WizardStepIndicator = ({
         scale: isCurrent ? 1.06 : 1,
         borderColor:
           isCompleted || isCurrent ? "hsl(var(--foreground))" : "hsl(var(--border))",
-        color:
-          isCompleted || isCurrent
-            ? isCompleted
-              ? "hsl(var(--primary-foreground))"
-              : "hsl(var(--foreground))"
-            : "hsl(var(--muted-foreground))",
+        color: indicatorColor,
         backgroundColor: isCompleted ? "hsl(var(--foreground))" : "transparent",
       }}
       transition={fadeTransition}

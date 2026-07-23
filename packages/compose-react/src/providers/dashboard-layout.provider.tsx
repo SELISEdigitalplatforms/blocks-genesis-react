@@ -167,22 +167,37 @@ export function DashboardLayoutProvider({
     setServicesSearchTerm(term);
   }, []);
 
+  const contextValue = React.useMemo(
+    () => ({
+      isSidebarOpen,
+      toggleSidebar,
+      closeSidebar,
+      closeWithoutPersist,
+      isSidebarSubMenuOpen,
+      toggleSidebarSubMenu,
+      showSidebarSubMenu,
+      subMenuId,
+      updateSubMenuId,
+      servicesSearchTerm,
+      updateServicesSearchTerm,
+    }),
+    [
+      isSidebarOpen,
+      toggleSidebar,
+      closeSidebar,
+      closeWithoutPersist,
+      isSidebarSubMenuOpen,
+      toggleSidebarSubMenu,
+      showSidebarSubMenu,
+      subMenuId,
+      updateSubMenuId,
+      servicesSearchTerm,
+      updateServicesSearchTerm,
+    ],
+  );
+
   return (
-    <SidebarContext.Provider
-      value={{
-        isSidebarOpen,
-        toggleSidebar,
-        closeSidebar,
-        closeWithoutPersist,
-        isSidebarSubMenuOpen,
-        toggleSidebarSubMenu,
-        showSidebarSubMenu,
-        subMenuId,
-        updateSubMenuId,
-        servicesSearchTerm,
-        updateServicesSearchTerm,
-      }}
-    >
+    <SidebarContext.Provider value={contextValue}>
       {children}
     </SidebarContext.Provider>
   );

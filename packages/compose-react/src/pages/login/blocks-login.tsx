@@ -377,25 +377,23 @@ export const BlocksLoginPage = ({
               {carouselCards.map((item, i) => {
                 const isCarouselProduct = "appName" in item;
                 const cardKey = isCarouselProduct
-                  ? `${(item as (typeof otherProducts)[number]).name}-${i}`
-                  : `${(item as LoginCarouselItem).title}-${i}`;
+                  ? `${item.name}-${i}`
+                  : `${item.title}-${i}`;
                 const displayName = isCarouselProduct
-                  ? (item as (typeof otherProducts)[number]).appName
-                  : (item as LoginCarouselItem).title.replace(/^Blocks\s+/, "");
+                  ? item.appName
+                  : item.title.replace(/^Blocks\s+/, "");
                 const description = isCarouselProduct
-                  ? (item as (typeof otherProducts)[number]).shortDescription
-                  : (item as LoginCarouselItem).description;
+                  ? item.shortDescription
+                  : item.description;
                 const badge = item.badge;
                 const stacks = isCarouselProduct
                   ? undefined
-                  : (item as LoginCarouselItem).stacks;
+                  : item.stacks;
                 const features = isCarouselProduct
-                  ? (item as (typeof otherProducts)[number]).featureChips
-                  : (item as LoginCarouselItem).features;
+                  ? item.featureChips
+                  : item.features;
                 const url = item.url;
-                const cta = isCarouselProduct
-                  ? (item as (typeof otherProducts)[number]).cta
-                  : (item as LoginCarouselItem).cta;
+                const cta = item.cta;
 
                 return (
                   <div className="sdk-card" key={cardKey}>

@@ -42,46 +42,48 @@ export const Timeline = <TEvent extends TimelineEventBase>({
 }: TimelineProps<TEvent>) => {
   const isMobile = useIsMobile();
 
-  const defaultRightContent = (event: TEvent) => (
-    <motion.div className="relative flex w-full flex-row justify-between" layout>
-      <p className="text-muted-foreground w-[75%] text-xs font-medium leading-5 md:w-[55%] md:text-base md:leading-6">
-        {event.description}
-      </p>
-      {onRevert ? (
-        isMobile ? (
-          <div className="flex w-[25%] justify-end">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button type="button" variant="ghost" className="size-5 p-0">
-                  <EllipsisVertical className="size-5" aria-hidden />
-                  <span className="sr-only">{revertLabel}</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem className="cursor-pointer" onClick={() => onRevert(event)}>
-                  <RotateCcw className="size-4" aria-hidden />
-                  <span className="ml-2">{revertLabel}</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        ) : (
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Button
-              type="button"
-              size="default"
-              variant="outline"
-              className="gap-2"
-              onClick={() => onRevert(event)}
-            >
-              <RotateCcw className="size-4" aria-hidden />
-              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">{revertLabel}</span>
+  const defaultRightContent = (event: TEvent) => {
+    const revertAction = isMobile ? (
+      <div className="flex w-[25%] justify-end">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button type="button" variant="ghost" className="size-5 p-0">
+              <EllipsisVertical className="size-5" aria-hidden />
+              <span className="sr-only">{revertLabel}</span>
             </Button>
-          </motion.div>
-        )
-      ) : null}
-    </motion.div>
-  );
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem className="cursor-pointer" onClick={() => onRevert?.(event)}>
+              <RotateCcw className="size-4" aria-hidden />
+              <span className="ml-2">{revertLabel}</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    ) : (
+      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+        <Button
+          type="button"
+          size="default"
+          variant="outline"
+          className="gap-2"
+          onClick={() => onRevert?.(event)}
+        >
+          <RotateCcw className="size-4" aria-hidden />
+          <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">{revertLabel}</span>
+        </Button>
+      </motion.div>
+    );
+
+    return (
+      <motion.div className="relative flex w-full flex-row justify-between" layout>
+        <p className="text-muted-foreground w-[75%] text-xs font-medium leading-5 md:w-[55%] md:text-base md:leading-6">
+          {event.description}
+        </p>
+        {onRevert ? revertAction : null}
+      </motion.div>
+    );
+  };
 
   return (
     <motion.div
@@ -92,7 +94,7 @@ export const Timeline = <TEvent extends TimelineEventBase>({
     >
       {events.map((event, index) => (
         <motion.div
-          key={index}
+          key={`${event.date ?? ""}|${event.time ?? ""}|${event.description ?? ""}`}
           variants={staggerItem}
           transition={fadeTransition}
           className="flex min-h-[66px] w-full"
