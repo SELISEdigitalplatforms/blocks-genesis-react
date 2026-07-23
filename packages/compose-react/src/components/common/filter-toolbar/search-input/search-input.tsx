@@ -1,7 +1,6 @@
 import { useRef, type MouseEvent, useState, useEffect } from "react";
 import { Search, X } from "lucide-react";
-import { Button } from "@/components/core";
-import { Input } from "@/components/core";
+import { Button, Input } from "@/components/core";
 import { cn } from "@/lib/utils";
 import { debounce } from "@/utils/functions";
 
