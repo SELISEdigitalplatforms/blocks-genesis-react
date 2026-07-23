@@ -26,6 +26,87 @@ function getStatus(index: number, current: number): StepStatus {
   return "upcoming";
 }
 
+interface StepperItemProps {
+  step: StepperStep;
+  index: number;
+  currentStep: number;
+  totalSteps: number;
+  orientation: "horizontal" | "vertical";
+}
+
+function StepperItem({
+  step,
+  index,
+  currentStep,
+  totalSteps,
+  orientation,
+}: StepperItemProps) {
+  const status = getStatus(index, currentStep);
+  const isLast = index === totalSteps - 1;
+
+  return (
+    <li
+      className={cn(
+        "flex flex-1 gap-3",
+        orientation === "horizontal" ? "items-center" : "items-start",
+      )}
+      aria-current={status === "current" ? "step" : undefined}
+    >
+      <div className="flex flex-col items-center">
+        <motion.span
+          layout
+          initial={false}
+          animate={{
+            backgroundColor:
+              status === "upcoming" ? "hsl(var(--muted))" : "hsl(var(--primary))",
+            color:
+              status === "upcoming"
+                ? "hsl(var(--muted-foreground))"
+                : "hsl(var(--primary-foreground))",
+          }}
+          transition={{ duration: 0.2 }}
+          className="flex size-8 items-center justify-center rounded-full text-xs font-medium"
+        >
+          {status === "complete" ? <Check className="size-4" /> : index + 1}
+        </motion.span>
+        {!isLast && orientation === "vertical" && (
+          <span
+            className={cn(
+              "mt-1 w-px flex-1",
+              status === "complete" ? "bg-primary" : "bg-border",
+            )}
+            aria-hidden
+          />
+        )}
+      </div>
+
+      <div className="flex flex-1 flex-col pt-1">
+        <span
+          className={cn(
+            "text-sm font-medium",
+            status === "current" ? "text-foreground" : "text-medium-emphasis",
+          )}
+        >
+          {step.title}
+        </span>
+        {step.description && (
+          <span className="text-xs text-muted-foreground">{step.description}</span>
+        )}
+      </div>
+
+      {!isLast && orientation === "horizontal" && (
+        <span
+          className={cn(
+            "h-px flex-1 self-center",
+            status === "complete" ? "bg-primary" : "bg-border",
+          )}
+          aria-hidden
+        />
+      )}
+    </li>
+  );
+}
+
 const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
   ({ steps, currentStep, orientation = "horizontal", className, ...props }, ref) => {
     return (
@@ -39,72 +120,16 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
         )}
         {...props}
       >
-        {steps.map((step, index) => {
-          const status = getStatus(index, currentStep);
-          const isLast = index === steps.length - 1;
-          return (
-            <li
-              key={step.id}
-              className={cn(
-                "flex flex-1 gap-3",
-                orientation === "horizontal" ? "items-center" : "items-start",
-              )}
-              aria-current={status === "current" ? "step" : undefined}
-            >
-              <div className="flex flex-col items-center">
-                <motion.span
-                  layout
-                  initial={false}
-                  animate={{
-                    backgroundColor:
-                      status === "upcoming" ? "hsl(var(--muted))" : "hsl(var(--primary))",
-                    color:
-                      status === "upcoming"
-                        ? "hsl(var(--muted-foreground))"
-                        : "hsl(var(--primary-foreground))",
-                  }}
-                  transition={{ duration: 0.2 }}
-                  className="flex size-8 items-center justify-center rounded-full text-xs font-medium"
-                >
-                  {status === "complete" ? <Check className="size-4" /> : index + 1}
-                </motion.span>
-                {!isLast && orientation === "vertical" && (
-                  <span
-                    className={cn(
-                      "mt-1 w-px flex-1",
-                      status === "complete" ? "bg-primary" : "bg-border",
-                    )}
-                    aria-hidden
-                  />
-                )}
-              </div>
-
-              <div className="flex flex-1 flex-col pt-1">
-                <span
-                  className={cn(
-                    "text-sm font-medium",
-                    status === "current" ? "text-foreground" : "text-medium-emphasis",
-                  )}
-                >
-                  {step.title}
-                </span>
-                {step.description && (
-                  <span className="text-xs text-muted-foreground">{step.description}</span>
-                )}
-              </div>
-
-              {!isLast && orientation === "horizontal" && (
-                <span
-                  className={cn(
-                    "h-px flex-1 self-center",
-                    status === "complete" ? "bg-primary" : "bg-border",
-                  )}
-                  aria-hidden
-                />
-              )}
-            </li>
-          );
-        })}
+        {steps.map((step, index) => (
+          <StepperItem
+            key={step.id}
+            step={step}
+            index={index}
+            currentStep={currentStep}
+            totalSteps={steps.length}
+            orientation={orientation}
+          />
+        ))}
       </ol>
     );
   },
