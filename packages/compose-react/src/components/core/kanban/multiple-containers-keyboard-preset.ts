@@ -13,116 +13,94 @@ const directions: string[] = [
   KeyboardCode.Left,
 ]
 
-type CoordinateContext = Parameters<KeyboardCoordinateGetter>[1]["context"]
-type ActiveNode = NonNullable<CoordinateContext["active"]>
-type CollisionRect = NonNullable<CoordinateContext["collisionRect"]>
+export const kanbanKeyboardCoordinateGetter: KeyboardCoordinateGetter = (
+  event,
+  { context: { active, droppableRects, droppableContainers, collisionRect } }
+) => {
+  if (directions.includes(event.code)) {
+    event.preventDefault()
 
-function shouldPushContainer(
-  entry: DroppableContainer,
-  active: ActiveNode,
-  collisionRect: CollisionRect,
-  droppableRects: CoordinateContext["droppableRects"],
-  code: string,
-): boolean {
-  if (!entry || entry?.disabled) return false
-
-  const rect = droppableRects.get(entry.id)
-  if (!rect) return false
-
-  const data = entry.data.current
-  if (data) {
-    const { type, children } = data
-    if (
-      type === "Column" &&
-      children?.length > 0 &&
-      active.data.current?.type !== "Column"
-    ) {
-      return false
+    if (!active || !collisionRect) {
+      return
     }
-  }
 
-  const activeIsColumn = active.data.current?.type === "Column"
-  switch (code) {
-    case KeyboardCode.Down:
-      return !activeIsColumn && collisionRect.top < rect.top
-    case KeyboardCode.Up:
-      return !activeIsColumn && collisionRect.top > rect.top
-    case KeyboardCode.Left:
-      return collisionRect.left >= rect.left + rect.width
-    case KeyboardCode.Right:
-      return collisionRect.left + collisionRect.width <= rect.left
-    default:
-      return false
-  }
-}
+    const filteredContainers: DroppableContainer[] = []
 
-function resolveCoordinates(
-  active: ActiveNode,
-  collisionRect: CollisionRect,
-  droppableRects: CoordinateContext["droppableRects"],
-  droppableContainers: CoordinateContext["droppableContainers"],
-  filteredContainers: DroppableContainer[],
-) {
-  const collisions = closestCorners({
-    active,
-    collisionRect,
-    droppableRects,
-    droppableContainers: filteredContainers,
-    pointerCoordinates: null,
-  })
-  const closestId = getFirstCollision(collisions, "id")
+    droppableContainers.getEnabled().forEach((entry) => {
+      if (!entry || entry?.disabled) {
+        return
+      }
 
-  if (closestId != null) {
-    const newDroppable = droppableContainers.get(closestId)
-    const newNode = newDroppable?.node.current
-    const newRect = newDroppable?.rect.current
+      const rect = droppableRects.get(entry.id)
 
-    if (newNode && newRect) {
-      return {
-        x: newRect.left,
-        y: newRect.top,
+      if (!rect) {
+        return
+      }
+
+      const data = entry.data.current
+
+      if (data) {
+        const { type, children } = data
+
+        if (type === "Column" && children?.length > 0) {
+          if (active.data.current?.type !== "Column") {
+            return
+          }
+        }
+      }
+
+      switch (event.code) {
+        case KeyboardCode.Down:
+          if (active.data.current?.type === "Column") {
+            return
+          }
+          if (collisionRect.top < rect.top) {
+            filteredContainers.push(entry)
+          }
+          break
+        case KeyboardCode.Up:
+          if (active.data.current?.type === "Column") {
+            return
+          }
+          if (collisionRect.top > rect.top) {
+            filteredContainers.push(entry)
+          }
+          break
+        case KeyboardCode.Left:
+          if (collisionRect.left >= rect.left + rect.width) {
+            filteredContainers.push(entry)
+          }
+          break
+        case KeyboardCode.Right:
+          if (collisionRect.left + collisionRect.width <= rect.left) {
+            filteredContainers.push(entry)
+          }
+          break
+      }
+    })
+
+    const collisions = closestCorners({
+      active,
+      collisionRect,
+      droppableRects,
+      droppableContainers: filteredContainers,
+      pointerCoordinates: null,
+    })
+    const closestId = getFirstCollision(collisions, "id")
+
+    if (closestId != null) {
+      const newDroppable = droppableContainers.get(closestId)
+      const newNode = newDroppable?.node.current
+      const newRect = newDroppable?.rect.current
+
+      if (newNode && newRect) {
+        return {
+          x: newRect.left,
+          y: newRect.top,
+        }
       }
     }
   }
 
   return undefined
-}
-
-export const kanbanKeyboardCoordinateGetter: KeyboardCoordinateGetter = (
-  event,
-  { context: { active, droppableRects, droppableContainers, collisionRect } },
-) => {
-  if (!directions.includes(event.code)) {
-    return undefined
-  }
-
-  event.preventDefault()
-
-  if (!active || !collisionRect) {
-    return
-  }
-
-  const filteredContainers: DroppableContainer[] = []
-
-  droppableContainers.getEnabled().forEach((entry) => {
-    if (
-      shouldPushContainer(
-        entry,
-        active,
-        collisionRect,
-        droppableRects,
-        event.code,
-      )
-    ) {
-      filteredContainers.push(entry)
-    }
-  })
-
-  return resolveCoordinates(
-    active,
-    collisionRect,
-    droppableRects,
-    droppableContainers,
-    filteredContainers,
-  )
 }
