@@ -5,6 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/core/popover/popover";
+import { RenderConditionally } from "@/components/core/render-elements";
 import {
   Tooltip,
   TooltipContent,
@@ -13,10 +14,12 @@ import {
 } from "@/components/core/tooltip/tooltip";
 import { environmentOptions } from "@/constants/environment-options";
 import type { IProject } from "@/models";
+import { useAuthStore } from "@/store/auth.store";
 import { useProjectStore } from "@/store/project.store";
 import { ChevronRight, Settings2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useProjectOverviewRedirect } from "./use-project-overview-redirect";
+import { Badge } from "@/components/core/badge";
 
 const INLINE_LIMIT = 3;
 
@@ -28,6 +31,7 @@ type ProjectCardProps = {
 export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
   const navigate = useNavigate();
   const { setTenantGroup, setSelectedProject } = useProjectStore();
+  const { user } = useAuthStore();
   const { handleClick, isDisabled, isFetching } = useProjectOverviewRedirect({
     tenantGroupId: project.tenantGroupId,
   });
@@ -69,32 +73,45 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
     ? projects.slice(0, INLINE_LIMIT)
     : projects;
   const overflowCount = projects.length - INLINE_LIMIT;
+  const isOwner = user?.sub === project?.createdBy;
 
   return (
     <Card className="border-border/60 bg-card hover:border-primary/30 group flex h-40 flex-col overflow-hidden rounded-xl border p-4 shadow-sm transition-all duration-200 hover:shadow-md">
       <div className="relative flex items-start justify-between gap-2">
-        <CardTitle className="line-clamp-3 flex-1 break-all pr-2 text-base font-semibold leading-snug">
-          {project.name}
-        </CardTitle>
-        <div className="absolute right-0 top-0">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="text-primary hover:bg-primary/10 h-8 w-8 shrink-0 transition-colors"
-                  disabled={isDisabled || isFetching}
-                  onClick={onConfigureClick}
-                >
-                  <Settings2 size={16} />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Configure Project</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+        <div className="flex min-w-0 flex-1 flex-col gap-2 pr-10">
+          <CardTitle className="line-clamp-3 break-all text-base font-semibold leading-snug">
+            {project.name}
+          </CardTitle>
+
+          <RenderConditionally condition={!isOwner}>
+            <div className="flex">
+              <Badge>Shared project</Badge>
+            </div>
+          </RenderConditionally>
         </div>
+        <RenderConditionally condition={isOwner}>
+          <div className="absolute right-0 top-0">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="icon"
+                    data-testid="project-card-configure"
+                    variant="ghost"
+                    className="text-primary hover:bg-primary/10 h-8 w-8 shrink-0 transition-colors"
+                    disabled={isDisabled || isFetching}
+                    onClick={onConfigureClick}
+                  >
+                    <Settings2 size={16} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Configure Project</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </RenderConditionally>
       </div>
+
       <div className="mt-auto">
         {projects.length === 0 ? (
           <span className="border-border/60 bg-muted/40 text-muted-foreground inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs">
