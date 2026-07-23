@@ -132,7 +132,7 @@ export const FilterToolbar = <T extends Record<string, unknown>>({
         //@ts-expect-error
         value={values[item.key]}
         onChange={(val: unknown) =>
-          changeHandler(item.key as keyof T, val as T[keyof T])
+          changeHandler(item.key, val as T[keyof T])
         }
         {...item.props}
         key={String(item.key)}
