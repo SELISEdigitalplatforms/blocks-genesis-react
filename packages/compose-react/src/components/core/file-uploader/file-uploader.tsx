@@ -128,8 +128,7 @@ export const FileUploader = forwardRef<
         onValueChange(newValues);
 
         if (rejectedFiles.length > 0) {
-          for (let i = 0; i < rejectedFiles.length; i++) {
-            const rejection = rejectedFiles[i];
+          for (const rejection of rejectedFiles) {
             const firstError = rejection?.errors[0];
             if (!firstError) continue;
             if (firstError.code === "file-too-large") {

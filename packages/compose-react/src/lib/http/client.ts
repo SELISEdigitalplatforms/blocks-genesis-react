@@ -64,15 +64,9 @@ export class HttpClient {
 
     if (headers instanceof Headers) {
       headers.forEach((value, key) => normalizedHeaders.set(key, value));
-      return normalizedHeaders;
-    }
-
-    if (Array.isArray(headers)) {
+    } else if (Array.isArray(headers)) {
       headers.forEach(([key, value]) => normalizedHeaders.set(key, value));
-      return normalizedHeaders;
-    }
-
-    if (headers) {
+    } else if (headers) {
       Object.entries(headers).forEach(([key, value]) =>
         normalizedHeaders.set(key, value),
       );

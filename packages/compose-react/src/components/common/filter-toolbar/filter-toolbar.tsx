@@ -76,11 +76,6 @@ export const FilterToolBarMobileView = ({
               size="sm"
               className="relative h-8 w-8 p-0">
               <Filter className="h-4 w-4" />
-              {/* {activeFilter > 0 && (
-              <Badge className="absolute -right-2 -top-2 h-4 w-4 px-1 text-xs font-medium">
-                {activeFilter}
-              </Badge>
-            )} */}
             </Button>
           </SheetTrigger>
           <SheetContent
