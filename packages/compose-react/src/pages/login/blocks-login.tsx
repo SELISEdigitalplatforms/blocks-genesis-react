@@ -377,24 +377,24 @@ export const BlocksLoginPage = ({
               {carouselCards.map((item, i) => {
                 const isCarouselProduct = "appName" in item;
                 const cardKey = isCarouselProduct
-                  ? `${(item as (typeof otherProducts)[number]).name}-${i}`
+                  ? `${item.name}-${i}`
                   : `${item.title}-${i}`;
                 const displayName = isCarouselProduct
-                  ? (item as (typeof otherProducts)[number]).appName
+                  ? item.appName
                   : item.title.replace(/^Blocks\s+/, "");
                 const description = isCarouselProduct
-                  ? (item as (typeof otherProducts)[number]).shortDescription
+                  ? item.shortDescription
                   : item.description;
                 const badge = item.badge;
                 const stacks = isCarouselProduct
                   ? undefined
                   : item.stacks;
                 const features = isCarouselProduct
-                  ? (item as (typeof otherProducts)[number]).featureChips
+                  ? item.featureChips
                   : item.features;
                 const url = item.url;
                 const cta = isCarouselProduct
-                  ? (item as (typeof otherProducts)[number]).cta
+                  ? item.cta
                   : item.cta;
 
                 return (
