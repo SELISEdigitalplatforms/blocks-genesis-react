@@ -55,3 +55,6 @@ copilot-instructions.md
 !CONTRIBUTING.md
 !SECURITY.md
 !CODE_OF_CONDUCT.md
+
+# local security scan tooling (contains credentials, never commit)
+scripts/scan.sh
