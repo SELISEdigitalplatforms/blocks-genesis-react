@@ -1,4 +1,8 @@
-import { Button, DashboardSectionCard } from "@/components";
+import {
+  Button,
+  DashboardSectionCard,
+  ErrorDisplayWithCard,
+} from "@/components";
 import { environmentOptions } from "@/constants/environment-options";
 import {
   CopyToClipboardButton,
@@ -57,6 +61,13 @@ export const ProjectDetail = ({
   isLoading: boolean;
 }) => {
   if (isLoading) return <LoadingSkeleton />;
+  if (!project)
+    return (
+      <ErrorDisplayWithCard
+        text={"Error loading project data"}
+        containerClassName="min-h-[20dvh]"
+      />
+    );
 
   return (
     <DashboardSectionCard

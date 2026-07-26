@@ -38,7 +38,7 @@ export class ErrorBoundary extends Component<
           <ErrorDisplay
             icon={AlertCircle}
             text={this.state.error?.message ?? "Something went wrong"}
-            className="h-full w-full min-h-[400px]"
+            containerClassName="h-full w-full min-h-100"
           />
         )
       );
