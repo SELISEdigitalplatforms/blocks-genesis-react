@@ -25,8 +25,8 @@ import {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
-  useSidebar,
 } from "@/components/core/sidebar/sidebar";
+import { useSidebar } from "@/components/core/sidebar/use-sidebar";
 
 const h = vi.hoisted(() => ({ isMobile: false }));
 vi.mock("@/hooks/use-mobile", () => ({ useIsMobile: () => h.isMobile }));
@@ -102,7 +102,7 @@ describe("Sidebar", () => {
     const [trigger] = screen.getAllByRole("button", {
       name: /toggle sidebar/i,
     });
-    fireEvent.click(trigger);
+    fireEvent.click(trigger!);
     expect(trigger).toBeInTheDocument();
   });
 
@@ -118,7 +118,7 @@ describe("Sidebar", () => {
     const [trigger] = screen.getAllByRole("button", {
       name: /toggle sidebar/i,
     });
-    fireEvent.click(trigger);
+    fireEvent.click(trigger!);
     expect(await screen.findByText("Home")).toBeInTheDocument();
   });
 

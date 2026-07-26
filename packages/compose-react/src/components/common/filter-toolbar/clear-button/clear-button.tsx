@@ -1,5 +1,5 @@
 import { Button } from "@/components/core";
-import { MouseEventHandler } from "react";
+import type { MouseEventHandler } from "react";
 
 type ClearButtonProps = {
   onClear: MouseEventHandler<HTMLButtonElement>;
@@ -11,7 +11,8 @@ export const ClearButton = ({ onClear }: ClearButtonProps) => {
       <Button
         variant="ghost"
         className="h-auto w-full rounded-sm px-2 py-1.5 font-medium text-accent-foreground hover:bg-accent"
-        onClick={onClear}>
+        onClick={onClear}
+      >
         Clear
       </Button>
     </div>

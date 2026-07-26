@@ -37,7 +37,7 @@ describe("WizardVerticalTrackBar", () => {
   it("navigates to a reachable earlier step on click", () => {
     renderBar(3);
 
-    fireEvent.click(screen.getAllByRole("button")[0]);
+    fireEvent.click(screen.getAllByRole("button")[0]!);
 
     expect(screen.getAllByRole("button")[0]).toHaveAttribute(
       "aria-current",

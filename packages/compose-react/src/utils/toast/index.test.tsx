@@ -1,9 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  showErrorToast,
-  showInfoToast,
-  showSuccessToast,
-} from "./index";
+import { showErrorToast, showInfoToast, showSuccessToast } from "./index";
 
 const h = vi.hoisted(() => ({
   toast: vi.fn(),
@@ -58,7 +54,7 @@ describe("toast helpers", () => {
     showErrorToast({ errors: {}, customMessages: { code: "msg" } });
 
     expect(h.handleErrorMessages).toHaveBeenCalledWith({}, { code: "msg" });
-    const call = h.toast.mock.calls[0][0];
+    const call = h.toast.mock.calls[0]?.[0];
     expect(Array.isArray(call.description)).toBe(true);
     expect(call.description).toHaveLength(2);
   });

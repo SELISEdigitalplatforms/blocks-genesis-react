@@ -23,6 +23,12 @@
       "@/utils/*": ["src/utils/*"]
     }
   },
-  "include": ["src", "eslint.config.js", "tsup.config.ts"],
+  "include": [
+    "src",
+    "eslint.config.js",
+    "tsup.config.ts",
+    "vitest.config.ts",
+    "vitest.setup.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

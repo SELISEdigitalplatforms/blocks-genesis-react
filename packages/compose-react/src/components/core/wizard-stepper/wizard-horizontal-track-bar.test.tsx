@@ -36,7 +36,7 @@ describe("WizardHorizontalTrackBar", () => {
   it("navigates to a reachable earlier step on click", () => {
     renderBar(2);
 
-    fireEvent.click(screen.getAllByRole("button")[0]);
+    fireEvent.click(screen.getAllByRole("button")[0]!);
 
     expect(screen.getAllByRole("button")[0]).toHaveAttribute(
       "aria-current",
@@ -47,7 +47,7 @@ describe("WizardHorizontalTrackBar", () => {
   it("ignores clicks on an unreachable later step", () => {
     renderBar(2);
 
-    fireEvent.click(screen.getAllByRole("button")[2]);
+    fireEvent.click(screen.getAllByRole("button")[2]!);
 
     expect(screen.getAllByRole("button")[1]).toHaveAttribute(
       "aria-current",
