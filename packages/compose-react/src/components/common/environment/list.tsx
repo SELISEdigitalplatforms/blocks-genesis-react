@@ -82,6 +82,13 @@ export function EnvironmentList({
   const applicationDomain =
     projectData?.data?.customDomain || selectedProject?.customDomain;
 
+  const environmentDomainSuffix = applicationDomain
+    ? ` · ${applicationDomain}`
+    : "";
+  const environmentLabel = environment
+    ? `${environment}${environmentDomainSuffix}`
+    : "Select an Environment";
+
   const projects = useMemo(() => {
     if (!selectedProject) return [];
     const groupWithSelected = projectGroups.find((group) =>
@@ -101,9 +108,7 @@ export function EnvironmentList({
         >
           <Globe className="h-5 w-5 text-muted-foreground" />
           <div className="pointer-events-none absolute left-full top-0 z-20 ml-2 min-w-max whitespace-nowrap rounded bg-gray-300 px-2 py-1 text-xs text-primary opacity-0 transition-opacity group-hover:opacity-100">
-            {environment
-              ? `${environment}${applicationDomain ? ` · ${applicationDomain}` : ""}`
-              : "Select an Environment"}
+            {environmentLabel}
           </div>
         </DropdownMenuTrigger>
       ) : (

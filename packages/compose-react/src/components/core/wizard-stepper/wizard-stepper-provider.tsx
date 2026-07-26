@@ -1,6 +1,7 @@
 import {
   createContext,
   useContext,
+  useMemo,
   useState,
   type ReactNode,
 } from "react"
@@ -70,19 +71,31 @@ export const WizardStepperProvider = ({
     }
   }
 
+  const contextValue = useMemo(
+    () => ({
+      currentStep,
+      nextStep,
+      previousStep,
+      goToStep,
+      completedSteps,
+      setCompletedSteps,
+      totalSteps,
+      getSteps: () => steps,
+    }),
+    [
+      currentStep,
+      nextStep,
+      previousStep,
+      goToStep,
+      completedSteps,
+      setCompletedSteps,
+      totalSteps,
+      steps,
+    ],
+  )
+
   return (
-    <WizardStepperContext.Provider
-      value={{
-        currentStep,
-        nextStep,
-        previousStep,
-        goToStep,
-        completedSteps,
-        setCompletedSteps,
-        totalSteps,
-        getSteps: () => steps,
-      }}
-    >
+    <WizardStepperContext.Provider value={contextValue}>
       {children}
     </WizardStepperContext.Provider>
   )

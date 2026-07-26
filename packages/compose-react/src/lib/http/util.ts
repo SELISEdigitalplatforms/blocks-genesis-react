@@ -5,14 +5,12 @@ export const resolveBaseUrl = (
 ): string => {
   if (typeof window === "undefined") return "";
 
-  const directKey =
-    type === "user"
-      ? "userBaseUrl"
-      : type === "project"
-        ? "projectBaseUrl"
-        : type === "notification"
-          ? "notificationBaseUrl"
-          : "BLOCKS_PUBLIC_API_BASE_URL";
+  const directKeyMap = {
+    user: "userBaseUrl",
+    project: "projectBaseUrl",
+    notification: "notificationBaseUrl",
+  } as const;
+  const directKey = directKeyMap[type];
   const directVal = getRuntimeEnv(directKey);
   if (directVal) return directVal;
 

@@ -18,7 +18,7 @@ export interface LoginCarouselStack {
   links: { label: string; to: string }[];
 }
 
-export interface LoginCarouselItem extends BlocksProduct {
+export interface LoginCarouselItem {
   badge: string;
   title: string;
   description: string;
@@ -38,5 +38,6 @@ export interface BlocksLoginPageProps {
   loginLabel?: string;
   docsUrl?: string;
   footerLink?: { label: string; url: string };
-  carouselItems?: LoginCarouselItem[];
+  // Was LoginCarouselItem[] — widened to accept either shape
+  carouselItems?: (LoginCarouselItem | BlocksProduct)[];
 }

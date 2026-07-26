@@ -11,7 +11,7 @@ This repository contains reusable packages:
 
 ## Documentation
 
-- [Package README](./packages/compose-react/README.md) - Developer guide for using @seliseblocks/blocks-kit
+- [Package README](./packages/compose-react/README.md) - Developer guide for using @selisedigitalplatforms/blocks-kit
 - [Project Conventions](./PROJECT_CONVENTIONS.md) - Coding standards and architectural patterns
 - [Design System](./packages/compose-react/design.md) - Blocks design system guide
 - [AI Agent Instructions](./.trae/agent-instructions.md) - Guidelines for AI contributors
@@ -47,7 +47,7 @@ pnpm typecheck
 Build a single package:
 
 ```bash
-pnpm --filter @seliseblocks/blocks-kit build
+pnpm --filter @selisedigitalplatforms/blocks-kit build
 ```
 
 You can also build all packages at once:
@@ -59,7 +59,7 @@ pnpm build
 Typecheck a single package:
 
 ```bash
-pnpm --filter @seliseblocks/blocks-kit typecheck
+pnpm --filter @selisedigitalplatforms/blocks-kit typecheck
 ```
 
 ## Package Publish
@@ -91,7 +91,7 @@ pnpm release
 - Build and watch a single package:
 
 ```bash
-pnpm --filter @seliseblocks/blocks-kit dev
+pnpm --filter @selisedigitalplatforms/blocks-kit dev
 ```
 
 - Build and watch all packages:
@@ -105,7 +105,7 @@ pnpm dev
 ```json
 {
   "dependencies": {
-    "@seliseblocks/blocks-kit": "file:./path/to/blocks-kit/packages/compose-react"
+    "@selisedigitalplatforms/blocks-kit": "file:./path/to/blocks-kit/packages/compose-react"
   }
 }
 ```

@@ -8,8 +8,8 @@ import {
   SheetDescription,
   SheetTitle,
   SheetTrigger,
+  Button,
 } from "@/components/core";
-import { Button } from "@/components/core";
 import { Filter } from "lucide-react";
 import { deepEqual } from "@/utils/equal";
 
@@ -85,11 +85,6 @@ export const FilterToolBarMobileView = ({
               className="relative h-8 w-8 p-0"
             >
               <Filter className="h-4 w-4" />
-              {/* {activeFilter > 0 && (
-              <Badge className="absolute -right-2 -top-2 h-4 w-4 px-1 text-xs font-medium">
-                {activeFilter}
-              </Badge>
-            )} */}
             </Button>
           </SheetTrigger>
           <SheetContent
@@ -146,9 +141,7 @@ export const FilterToolbar = <T extends Record<string, unknown>>({
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-expect-error
         value={values[item.key]}
-        onChange={(val: unknown) =>
-          changeHandler(item.key as keyof T, val as T[keyof T])
-        }
+        onChange={(val: unknown) => changeHandler(item.key, val as T[keyof T])}
         {...item.props}
         key={String(item.key)}
       />

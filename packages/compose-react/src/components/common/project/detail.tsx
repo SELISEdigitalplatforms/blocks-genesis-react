@@ -25,15 +25,6 @@ const ProjectDetailItem = ({ label, children }: ProjectDetailItemProps) => (
   </div>
 );
 
-// const RenderProjectUrl = ({ project }: { project?: IProject }) => {
-//   if (!project) return null;
-//   const url = getProjectBlocksApiUrl(project);
-//   return (
-//     <CopyToClipboardButton textToCopy={url || ""} isHoverable>
-//       {url}
-//     </CopyToClipboardButton>
-//   );
-// };
 
 const LoadingSkeleton = () => {
   return (
@@ -42,8 +33,8 @@ const LoadingSkeleton = () => {
         <Skeleton className="h-4 w-32" />
       </div>
       <div className="grid grid-cols-1 gap-4 border-t border-border px-2 py-2 sm:px-4 sm:py-3 md:grid-cols-2 md:gap-6">
-        {Array.from({ length: 6 }).map((_item, index) => (
-          <div key={index}>
+        {["sk-1", "sk-2", "sk-3", "sk-4", "sk-5", "sk-6"].map((itemKey) => (
+          <div key={itemKey}>
             <Skeleton className="h-4 w-1/2" />
             <Skeleton className="mt-2 h-5 w-full" />
           </div>
@@ -91,18 +82,6 @@ export const ProjectDetail = ({
             </CopyToClipboardButton>
           </div>
         </ProjectDetailItem>
-        {/* {project?.tenantSlug && (
-          <ProjectDetailItem label="Project Slug">
-            <div className="flex h-6 items-center gap-2">
-              <CopyToClipboardButton
-                textToCopy={project?.tenantSlug || ""}
-                isHoverable
-              >
-                {project?.tenantSlug}
-              </CopyToClipboardButton>
-            </div>
-          </ProjectDetailItem>
-        )} */}
         <ProjectDetailItem label="Environment">
           {project?.environment === "prod" ? (
             <Button className="h-6 rounded-xl" size="sm" variant="default">

@@ -2,7 +2,6 @@ import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { useState } from "react";
 import { BlocksLoginPage } from "./blocks-login";
 import { BLOCKS_PRODUCTS } from "./login.constant";
-import type { LoginCarouselItem } from "./login.types";
 
 export const LoginPage = () => {
   const config = useBlocksAppConfigStore((state) => state.getConfig());
@@ -38,7 +37,7 @@ export const LoginPage = () => {
       name={config.name}
       onLogin={startLogin}
       isLoading={isStarting}
-      carouselItems={BLOCKS_PRODUCTS as LoginCarouselItem[]}
+      carouselItems={BLOCKS_PRODUCTS}
     />
   );
 };
