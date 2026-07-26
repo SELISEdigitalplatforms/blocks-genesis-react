@@ -25,6 +25,7 @@ import {
   useValidateCNameProject,
   useDisableProject,
 } from "@/hooks/use-project";
+import { useImpersonateStore, useProjectStore } from "@/store";
 
 const wrapper = () => {
   const client = new QueryClient({
@@ -39,6 +40,8 @@ const wrapper = () => {
 };
 
 beforeEach(() => {
+  useProjectStore.getState().resetProjectStore();
+  useImpersonateStore.getState().reset();
   Object.values(h).forEach((fn) => fn.mockReset());
   h.getProjects.mockResolvedValue([{ projects: [{ id: 1 }, { id: 2 }] }]);
   h.getProject.mockResolvedValue({ id: "p1" });
@@ -60,12 +63,39 @@ describe("use-project queries", () => {
     expect(h.getProjects).toHaveBeenCalledWith(0, 100, "tg1");
   });
 
-  it("useGetProject fetches a single project when an id is present", async () => {
-    const { result } = renderHook(() => useGetProject({ projectId: "p1" }), {
+  it("useGetProject fetches once impersonation is active and a project is selected", async () => {
+    useProjectStore.getState().setSelectedProject({ itemId: "p1" } as never);
+    useImpersonateStore.getState().impersonate("tenant-a", "root-tenant");
+
+    const { result } = renderHook(() => useGetProject(), {
       wrapper: wrapper(),
     });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(h.getProject).toHaveBeenCalled();
+  });
+
+  // Project/Get resolves the project from the caller's token, not from an
+  // argument. On console and project-overview routes ImpersonationTerminator has
+  // dropped the token to the root tenant, so a request there would describe the
+  // platform's own project — and no consumer on those routes reads it.
+  it("useGetProject stays idle when the token is not impersonated", async () => {
+    useProjectStore.getState().setSelectedProject({ itemId: "p1" } as never);
+
+    const { result } = renderHook(() => useGetProject(), {
+      wrapper: wrapper(),
+    });
+    await waitFor(() => expect(result.current.fetchStatus).toBe("idle"));
+    expect(h.getProject).not.toHaveBeenCalled();
+  });
+
+  it("useGetProject stays idle when impersonated with no project selected", async () => {
+    useImpersonateStore.getState().impersonate("tenant-a", "root-tenant");
+
+    const { result } = renderHook(() => useGetProject(), {
+      wrapper: wrapper(),
+    });
+    await waitFor(() => expect(result.current.fetchStatus).toBe("idle"));
+    expect(h.getProject).not.toHaveBeenCalled();
   });
 
   it("useGetEnvRepositories fetches when a project key is present", async () => {
@@ -105,7 +135,9 @@ describe("use-project mutations", () => {
   });
 
   it("useValidateCNameProject triggers validateCNameProject", async () => {
-    await runMutation(() => useValidateCNameProject({ projectKey: "k" } as never));
+    await runMutation(() =>
+      useValidateCNameProject({ projectKey: "k" } as never),
+    );
     expect(h.validateCNameProject).toHaveBeenCalled();
   });
 
