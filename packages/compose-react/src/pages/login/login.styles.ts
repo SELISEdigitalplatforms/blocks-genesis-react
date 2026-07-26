@@ -51,16 +51,6 @@ export const blocksLoginStyles = `
 :root:not(.dark) .blocksLogin-page .grid-bg { opacity: 0.18; background-size: 100px 100px; }
 @keyframes blocksLogin-gridPulse { 0%,100%{opacity:0.25} 50%{opacity:0.55} }
 
-.blocksLogin-page .scan-line {
-// TODO: removing scanner animation for now, can re-enable later if we want it back
-  display: none;
-  position: absolute; top: -2px; left: 0; right: 0; height: 1.5px;
-  background: linear-gradient(90deg, transparent 5%, var(--accent) 50%, transparent 95%);
-  animation: blocksLogin-scanMove 7s linear infinite;
-  opacity: 0.25; z-index: 50; pointer-events: none; filter: blur(0.3px);
-}
-@keyframes blocksLogin-scanMove { 0%{top:-2px} 100%{top:100vh} }
-
 .blocksLogin-page .radial-glow {
   position: absolute; top: 55%; left: 25%;
   transform: translate(-50%, -50%); width: 700px; height: 700px;
