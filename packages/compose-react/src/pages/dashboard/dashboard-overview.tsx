@@ -15,8 +15,6 @@ export const DashboardOverview = () => {
     error,
   } = useSwaggerEndpoints(name);
 
-  if (!data?.data) return null;
-
   return (
     <main className="flex flex-col gap-6 p-6">
       <ProjectDetail isLoading={isFetching} project={data?.data} />
