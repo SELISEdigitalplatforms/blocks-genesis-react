@@ -64,15 +64,9 @@ export class HttpClient {
 
     if (headers instanceof Headers) {
       headers.forEach((value, key) => normalizedHeaders.set(key, value));
-      return normalizedHeaders;
-    }
-
-    if (Array.isArray(headers)) {
+    } else if (Array.isArray(headers)) {
       headers.forEach(([key, value]) => normalizedHeaders.set(key, value));
-      return normalizedHeaders;
-    }
-
-    if (headers) {
+    } else if (headers) {
       Object.entries(headers).forEach(([key, value]) =>
         normalizedHeaders.set(key, value),
       );
@@ -180,6 +174,48 @@ export class HttpClient {
     }
   }
 
+  private async throwIfNotOk(response: Response): Promise<void> {
+    if (response.ok) return;
+    const errorBody = await response.json().catch(() => ({}));
+    throw new HttpError(response.status, {
+      errors: errorBody?.errors || errorBody || { general: "Request failed" },
+    });
+  }
+
+  private normalizeRequestError(error: unknown): HttpError {
+    if (error instanceof HttpError) return error;
+    if (typeof error === "object" && error !== null) {
+      return new HttpError(500, {
+        errors: error as Record<string, string | string[]>,
+      });
+    }
+    return new HttpError(500, { errors: { general: "Something went wrong" } });
+  }
+
+  private async parseSuccessResponse<T>(response: Response): Promise<T> {
+    const contentType = response.headers.get("content-type")?.toLowerCase();
+    if (!contentType) return { success: true, status: response.status } as T;
+
+    if (contentType.includes("text/html")) {
+      throw new HttpError(response.status, {
+        errors: { general: "Unexpected HTML response from server" },
+      });
+    }
+
+    if (contentType.includes("text/"))
+      return (await response.text()) as unknown as T;
+
+    if (
+      contentType.includes("image/") ||
+      contentType.includes("application/octet-stream") ||
+      contentType.includes("application/pdf")
+    ) {
+      return (await response.blob()) as unknown as T;
+    }
+
+    return (await response.json()) as T;
+  }
+
   private async request<T = unknown>(
     url: string,
     requestOption: RequestOptions,
@@ -223,47 +259,11 @@ export class HttpClient {
         });
       }
 
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        throw new HttpError(response.status, {
-          errors: errorBody?.errors ||
-            errorBody || { general: "Request failed" },
-        });
-      }
+      await this.throwIfNotOk(response);
 
-      const contentType = response.headers.get("content-type")?.toLowerCase();
-      if (!contentType) return { success: true, status: response.status } as T;
-
-      if (contentType.includes("text/html")) {
-        throw new HttpError(response.status, {
-          errors: { general: "Unexpected HTML response from server" },
-        });
-      }
-
-      if (contentType.includes("text/"))
-        return (await response.text()) as unknown as T;
-
-      if (
-        contentType.includes("image/") ||
-        contentType.includes("application/octet-stream") ||
-        contentType.includes("application/pdf")
-      ) {
-        return (await response.blob()) as unknown as T;
-      }
-
-      return (await response.json()) as T;
+      return this.parseSuccessResponse<T>(response);
     } catch (error) {
-      if (error instanceof HttpError) throw error;
-
-      if (typeof error === "object" && error !== null) {
-        throw new HttpError(500, {
-          errors: error as Record<string, string | string[]>,
-        });
-      }
-
-      throw new HttpError(500, {
-        errors: { general: "Something went wrong" },
-      });
+      throw this.normalizeRequestError(error);
     }
   }
 
@@ -350,13 +350,7 @@ export class HttpClient {
         });
       }
 
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        throw new HttpError(response.status, {
-          errors: errorBody?.errors ||
-            errorBody || { general: "Request failed" },
-        });
-      }
+      await this.throwIfNotOk(response);
 
       if (!response.body) {
         throw new HttpError(response.status, {
@@ -366,17 +360,7 @@ export class HttpClient {
 
       return response.body;
     } catch (error) {
-      if (error instanceof HttpError) throw error;
-
-      if (typeof error === "object" && error !== null) {
-        throw new HttpError(500, {
-          errors: error as Record<string, string | string[]>,
-        });
-      }
-
-      throw new HttpError(500, {
-        errors: { general: "Something went wrong" },
-      });
+      throw this.normalizeRequestError(error);
     }
   }
 }

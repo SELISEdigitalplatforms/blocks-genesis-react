@@ -8,6 +8,7 @@ import type {
   BlocksLoginPageProps,
   BlocksProduct,
   LoginCarouselItem,
+  LoginCarouselStack,
 } from "./login.types";
 
 /** Split "blocks IAM" -> ["blocks", "IAM"] so the hero can render two lines. */
@@ -16,6 +17,13 @@ function splitAppName(appName: string): [string, string] {
   if (idx === -1) return [appName, ""];
   return [appName.slice(0, idx), appName.slice(idx + 1)];
 }
+
+// Type guard to distinguish between BlocksProduct and LoginCarouselItem
+const isBlocksProduct = (
+  item: BlocksProduct | LoginCarouselItem,
+): item is BlocksProduct => {
+  return "appName" in item;
+};
 
 export const BlocksLoginPage = ({
   name,
@@ -28,10 +36,13 @@ export const BlocksLoginPage = ({
   carouselItems,
 }: BlocksLoginPageProps) => {
   const active = useMemo(() => {
+    // Filter to BlocksProduct entries only, fall back to the built-in list.
+    // This replaces the unsafe `as BlocksProduct[]` cast.
     const products =
-      (carouselItems as BlocksProduct[]) ?? DEFAULT_BLOCKS_PRODUCTS;
+      carouselItems?.filter(isBlocksProduct) ?? DEFAULT_BLOCKS_PRODUCTS;
     return products.find((p) => p.name === name) ?? products[0];
   }, [name, carouselItems]);
+
   const otherProducts = useMemo(
     () => DEFAULT_BLOCKS_PRODUCTS.filter((p) => p.name !== active?.name),
     [active?.name],
@@ -336,27 +347,23 @@ export const BlocksLoginPage = ({
           <div className="carousel-track">
             <div className="carousel-inner">
               {carouselCards.map((item, i) => {
-                const isCarouselProduct = "appName" in item;
-                const cardKey = isCarouselProduct
-                  ? `${(item as (typeof otherProducts)[number]).name}-${i}`
-                  : `${(item as LoginCarouselItem).title}-${i}`;
-                const displayName = isCarouselProduct
-                  ? (item as (typeof otherProducts)[number]).appName
-                  : (item as LoginCarouselItem).title.replace(/^Blocks\s+/, "");
-                const description = isCarouselProduct
-                  ? (item as (typeof otherProducts)[number]).shortDescription
-                  : (item as LoginCarouselItem).description;
+                const isBlocksProductItem = isBlocksProduct(item);
+                const cardKey = isBlocksProductItem
+                  ? `${item.name}-${i}`
+                  : `${item.title}-${i}`;
+                const displayName = isBlocksProductItem
+                  ? item.appName
+                  : item.title.replace(/^Blocks\s+/, "");
+                const description = isBlocksProductItem
+                  ? item.shortDescription
+                  : item.description;
                 const badge = item.badge;
-                const stacks = isCarouselProduct
-                  ? undefined
-                  : (item as LoginCarouselItem).stacks;
-                const features = isCarouselProduct
-                  ? (item as (typeof otherProducts)[number]).featureChips
-                  : (item as LoginCarouselItem).features;
+                const stacks = isBlocksProductItem ? undefined : item.stacks;
+                const features = isBlocksProductItem
+                  ? item.featureChips
+                  : item.features;
                 const url = item.url;
-                const cta = isCarouselProduct
-                  ? (item as (typeof otherProducts)[number]).cta
-                  : (item as LoginCarouselItem).cta;
+                const cta = item.cta;
 
                 return (
                   <div className="sdk-card" key={cardKey}>
@@ -371,8 +378,8 @@ export const BlocksLoginPage = ({
                       {stacks ? (
                         <div className="sdk-links">
                           {stacks
-                            .filter((st) => st.available)
-                            .map((st) => (
+                            .filter((st: LoginCarouselStack) => st.available)
+                            .map((st: LoginCarouselStack) => (
                               <a
                                 key={st.name}
                                 href={st.links[0]?.to ?? "#"}
@@ -384,8 +391,8 @@ export const BlocksLoginPage = ({
                               </a>
                             ))}
                           {stacks
-                            .filter((st) => !st.available)
-                            .map((st) => (
+                            .filter((st: LoginCarouselStack) => !st.available)
+                            .map((st: LoginCarouselStack) => (
                               <Badge
                                 key={st.name}
                                 variant="outline"
@@ -397,7 +404,7 @@ export const BlocksLoginPage = ({
                         </div>
                       ) : (
                         <div className="sdk-links">
-                          {features.slice(0, 4).map((chip) => (
+                          {features.slice(0, 4).map((chip: string) => (
                             <Badge
                               key={chip}
                               variant="outline"

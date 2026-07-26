@@ -1,5 +1,5 @@
 import type * as React from "react";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 
 export interface OidcContextValue {
   isLoading: boolean;
@@ -25,5 +25,11 @@ export function OidcLayout({
   children?: React.ReactNode;
   value?: OidcContextValue;
 }) {
-  return <OidcContext.Provider value={value ?? { isLoading: false }}>{children}</OidcContext.Provider>;
+  const contextValue = useMemo(
+    () => value ?? { isLoading: false },
+    [value],
+  );
+  return (
+    <OidcContext.Provider value={contextValue}>{children}</OidcContext.Provider>
+  );
 }

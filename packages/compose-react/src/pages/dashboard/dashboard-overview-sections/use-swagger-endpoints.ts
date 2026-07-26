@@ -143,7 +143,7 @@ export const useSwaggerEndpoints = (
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["swagger-endpoints", swaggerUrl],
-    queryFn: () => fetchSwaggerDocument(swaggerUrl as string),
+    queryFn: () => fetchSwaggerDocument(swaggerUrl),
     enabled: Boolean(swaggerUrl) && enabled,
     staleTime,
   });

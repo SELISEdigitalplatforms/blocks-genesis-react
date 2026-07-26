@@ -21,8 +21,8 @@ const CoreApiLoadingSkeleton = () => (
       <Skeleton className="h-4 w-28" />
     </div>
     <div className="flex flex-col gap-1.5 border-t border-border px-2 py-2 sm:px-4 sm:py-3">
-      {Array.from({ length: 4 }).map((_item, index) => (
-        <Skeleton key={index} className="h-10 w-full" />
+      {["sk-1", "sk-2", "sk-3", "sk-4"].map((itemKey) => (
+        <Skeleton key={itemKey} className="h-10 w-full" />
       ))}
     </div>
   </div>
