@@ -1,1 +1,1 @@
-export { ErrorDisplay } from "./error-display";
+export { ErrorDisplay, ErrorDisplayWithCard } from "./error-display";
