@@ -24,3 +24,7 @@ overrides:
   react-dom: 18.3.1
   "@types/react": 18.3.1
   "@types/react-dom": 18.3.1
+  fast-uri: 3.1.4
+  "brace-expansion@5": 5.0.8
+  "brace-expansion@1": 1.1.16
+  esbuild: 0.28.1
