@@ -32,7 +32,7 @@ This package requires the following peer dependencies:
 This package intentionally does **not** ship CSS files. Host applications are responsible for:
 
 - Tailwind CSS setup
-- shadcn token/theme variables
+- shared design tokens (CSS variables) for theming
 - Any global CSS imports required by their design system
 
 ## Quick Start
@@ -76,7 +76,7 @@ Everything exported from the main entry:
 
 All UI components organized into:
 
-- **Core Components** (Radix UI + shadcn based):
+- **Core Components** (Radix UI based):
   - `Accordion`, `Alert`, `AlertDialog`, `AspectRatio`, `Avatar`, `Badge`, `Breadcrumb`, `Button`, `Calendar`, `Card`, `Carousel`, `Chart`, `Checkbox`, `Collapsible`, `Command`, `ContextMenu`, `CopyToClipboardButton`, `DateRangePicker`, `Dialog`, `Drawer`, `DropdownMenu`, `FileUploader`, `Form`, `HoverCard`, `ImportFileModal`, `InfiniteScroller`, `Input`, `InputOTP`, `KanbanBoard`, `Label`, `MaskedText`, `Menubar`, `MultiSelect`, `NavigationMenu`, `Pagination`, `PasswordInput`, `Popover`, `Progress`, `RadioGroup`, `RenderConditionally`, `RenderAlternatively`, `Resizable`, `ScrollArea`, `Select`, `Separator`, `Sheet`, `Sidebar`, `Skeleton`, `Slider`, `Spinner`, `Stepper`, `Switch`, `Table`, `TablePagination`, `Tabs`, `Textarea`, `Timeline`, `Toast`, `Toaster`, `Toggle`, `ToggleGroup`, `Tooltip`, `WizardStepper`
 
 - **Common Components**:

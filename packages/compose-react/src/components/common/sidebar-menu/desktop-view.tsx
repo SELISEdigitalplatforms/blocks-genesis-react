@@ -34,12 +34,12 @@ export function SidebarMenuDesktop({
     <div
       className={`hidden h-screen shrink-0 flex-col border-r bg-background transition-all md:flex ${isSidebarOpen ? "min-w-60" : "w-14"}`}
     >
-      <div className="flex h-[60px] shrink-0 items-center justify-between border-b bg-background px-3">
+      <div className="flex h-15 shrink-0 items-center justify-between border-b bg-background px-3">
         <Link
           to="console"
           className={cn(
             "relative inline-block cursor-pointer overflow-hidden transition-all",
-            isSidebarOpen ? "h-9 w-[72px]" : "h-8 w-8",
+            isSidebarOpen ? "h-9 w-18" : "h-8 w-8",
           )}
         >
           <RenderAlternatively

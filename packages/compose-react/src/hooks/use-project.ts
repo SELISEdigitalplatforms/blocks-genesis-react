@@ -55,7 +55,7 @@ export const useGetProject = () => {
     // impersonation status endpoint agreeing byte-for-byte, which is unverified.
     // Getting that wrong disables the query permanently and blanks
     // dashboard-overview (`if (!data?.data) return null`).
-    enabled: Boolean(selectedProject?.itemId),
+    enabled: isImpersonated && Boolean(selectedProject?.itemId),
   });
 };
 
