@@ -21,8 +21,7 @@ describe("Command", () => {
           <CommandEmpty>No results</CommandEmpty>
           <CommandGroup heading="Suggestions">
             <CommandItem>
-              Item A
-              <CommandShortcut>A</CommandShortcut>
+              Item A<CommandShortcut>A</CommandShortcut>
             </CommandItem>
             <CommandSeparator />
             <CommandItem>Item B</CommandItem>

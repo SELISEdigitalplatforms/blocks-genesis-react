@@ -21,9 +21,7 @@ describe("CNameInstruction", () => {
     render(<CNameInstruction cookieDomainName="" />);
 
     expect(screen.getByText(/CNAME record to your/)).toBeInTheDocument();
-    expect(
-      screen.queryByText("CNAME configuration 1"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("CNAME configuration 1")).not.toBeInTheDocument();
     expect(screen.getByText("blocksapi.")).toBeInTheDocument();
   });
 });

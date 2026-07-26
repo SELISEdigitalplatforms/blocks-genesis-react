@@ -36,7 +36,10 @@ beforeEach(() => {
       },
     },
   };
-  h.logout = { isPending: false, mutateAsync: vi.fn().mockResolvedValue(undefined) };
+  h.logout = {
+    isPending: false,
+    mutateAsync: vi.fn().mockResolvedValue(undefined),
+  };
   h.orgs = {
     data: {
       organizations: [

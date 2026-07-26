@@ -19,7 +19,8 @@ vi.mock("@/lib/theme", () => ({ applyTheme: vi.fn() }));
 import { applyTheme } from "@/lib/theme";
 
 const clearCookie = () => {
-  document.cookie = "app-settings-storage=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  document.cookie =
+    "app-settings-storage=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 };
 
 describe("ThemeProvider", () => {

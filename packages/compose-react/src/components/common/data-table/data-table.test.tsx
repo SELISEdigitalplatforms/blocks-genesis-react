@@ -62,9 +62,7 @@ describe("DataTable", () => {
       <DataTable
         data={data}
         columns={columns as never}
-        pagination={
-          { totalCount: 20, pageSize: 5, pageNumber: 0 } as never
-        }
+        pagination={{ totalCount: 20, pageSize: 5, pageNumber: 0 } as never}
       />,
     );
     expect(screen.getByText("Alice")).toBeInTheDocument();

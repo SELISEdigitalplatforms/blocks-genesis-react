@@ -11,7 +11,8 @@ const wrapper = ({ children }: { children: ReactNode }) => (
 describe("usePaginationQueryParams", () => {
   it("defaults to the provided initial pagination values", () => {
     const { result } = renderHook(
-      () => usePaginationQueryParams({ initial: { pageIndex: 2, pageSize: 25 } }),
+      () =>
+        usePaginationQueryParams({ initial: { pageIndex: 2, pageSize: 25 } }),
       { wrapper },
     );
 

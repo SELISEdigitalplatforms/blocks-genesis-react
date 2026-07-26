@@ -1,10 +1,15 @@
-"use client"
+"use client";
 
-import { useState, type ReactNode } from "react"
-import { ArrowDownToLine, CloudUpload, Paperclip, TriangleAlert } from "lucide-react"
-import { AnimatePresence, motion } from "framer-motion"
+import { useState, type ReactNode } from "react";
+import {
+  ArrowDownToLine,
+  CloudUpload,
+  Paperclip,
+  TriangleAlert,
+} from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 
-import { Button } from "@/components/core/button"
+import { Button } from "@/components/core/button";
 import {
   DialogContent,
   DialogDescription,
@@ -12,58 +17,57 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/core/dialog"
+} from "@/components/core/dialog";
 import {
   FileInput,
   FileUploader,
   FileUploaderContent,
   FileUploaderItem,
-} from "@/components/core/file-uploader"
-import { cn } from "@/lib/utils"
-import { fadeInScale, fadeTransition } from "@/lib/motion-presets"
+} from "@/components/core/file-uploader";
+import { cn } from "@/lib/utils";
+import { fadeInScale, fadeTransition } from "@/lib/motion-presets";
 
 export type ImportFileModalDropzoneOptions = {
-  maxFiles?: number
-  maxSize?: number
-  multiple?: boolean
-}
+  maxFiles?: number;
+  maxSize?: number;
+  multiple?: boolean;
+};
 
 export type ImportFileModalContentProps = {
-  dialogTitle: string
-  dialogDescription?: string
-  warningTitle?: string
-  warningDescription?: string
-  acceptedFormatsLabel?: string
-  templateLabel?: string
-  uploadLabel?: string
-  cancelLabel?: string
-  processingTitle?: string
-  processingDescription?: string
-  checkActivityLabel?: string
-  dropzoneOptions?: ImportFileModalDropzoneOptions
-  dropzoneContent?: ReactNode
-  onUpload?: (files: File[]) => void
-  onCheckActivity?: () => void
-  onCancel?: () => void
-  onDownloadTemplate?: () => void
-  className?: string
-}
+  dialogTitle: string;
+  dialogDescription?: string;
+  warningTitle?: string;
+  warningDescription?: string;
+  acceptedFormatsLabel?: string;
+  templateLabel?: string;
+  uploadLabel?: string;
+  cancelLabel?: string;
+  processingTitle?: string;
+  processingDescription?: string;
+  checkActivityLabel?: string;
+  dropzoneOptions?: ImportFileModalDropzoneOptions;
+  dropzoneContent?: ReactNode;
+  onUpload?: (files: File[]) => void;
+  onCheckActivity?: () => void;
+  onCancel?: () => void;
+  onDownloadTemplate?: () => void;
+  className?: string;
+};
 
 const DefaultDropzoneContent = ({
   acceptedFormatsLabel = "SVG, PNG, JPG or GIF",
 }: {
-  acceptedFormatsLabel?: string
+  acceptedFormatsLabel?: string;
 }) => (
   <>
     <CloudUpload className="mb-3 size-8 text-muted-foreground" aria-hidden />
     <p className="mb-1 text-sm text-foreground">
-      <span className="font-semibold text-primary">Click to upload</span>
-      {" "}
-      or drag and drop
+      <span className="font-semibold text-primary">Click to upload</span> or
+      drag and drop
     </p>
     <p className="text-xs text-muted-foreground">{acceptedFormatsLabel}</p>
   </>
-)
+);
 
 export const ImportFileModalContent = ({
   dialogTitle,
@@ -85,15 +89,15 @@ export const ImportFileModalContent = ({
   onDownloadTemplate,
   className,
 }: ImportFileModalContentProps) => {
-  const [files, setFiles] = useState<File[] | null>(null)
-  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [files, setFiles] = useState<File[] | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleUpload = () => {
     if (files?.length) {
-      onUpload?.(files)
+      onUpload?.(files);
     }
-    setShowConfirmation(true)
-  }
+    setShowConfirmation(true);
+  };
 
   return (
     <DialogContent className={cn("rounded-md sm:max-w-[450px]", className)}>
@@ -109,7 +113,9 @@ export const ImportFileModalContent = ({
           >
             <DialogHeader>
               <DialogTitle className="text-left">{dialogTitle}</DialogTitle>
-              <DialogDescription className="text-left">{dialogDescription}</DialogDescription>
+              <DialogDescription className="text-left">
+                {dialogDescription}
+              </DialogDescription>
             </DialogHeader>
             <motion.div
               className="flex flex-col rounded-md bg-muted/50 px-3 py-2"
@@ -118,10 +124,17 @@ export const ImportFileModalContent = ({
               transition={{ ...fadeTransition, delay: 0.05 }}
             >
               <motion.div className="flex flex-row items-center">
-                <TriangleAlert className="size-4 text-amber-600 dark:text-amber-500" aria-hidden />
-                <p className="ml-2 text-sm font-semibold text-foreground">{warningTitle}</p>
+                <TriangleAlert
+                  className="size-4 text-amber-600 dark:text-amber-500"
+                  aria-hidden
+                />
+                <p className="ml-2 text-sm font-semibold text-foreground">
+                  {warningTitle}
+                </p>
               </motion.div>
-              <p className="mt-2 text-sm text-muted-foreground">{warningDescription}</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {warningDescription}
+              </p>
             </motion.div>
             <FileUploader
               value={files}
@@ -132,7 +145,9 @@ export const ImportFileModalContent = ({
               <FileInput className="rounded border border-dashed border-border">
                 <div className="flex w-full flex-col items-center justify-center py-4">
                   {dropzoneContent ?? (
-                    <DefaultDropzoneContent acceptedFormatsLabel={acceptedFormatsLabel} />
+                    <DefaultDropzoneContent
+                      acceptedFormatsLabel={acceptedFormatsLabel}
+                    />
                   )}
                 </div>
               </FileInput>
@@ -148,7 +163,10 @@ export const ImportFileModalContent = ({
                       transition={fadeTransition}
                     >
                       <FileUploaderItem index={index}>
-                        <Paperclip className="size-4 stroke-current" aria-hidden />
+                        <Paperclip
+                          className="size-4 stroke-current"
+                          aria-hidden
+                        />
                         <span>{file.name}</span>
                       </FileUploaderItem>
                     </motion.div>
@@ -166,7 +184,12 @@ export const ImportFileModalContent = ({
                 {templateLabel}
               </button>
               <div className="grid grid-cols-2 gap-2">
-                <Button type="button" variant="outline" size="default" onClick={onCancel}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="default"
+                  onClick={onCancel}
+                >
                   {cancelLabel}
                 </Button>
                 <Button type="button" size="default" onClick={handleUpload}>
@@ -193,7 +216,12 @@ export const ImportFileModalContent = ({
             <div className="mt-0 flex flex-row-reverse gap-2">
               {onCheckActivity ? (
                 <DialogTrigger asChild>
-                  <Button type="button" size="default" variant="outline" onClick={onCheckActivity}>
+                  <Button
+                    type="button"
+                    size="default"
+                    variant="outline"
+                    onClick={onCheckActivity}
+                  >
                     {checkActivityLabel}
                   </Button>
                 </DialogTrigger>
@@ -203,5 +231,5 @@ export const ImportFileModalContent = ({
         )}
       </AnimatePresence>
     </DialogContent>
-  )
-}
+  );
+};

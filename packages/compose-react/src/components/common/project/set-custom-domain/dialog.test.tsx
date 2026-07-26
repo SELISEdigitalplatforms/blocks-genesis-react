@@ -60,7 +60,9 @@ const domains = [
   { domain: "b.com", isDomainVerified: false },
 ] as unknown as IDomain[];
 
-const renderDialog = (overrides: Partial<Parameters<typeof SetCustomDomainDialog>[0]> = {}) =>
+const renderDialog = (
+  overrides: Partial<Parameters<typeof SetCustomDomainDialog>[0]> = {},
+) =>
   render(
     <SetCustomDomainDialog
       open
@@ -95,7 +97,10 @@ describe("SetCustomDomainDialog", () => {
 
   it("shows an empty default domain when the current url has no match", () => {
     renderDialog({
-      repo: { ...repo, customDeploymentUrl: "https://nomatch.com" } as IEnvRepository,
+      repo: {
+        ...repo,
+        customDeploymentUrl: "https://nomatch.com",
+      } as IEnvRepository,
     });
 
     expect(screen.getByTestId("default-domain")).toHaveTextContent("");

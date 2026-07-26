@@ -6,7 +6,15 @@ import {
   type ReactNode,
 } from "react";
 import { X } from "lucide-react";
-import { Button, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/core";
+import {
+  Button,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/core";
 import { debounce } from "@/utils/functions";
 import { cn } from "@/lib/utils";
 
@@ -80,7 +88,8 @@ export const DropdownSearchInput: React.FC<DropdownSearchInputProps> = ({
             <SelectItem
               key={item.value}
               value={item.value}
-              className={cn(className.SelectItem)}>
+              className={cn(className.SelectItem)}
+            >
               {item.label}
             </SelectItem>
           ))}
@@ -105,7 +114,8 @@ export const DropdownSearchInput: React.FC<DropdownSearchInputProps> = ({
           "h-full p-1 pr-0 hover:bg-transparent",
           !value.value && "invisible",
         )}
-        onClick={handleClear}>
+        onClick={handleClear}
+      >
         <X className="h-4 w-4 text-muted-foreground" />
       </Button>
     </div>

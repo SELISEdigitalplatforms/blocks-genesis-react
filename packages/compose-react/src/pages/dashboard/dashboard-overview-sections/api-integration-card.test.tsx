@@ -27,7 +27,10 @@ describe("AppIntegrationCard", () => {
 
   it("renders client id and secret labels when both are provided", () => {
     render(
-      <AppIntegrationCard clientId="abc123456789" clientSecret="secret-value" />,
+      <AppIntegrationCard
+        clientId="abc123456789"
+        clientSecret="secret-value"
+      />,
     );
 
     expect(screen.getByText("Client ID")).toBeInTheDocument();

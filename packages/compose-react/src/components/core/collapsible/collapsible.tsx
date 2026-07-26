@@ -7,7 +7,9 @@ import { motion, type Transition } from "framer-motion";
 const Collapsible = CollapsiblePrimitive.Root;
 const CollapsibleTrigger = CollapsiblePrimitive.CollapsibleTrigger;
 
-function useRadixDataState(ref: React.RefObject<HTMLElement | null>): "open" | "closed" {
+function useRadixDataState(
+  ref: React.RefObject<HTMLElement | null>,
+): "open" | "closed" {
   const [state, setState] = React.useState<"open" | "closed">("closed");
   React.useEffect(() => {
     const el = ref.current;
@@ -24,7 +26,10 @@ function useRadixDataState(ref: React.RefObject<HTMLElement | null>): "open" | "
   return state;
 }
 
-const collapsibleTransition: Transition = { duration: 0.26, ease: [0.16, 1, 0.3, 1] };
+const collapsibleTransition: Transition = {
+  duration: 0.26,
+  ease: [0.16, 1, 0.3, 1],
+};
 
 const CollapsibleContent = React.forwardRef<
   React.ComponentRef<typeof CollapsiblePrimitive.CollapsibleContent>,
@@ -56,6 +61,7 @@ const CollapsibleContent = React.forwardRef<
     </CollapsiblePrimitive.CollapsibleContent>
   );
 });
-CollapsibleContent.displayName = CollapsiblePrimitive.CollapsibleContent.displayName;
+CollapsibleContent.displayName =
+  CollapsiblePrimitive.CollapsibleContent.displayName;
 
 export { Collapsible, CollapsibleTrigger, CollapsibleContent };
