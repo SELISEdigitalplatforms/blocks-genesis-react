@@ -2,8 +2,8 @@ import { act, renderHook } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 import type { WizardSteps } from "./wizard-stepper-models";
+import { useWizardStepper } from "./use-wizard-stepper";
 import {
-  useWizardStepper,
   WizardStepperProvider,
   type WizardStepperProviderProps,
 } from "./wizard-stepper-provider";
@@ -14,13 +14,14 @@ const STEPS: WizardSteps = [
   { id: 3, title: "Three" },
 ];
 
-const makeWrapper =
-  (props: Partial<WizardStepperProviderProps> = {}) =>
-  ({ children }: { children: ReactNode }) => (
+const makeWrapper = (props: Partial<WizardStepperProviderProps> = {}) => {
+  const Wrapper = ({ children }: { children: ReactNode }) => (
     <WizardStepperProvider steps={STEPS} {...props}>
       {children}
     </WizardStepperProvider>
   );
+  return Wrapper;
+};
 
 const renderStepper = (props?: Partial<WizardStepperProviderProps>) =>
   renderHook(() => useWizardStepper(), { wrapper: makeWrapper(props) });

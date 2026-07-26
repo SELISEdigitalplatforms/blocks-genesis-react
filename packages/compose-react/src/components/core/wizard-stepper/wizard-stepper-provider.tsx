@@ -1,31 +1,14 @@
-import {
-  createContext,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react"
+import { useCallback, useMemo, useState, type ReactNode } from "react";
 
-import type { WizardStepperContextType, WizardSteps } from "./wizard-stepper-models"
-
-const WizardStepperContext = createContext<WizardStepperContextType | undefined>(
-  undefined,
-)
-
-export const useWizardStepper = (): WizardStepperContextType => {
-  const context = useContext(WizardStepperContext)
-  if (!context) {
-    throw new Error("useWizardStepper must be used within a WizardStepperProvider")
-  }
-  return context
-}
+import type { WizardSteps } from "./wizard-stepper-models";
+import { WizardStepperContext } from "./use-wizard-stepper";
 
 export type WizardStepperProviderProps = {
-  children: ReactNode
-  steps: WizardSteps
-  isStepValid?: (step: number) => boolean
-  initialStep?: number
-}
+  children: ReactNode;
+  steps: WizardSteps;
+  isStepValid?: (step: number) => boolean;
+  initialStep?: number;
+};
 
 export const WizardStepperProvider = ({
   children,
@@ -33,43 +16,49 @@ export const WizardStepperProvider = ({
   isStepValid = () => true,
   initialStep = 1,
 }: WizardStepperProviderProps) => {
-  const [currentStep, setCurrentStep] = useState(initialStep)
+  const [currentStep, setCurrentStep] = useState(initialStep);
   const [completedSteps, setCompletedSteps] = useState<number[]>(
     Array.from({ length: initialStep - 1 }, (_, index) => index + 1),
-  )
-  const totalSteps = steps.length
+  );
+  const totalSteps = steps.length;
 
-  const nextStep = () => {
+  const nextStep = useCallback(() => {
     if (currentStep < totalSteps) {
-      setCurrentStep((prevStep) => prevStep + 1)
+      setCurrentStep((prevStep) => prevStep + 1);
       if (!completedSteps.includes(currentStep)) {
-        setCompletedSteps((prevCompleted) => [...prevCompleted, currentStep])
+        setCompletedSteps((prevCompleted) => [...prevCompleted, currentStep]);
       }
     }
-  }
+  }, [completedSteps, currentStep, totalSteps]);
 
-  const previousStep = () => {
+  const previousStep = useCallback(() => {
     if (currentStep > 1) {
-      setCurrentStep((prevStep) => prevStep - 1)
+      setCurrentStep((prevStep) => prevStep - 1);
       setCompletedSteps((prevCompleted) =>
         prevCompleted.filter((step) => step !== currentStep - 1),
-      )
+      );
     }
-  }
+  }, [currentStep]);
 
-  const goToStep = (step: number) => {
-    const canNavigate =
-      step > 0 &&
-      step <= totalSteps &&
-      (step === 1 || completedSteps.includes(step - 1)) &&
-      isStepValid(step)
+  const goToStep = useCallback(
+    (step: number) => {
+      const canNavigate =
+        step > 0 &&
+        step <= totalSteps &&
+        (step === 1 || completedSteps.includes(step - 1)) &&
+        isStepValid(step);
 
-    if (canNavigate) {
-      setCurrentStep(step)
-      const newCompletedSteps = Array.from({ length: step - 1 }, (_, index) => index + 1)
-      setCompletedSteps(newCompletedSteps)
-    }
-  }
+      if (canNavigate) {
+        setCurrentStep(step);
+        const newCompletedSteps = Array.from(
+          { length: step - 1 },
+          (_, index) => index + 1,
+        );
+        setCompletedSteps(newCompletedSteps);
+      }
+    },
+    [completedSteps, isStepValid, totalSteps],
+  );
 
   const contextValue = useMemo(
     () => ({
@@ -92,11 +81,11 @@ export const WizardStepperProvider = ({
       totalSteps,
       steps,
     ],
-  )
+  );
 
   return (
     <WizardStepperContext.Provider value={contextValue}>
       {children}
     </WizardStepperContext.Provider>
-  )
-}
+  );
+};

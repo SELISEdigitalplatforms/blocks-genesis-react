@@ -1,4 +1,4 @@
-import type { ColumnDef, Header, TableOptions } from "@tanstack/react-table";
+import type { Header, RowData, TableOptions } from "@tanstack/react-table";
 import type { ReactNode } from "react";
 import type { SortValue } from "../filter-toolbar/sort-header";
 
@@ -6,7 +6,13 @@ import type { SortValue } from "../filter-toolbar/sort-header";
 // Enables Option C: meta-driven header rendering alongside explicit header
 // functions, with a plain-text fallback when neither is provided.
 declare module "@tanstack/react-table" {
-  interface ColumnMeta<TData, TValue> {
+  // TS declaration merging (TS2428) forces the exact type parameter names of
+  // tanstack's own `ColumnMeta<TData extends RowData, TValue>` declaration,
+  // so they cannot be renamed to match the unused-var ignore pattern or
+  // removed. This is the augmentation pattern from the TanStack Table docs,
+  // which carry this same suppression. Confirmed false positive.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData extends RowData, TValue> {
     /** Display label for auto-rendered headers and sort controls */
     label?: string;
     /** Sort key sent to onSortChange. Defaults to column id when omitted */
@@ -65,7 +71,8 @@ export type PaginationConfig = {
 
 export type DataTableProps<TData> = {
   data: TData[];
-  columns: ColumnDef<TData, any>[];
+  /** Exactly what useReactTable accepts: tanstack types this as ColumnDef<TData, any>[] */
+  columns: TableOptions<TData>["columns"];
   /** Shows the loader when true */
   isLoading?: boolean;
   /**

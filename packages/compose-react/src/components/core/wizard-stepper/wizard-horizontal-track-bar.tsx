@@ -1,17 +1,18 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
+import { motion } from "framer-motion";
 
-import { Button } from "@/components/core/button"
-import { cn } from "@/lib/utils"
-import { fadeTransition } from "@/lib/motion-presets"
+import { Button } from "@/components/core/button";
+import { cn } from "@/lib/utils";
+import { fadeTransition } from "@/lib/motion-presets";
 
-import { WizardStepIndicator } from "./wizard-step-indicator"
-import { useWizardStepper } from "./wizard-stepper-provider"
+import { WizardStepIndicator } from "./wizard-step-indicator";
+import { useWizardStepper } from "./use-wizard-stepper";
 
 export const WizardHorizontalTrackBar = () => {
-  const { currentStep, completedSteps, goToStep, getSteps } = useWizardStepper()
-  const steps = getSteps()
+  const { currentStep, completedSteps, goToStep, getSteps } =
+    useWizardStepper();
+  const steps = getSteps();
 
   return (
     <motion.div
@@ -20,9 +21,9 @@ export const WizardHorizontalTrackBar = () => {
       transition={fadeTransition}
     >
       {steps.map((step, index) => {
-        const stepNumber = index + 1
-        const isCompleted = completedSteps.includes(stepNumber)
-        const isCurrent = currentStep === stepNumber
+        const stepNumber = index + 1;
+        const isCompleted = completedSteps.includes(stepNumber);
+        const isCurrent = currentStep === stepNumber;
 
         return (
           <div
@@ -50,9 +51,10 @@ export const WizardHorizontalTrackBar = () => {
               <motion.div
                 layout
                 animate={{
-                  color: isCurrent || isCompleted
-                    ? "hsl(var(--foreground))"
-                    : "hsl(var(--muted-foreground))",
+                  color:
+                    isCurrent || isCompleted
+                      ? "hsl(var(--foreground))"
+                      : "hsl(var(--muted-foreground))",
                 }}
                 transition={fadeTransition}
                 className="hidden md:block"
@@ -61,8 +63,8 @@ export const WizardHorizontalTrackBar = () => {
               </motion.div>
             </div>
           </div>
-        )
+        );
       })}
     </motion.div>
-  )
-}
+  );
+};

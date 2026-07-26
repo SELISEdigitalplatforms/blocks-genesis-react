@@ -9,7 +9,7 @@ import type {
   RequestBody,
 } from "./types";
 import { HttpError } from "./error";
-import { getQueryClient } from "@/providers/query.provider";
+import { getQueryClient } from "@/providers/query-client";
 import { useAuthStore } from "@/store/auth.store";
 import { useProjectStore } from "@/store/project.store";
 

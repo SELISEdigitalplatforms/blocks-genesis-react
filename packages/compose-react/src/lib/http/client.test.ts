@@ -11,7 +11,7 @@ const h = vi.hoisted(() => ({
 vi.mock("@/lib/runtime-env", () => ({
   getRuntimeEnv: (key: string) => h.runtimeEnv[key] ?? "",
 }));
-vi.mock("@/providers/query.provider", () => ({
+vi.mock("@/providers/query-client", () => ({
   getQueryClient: () => ({ cancelQueries: h.cancelQueries, clear: h.clear }),
 }));
 vi.mock("@/store/auth.store", () => ({
