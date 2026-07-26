@@ -6,7 +6,7 @@ interface NotificationListProps {
   notifications: INotification[];
   isLoading: boolean;
   isFetching: boolean;
-  listRef: RefObject<HTMLDivElement>;
+  listRef: RefObject<HTMLDivElement | null>;
   onScroll: () => void;
   onMarkAsRead: (id: string) => void;
 }

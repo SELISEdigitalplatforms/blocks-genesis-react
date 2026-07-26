@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
+import { parseSwaggerDocument } from "@/pages/dashboard/dashboard-overview-sections/use-swagger-endpoints";
 import {
-  parseSwaggerDocument,
   buildCurlCommand,
   groupEndpointsByTag,
-} from "@/pages/dashboard/dashboard-overview-sections/util";
+} from "@/pages/dashboard/dashboard-overview-sections/core-api/util";
 
 describe("parseSwaggerDocument", () => {
   it("resolves the base URL from OpenAPI servers and keeps the summary", () => {
@@ -35,9 +35,9 @@ describe("parseSwaggerDocument", () => {
       } as never,
       "https://ignored.test/swagger.json",
     );
-    expect(endpoint.path).toBe("https://api.test/v1/x");
-    expect(endpoint.summary).toBe("CreateX");
-    expect(endpoint.method).toBe("POST");
+    expect(endpoint?.path).toBe("https://api.test/v1/x");
+    expect(endpoint?.summary).toBe("CreateX");
+    expect(endpoint?.method).toBe("POST");
   });
 
   it("uses an explicit runtime base URL when provided", () => {
@@ -46,8 +46,8 @@ describe("parseSwaggerDocument", () => {
       "https://ignored.test/swagger.json",
       "BLOCKS_OS_BASE_URL" as never,
     );
-    expect(endpoint.path).toBe("https://test.local/y");
-    expect(endpoint.summary).toBe("y");
+    expect(endpoint?.path).toBe("https://test.local/y");
+    expect(endpoint?.summary).toBe("y");
   });
 
   it("falls back to the swagger URL origin and humanizes camel-case paths", () => {
@@ -55,8 +55,8 @@ describe("parseSwaggerDocument", () => {
       { paths: { "/GetUsers/{id}": { get: {} } } } as never,
       "https://origin.test/swagger.json",
     );
-    expect(endpoint.path).toBe("https://origin.test/GetUsers/{id}");
-    expect(endpoint.summary).toBe("Get Users");
+    expect(endpoint?.path).toBe("https://origin.test/GetUsers/{id}");
+    expect(endpoint?.summary).toBe("Get Users");
   });
 
   it("returns an empty list when there are no paths", () => {
@@ -100,6 +100,6 @@ describe("groupEndpointsByTag", () => {
       {},
     ] as never);
     expect(groups.map((g) => g.tag)).toEqual(["Iam", "Mfa", "Other"]);
-    expect(groups[0].endpoints).toHaveLength(2);
+    expect(groups[0]?.endpoints).toHaveLength(2);
   });
 });

@@ -34,9 +34,10 @@ const wrapper = () => {
       mutations: { retry: false },
     },
   });
-  return ({ children }: { children: ReactNode }) => (
+  const Wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={client}>{children}</QueryClientProvider>
   );
+  return Wrapper;
 };
 
 beforeEach(() => {
@@ -109,12 +110,12 @@ describe("use-project queries", () => {
 
 describe("use-project mutations", () => {
   const runMutation = async (
-    hook: () => { mutate: (p?: unknown) => void; isSuccess: boolean },
+    hook: () => { mutate: (p: never) => void; isSuccess: boolean },
     payload?: unknown,
   ) => {
     const { result } = renderHook(hook, { wrapper: wrapper() });
     await act(async () => {
-      result.current.mutate(payload);
+      result.current.mutate(payload as never);
     });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
   };

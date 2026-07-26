@@ -35,7 +35,7 @@ describe("NotificationService", () => {
     expect(c.get).toHaveBeenCalledWith(
       expect.stringContaining(`${NOTIFICATION_ENDPOINTS.GET_NOTIFICATIONS}?`),
     );
-    expect(c.get.mock.calls[0][0]).toContain("page=0");
+    expect(c.get.mock.calls[0]?.[0]).toContain("page=0");
   });
 
   it("markAsRead posts the notification id", async () => {
@@ -55,7 +55,7 @@ describe("NotificationService", () => {
 
   it("getNotificationConfigs requests the configs page", async () => {
     await notificationService.getNotificationConfigs(2, 5);
-    expect(c.get.mock.calls[0][0]).toContain("page=2");
+    expect(c.get.mock.calls[0]?.[0]).toContain("page=2");
   });
 
   it("getNotificationConfig dispatches a window CustomEvent (parsed JSON)", () => {

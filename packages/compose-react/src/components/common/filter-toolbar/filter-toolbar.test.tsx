@@ -17,15 +17,19 @@ describe("Radio filter", () => {
 
   it("opens and selects a radio option", () => {
     const onChange = vi.fn();
-    render(<Radio label="Status" options={options} value="" onChange={onChange} />);
+    render(
+      <Radio label="Status" options={options} value="" onChange={onChange} />,
+    );
     fireEvent.click(screen.getByRole("button"));
     expect(screen.getAllByText("Open").length).toBeGreaterThan(0);
-    fireEvent.click(screen.getAllByRole("radio")[0]);
+    fireEvent.click(screen.getAllByRole("radio")[0]!);
     expect(onChange).toHaveBeenCalledWith("open");
   });
 
   it("shows a no-results state while searching", () => {
-    render(<Radio label="Status" options={options} value="" onChange={vi.fn()} />);
+    render(
+      <Radio label="Status" options={options} value="" onChange={vi.fn()} />,
+    );
     fireEvent.click(screen.getByRole("button"));
     fireEvent.change(screen.getByPlaceholderText("Status"), {
       target: { value: "zzz" },
@@ -35,7 +39,12 @@ describe("Radio filter", () => {
 
   it("renders the selected badge when a value is set", () => {
     render(
-      <Radio label="Status" options={options} value="open" onChange={vi.fn()} />,
+      <Radio
+        label="Status"
+        options={options}
+        value="open"
+        onChange={vi.fn()}
+      />,
     );
     expect(screen.getAllByText("Open").length).toBeGreaterThan(0);
   });

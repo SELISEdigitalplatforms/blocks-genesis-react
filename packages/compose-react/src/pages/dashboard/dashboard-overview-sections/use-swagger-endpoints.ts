@@ -77,7 +77,7 @@ const humanizeFromPath = (path: string): string => {
     .trim();
 };
 
-const parseSwaggerDocument = (
+export const parseSwaggerDocument = (
   swagger: ISwaggerDocument,
   swaggerUrl: string,
   explicitBaseUrl?: RuntimeKey,
@@ -143,7 +143,12 @@ export const useSwaggerEndpoints = (
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["swagger-endpoints", swaggerUrl],
-    queryFn: () => fetchSwaggerDocument(swaggerUrl),
+    queryFn: () => {
+      if (!swaggerUrl) {
+        return Promise.reject(new Error("Swagger URL is not configured"));
+      }
+      return fetchSwaggerDocument(swaggerUrl);
+    },
     enabled: Boolean(swaggerUrl) && enabled,
     staleTime,
   });

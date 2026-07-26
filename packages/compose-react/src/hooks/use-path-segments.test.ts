@@ -28,7 +28,7 @@ describe("path segments", () => {
     const segments = getPathSegments("/a/b", {
       formatter: (s) => s.toUpperCase(),
     });
-    expect(segments[0].label).toBe("A");
+    expect(segments[0]?.label).toBe("A");
   });
 
   it("usePathSegments returns the parsed segments", () => {

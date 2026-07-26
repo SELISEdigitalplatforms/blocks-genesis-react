@@ -22,6 +22,7 @@ vi.mock("react-router-dom", async (imp) => ({
   useNavigate: () => navigate,
 }));
 
+import { TooltipProvider } from "@/components/core/tooltip/tooltip";
 import { ProjectCard } from "@/pages/console/project-card";
 import { useProjectStore } from "@/store/project.store";
 
@@ -38,7 +39,12 @@ const envA = {
   environment: "prod",
 };
 
-const wrap = (ui: ReactNode) => render(<MemoryRouter>{ui}</MemoryRouter>);
+const wrap = (ui: ReactNode) =>
+  render(
+    <MemoryRouter>
+      <TooltipProvider>{ui}</TooltipProvider>
+    </MemoryRouter>,
+  );
 
 beforeEach(() => {
   navigate.mockReset();
@@ -61,7 +67,7 @@ describe("ProjectCard", () => {
 
   it("configures the project when the settings button is clicked", () => {
     wrap(<ProjectCard project={project as never} projects={[envA] as never} />);
-    fireEvent.click(screen.getAllByRole("button")[0]);
+    fireEvent.click(screen.getAllByRole("button")[0]!);
     expect(h.handleClick).toHaveBeenCalled();
     expect(useProjectStore.getState().selectedTenantGroup).toBe("tg1");
   });
@@ -69,7 +75,7 @@ describe("ProjectCard", () => {
   it("navigates to an environment dashboard on chip click", () => {
     wrap(<ProjectCard project={project as never} projects={[envA] as never} />);
     const buttons = screen.getAllByRole("button");
-    fireEvent.click(buttons[buttons.length - 1]);
+    fireEvent.click(buttons[buttons.length - 1]!);
     expect(navigate).toHaveBeenCalledWith("/app/iA/dashboard");
   });
 

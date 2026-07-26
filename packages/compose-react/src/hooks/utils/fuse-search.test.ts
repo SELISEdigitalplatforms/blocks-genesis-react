@@ -8,7 +8,10 @@ import {
 } from "@/hooks/utils/fuse-search";
 
 const rows = [{ name: "apple" }, { name: "banana" }, { name: "cherry" }];
-const options = { ...defaultFuseSearchOptions<(typeof rows)[number]>(), keys: ["name"] };
+const options = {
+  ...defaultFuseSearchOptions<(typeof rows)[number]>(),
+  keys: ["name"],
+};
 
 describe("fuse-search", () => {
   it("provides sensible default options", () => {
@@ -28,7 +31,7 @@ describe("fuse-search", () => {
     const all = fuseSearch(rows, "", options);
     expect(all).toHaveLength(3);
     expect(all[0]).toHaveProperty("refIndex", 0);
-    expect(fuseSearch(rows, "banana", options)[0].item.name).toBe("banana");
+    expect(fuseSearch(rows, "banana", options)[0]?.item.name).toBe("banana");
   });
 
   it("fuseSearchWithIndex reuses a prebuilt index", () => {
