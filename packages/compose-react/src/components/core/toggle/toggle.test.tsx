@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { Toggle, toggleVariants } from "@/components/core/toggle/toggle";
+import { Toggle } from "@/components/core/toggle/toggle";
+import { toggleVariants } from "@/components/core/toggle/toggle-variants";
 
 describe("Toggle", () => {
   it("renders a toggle button", () => {

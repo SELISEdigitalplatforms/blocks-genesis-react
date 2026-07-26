@@ -1,19 +1,22 @@
-"use client"
+"use client";
 
-import type { ReactNode } from "react"
-import { AnimatePresence, motion } from "framer-motion"
+import type { ReactNode } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
-import { fadeInUp, fadeTransition } from "@/lib/motion-presets"
+import { fadeInUp, fadeTransition } from "@/lib/motion-presets";
 
-import { useWizardStepper } from "./wizard-stepper-provider"
+import { useWizardStepper } from "./use-wizard-stepper";
 
 export type WizardStepViewportProps = {
-  children: ReactNode
-  className?: string
-}
+  children: ReactNode;
+  className?: string;
+};
 
-export const WizardStepViewport = ({ children, className }: WizardStepViewportProps) => {
-  const { currentStep } = useWizardStepper()
+export const WizardStepViewport = ({
+  children,
+  className,
+}: WizardStepViewportProps) => {
+  const { currentStep } = useWizardStepper();
 
   return (
     <AnimatePresence mode="wait">
@@ -29,5 +32,5 @@ export const WizardStepViewport = ({ children, className }: WizardStepViewportPr
         {children}
       </motion.div>
     </AnimatePresence>
-  )
-}
+  );
+};
