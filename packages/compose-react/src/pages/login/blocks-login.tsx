@@ -181,7 +181,6 @@ export const BlocksLoginPage = ({
       <style>{blocksLoginStyles}</style>
 
       <div className="grid-bg" />
-      <div className="scan-line" />
       <div className="radial-glow" />
       <div className="secondary-glow" />
       <div className="vignette" />
