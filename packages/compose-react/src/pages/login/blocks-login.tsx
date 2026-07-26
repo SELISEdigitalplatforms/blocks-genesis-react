@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { LoginHeader } from "@/components/common/login-header/login-header";
 import { Badge } from "@/components/core/badge";
 import { Button } from "@/components/core/button";
-import { LoginHeader } from "@/components/common/login-header/login-header";
-import { blocksLoginStyles } from "./login.styles";
+import { useEffect, useMemo, useRef } from "react";
 import { DEFAULT_BLOCKS_PRODUCTS } from "./login.constant";
+import { blocksLoginStyles } from "./login.styles";
 import type {
   BlocksLoginPageProps,
   BlocksProduct,
@@ -40,28 +40,28 @@ export const BlocksLoginPage = ({
   const [titleHead, titleTail] = splitAppName(active?.appName ?? "");
   const heroSubtitle = active?.tagline;
   const features = active?.featureChips;
-  const derivedKeywordPrefix = active?.descriptionTitle;
-  const derivedKeywords = active?.keywords;
+  // const derivedKeywordPrefix = active?.descriptionTitle;
+  // const derivedKeywords = active?.keywords;
 
-  const [keywordIdx, setKeywordIdx] = useState(0);
-  const [keywordVisible, setKeywordVisible] = useState(true);
+  // const [keywordIdx, setKeywordIdx] = useState(0);
+  // const [keywordVisible, setKeywordVisible] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const resolvedKeywords = useMemo(
-    () => derivedKeywords ?? [],
-    [derivedKeywords],
-  );
+  // const resolvedKeywords = useMemo(
+  //   () => derivedKeywords ?? [],
+  //   [derivedKeywords],
+  // );
 
-  useEffect(() => {
-    const id = setInterval(() => {
-      setKeywordVisible(false);
-      setTimeout(() => {
-        setKeywordIdx((p) => (p + 1) % resolvedKeywords.length);
-        setKeywordVisible(true);
-      }, 280);
-    }, 2800);
-    return () => clearInterval(id);
-  }, [resolvedKeywords.length]);
+  // useEffect(() => {
+  //   const id = setInterval(() => {
+  //     setKeywordVisible(false);
+  //     setTimeout(() => {
+  //       setKeywordIdx((p) => (p + 1) % resolvedKeywords.length);
+  //       setKeywordVisible(true);
+  //     }, 280);
+  //   }, 2800);
+  //   return () => clearInterval(id);
+  // }, [resolvedKeywords.length]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -272,15 +272,14 @@ export const BlocksLoginPage = ({
             )}
           </h1>
           <p className="title-sub">{heroSubtitle}</p>
-          <p className="keywords">
+          {/* <p className="keywords">
             {derivedKeywordPrefix}{" "}
             <span
               className="keyword-anim"
-              style={{ opacity: keywordVisible ? 1 : 0 }}
-            >
+              style={{ opacity: keywordVisible ? 1 : 0 }}>
               {resolvedKeywords[keywordIdx]}
             </span>
-          </p>
+          </p> */}
           <p className="desc">{active?.description}</p>
 
           {features && features?.length > 0 && (
