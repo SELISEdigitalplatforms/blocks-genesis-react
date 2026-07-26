@@ -11,7 +11,8 @@ A package-first pnpm monorepo for reusable React building blocks. Its main produ
 | `tooling/prettier`                                   | Shared Prettier config (`@blocks-kit/prettier-config`)                                                                                   |
 | `tooling/typescript`                                 | Shared TypeScript configs (`@blocks-kit/tsconfig`)                                                                                       |
 
-Consumer-facing documentation (installation, peer dependencies, quick start, API surface) lives in the [package README](./packages/compose-react/README.md), which is what npm displays.
+- [packages/compose-react](./packages/compose-react): React composition package built on Radix UI primitives with app-shell utilities (published as `@seliseblocks/blocks-kit`)
+- tooling/\*: Shared ESLint, Prettier, and TypeScript configs
 
 ## Requirements
 
@@ -49,8 +50,10 @@ Tests are Vitest (jsdom + Testing Library) and live next to the source files in 
 
 `@seliseblocks/blocks-kit` intentionally does not ship CSS files. Host applications are responsible for:
 
-- Tailwind CSS setup (including scanning the package's `dist` output for class names)
-- shadcn token/theme variables
+Host applications are responsible for:
+
+- Tailwind setup
+- shared design tokens (CSS variables) for theming
 - Any global CSS imports required by their design system
 
 See the [package README](./packages/compose-react/README.md#styling-contract) for the exact Tailwind configuration.

@@ -38,11 +38,15 @@ This package intentionally ships **no CSS files**. Host applications are respons
   ```ts
   // tailwind.config.ts
   export default {
-    content: ["./app/**/*.{ts,tsx}", "./node_modules/@seliseblocks/blocks-kit/dist/**/*.{js,jsx,ts,tsx}"],
+    content: [
+      "./app/**/*.{ts,tsx}",
+      "./node_modules/@seliseblocks/blocks-kit/dist/**/*.{js,jsx,ts,tsx}",
+    ],
   };
   ```
 
-- shadcn token/theme CSS variables
+- Tailwind CSS setup
+- shared design tokens (CSS variables) for theming
 - Any global CSS imports required by their design system
 
 ## Runtime Configuration
@@ -69,12 +73,30 @@ Wrap your app in the providers, then compose routes from the guards, layouts, an
 import { NuqsAdapter } from "nuqs/adapters/react-router/v6";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, Navigate, Outlet, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  Outlet,
+  RouterProvider,
+} from "react-router-dom";
 
-import { AuthResolver, ProtectedGuard, PublicGuard } from "@seliseblocks/blocks-kit/guards";
+import {
+  AuthResolver,
+  ProtectedGuard,
+  PublicGuard,
+} from "@seliseblocks/blocks-kit/guards";
 import { ConsoleLayout } from "@seliseblocks/blocks-kit/layouts";
-import { CallbackPage, ConsolePage, LoginPage, ProfilePage } from "@seliseblocks/blocks-kit/pages";
-import { BlocksAppLayout, QueryProvider, ThemeProvider } from "@seliseblocks/blocks-kit/providers";
+import {
+  CallbackPage,
+  ConsolePage,
+  LoginPage,
+  ProfilePage,
+} from "@seliseblocks/blocks-kit/pages";
+import {
+  BlocksAppLayout,
+  QueryProvider,
+  ThemeProvider,
+} from "@seliseblocks/blocks-kit/providers";
 
 const router = createBrowserRouter([
   {
@@ -124,8 +146,7 @@ createRoot(document.getElementById("root")!).render(
             config={{
               name: "blocks-monitor",
               appLogoUrl: { dark: "/logo-dark.svg", light: "/logo-light.svg" },
-            }}
-          >
+            }}>
             <RouterProvider router={router} />
           </BlocksAppLayout>
         </NuqsAdapter>
@@ -161,7 +182,21 @@ The main entry (`@seliseblocks/blocks-kit`) re-exports everything below. Subpath
 
 - **Core components** (Radix UI + shadcn based): `Accordion`, `Alert`, `AlertDialog`, `AspectRatio`, `Avatar`, `Badge`, `Breadcrumb`, `Button`, `Calendar`, `Card`, `Carousel`, `ChartContainer`, `Checkbox`, `Collapsible`, `Command`, `ContextMenu`, `CopyToClipboardButton`, `DateRangePicker`, `Dialog`, `Drawer`, `DropdownMenu`, `FileUploader`, `Form`, `HoverCard`, `InfiniteScroller`, `Input`, `InputOTP`, `KanbanBoard`, `Label`, `MaskedText`, `Menubar`, `MultiSelect`, `NavigationMenu`, `Pagination`, `PasswordInput`, `Popover`, `Progress`, `RadioGroup`, `RenderConditionally`, `RenderAlternatively`, `ResizablePanel`, `ScrollArea`, `Select`, `Separator`, `Sheet`, `Sidebar`, `Skeleton`, `Slider`, `Spinner`, `Stepper`, `Switch`, `Table`, `TablePagination`, `Tabs`, `Textarea`, `Timeline`, `Toast`, `Toaster`, `Toggle`, `ToggleGroup`, `Tooltip`, and the `WizardStepper` family, along with their subcomponents (`CardContent`, `DialogTrigger`, `SelectItem`, and so on).
 
-- **Common composites**: `AppSwitcher`, `ArchiveProject`, `BackToConsoleNavigator`, `ConfirmationModal`, `ConsoleHeader`, `CopyableSnippet`, `DashboardHeader`, `DashboardSectionCard`, `DataTable`, `EnvironmentCard`, `EnvironmentList`, `ErrorBoundary`, `ErrorDisplay`, `FilterToolbar`, `LanguageSelector`, `LoadingButton`, `Logo`, `Notification`, `ProjectList`, `ProjectDetail`, `ProjectActions`, `ThemeSwitcher`, `UserDropdownMenu`, and more.
+<<<<<<< HEAD
+
+- # **Common composites**: `AppSwitcher`, `ArchiveProject`, `BackToConsoleNavigator`, `ConfirmationModal`, `ConsoleHeader`, `CopyableSnippet`, `DashboardHeader`, `DashboardSectionCard`, `DataTable`, `EnvironmentCard`, `EnvironmentList`, `ErrorBoundary`, `ErrorDisplay`, `FilterToolbar`, `LanguageSelector`, `LoadingButton`, `Logo`, `Notification`, `ProjectList`, `ProjectDetail`, `ProjectActions`, `ThemeSwitcher`, `UserDropdownMenu`, and more.
+
+  All UI components organized into:
+
+- **Core Components** (Radix UI based):
+  - `Accordion`, `Alert`, `AlertDialog`, `AspectRatio`, `Avatar`, `Badge`, `Breadcrumb`, `Button`, `Calendar`, `Card`, `Carousel`, `Chart`, `Checkbox`, `Collapsible`, `Command`, `ContextMenu`, `CopyToClipboardButton`, `DateRangePicker`, `Dialog`, `Drawer`, `DropdownMenu`, `FileUploader`, `Form`, `HoverCard`, `ImportFileModal`, `InfiniteScroller`, `Input`, `InputOTP`, `KanbanBoard`, `Label`, `MaskedText`, `Menubar`, `MultiSelect`, `NavigationMenu`, `Pagination`, `PasswordInput`, `Popover`, `Progress`, `RadioGroup`, `RenderConditionally`, `RenderAlternatively`, `Resizable`, `ScrollArea`, `Select`, `Separator`, `Sheet`, `Sidebar`, `Skeleton`, `Slider`, `Spinner`, `Stepper`, `Switch`, `Table`, `TablePagination`, `Tabs`, `Textarea`, `Timeline`, `Toast`, `Toaster`, `Toggle`, `ToggleGroup`, `Tooltip`, `WizardStepper`
+
+- **Common Components**:
+  - `AppSwitcher`, `ArchiveProject`, `BackToConsoleNavigator`, `ConfirmationModal`, `ConsoleHeader`, `CopyableSnippet`, `DashboardHeader`, `DashboardSectionCard`, `EnvironmentCard`, `EnvironmentList`, `EnvironmentSelected`, `ErrorBoundary`, `ErrorDisplay`, `LanguageSelector`, `LoaderSpinner`, `LoadingButton`, `LoginHeader`, `Logo`, `LogoutButton`, `ModeToggle`, `Notification`, `NotificationBell`, `NotificationHeader`, `NotificationItem`, `NotificationList`, `ProjectList`, `ProjectDetail`, `ProjectEdit`, `ProjectActions`, `SidebarMenu`, `ThemeSwitcher`, `UserDropdownMenu`, and more
+
+#### `@selisedigitalplatforms/blocks-kit/hooks`
+
+> > > > > > > main
 
 ```tsx
 import { Button, Card, CardContent } from "@seliseblocks/blocks-kit/components";
@@ -199,8 +234,7 @@ function MyComponent() {
       onClick={() => {
         toggle();
         toast({ title: isOpen ? "Closed" : "Opened" });
-      }}
-    >
+      }}>
       Toggle
     </button>
   );
@@ -217,7 +251,11 @@ function MyComponent() {
 - `CookieStorage`, `cn`, theme helpers (`applyTheme`, `getSystemTheme`), and motion presets (`fadeInUp`, `fadeInScale`, `fadeTransition`, `motionEase`, `staggerContainer`, `staggerItem`)
 
 ```tsx
-import { getRuntimeEnv, HttpClient, logicClient } from "@seliseblocks/blocks-kit/lib";
+import {
+  getRuntimeEnv,
+  HttpClient,
+  logicClient,
+} from "@seliseblocks/blocks-kit/lib";
 
 // Use a preconfigured instance:
 async function fetchProjects() {
