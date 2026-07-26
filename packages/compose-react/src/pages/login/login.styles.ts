@@ -52,6 +52,8 @@ export const blocksLoginStyles = `
 @keyframes blocksLogin-gridPulse { 0%,100%{opacity:0.25} 50%{opacity:0.55} }
 
 .blocksLogin-page .scan-line {
+// TODO: removing scanner animation for now, can re-enable later if we want it back
+  display: none;
   position: absolute; top: -2px; left: 0; right: 0; height: 1.5px;
   background: linear-gradient(90deg, transparent 5%, var(--accent) 50%, transparent 95%);
   animation: blocksLogin-scanMove 7s linear infinite;

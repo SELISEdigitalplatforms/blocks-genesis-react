@@ -6,7 +6,7 @@ A package-first monorepo for reusable React building blocks.
 
 This repository contains reusable packages:
 
-- [packages/compose-react](./packages/compose-react): React composition package with shadcn-based components and app-shell utilities (published as `@selisedigitalplatforms/blocks-kit`)
+- [packages/compose-react](./packages/compose-react): React composition package built on Radix UI primitives with app-shell utilities (published as `@seliseblocks/blocks-kit`)
 - tooling/\*: Shared ESLint, Prettier, and TypeScript configs
 
 ## Documentation
@@ -23,7 +23,7 @@ compose-react intentionally does not ship CSS files.
 Host applications are responsible for:
 
 - Tailwind setup
-- shadcn token/theme variables
+- shared design tokens (CSS variables) for theming
 - Any global CSS imports required by their design system
 
 ## Quick Start (Monorepo Development)

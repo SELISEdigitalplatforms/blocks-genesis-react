@@ -1,3 +1,4 @@
+import { Badge } from "@/components/core/badge";
 import { Button } from "@/components/core/button/button";
 import { Card, CardTitle } from "@/components/core/card/card";
 import {
@@ -5,21 +6,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/core/popover/popover";
-import { RenderConditionally } from "@/components/core/render-elements";
+import { RenderAlternatively } from "@/components/core/render-elements";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/core/tooltip/tooltip";
 import { environmentOptions } from "@/constants/environment-options";
 import type { IProject } from "@/models";
 import { useAuthStore } from "@/store/auth.store";
 import { useProjectStore } from "@/store/project.store";
-import { ChevronRight, Settings2 } from "lucide-react";
+import { ChevronRight, Settings2, UsersRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useProjectOverviewRedirect } from "./use-project-overview-redirect";
-import { Badge } from "@/components/core/badge";
 
 const INLINE_LIMIT = 3;
 
@@ -78,20 +77,15 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
   return (
     <Card className="border-border/60 bg-card hover:border-primary/30 group flex h-40 flex-col overflow-hidden rounded-xl border p-4 shadow-sm transition-all duration-200 hover:shadow-md">
       <div className="relative flex items-start justify-between gap-2">
-        <div className="flex min-w-0 flex-1 flex-col gap-2 pr-10">
+        <div className="flex min-w-0 flex-1 flex-col gap-2">
           <CardTitle className="line-clamp-3 break-all text-base font-semibold leading-snug">
             {project.name}
           </CardTitle>
-
-          <RenderConditionally condition={!isOwner}>
-            <div className="flex">
-              <Badge>Shared project</Badge>
-            </div>
-          </RenderConditionally>
         </div>
-        <RenderConditionally condition={isOwner}>
-          <div className="absolute right-0 top-0">
-            <TooltipProvider>
+        <div className="shrink-0">
+          <RenderAlternatively
+            condition={isOwner}
+            whenTrue={
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -107,9 +101,18 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
                 </TooltipTrigger>
                 <TooltipContent>Configure Project</TooltipContent>
               </Tooltip>
-            </TooltipProvider>
-          </div>
-        </RenderConditionally>
+            }
+            whenFalse={
+              <Badge
+                variant={"outline"}
+                className="flex items-center gap-1 shrink-0"
+              >
+                <UsersRound size={16} />
+                {"Shared with you"}
+              </Badge>
+            }
+          />
+        </div>
       </div>
 
       <div className="mt-auto">
