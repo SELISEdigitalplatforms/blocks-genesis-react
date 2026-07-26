@@ -38,10 +38,7 @@ This package intentionally ships **no CSS files**. Host applications are respons
   ```ts
   // tailwind.config.ts
   export default {
-    content: [
-      "./app/**/*.{ts,tsx}",
-      "./node_modules/@seliseblocks/blocks-kit/dist/**/*.{js,jsx,ts,tsx}",
-    ],
+    content: ["./app/**/*.{ts,tsx}", "./node_modules/@seliseblocks/blocks-kit/dist/**/*.{js,jsx,ts,tsx}"],
   };
   ```
 
@@ -73,30 +70,12 @@ Wrap your app in the providers, then compose routes from the guards, layouts, an
 import { NuqsAdapter } from "nuqs/adapters/react-router/v6";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import {
-  createBrowserRouter,
-  Navigate,
-  Outlet,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, Navigate, Outlet, RouterProvider } from "react-router-dom";
 
-import {
-  AuthResolver,
-  ProtectedGuard,
-  PublicGuard,
-} from "@seliseblocks/blocks-kit/guards";
+import { AuthResolver, ProtectedGuard, PublicGuard } from "@seliseblocks/blocks-kit/guards";
 import { ConsoleLayout } from "@seliseblocks/blocks-kit/layouts";
-import {
-  CallbackPage,
-  ConsolePage,
-  LoginPage,
-  ProfilePage,
-} from "@seliseblocks/blocks-kit/pages";
-import {
-  BlocksAppLayout,
-  QueryProvider,
-  ThemeProvider,
-} from "@seliseblocks/blocks-kit/providers";
+import { CallbackPage, ConsolePage, LoginPage, ProfilePage } from "@seliseblocks/blocks-kit/pages";
+import { BlocksAppLayout, QueryProvider, ThemeProvider } from "@seliseblocks/blocks-kit/providers";
 
 const router = createBrowserRouter([
   {
@@ -146,7 +125,8 @@ createRoot(document.getElementById("root")!).render(
             config={{
               name: "blocks-monitor",
               appLogoUrl: { dark: "/logo-dark.svg", light: "/logo-light.svg" },
-            }}>
+            }}
+          >
             <RouterProvider router={router} />
           </BlocksAppLayout>
         </NuqsAdapter>
@@ -234,7 +214,8 @@ function MyComponent() {
       onClick={() => {
         toggle();
         toast({ title: isOpen ? "Closed" : "Opened" });
-      }}>
+      }}
+    >
       Toggle
     </button>
   );
@@ -251,11 +232,7 @@ function MyComponent() {
 - `CookieStorage`, `cn`, theme helpers (`applyTheme`, `getSystemTheme`), and motion presets (`fadeInUp`, `fadeInScale`, `fadeTransition`, `motionEase`, `staggerContainer`, `staggerItem`)
 
 ```tsx
-import {
-  getRuntimeEnv,
-  HttpClient,
-  logicClient,
-} from "@seliseblocks/blocks-kit/lib";
+import { getRuntimeEnv, HttpClient, logicClient } from "@seliseblocks/blocks-kit/lib";
 
 // Use a preconfigured instance:
 async function fetchProjects() {

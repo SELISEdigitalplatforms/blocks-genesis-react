@@ -79,7 +79,9 @@ describe("SelfProject", () => {
 
     expect(screen.queryByTestId("add-card")).not.toBeInTheDocument();
     expect(
-      screen.getByText("Please delete an existing project to create a new one."),
+      screen.getByText(
+        "Please delete an existing project to create a new one.",
+      ),
     ).toBeInTheDocument();
   });
 });

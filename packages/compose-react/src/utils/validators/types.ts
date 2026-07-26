@@ -4,8 +4,7 @@
  * @typeParam T Validated data type.
  */
 export type ValidationResult<T> =
-  | { success: true; data: T }
-  | { success: false; error: string };
+  { success: true; data: T } | { success: false; error: string };
 
 /**
  * Validator function signature.

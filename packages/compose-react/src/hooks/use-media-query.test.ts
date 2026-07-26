@@ -23,7 +23,10 @@ describe("useMediaQuery", () => {
     let changeHandler: ((event: { matches: boolean }) => void) | undefined;
     window.matchMedia = vi.fn().mockReturnValue({
       matches: false,
-      addEventListener: (_: string, cb: (event: { matches: boolean }) => void) => {
+      addEventListener: (
+        _: string,
+        cb: (event: { matches: boolean }) => void,
+      ) => {
         changeHandler = cb;
       },
       removeEventListener: vi.fn(),

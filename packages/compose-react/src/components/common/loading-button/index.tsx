@@ -27,7 +27,8 @@ export function LoadingButton({ children, ...props }: LoadingButtonProps) {
       disabled={disabled || isLoading}
       size={size}
       className="gap-2"
-      {...rest}>
+      {...rest}
+    >
       <RenderConditionally condition={isLoading}>
         {loadingIcon || <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
       </RenderConditionally>

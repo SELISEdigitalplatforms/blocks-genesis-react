@@ -11,9 +11,13 @@ const h = vi.hoisted(() => ({
 }));
 
 vi.mock("@/components", () => ({
-  Button: ({ children, onClick }: { children: ReactNode; onClick?: () => void }) => (
-    <button onClick={onClick}>{children}</button>
-  ),
+  Button: ({
+    children,
+    onClick,
+  }: {
+    children: ReactNode;
+    onClick?: () => void;
+  }) => <button onClick={onClick}>{children}</button>,
   DesktopMenuItem: ({ menu }: { menu: { label?: string; id: string } }) => (
     <div data-testid="menu-item">{menu.label ?? menu.id}</div>
   ),
@@ -52,19 +56,13 @@ vi.mock("@/hooks/use-menus", () => ({
   useIsActiveMenu: () => ({ isActivePath: h.isActivePath }),
 }));
 
-const renderDesktop = (
-  isSidebarOpen: boolean,
-  toggleSidebar = vi.fn(),
-) => {
+const renderDesktop = (isSidebarOpen: boolean, toggleSidebar = vi.fn()) => {
   render(
     <MemoryRouter>
       <SidebarContext.Provider
         value={{ isSidebarOpen, toggleSidebar } as never}
       >
-        <SidebarMenuDesktop
-          redirectPaths={{}}
-          navigationMenus={[]}
-        />
+        <SidebarMenuDesktop redirectPaths={{}} navigationMenus={[]} />
       </SidebarContext.Provider>
     </MemoryRouter>,
   );

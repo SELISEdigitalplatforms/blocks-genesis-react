@@ -13,9 +13,7 @@ vi.mock("@/store/app-config.store", () => ({
 
 const renderLayout = (name: string) =>
   render(
-    <BlocksAppLayout
-      config={{ name } as AppConfigStoreState["config"]}
-    >
+    <BlocksAppLayout config={{ name } as AppConfigStoreState["config"]}>
       <span>app content</span>
     </BlocksAppLayout>,
   );

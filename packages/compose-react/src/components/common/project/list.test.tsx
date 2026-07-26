@@ -73,9 +73,7 @@ describe("ProjectList", () => {
   });
 
   it("redirects instead of selecting when a redirect path matches", () => {
-    wrap(<ProjectList redirectPaths={{ "/app/*": "/target" }} />, [
-      "/app/foo",
-    ]);
+    wrap(<ProjectList redirectPaths={{ "/app/*": "/target" }} />, ["/app/foo"]);
     fireEvent.click(screen.getByText("Alpha"));
     expect(navigate).toHaveBeenCalledWith("/target", { replace: true });
   });

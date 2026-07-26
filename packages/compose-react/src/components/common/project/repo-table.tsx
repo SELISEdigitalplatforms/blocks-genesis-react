@@ -75,7 +75,8 @@ const buildColumns = (onSet: (repo: IEnvRepository) => void) => [
             size="icon"
             title="Edit custom domain"
             disabled={!hasCustomDomain}
-            onClick={() => onSet(repo)}>
+            onClick={() => onSet(repo)}
+          >
             <Pencil className="h-4 w-4 text-muted-foreground" />
           </Button>
         </div>
@@ -143,7 +144,8 @@ export const ProjectRepoTable = ({
                     className={cn(
                       "h-12 px-4 text-left text-xs font-semibold uppercase tracking-wide text-medium-emphasis",
                       header.id === "actions" && "w-32",
-                    )}>
+                    )}
+                  >
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext(),
@@ -158,7 +160,8 @@ export const ProjectRepoTable = ({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="py-10 text-center text-sm text-muted-foreground">
+                  className="py-10 text-center text-sm text-muted-foreground"
+                >
                   No repositories found for this project.
                 </td>
               </tr>
@@ -166,7 +169,8 @@ export const ProjectRepoTable = ({
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="border-b border-border last:border-0 hover:bg-muted/50">
+                  className="border-b border-border last:border-0 hover:bg-muted/50"
+                >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="p-2 md:px-4 md:py-3">
                       {flexRender(
