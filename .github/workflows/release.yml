@@ -1,0 +1,166 @@
+name: Publish npm package
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: write # push the version tag
+  id-token: write # npm Trusted Publishing (OIDC)
+
+# Never run two publishes at once — they would race on the registry and on tags.
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Build and publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # full history so the release tag lands on real ancestry
+
+      - name: Set Environment Variables
+        uses: ./.github/actions/setvars
+        with:
+          varFilePath: ./.github/variables/vars.env
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4 # version comes from package.json "packageManager"
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      # Trusted Publishing (OIDC) needs npm >= 11.5.1; Node 22 ships an older npm.
+      - name: Ensure OIDC-capable npm
+        run: npm install -g npm@latest
+
+      # `latest` only moves on the real release branch. Any other branch (e.g.
+      # fix/sonar, used to rehearse this pipeline) publishes under `next`, so
+      # consumers on the default tag are never affected by a test run.
+      - name: Resolve dist-tag
+        id: disttag
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_REF_NAME}" = "main" ]; then
+            tag=latest
+          else
+            tag=next
+          fi
+          echo "Publishing under dist-tag: $tag (branch ${GITHUB_REF_NAME})"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      # Same scheme as blocks-genesis-net: the MAJOR is declared in package.json
+      # and only ever changes by a deliberate commit; minor and patch are derived
+      # from the registry. `counter = minor*10 + patch + 1` means patch walks
+      # 0..9 and then rolls into the next minor (4.0.9 -> 4.1.0).
+      - name: Resolve next version
+        id: version
+        env:
+          PACKAGE_DIR: ${{ env.PACKAGE_DIR }}
+        run: |
+          set -euo pipefail
+
+          name=$(node -p "require('./${PACKAGE_DIR}/package.json').name")
+          declared=$(node -p "require('./${PACKAGE_DIR}/package.json').version")
+          major=$(echo "$declared" | cut -d. -f1 | sed 's/^0*//')
+          major=${major:-0}
+          echo "Package: $name"
+          echo "Declared version: $declared (major: $major)"
+
+          # A brand-new package name 404s here; `|| echo '[]'` turns that into an
+          # empty history so the first release starts the major cleanly.
+          published=$(npm view "$name" versions --json 2>/dev/null || echo '[]')
+
+          # `npm view <pkg> version` (singular) would report the `latest` dist-tag,
+          # which can sit BELOW the true highest version when a prerelease holds
+          # `next`. Enumerating and sorting numerically avoids republishing an
+          # existing version, and avoids lexical sort putting 4.9.0 above 4.10.0.
+          resolved=$(printf '%s' "$published" | node -e '
+            const major = Number(process.argv[1]);
+            let raw = "";
+            process.stdin.on("data", (c) => (raw += c));
+            process.stdin.on("end", () => {
+              let all = [];
+              try {
+                const parsed = JSON.parse(raw || "[]");
+                all = Array.isArray(parsed) ? parsed : [parsed];
+              } catch {
+                all = [];
+              }
+              const inMajor = all
+                .map((v) => /^(\d+)\.(\d+)\.(\d+)$/.exec(String(v)))
+                .filter(Boolean)
+                .map((m) => m.slice(1).map(Number))
+                .filter(([maj]) => maj === major)
+                .sort((a, b) => a[1] - b[1] || a[2] - b[2]);
+
+              if (!inMajor.length) {
+                // No release in this major yet — start it at <major>.0.0.
+                process.stdout.write(`${major}.0.0 `);
+                return;
+              }
+              const [, minor, patch] = inMajor[inMajor.length - 1];
+              const counter = minor * 10 + patch + 1;
+              process.stdout.write(
+                `${major}.${Math.floor(counter / 10)}.${counter % 10} ${major}.${minor}.${patch}`
+              );
+            });
+          ' "$major")
+
+          version=$(echo "$resolved" | cut -d" " -f1)
+          previous=$(echo "$resolved" | cut -d" " -f2)
+
+          if [ -z "$previous" ]; then
+            echo "No published ${major}.x.y found — starting this major at $version"
+          else
+            echo "Highest published for major ${major}: $previous"
+          fi
+
+          echo "Next version: $version"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Publishing \`$name\` **$version** under \`${{ steps.disttag.outputs.tag }}\`" >> "$GITHUB_STEP_SUMMARY"
+
+      # Written only into this runner's checkout — never committed. Scoped to the
+      # one workspace so no other package's version is disturbed.
+      - name: Stamp version into package.json
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          npm pkg set "version=${VERSION}" --prefix "./${PACKAGE_DIR}"
+          node -p "require('./${PACKAGE_DIR}/package.json').version"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      # Auth is OIDC Trusted Publishing (configured on npmjs.com for this repo +
+      # workflow): no token, no secret, no 2FA prompt. `--provenance` is implied.
+      - name: Publish to npm
+        working-directory: ${{ env.PACKAGE_DIR }}
+        run: npm publish --tag "${{ steps.disttag.outputs.tag }}"
+
+      # Only the real release branch earns a git tag; rehearsal runs on other
+      # branches would otherwise litter the repo with tags for `next` builds.
+      - name: Tag the release
+        if: ${{ github.ref_name == 'main' }}
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          tag="v${VERSION}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$tag" -m "Release $tag"
+          git push origin "$tag"

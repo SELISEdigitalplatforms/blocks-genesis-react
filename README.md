@@ -1,17 +1,17 @@
 # blocks-genesis-react (Blocks Kit)
 
-A package-first pnpm monorepo for reusable React building blocks. Its main product is the npm package [`@seliseblocks/blocks-kit`](https://www.npmjs.com/package/@seliseblocks/blocks-kit), the shared app-shell and component foundation consumed by the SELISE Blocks service applications (IAM, OS, Data, Logic, Monitor, Release, Studio, Utilities, Localization).
+A package-first pnpm monorepo for reusable React building blocks. Its main product is the npm package [`@seliseblocks/genesis-os`](https://www.npmjs.com/package/@seliseblocks/genesis-os), the shared app-shell and component foundation consumed by the SELISE Blocks service applications (IAM, OS, Data, Logic, Monitor, Release, Studio, Utilities, Localization).
 
 ## Workspace Layout
 
 | Path                                                 | Purpose                                                                                                                                  |
 | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| [`packages/compose-react`](./packages/compose-react) | The `@seliseblocks/blocks-kit` package: guards, layouts, providers, pages, stores, hooks, HTTP client, and shadcn/Radix based components |
+| [`packages/compose-react`](./packages/compose-react) | The `@seliseblocks/genesis-os` package: guards, layouts, providers, pages, stores, hooks, HTTP client, and shadcn/Radix based components |
 | `tooling/eslint`                                     | Shared ESLint config (`@blocks-kit/eslint-config`)                                                                                       |
 | `tooling/prettier`                                   | Shared Prettier config (`@blocks-kit/prettier-config`)                                                                                   |
 | `tooling/typescript`                                 | Shared TypeScript configs (`@blocks-kit/tsconfig`)                                                                                       |
 
-- [packages/compose-react](./packages/compose-react): React composition package built on Radix UI primitives with app-shell utilities (published as `@seliseblocks/blocks-kit`)
+- [packages/compose-react](./packages/compose-react): React composition package built on Radix UI primitives with app-shell utilities (published as `@seliseblocks/genesis-os`)
 - tooling/\*: Shared ESLint, Prettier, and TypeScript configs
 
 ## Requirements
@@ -40,15 +40,15 @@ pnpm dev          # build and watch
 Scope any task to the package with `--filter`:
 
 ```bash
-pnpm --filter @seliseblocks/blocks-kit build
-pnpm --filter @seliseblocks/blocks-kit test
+pnpm --filter @seliseblocks/genesis-os build
+pnpm --filter @seliseblocks/genesis-os test
 ```
 
 Tests are Vitest (jsdom + Testing Library) and live next to the source files in `packages/compose-react/src`.
 
 ## Styling Contract
 
-`@seliseblocks/blocks-kit` intentionally does not ship CSS files. Host applications are responsible for:
+`@seliseblocks/genesis-os` intentionally does not ship CSS files. Host applications are responsible for:
 
 Host applications are responsible for:
 
@@ -70,7 +70,7 @@ pnpm release            # build and publish (CI does this; see below)
 
 Publishing runs in CI via `.github/workflows/publish.yml` using npm Trusted Publishing (OIDC); no npm tokens are stored in the repository. `changeset publish` only publishes versions that are not already on npm.
 
-The package is on a `0.0.x` release line; while the major version is 0, any release may contain breaking changes. Exports of `@seliseblocks/blocks-kit` are consumed by ten downstream Blocks repositories and are treated as a public API: see [CONTRIBUTING.md](./CONTRIBUTING.md) before changing any exported name, signature, type, or default.
+The package is on a `0.0.x` release line; while the major version is 0, any release may contain breaking changes. Exports of `@seliseblocks/genesis-os` are consumed by ten downstream Blocks repositories and are treated as a public API: see [CONTRIBUTING.md](./CONTRIBUTING.md) before changing any exported name, signature, type, or default.
 
 ## Local Development Against an Application
 
@@ -79,16 +79,16 @@ To test unpublished changes inside a consuming application, point the app's depe
 ```json
 {
   "dependencies": {
-    "@seliseblocks/blocks-kit": "file:../blocks-genesis-react/packages/compose-react"
+    "@seliseblocks/genesis-os": "file:../blocks-genesis-react/packages/compose-react"
   }
 }
 ```
 
-Then rebuild on change with `pnpm --filter @seliseblocks/blocks-kit dev` and reinstall in the application (delete its `node_modules` and lockfile-managed install first if the package manager caches the old copy).
+Then rebuild on change with `pnpm --filter @seliseblocks/genesis-os dev` and reinstall in the application (delete its `node_modules` and lockfile-managed install first if the package manager caches the old copy).
 
 ## Repository Documentation
 
-- [Package README](./packages/compose-react/README.md): using `@seliseblocks/blocks-kit`
+- [Package README](./packages/compose-react/README.md): using `@seliseblocks/genesis-os`
 - [CONTRIBUTING.md](./CONTRIBUTING.md): branch model, commit conventions, tests, API stability rules
 - [SECURITY.md](./SECURITY.md): supported versions and vulnerability reporting
 - [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
