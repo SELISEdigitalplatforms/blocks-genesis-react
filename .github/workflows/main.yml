@@ -12,6 +12,11 @@ permissions:
   contents: read
   checks: write
   pull-requests: write
+  # Granting id-token only on release-job was not enough: the job reported
+  # `Contents: write, Metadata: read` with no IdToken, so npm could not mint an
+  # OIDC token and never attempted Trusted Publishing at all. A called reusable
+  # workflow cannot hold a permission the caller workflow never had.
+  id-token: write
 
 # One pipeline per ref. A newer push supersedes an in-flight PR run, but pushes
 # to a release branch are never cancelled — that would abort a publish midway.
