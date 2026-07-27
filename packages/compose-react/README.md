@@ -21,10 +21,10 @@ Your application must provide these packages (`@types/react` is optional, for Ty
 ```json
 {
   "@tanstack/react-query": "^5.0.0",
-  "nuqs": "^2.0.0",
-  "react": "^18.3.1 || ^19.0.0",
-  "react-dom": "^18.3.1 || ^19.0.0",
-  "react-router-dom": "^6.0.0",
+  "nuqs": "^2.9.0",
+  "react": "^19.2.8",
+  "react-dom": "^19.2.8",
+  "react-router": "^8.0.0",
   "zustand": "^5.0.0"
 }
 ```
@@ -67,10 +67,10 @@ Read values with `getRuntimeEnv` from `@seliseblocks/genesis-os/lib`. The full k
 Wrap your app in the providers, then compose routes from the guards, layouts, and pages:
 
 ```tsx
-import { NuqsAdapter } from "nuqs/adapters/react-router/v6";
+import { NuqsAdapter } from "nuqs/adapters/react-router/v8";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, Navigate, Outlet, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Navigate, Outlet, RouterProvider } from "react-router";
 
 import { AuthResolver, ProtectedGuard, PublicGuard } from "@seliseblocks/genesis-os/guards";
 import { ConsoleLayout } from "@seliseblocks/genesis-os/layouts";
@@ -162,21 +162,7 @@ The main entry (`@seliseblocks/genesis-os`) re-exports everything below. Subpath
 
 - **Core components** (Radix UI + shadcn based): `Accordion`, `Alert`, `AlertDialog`, `AspectRatio`, `Avatar`, `Badge`, `Breadcrumb`, `Button`, `Calendar`, `Card`, `Carousel`, `ChartContainer`, `Checkbox`, `Collapsible`, `Command`, `ContextMenu`, `CopyToClipboardButton`, `DateRangePicker`, `Dialog`, `Drawer`, `DropdownMenu`, `FileUploader`, `Form`, `HoverCard`, `InfiniteScroller`, `Input`, `InputOTP`, `KanbanBoard`, `Label`, `MaskedText`, `Menubar`, `MultiSelect`, `NavigationMenu`, `Pagination`, `PasswordInput`, `Popover`, `Progress`, `RadioGroup`, `RenderConditionally`, `RenderAlternatively`, `ResizablePanel`, `ScrollArea`, `Select`, `Separator`, `Sheet`, `Sidebar`, `Skeleton`, `Slider`, `Spinner`, `Stepper`, `Switch`, `Table`, `TablePagination`, `Tabs`, `Textarea`, `Timeline`, `Toast`, `Toaster`, `Toggle`, `ToggleGroup`, `Tooltip`, and the `WizardStepper` family, along with their subcomponents (`CardContent`, `DialogTrigger`, `SelectItem`, and so on).
 
-<<<<<<< HEAD
-
-- # **Common composites**: `AppSwitcher`, `ArchiveProject`, `BackToConsoleNavigator`, `ConfirmationModal`, `ConsoleHeader`, `CopyableSnippet`, `DashboardHeader`, `DashboardSectionCard`, `DataTable`, `EnvironmentCard`, `EnvironmentList`, `ErrorBoundary`, `ErrorDisplay`, `FilterToolbar`, `LanguageSelector`, `LoadingButton`, `Logo`, `Notification`, `ProjectList`, `ProjectDetail`, `ProjectActions`, `ThemeSwitcher`, `UserDropdownMenu`, and more.
-
-  All UI components organized into:
-
-- **Core Components** (Radix UI based):
-  - `Accordion`, `Alert`, `AlertDialog`, `AspectRatio`, `Avatar`, `Badge`, `Breadcrumb`, `Button`, `Calendar`, `Card`, `Carousel`, `Chart`, `Checkbox`, `Collapsible`, `Command`, `ContextMenu`, `CopyToClipboardButton`, `DateRangePicker`, `Dialog`, `Drawer`, `DropdownMenu`, `FileUploader`, `Form`, `HoverCard`, `ImportFileModal`, `InfiniteScroller`, `Input`, `InputOTP`, `KanbanBoard`, `Label`, `MaskedText`, `Menubar`, `MultiSelect`, `NavigationMenu`, `Pagination`, `PasswordInput`, `Popover`, `Progress`, `RadioGroup`, `RenderConditionally`, `RenderAlternatively`, `Resizable`, `ScrollArea`, `Select`, `Separator`, `Sheet`, `Sidebar`, `Skeleton`, `Slider`, `Spinner`, `Stepper`, `Switch`, `Table`, `TablePagination`, `Tabs`, `Textarea`, `Timeline`, `Toast`, `Toaster`, `Toggle`, `ToggleGroup`, `Tooltip`, `WizardStepper`
-
-- **Common Components**:
-  - `AppSwitcher`, `ArchiveProject`, `BackToConsoleNavigator`, `ConfirmationModal`, `ConsoleHeader`, `CopyableSnippet`, `DashboardHeader`, `DashboardSectionCard`, `EnvironmentCard`, `EnvironmentList`, `EnvironmentSelected`, `ErrorBoundary`, `ErrorDisplay`, `LanguageSelector`, `LoaderSpinner`, `LoadingButton`, `LoginHeader`, `Logo`, `LogoutButton`, `ModeToggle`, `Notification`, `NotificationBell`, `NotificationHeader`, `NotificationItem`, `NotificationList`, `ProjectList`, `ProjectDetail`, `ProjectEdit`, `ProjectActions`, `SidebarMenu`, `ThemeSwitcher`, `UserDropdownMenu`, and more
-
-#### `@selisedigitalplatforms/blocks-kit/hooks`
-
-> > > > > > > main
+- **Common composites**: `AppSwitcher`, `ArchiveProject`, `BackToConsoleNavigator`, `ConfirmationModal`, `ConsoleHeader`, `CopyableSnippet`, `DashboardHeader`, `DashboardSectionCard`, `DataTable`, `EnvironmentCard`, `EnvironmentList`, `EnvironmentSelected`, `ErrorBoundary`, `ErrorDisplay`, `FilterToolbar`, `ImportFileModal`, `LanguageSelector`, `LoaderSpinner`, `LoadingButton`, `LoginHeader`, `Logo`, `LogoutButton`, `ModeToggle`, `Notification`, `NotificationBell`, `NotificationHeader`, `NotificationItem`, `NotificationList`, `ProjectList`, `ProjectDetail`, `ProjectEdit`, `ProjectActions`, `SidebarMenu`, `ThemeSwitcher`, `UserDropdownMenu`, and more.
 
 ```tsx
 import { Button, Card, CardContent } from "@seliseblocks/genesis-os/components";

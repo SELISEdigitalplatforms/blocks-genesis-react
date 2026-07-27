@@ -1,15 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { ReactNode } from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 
 const h = vi.hoisted(() => ({ mutateAsync: vi.fn() }));
 vi.mock("@/hooks/use-impersonation", () => ({
   useStartImpersonation: () => ({ mutateAsync: h.mutateAsync }),
 }));
 const navigate = vi.fn();
-vi.mock("react-router-dom", async (imp) => ({
-  ...(await imp<typeof import("react-router-dom")>()),
+vi.mock("react-router", async (imp) => ({
+  ...(await imp<typeof import("react-router")>()),
   useNavigate: () => navigate,
 }));
 

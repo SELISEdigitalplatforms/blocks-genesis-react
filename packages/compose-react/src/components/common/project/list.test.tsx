@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { ReactNode } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 
 const h = vi.hoisted(() => ({
   projects: { data: [] as unknown[], isLoading: false },
@@ -13,8 +13,8 @@ vi.mock("@/hooks/use-project", () => ({
   useGetProjects: () => h.projects,
   useGetProject: () => h.project,
 }));
-vi.mock("react-router-dom", async (imp) => ({
-  ...(await imp<typeof import("react-router-dom")>()),
+vi.mock("react-router", async (imp) => ({
+  ...(await imp<typeof import("react-router")>()),
   useNavigate: () => navigate,
 }));
 /* eslint-disable @typescript-eslint/no-explicit-any */

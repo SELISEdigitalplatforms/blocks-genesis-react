@@ -4,9 +4,9 @@
 
 Security fixes are provided for the latest release of the npm package published from this repository.
 
-| Package                                                                              | Supported versions   |
-| ------------------------------------------------------------------------------------ | -------------------- |
-| [`@seliseblocks/genesis-os`](https://www.npmjs.com/package/@seliseblocks/genesis-os) | latest 0.0.x release |
+| Package                                                                              | Supported versions |
+| ------------------------------------------------------------------------------------ | ------------------ |
+| [`@seliseblocks/genesis-os`](https://www.npmjs.com/package/@seliseblocks/genesis-os) | latest 4.x release |
 
 Older releases do not receive security fixes; upgrade to the latest release to stay covered.
 

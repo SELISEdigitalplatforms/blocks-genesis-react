@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { useContext } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 import { SidebarContext } from "@/contexts";
 import { DashboardLayoutProvider } from "@/providers/dashboard-layout.provider";
 

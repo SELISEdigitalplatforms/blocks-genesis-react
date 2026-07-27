@@ -10,7 +10,7 @@ import { useStartImpersonation } from "@/hooks/use-impersonation";
 import type { IProject } from "@/models";
 import { useProjectStore } from "@/store/project.store";
 import { ChevronRightIcon, HourglassIcon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 type EnvironmentCardProps = {
   project: IProject;
