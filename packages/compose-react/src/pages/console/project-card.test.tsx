@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { ReactNode } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 
 const h = vi.hoisted(() => ({
   handleClick: vi.fn(),
@@ -17,8 +17,8 @@ vi.mock("@/pages/console/use-project-overview-redirect", () => ({
     isFetching: h.isFetching,
   }),
 }));
-vi.mock("react-router-dom", async (imp) => ({
-  ...(await imp<typeof import("react-router-dom")>()),
+vi.mock("react-router", async (imp) => ({
+  ...(await imp<typeof import("react-router")>()),
   useNavigate: () => navigate,
 }));
 

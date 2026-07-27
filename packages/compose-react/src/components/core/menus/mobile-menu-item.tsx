@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import type { Menu } from "@/types";
 import { ChevronRight, X } from "lucide-react";
 import { isValidElement, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 type MenuItemType = Extract<Menu, { type: "menu" }>;
 

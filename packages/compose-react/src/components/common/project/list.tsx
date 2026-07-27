@@ -12,7 +12,7 @@ import { useProjectStore } from "@/store";
 import type { IProject } from "@/models";
 import { FolderOpen, Loader } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import type { RedirectPaths } from "../sidebar-menu/types";
 
 const wildcardToRegex = (pattern: string) => {
