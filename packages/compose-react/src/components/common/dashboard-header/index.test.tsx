@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { ReactNode } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
@@ -29,7 +28,10 @@ const renderHeader = (
   render(
     <MemoryRouter initialEntries={entries}>
       <SidebarContext.Provider value={ctx as never}>
-        <DashboardHeader redirectPaths={{} as never} navigationMenus={[] as never} />
+        <DashboardHeader
+          redirectPaths={{} as never}
+          navigationMenus={[] as never}
+        />
       </SidebarContext.Provider>
     </MemoryRouter>,
   );

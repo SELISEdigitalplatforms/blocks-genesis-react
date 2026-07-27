@@ -99,7 +99,8 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4">
+        className="flex flex-col gap-4"
+      >
         <FormField
           control={form.control}
           name="domain"
@@ -164,7 +165,8 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
             size="sm"
             className="w-20"
             type="submit"
-            disabled={!isFormValid || isPending}>
+            disabled={!isFormValid || isPending}
+          >
             {isEditMode ? "Update" : "Add"}
           </Button>
         </DialogFooter>

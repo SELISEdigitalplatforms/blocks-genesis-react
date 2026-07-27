@@ -1,4 +1,11 @@
-import { Button, Calendar, Popover, PopoverContent, PopoverTrigger, Separator } from "@/components/core";
+import {
+  Button,
+  Calendar,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Separator,
+} from "@/components/core";
 import { CalendarIcon } from "lucide-react";
 import { useIsMobile } from "@/hooks";
 import { type MouseEvent, useEffect, useState } from "react";
@@ -44,7 +51,8 @@ export function DateRange({ label, value, onChange }: DateRangeFilterProps) {
       onOpenChange={(open) => {
         setOpen(open);
         setDate(value);
-      }}>
+      }}
+    >
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="h-8 border-dashed">
           <div className="flex w-full items-center justify-between">
@@ -85,7 +93,8 @@ export function DateRange({ label, value, onChange }: DateRangeFilterProps) {
             type="button"
             variant="outline"
             className="w-full"
-            onClick={resetBtnHandler}>
+            onClick={resetBtnHandler}
+          >
             Reset
           </Button>
           <Button type="button" className="w-full" onClick={applyBtnHandler}>

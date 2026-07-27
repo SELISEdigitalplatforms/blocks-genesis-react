@@ -16,9 +16,7 @@ const baseDomain = {
 } as unknown as IDomain;
 
 const renderDialog = (domain: IDomain | null) =>
-  render(
-    <CnameValidatorDialog open onOpenChange={vi.fn()} domain={domain} />,
-  );
+  render(<CnameValidatorDialog open onOpenChange={vi.fn()} domain={domain} />);
 
 describe("CnameValidatorDialog", () => {
   it("shows the domain summary and the unverified error banner", () => {

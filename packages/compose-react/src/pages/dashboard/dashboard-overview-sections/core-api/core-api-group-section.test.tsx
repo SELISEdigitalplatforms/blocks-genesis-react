@@ -33,9 +33,6 @@ describe("CoreApiGroupSection", () => {
 
     fireEvent.click(screen.getByRole("button"));
 
-    expect(screen.getByRole("button")).toHaveAttribute(
-      "aria-expanded",
-      "true",
-    );
+    expect(screen.getByRole("button")).toHaveAttribute("aria-expanded", "true");
   });
 });

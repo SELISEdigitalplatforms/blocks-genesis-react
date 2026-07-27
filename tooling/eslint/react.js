@@ -34,8 +34,12 @@ export default [
     rules: {
       ...react.configs.recommended.rules,
       ...react.configs["jsx-runtime"].rules,
-      ...reactHooks.configs.recommended.rules,
+      ...reactHooks.configs["recommended-legacy"].rules,
       "react/prop-types": "off",
+      // cmdk styles its input row via the custom `cmdk-input-wrapper`
+      // attribute (see the cmdk docs); the attribute must stay in the DOM,
+      // so teach the rule about it instead of renaming it.
+      "react/no-unknown-property": ["error", { ignore: ["cmdk-input-wrapper"] }],
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },
@@ -50,6 +54,12 @@ export default [
   },
   prettier,
   {
-    ignores: ["dist/**", "node_modules/**", ".turbo/**", "build/**"],
+    ignores: [
+      "dist/**",
+      "node_modules/**",
+      ".turbo/**",
+      "build/**",
+      "**/coverage/**",
+    ],
   },
 ];

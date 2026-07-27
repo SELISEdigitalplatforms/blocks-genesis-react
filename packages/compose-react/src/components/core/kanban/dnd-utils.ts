@@ -1,23 +1,23 @@
-import type { Active, DataRef, Over } from "@dnd-kit/core"
+import type { Active, DataRef, Over } from "@dnd-kit/core";
 
-import type { KanbanColumnDragData, KanbanTaskDragData } from "./types"
+import type { KanbanColumnDragData, KanbanTaskDragData } from "./types";
 
-type DraggableData = KanbanColumnDragData | KanbanTaskDragData
+type DraggableData = KanbanColumnDragData | KanbanTaskDragData;
 
 export const hasDraggableData = <T extends Active | Over>(
-  entry: T | null | undefined
+  entry: T | null | undefined,
 ): entry is T & {
-  data: DataRef<DraggableData>
+  data: DataRef<DraggableData>;
 } => {
   if (!entry) {
-    return false
+    return false;
   }
 
-  const data = entry.data.current
+  const data = entry.data.current;
 
   if (data?.type === "Column" || data?.type === "Task") {
-    return true
+    return true;
   }
 
-  return false
-}
+  return false;
+};

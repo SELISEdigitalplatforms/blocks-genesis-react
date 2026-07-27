@@ -47,7 +47,9 @@ describe("EnvironmentCard", () => {
     wrap(<EnvironmentCard project={project as never} />);
     fireEvent.click(screen.getByText("t-123"));
     await waitFor(() =>
-      expect(h.mutateAsync).toHaveBeenCalledWith({ targeted_tenant_id: "t-123" }),
+      expect(h.mutateAsync).toHaveBeenCalledWith({
+        targeted_tenant_id: "t-123",
+      }),
     );
     await waitFor(() =>
       expect(navigate).toHaveBeenCalledWith("/app/i1/dashboard"),

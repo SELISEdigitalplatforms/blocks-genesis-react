@@ -5,9 +5,7 @@ import { Spinner } from "@/components/core/spinner/spinner";
 describe("Spinner", () => {
   it("renders a status role with the default label", () => {
     render(<Spinner />);
-    expect(
-      screen.getByRole("status", { name: "Loading" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("status", { name: "Loading" })).toBeInTheDocument();
   });
 
   it("accepts a custom label and size", () => {

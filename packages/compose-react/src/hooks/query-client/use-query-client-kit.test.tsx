@@ -10,7 +10,8 @@ const wrapper = ({ children }: { children: ReactNode }) => (
   <QueryClientProvider client={client}>{children}</QueryClientProvider>
 );
 
-const renderKit = () => renderHook(() => useQueryClientKit(), { wrapper }).result;
+const renderKit = () =>
+  renderHook(() => useQueryClientKit(), { wrapper }).result;
 
 const key = ["notifications"] as never;
 const filters = { exact: true } as never;
@@ -32,10 +33,7 @@ describe("useQueryClientKit", () => {
 
     current.invalidate(key, filters, options);
 
-    expect(spy).toHaveBeenCalledWith(
-      { exact: true, queryKey: key },
-      options,
-    );
+    expect(spy).toHaveBeenCalledWith({ exact: true, queryKey: key }, options);
   });
 
   it("invalidateMany invalidates every provided key", async () => {
@@ -59,8 +57,14 @@ describe("useQueryClientKit", () => {
     current.remove(key, filters);
     current.reset(key, filters, options);
 
-    expect(cancel).toHaveBeenCalledWith({ exact: true, queryKey: key }, options);
-    expect(refetch).toHaveBeenCalledWith({ exact: true, queryKey: key }, options);
+    expect(cancel).toHaveBeenCalledWith(
+      { exact: true, queryKey: key },
+      options,
+    );
+    expect(refetch).toHaveBeenCalledWith(
+      { exact: true, queryKey: key },
+      options,
+    );
     expect(remove).toHaveBeenCalledWith({ exact: true, queryKey: key });
     expect(reset).toHaveBeenCalledWith({ exact: true, queryKey: key }, options);
   });

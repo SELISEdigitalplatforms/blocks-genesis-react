@@ -5,9 +5,9 @@ import { LoginPage } from "./login";
 const h = vi.hoisted(() => ({ name: "blocks-logic" }));
 
 vi.mock("@/hooks/use-blocks-app-config-store", () => ({
-  useBlocksAppConfigStore: (selector: (s: {
-    getConfig: () => { name: string };
-  }) => unknown) => selector({ getConfig: () => ({ name: h.name }) }),
+  useBlocksAppConfigStore: (
+    selector: (s: { getConfig: () => { name: string } }) => unknown,
+  ) => selector({ getConfig: () => ({ name: h.name }) }),
 }));
 vi.mock("./blocks-login", () => ({
   BlocksLoginPage: ({

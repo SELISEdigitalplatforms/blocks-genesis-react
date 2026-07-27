@@ -1,7 +1,21 @@
 import { CheckIcon, PlusCircledIcon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
 import { useIsMobile, usePopoverWidth } from "@/hooks";
-import { Popover, PopoverContent, PopoverTrigger, Button, Separator, Badge, Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/core";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Button,
+  Separator,
+  Badge,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from "@/components/core";
 
 interface MultiSelectProps {
   label?: string;
@@ -35,7 +49,8 @@ export function MultiSelect({
           ref={buttonRef}
           variant="outline"
           size="sm"
-          className="h-8 border-dashed">
+          className="h-8 border-dashed"
+        >
           <div className="flex w-full items-center justify-between">
             <div className="flex items-center">
               <PlusCircledIcon className="mr-2 h-4 w-4" />
@@ -53,7 +68,8 @@ export function MultiSelect({
                   {selectedValues.length > 2 ? (
                     <Badge
                       variant="secondary"
-                      className="rounded-sm px-1 font-normal">
+                      className="rounded-sm px-1 font-normal"
+                    >
                       {selectedValues.length} selected
                     </Badge>
                   ) : (
@@ -63,7 +79,8 @@ export function MultiSelect({
                         <Badge
                           variant="secondary"
                           key={option.value}
-                          className="rounded-sm px-1 font-normal">
+                          className="rounded-sm px-1 font-normal"
+                        >
                           {option.label}
                         </Badge>
                       ))
@@ -81,7 +98,8 @@ export function MultiSelect({
           isMobile
             ? { width: popoverWidth ? `${popoverWidth}px` : "auto" }
             : undefined
-        }>
+        }
+      >
         <Command>
           <CommandInput placeholder={label} />
           <CommandList>
@@ -92,14 +110,16 @@ export function MultiSelect({
                 return (
                   <CommandItem
                     key={option.value}
-                    onSelect={() => onSelectHandler(option.value)}>
+                    onSelect={() => onSelectHandler(option.value)}
+                  >
                     <div
                       className={cn(
                         "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
                         isSelected
                           ? "bg-primary text-primary-foreground"
                           : "opacity-50 [&_svg]:invisible",
-                      )}>
+                      )}
+                    >
                       <CheckIcon className={cn("h-4 w-4")} />
                     </div>
                     <span>{option.label}</span>
@@ -113,7 +133,8 @@ export function MultiSelect({
                 <CommandGroup>
                   <CommandItem
                     onSelect={() => onResetHandler()}
-                    className="justify-center text-center">
+                    className="justify-center text-center"
+                  >
                     Clear
                   </CommandItem>
                 </CommandGroup>

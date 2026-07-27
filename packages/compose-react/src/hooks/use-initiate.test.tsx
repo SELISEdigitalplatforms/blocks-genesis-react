@@ -1,10 +1,7 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  useInitiateRedirect,
-  usePrefetchRedirect,
-} from "./use-initiate";
+import { useInitiateRedirect, usePrefetchRedirect } from "./use-initiate";
 
 const h = vi.hoisted(() => ({ fetchRedirectUrl: vi.fn() }));
 

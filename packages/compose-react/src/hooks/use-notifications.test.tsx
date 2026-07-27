@@ -39,9 +39,14 @@ describe("use-notifications hooks", () => {
   });
 
   it("fetches a page of notifications", async () => {
-    h.getNotifications.mockResolvedValue({ notifications: [], totalNotificationsCount: 0 });
+    h.getNotifications.mockResolvedValue({
+      notifications: [],
+      totalNotificationsCount: 0,
+    });
 
-    const { result } = renderHook(() => useGetNotifications(2, 10), { wrapper });
+    const { result } = renderHook(() => useGetNotifications(2, 10), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(h.getNotifications).toHaveBeenCalledWith(2, 10);
@@ -54,7 +59,7 @@ describe("use-notifications hooks", () => {
     await result.current.mutateAsync("n1");
 
     expect(h.markAsRead).toHaveBeenCalled();
-    expect(h.markAsRead.mock.calls[0][0]).toBe("n1");
+    expect(h.markAsRead.mock.calls[0]?.[0]).toBe("n1");
   });
 
   it("marks all as read and invalidates the notifications cache", async () => {

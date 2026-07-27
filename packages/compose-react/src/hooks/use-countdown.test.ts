@@ -23,9 +23,7 @@ describe("useCountDown", () => {
   });
 
   it("supports start, pause and reset", () => {
-    const { result } = renderHook(() =>
-      useCountDown(5, { autoStart: false }),
-    );
+    const { result } = renderHook(() => useCountDown(5, { autoStart: false }));
     expect(result.current.isRunning).toBe(false);
     act(() => result.current.start());
     expect(result.current.isRunning).toBe(true);

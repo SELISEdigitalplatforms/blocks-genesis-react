@@ -13,13 +13,21 @@ export interface PasswordInputProps extends Omit<
 }
 
 const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
-  ({ className, toggleAriaLabel = "Toggle password visibility", ...props }, ref) => {
+  (
+    { className, toggleAriaLabel = "Toggle password visibility", ...props },
+    ref,
+  ) => {
     const [visible, setVisible] = React.useState(false);
     const Icon = visible ? EyeOff : Eye;
 
     return (
       <div className={cn("relative", className)}>
-        <Input {...props} ref={ref} type={visible ? "text" : "password"} className="pr-10" />
+        <Input
+          {...props}
+          ref={ref}
+          type={visible ? "text" : "password"}
+          className="pr-10"
+        />
         <button
           type="button"
           aria-label={toggleAriaLabel}

@@ -27,7 +27,9 @@ beforeEach(() => {
     .getState()
     .setSelectedProject({ itemId: "p1", tenantGroupId: "tg1" } as never);
   h.project = {
-    data: { data: { environment: "prod", customDomain: "x.com", tenantId: "t1" } },
+    data: {
+      data: { environment: "prod", customDomain: "x.com", tenantId: "t1" },
+    },
     isLoading: false,
   };
   h.repos = { data: { data: [] }, isLoading: false, isFetching: false };
