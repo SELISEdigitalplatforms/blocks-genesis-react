@@ -42,9 +42,11 @@ jobs:
       - name: Ensure OIDC-capable npm
         run: npm install -g npm@latest
 
-      # `latest` only moves on the real release branch. Any other branch (e.g.
-      # fix/sonar, used to rehearse this pipeline) publishes under `next`, so
-      # consumers on the default tag are never affected by a test run.
+      # main.yml only invokes this on a push to `main`, so in practice this always
+      # resolves to `latest`. The guard is kept as a safety net: if another branch
+      # is ever added to the release triggers, or this workflow is dispatched
+      # manually from a branch, it publishes under `next` instead of silently
+      # moving the tag every consumer installs by default.
       - name: Resolve dist-tag
         id: disttag
         run: |
