@@ -23,6 +23,10 @@ jobs:
       contents: read
       checks: write
       pull-requests: write
+    env:
+      # This job runs the full test suite for coverage; give it the same headroom
+      # as the test gate so a heap limit cannot mask a real quality-gate result.
+      NODE_OPTIONS: --max-old-space-size=8192
 
     steps:
       # Sonar needs full history to attribute issues to authors and to diff a PR

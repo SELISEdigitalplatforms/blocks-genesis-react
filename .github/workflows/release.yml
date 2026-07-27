@@ -16,6 +16,10 @@ jobs:
   publish:
     name: Build and publish
     runs-on: ubuntu-latest
+    env:
+      # Same dts-worker OOM as the test gate — see 1_test.yml. A publish must not
+      # fail here after the gates have already passed.
+      NODE_OPTIONS: --max-old-space-size=8192
 
     steps:
       - name: Check out source
