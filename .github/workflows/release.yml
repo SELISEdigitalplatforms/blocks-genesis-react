@@ -158,6 +158,24 @@ jobs:
 
       # Auth is OIDC Trusted Publishing (configured on npmjs.com for this repo +
       # workflow): no token, no secret, no 2FA prompt. `--provenance` is implied.
+      # Temporary diagnostic. npm reports ENEEDAUTH without ever mentioning OIDC,
+      # which has exactly two plausible causes: the OIDC request env is absent
+      # (id-token not actually granted to this reusable-workflow job), or the npm
+      # in PATH predates 11.5.1 and has no Trusted Publishing support. This step
+      # distinguishes them instead of guessing. Remove once publishing works.
+      - name: Diagnose OIDC availability
+        run: |
+          echo "npm:  $(npm --version)   (Trusted Publishing needs >= 11.5.1)"
+          echo "which npm: $(which npm)"
+          echo "node: $(node --version)"
+          if [ -n "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]; then
+            echo "ACTIONS_ID_TOKEN_REQUEST_URL: present -> id-token IS granted"
+          else
+            echo "ACTIONS_ID_TOKEN_REQUEST_URL: MISSING -> id-token NOT granted to this job"
+          fi
+          echo "npm config registry: $(npm config get registry)"
+          echo "npm authToken configured: $(npm config get //registry.npmjs.org/:_authToken)"
+
       # --ignore-scripts skips the package's `prepublishOnly`, which runs a full
       # tsup build. The Build step above already produced dist/, so without this
       # every release builds twice (several wasted minutes, and a second chance
