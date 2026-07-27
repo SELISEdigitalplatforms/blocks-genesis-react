@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 
 /**
  * Builds absolute paths scoped to the active project id in the URL

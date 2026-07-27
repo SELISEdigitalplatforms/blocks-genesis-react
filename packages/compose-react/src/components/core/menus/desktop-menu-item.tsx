@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import type { Menu } from "@/types";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 
 type MenuItemType = Extract<Menu, { type: "menu" }>;
 

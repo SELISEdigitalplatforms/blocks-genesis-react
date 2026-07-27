@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 
 vi.mock("@/components/common/app-switcher", () => ({
   AppSwitcher: () => <div data-testid="app-switcher" />,

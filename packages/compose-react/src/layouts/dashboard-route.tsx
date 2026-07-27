@@ -1,5 +1,5 @@
 import type { Menu } from "@/types";
-import { Navigate, Outlet, useParams } from "react-router-dom";
+import { Navigate, Outlet, useParams } from "react-router";
 import { DashboardLayout } from "./dashboard-layout";
 import type { LayoutProps } from "./layout.types";
 
