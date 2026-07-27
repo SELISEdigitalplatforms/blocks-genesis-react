@@ -1,4 +1,4 @@
-# @seliseblocks/blocks-kit
+# @seliseblocks/genesis-os
 
 React app-shell composition package for SELISE Blocks applications: guards, layouts, providers, pages, stores, hooks, an HTTP client, and a shadcn/Radix based component library. It is the shared frontend foundation consumed by the Blocks service applications (IAM, OS, Data, Logic, Monitor, Release, Studio, Utilities, Localization).
 
@@ -7,11 +7,11 @@ Ships as ESM and CJS with bundled TypeScript declarations. Every module carries 
 ## Installation
 
 ```bash
-npm install @seliseblocks/blocks-kit
+npm install @seliseblocks/genesis-os
 # or
-yarn add @seliseblocks/blocks-kit
+yarn add @seliseblocks/genesis-os
 # or
-pnpm add @seliseblocks/blocks-kit
+pnpm add @seliseblocks/genesis-os
 ```
 
 ## Peer Dependencies
@@ -38,7 +38,7 @@ This package intentionally ships **no CSS files**. Host applications are respons
   ```ts
   // tailwind.config.ts
   export default {
-    content: ["./app/**/*.{ts,tsx}", "./node_modules/@seliseblocks/blocks-kit/dist/**/*.{js,jsx,ts,tsx}"],
+    content: ["./app/**/*.{ts,tsx}", "./node_modules/@seliseblocks/genesis-os/dist/**/*.{js,jsx,ts,tsx}"],
   };
   ```
 
@@ -60,7 +60,7 @@ Service base URLs and keys are read at runtime, not baked in at build time. Prov
 </script>
 ```
 
-Read values with `getRuntimeEnv` from `@seliseblocks/blocks-kit/lib`. The full key list is the `RuntimeKey` union exported from `@seliseblocks/blocks-kit/types` (per-service `*_BASE_URL`, `*_CLIENT_ID`, and `*_CALLBACK_URL` keys plus `BLOCKS_X_BLOCKS_KEY` and others).
+Read values with `getRuntimeEnv` from `@seliseblocks/genesis-os/lib`. The full key list is the `RuntimeKey` union exported from `@seliseblocks/genesis-os/types` (per-service `*_BASE_URL`, `*_CLIENT_ID`, and `*_CALLBACK_URL` keys plus `BLOCKS_X_BLOCKS_KEY` and others).
 
 ## Quick Start
 
@@ -72,10 +72,10 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from "react-router-dom";
 
-import { AuthResolver, ProtectedGuard, PublicGuard } from "@seliseblocks/blocks-kit/guards";
-import { ConsoleLayout } from "@seliseblocks/blocks-kit/layouts";
-import { CallbackPage, ConsolePage, LoginPage, ProfilePage } from "@seliseblocks/blocks-kit/pages";
-import { BlocksAppLayout, QueryProvider, ThemeProvider } from "@seliseblocks/blocks-kit/providers";
+import { AuthResolver, ProtectedGuard, PublicGuard } from "@seliseblocks/genesis-os/guards";
+import { ConsoleLayout } from "@seliseblocks/genesis-os/layouts";
+import { CallbackPage, ConsolePage, LoginPage, ProfilePage } from "@seliseblocks/genesis-os/pages";
+import { BlocksAppLayout, QueryProvider, ThemeProvider } from "@seliseblocks/genesis-os/providers";
 
 const router = createBrowserRouter([
   {
@@ -140,7 +140,7 @@ createRoot(document.getElementById("root")!).render(
 
 ## Package Exports
 
-The main entry (`@seliseblocks/blocks-kit`) re-exports everything below. Subpath imports keep intent clearer and are what the Blocks applications use.
+The main entry (`@seliseblocks/genesis-os`) re-exports everything below. Subpath imports keep intent clearer and are what the Blocks applications use.
 
 | Subpath        | Contents                                                                                                                                                                                                                                                 |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -158,7 +158,7 @@ The main entry (`@seliseblocks/blocks-kit`) re-exports everything below. Subpath
 
 ### Components
 
-`@seliseblocks/blocks-kit/components` bundles two groups:
+`@seliseblocks/genesis-os/components` bundles two groups:
 
 - **Core components** (Radix UI + shadcn based): `Accordion`, `Alert`, `AlertDialog`, `AspectRatio`, `Avatar`, `Badge`, `Breadcrumb`, `Button`, `Calendar`, `Card`, `Carousel`, `ChartContainer`, `Checkbox`, `Collapsible`, `Command`, `ContextMenu`, `CopyToClipboardButton`, `DateRangePicker`, `Dialog`, `Drawer`, `DropdownMenu`, `FileUploader`, `Form`, `HoverCard`, `InfiniteScroller`, `Input`, `InputOTP`, `KanbanBoard`, `Label`, `MaskedText`, `Menubar`, `MultiSelect`, `NavigationMenu`, `Pagination`, `PasswordInput`, `Popover`, `Progress`, `RadioGroup`, `RenderConditionally`, `RenderAlternatively`, `ResizablePanel`, `ScrollArea`, `Select`, `Separator`, `Sheet`, `Sidebar`, `Skeleton`, `Slider`, `Spinner`, `Stepper`, `Switch`, `Table`, `TablePagination`, `Tabs`, `Textarea`, `Timeline`, `Toast`, `Toaster`, `Toggle`, `ToggleGroup`, `Tooltip`, and the `WizardStepper` family, along with their subcomponents (`CardContent`, `DialogTrigger`, `SelectItem`, and so on).
 
@@ -179,7 +179,7 @@ The main entry (`@seliseblocks/blocks-kit`) re-exports everything below. Subpath
 > > > > > > > main
 
 ```tsx
-import { Button, Card, CardContent } from "@seliseblocks/blocks-kit/components";
+import { Button, Card, CardContent } from "@seliseblocks/genesis-os/components";
 
 function MyComponent() {
   return (
@@ -203,7 +203,7 @@ Query helpers: `useQueryClientKit`, `useQueryStatesKit`, `createQueryKeyFactory`
 Domain data (TanStack Query backed): `useGetProject`, `useGetProjects`, `useUpdateProject`, `useDisableProject`, `useGetEnvRepositories`, `useGetAllServices`, `useGetMyOrganizations`, `useGetNotifications`, `useMarkAsRead`, `useMarkAllAsRead`, `useStartImpersonation`, `useStopImpersonation`, `useImpersonationStatusChecker`, `useInitiateRedirect`, `usePrefetchRedirect`, `useLanguage`, `useLanguageSwitcher`, `useLogout`, `useFilteredMenus`, `useIsActiveMenu`.
 
 ```tsx
-import { useBoolean, useToast } from "@seliseblocks/blocks-kit/hooks";
+import { useBoolean, useToast } from "@seliseblocks/genesis-os/hooks";
 
 function MyComponent() {
   const { toast } = useToast();
@@ -224,7 +224,7 @@ function MyComponent() {
 
 ### HTTP Client and Lib
 
-`@seliseblocks/blocks-kit/lib` exports:
+`@seliseblocks/genesis-os/lib` exports:
 
 - `HttpClient` and `HttpError`: a fetch-based client with Blocks key headers, token refresh queueing, and auth-failure redirects
 - Preconfigured instances wired to the runtime env: `iamClient`, `logicClient`, `notificationClient`
@@ -232,7 +232,7 @@ function MyComponent() {
 - `CookieStorage`, `cn`, theme helpers (`applyTheme`, `getSystemTheme`), and motion presets (`fadeInUp`, `fadeInScale`, `fadeTransition`, `motionEase`, `staggerContainer`, `staggerItem`)
 
 ```tsx
-import { getRuntimeEnv, HttpClient, logicClient } from "@seliseblocks/blocks-kit/lib";
+import { getRuntimeEnv, HttpClient, logicClient } from "@seliseblocks/genesis-os/lib";
 
 // Use a preconfigured instance:
 async function fetchProjects() {
@@ -248,7 +248,7 @@ const client = new HttpClient({
 
 ### Utils
 
-`@seliseblocks/blocks-kit/utils` covers formatting (`formatDate`, `formatFullDate`, `formatNumber`, `formatCurrency`, `formatBytes`, `formatFileSize`, `formatDuration`), objects and arrays (`pick`, `omit`, `deepClone`, `deepEqual`, `deepMerge`, `groupBy`, `uniqueBy`), functions (`debounce`, `throttle`, `memoize`, `sleep`), validation (`isEmail`, `isUrl`, `isUuid`, `isPhone`, `isValidDomain`, `isValidSubdomain`), query strings (`parseQueryString`, `stringifyQueryString`), ids (`generateId`, `getUniqueID`), storage (`createStorage`, `createCookieStore`), error handling (`getErrorMessage`, `handleErrorMessages`, `hasErrorCode`), and toast helpers (`showSuccessToast`, `showErrorToast`, `showInfoToast`).
+`@seliseblocks/genesis-os/utils` covers formatting (`formatDate`, `formatFullDate`, `formatNumber`, `formatCurrency`, `formatBytes`, `formatFileSize`, `formatDuration`), objects and arrays (`pick`, `omit`, `deepClone`, `deepEqual`, `deepMerge`, `groupBy`, `uniqueBy`), functions (`debounce`, `throttle`, `memoize`, `sleep`), validation (`isEmail`, `isUrl`, `isUuid`, `isPhone`, `isValidDomain`, `isValidSubdomain`), query strings (`parseQueryString`, `stringifyQueryString`), ids (`generateId`, `getUniqueID`), storage (`createStorage`, `createCookieStore`), error handling (`getErrorMessage`, `handleErrorMessages`, `hasErrorCode`), and toast helpers (`showSuccessToast`, `showErrorToast`, `showInfoToast`).
 
 ## Versioning and Compatibility
 
