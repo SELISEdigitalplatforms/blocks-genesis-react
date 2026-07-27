@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import { Loader } from "lucide-react";
 import { useAuthStore } from "@/store";
 

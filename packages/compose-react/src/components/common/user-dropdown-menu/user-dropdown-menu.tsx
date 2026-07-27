@@ -1,6 +1,6 @@
 import { Button } from "@/components/core/button";
 import { Building2, Check, LogOut, UserRound } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import {
   DropdownMenu,
   DropdownMenuContent,
