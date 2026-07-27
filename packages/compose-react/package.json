@@ -1,6 +1,6 @@
 {
-  "name": "@seliseblocks/genesis-os",
-  "version": "4.0.0",
+  "name": "@seliseblocks/blocks-kit",
+  "version": "0.0.71",
   "description": "React app-shell composition package for SELISE Genesis OS",
   "author": "SELISE Blocks",
   "license": "MIT",
