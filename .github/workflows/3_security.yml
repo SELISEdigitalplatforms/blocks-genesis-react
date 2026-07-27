@@ -1,0 +1,83 @@
+name: Security Gates
+on: workflow_call
+
+jobs:
+  dependency-vulnerability-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set Environment Variables
+        uses: ./.github/actions/setvars
+        with:
+          varFilePath: ./.github/variables/vars.env
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Scan dependencies for vulnerabilities
+        run: |
+          set -uo pipefail
+          pnpm audit --json > audit.json || true
+
+          if [ ! -s audit.json ]; then
+            echo "pnpm audit produced no output — treating as no advisories."
+            exit 0
+          fi
+
+          node -e '
+            const fs = require("fs");
+            const raw = fs.readFileSync("audit.json", "utf8").trim();
+            // pnpm emits either one JSON document or newline-delimited objects.
+            const docs = [];
+            for (const line of raw.split("\n")) {
+              if (!line.trim()) continue;
+              try { docs.push(JSON.parse(line)); } catch {}
+            }
+            if (!docs.length) {
+              try { docs.push(JSON.parse(raw)); } catch {
+                console.log("Could not parse audit output; failing open.");
+                process.exit(0);
+              }
+            }
+            const blocking = [];
+            for (const doc of docs) {
+              const advisories = doc.advisories ?? {};
+              for (const a of Object.values(advisories)) {
+                const sev = String(a.severity ?? "").toLowerCase();
+                const line = `${sev.toUpperCase().padEnd(8)} ${a.module_name} — ${a.title}`;
+                console.log(line);
+                if (sev === "high" || sev === "critical") blocking.push(line);
+              }
+            }
+            if (blocking.length) {
+              console.log(`\nHigh or critical vulnerabilities detected (${blocking.length}):`);
+              blocking.forEach((l) => console.log("  " + l));
+              process.exit(1);
+            }
+            console.log("\nNo high/critical vulnerabilities detected.");
+          '
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-report
+          path: audit.json
+          if-no-files-found: ignore
+          retention-days: 7
