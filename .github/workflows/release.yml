@@ -35,12 +35,17 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4 # version comes from package.json "packageManager"
 
+      # `registry-url` is deliberately NOT set. It makes setup-node write an
+      # .npmrc containing `_authToken=${NODE_AUTH_TOKEN}`, and with no token
+      # supplied that resolves to the literal placeholder XXXXX-XXXXX-XXXXX-XXXXX.
+      # npm then authenticates with that bogus token instead of falling back to
+      # OIDC, and the registry masks the auth failure as a 404 on PUT.
+      # registry.npmjs.org is the default registry anyway.
       - name: Setup Node
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-          registry-url: https://registry.npmjs.org
 
       # Trusted Publishing (OIDC) needs npm >= 11.5.1; Node 22 ships an older npm.
       - name: Ensure OIDC-capable npm
@@ -153,9 +158,13 @@ jobs:
 
       # Auth is OIDC Trusted Publishing (configured on npmjs.com for this repo +
       # workflow): no token, no secret, no 2FA prompt. `--provenance` is implied.
+      # --ignore-scripts skips the package's `prepublishOnly`, which runs a full
+      # tsup build. The Build step above already produced dist/, so without this
+      # every release builds twice (several wasted minutes, and a second chance
+      # for the dts worker to run out of memory).
       - name: Publish to npm
         working-directory: ${{ env.PACKAGE_DIR }}
-        run: npm publish --tag "${{ steps.disttag.outputs.tag }}"
+        run: npm publish --tag "${{ steps.disttag.outputs.tag }}" --ignore-scripts
 
       # Only the real release branch earns a git tag; rehearsal runs on other
       # branches would otherwise litter the repo with tags for `next` builds.
