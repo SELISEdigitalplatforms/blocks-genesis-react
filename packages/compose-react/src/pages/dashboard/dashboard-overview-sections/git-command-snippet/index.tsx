@@ -10,7 +10,7 @@ import {
 import { useGetEnvRepositories, useGetProject } from "@/hooks/use-project";
 import { useProjectStore } from "@/store";
 import { Plus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 const LoadingSkeleton = () => (
   <Card>
     <CardContent className="p-6">

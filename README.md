@@ -70,7 +70,7 @@ pnpm release            # build and publish (CI does this; see below)
 
 Publishing runs in CI via `.github/workflows/publish.yml` using npm Trusted Publishing (OIDC); no npm tokens are stored in the repository. `changeset publish` only publishes versions that are not already on npm.
 
-The package is on a `0.0.x` release line; while the major version is 0, any release may contain breaking changes. Exports of `@seliseblocks/genesis-os` are consumed by ten downstream Blocks repositories and are treated as a public API: see [CONTRIBUTING.md](./CONTRIBUTING.md) before changing any exported name, signature, type, or default.
+The package follows semantic versioning from `4.0.0` onward: breaking changes ship only in major releases. Exports of `@seliseblocks/genesis-os` are consumed by ten downstream Blocks repositories and are treated as a public API: see [CONTRIBUTING.md](./CONTRIBUTING.md) before changing any exported name, signature, type, or default.
 
 ## Local Development Against an Application
 
