@@ -4,13 +4,9 @@ on:
   pull_request:
     branches:
       - main
-      # Temporary: `fix/sonar` is the rehearsal branch for this pipeline. Remove
-      # it once the gates and the publish path are confirmed against `main`.
-      - fix/sonar
   push:
     branches:
       - main
-      - fix/sonar
 
 permissions:
   contents: read
