@@ -50,7 +50,7 @@ describe("useNotificationFeed", () => {
     });
 
     await waitFor(() => expect(result.current.notifications).toHaveLength(2));
-    expect(result.current.notifications[0].id).toBe("2");
+    expect(result.current.notifications[0]?.id).toBe("2");
     expect(result.current.unreadCount).toBe(3);
   });
 
@@ -69,9 +69,9 @@ describe("useNotificationFeed", () => {
       "1",
       expect.objectContaining({ onSuccess: expect.any(Function) }),
     );
-    expect(
-      result.current.notifications.find((n) => n.id === "1")?.isRead,
-    ).toBe(true);
+    expect(result.current.notifications.find((n) => n.id === "1")?.isRead).toBe(
+      true,
+    );
   });
 
   it("marks every notification as read on success", async () => {
@@ -103,9 +103,7 @@ describe("useNotificationFeed", () => {
       result.current.handleScroll();
     });
 
-    await waitFor(() =>
-      expect(h.getNotifications).toHaveBeenCalledWith(2, 10),
-    );
+    await waitFor(() => expect(h.getNotifications).toHaveBeenCalledWith(2, 10));
   });
 
   it("does not advance the page when the list ref is unset", async () => {

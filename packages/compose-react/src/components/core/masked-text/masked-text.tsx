@@ -1,13 +1,13 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 export type MaskedTextProps = {
-  text: string
-  length?: number
-  showFirstN?: number
-  showLastN?: number
-  char?: string
-  className?: string
-}
+  text: string;
+  length?: number;
+  showFirstN?: number;
+  showLastN?: number;
+  char?: string;
+  className?: string;
+};
 
 export const MaskedText = ({
   text,
@@ -17,10 +17,10 @@ export const MaskedText = ({
   char = "*",
   className,
 }: MaskedTextProps) => {
-  const actualLength = length ?? text?.length ?? 0
-  const firstVisible = showFirstN > 0 ? text.slice(0, showFirstN) : ""
-  const lastVisible = showLastN > 0 ? text.slice(-showLastN) : ""
-  const maskedCount = Math.max(actualLength - showFirstN - showLastN, 0)
+  const actualLength = length ?? text?.length ?? 0;
+  const firstVisible = showFirstN > 0 ? text.slice(0, showFirstN) : "";
+  const lastVisible = showLastN > 0 ? text.slice(-showLastN) : "";
+  const maskedCount = Math.max(actualLength - showFirstN - showLastN, 0);
 
   return (
     <div className={cn("flex min-w-0 items-center overflow-hidden", className)}>
@@ -30,5 +30,5 @@ export const MaskedText = ({
       </span>
       {lastVisible ? <span className="shrink-0">{lastVisible}</span> : null}
     </div>
-  )
-}
+  );
+};

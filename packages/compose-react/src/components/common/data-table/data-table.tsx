@@ -84,11 +84,13 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
       {table.getHeaderGroups().map((headerGroup) => (
         <TableRow
           key={headerGroup.id}
-          className="px-4 py-2 hover:bg-transparent">
+          className="px-4 py-2 hover:bg-transparent"
+        >
           {headerGroup.headers.map((header) => (
             <TableHead
               key={header.id}
-              className="font-bold text-medium-emphasis">
+              className="font-bold text-medium-emphasis"
+            >
               <DataTableHeaderCell
                 header={header}
                 sortValue={effectiveSortValue}
@@ -114,7 +116,8 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
             data-state={row.getIsSelected() ? "selected" : undefined}
             className="text-medium-emphasis"
             isHoverable={!!onRowClick}
-            onClick={onRowClick ? () => onRowClick(row.original) : undefined}>
+            onClick={onRowClick ? () => onRowClick(row.original) : undefined}
+          >
             {row.getVisibleCells().map((cell) => (
               <TableCell key={cell.id}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -126,7 +129,8 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
         <TableRow>
           <TableCell
             colSpan={table.getAllColumns().length}
-            className="h-24 text-center text-muted-foreground">
+            className="h-24 text-center text-muted-foreground"
+          >
             {renderEmptyState ?? "No results."}
           </TableCell>
         </TableRow>

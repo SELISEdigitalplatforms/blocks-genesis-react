@@ -3,50 +3,21 @@
 import { showErrorToast } from "@/utils/toast";
 import { Trash2 as RemoveIcon } from "lucide-react";
 import * as React from "react";
-import {
-  createContext,
-  forwardRef,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import {
   useDropzone,
   type DropzoneOptions,
-  type DropzoneState,
   type FileRejection,
 } from "react-dropzone";
 
 import { buttonVariants } from "@/components/core/button";
 import { Input } from "@/components/core/input";
 import { cn } from "@/lib/utils";
-
-type DirectionOptions = "rtl" | "ltr" | undefined;
-
-type FileUploaderContextType = {
-  dropzoneState: DropzoneState;
-  isLOF: boolean;
-  isFileTooBig: boolean;
-  removeFileFromSet: (index: number) => void;
-  activeIndex: number;
-  setActiveIndex: Dispatch<SetStateAction<number>>;
-  orientation: "horizontal" | "vertical";
-  direction: DirectionOptions;
-};
-
-const FileUploaderContext = createContext<FileUploaderContextType | null>(null);
-
-export const useFileUpload = () => {
-  const context = useContext(FileUploaderContext);
-  if (!context) {
-    throw new Error("useFileUpload must be used within a FileUploaderProvider");
-  }
-  return context;
-};
+import {
+  FileUploaderContext,
+  useFileUpload,
+  type DirectionOptions,
+} from "./use-file-upload";
 
 type FileUploaderProps = {
   value: File[] | null;
@@ -268,7 +239,8 @@ export const FileUploader = forwardRef<
             },
           )}
           dir={dir}
-          {...props}>
+          {...props}
+        >
           {children}
         </div>
       </FileUploaderContext.Provider>
@@ -289,7 +261,8 @@ export const FileUploaderContent = forwardRef<
     <div
       className={cn("w-full px-1")}
       ref={containerRef}
-      aria-description="content file holder">
+      aria-description="content file holder"
+    >
       <div
         {...props}
         ref={ref}
@@ -297,7 +270,8 @@ export const FileUploaderContent = forwardRef<
           "flex gap-1 rounded-xl",
           orientation === "horizontal" ? "flex-raw flex-wrap" : "flex-col",
           className,
-        )}>
+        )}
+      >
         {children}
       </div>
     </div>
@@ -321,7 +295,8 @@ export const FileUploaderItem = forwardRef<
         className,
         isSelected ? "bg-muted" : "",
       )}
-      {...props}>
+      {...props}
+    >
       <div className="flex h-full w-full items-center gap-1.5 font-medium leading-none tracking-tight">
         {children}
       </div>
@@ -331,7 +306,8 @@ export const FileUploaderItem = forwardRef<
           "absolute",
           direction === "rtl" ? "left-1 top-1" : "right-1 top-1",
         )}
-        onClick={() => removeFileFromSet(index)}>
+        onClick={() => removeFileFromSet(index)}
+      >
         <span className="sr-only">remove item {index}</span>
         <RemoveIcon className="h-4 w-4 duration-200 ease-in-out hover:stroke-destructive" />
       </button>
@@ -357,13 +333,15 @@ export const FileInput = forwardRef<
     <div
       ref={ref}
       {...props}
-      className={`relative w-full ${isLOF ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}>
+      className={`relative w-full ${isLOF ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
+    >
       <div
         className={cn(
           `w-full rounded-lg duration-300 ease-in-out ${dropzoneBorderClass}`,
           className,
         )}
-        {...rootProps}>
+        {...rootProps}
+      >
         {children}
       </div>
       <Input

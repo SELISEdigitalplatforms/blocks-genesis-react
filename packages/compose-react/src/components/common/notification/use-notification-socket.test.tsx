@@ -60,7 +60,7 @@ describe("useNotificationSocket", () => {
     const invalidate = vi.spyOn(client, "invalidateQueries");
 
     renderHook(() => useNotificationSocket(), { wrapper });
-    const handler = h.on.mock.calls[0][1] as (message: string) => void;
+    const handler = h.on.mock.calls[0]?.[1] as (message: string) => void;
 
     handler(
       JSON.stringify({
@@ -78,7 +78,7 @@ describe("useNotificationSocket", () => {
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     renderHook(() => useNotificationSocket(), { wrapper });
-    const handler = h.on.mock.calls[0][1] as (message: string) => void;
+    const handler = h.on.mock.calls[0]?.[1] as (message: string) => void;
 
     handler("not-json");
 

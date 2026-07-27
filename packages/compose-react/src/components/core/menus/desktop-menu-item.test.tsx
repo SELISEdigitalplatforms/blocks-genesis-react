@@ -31,7 +31,10 @@ describe("DesktopMenuItem", () => {
 
   it("renders a leaf menu badge when present", () => {
     wrap(
-      <DesktopMenuItem menu={{ ...leaf, badge: "New" } as never} isSidebarOpen />,
+      <DesktopMenuItem
+        menu={{ ...leaf, badge: "New" } as never}
+        isSidebarOpen
+      />,
     );
     expect(screen.getByText("New")).toBeInTheDocument();
   });

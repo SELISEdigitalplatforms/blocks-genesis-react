@@ -1,19 +1,19 @@
-import { useSortable } from "@dnd-kit/sortable"
-import { CSS } from "@dnd-kit/utilities"
-import { cva } from "class-variance-authority"
-import { GripVertical } from "lucide-react"
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { cva } from "class-variance-authority";
+import { GripVertical } from "lucide-react";
 
-import { Badge } from "@/components/core/badge"
-import { Button } from "@/components/core/button"
-import { Card, CardContent, CardHeader } from "@/components/core/card"
+import { Badge } from "@/components/core/badge";
+import { Button } from "@/components/core/button";
+import { Card, CardContent, CardHeader } from "@/components/core/card";
 
-import type { KanbanTask, KanbanTaskDragData } from "./types"
+import type { KanbanTask, KanbanTaskDragData } from "./types";
 
-export type { KanbanColumnId, KanbanTask } from "./types"
+export type { KanbanColumnId, KanbanTask } from "./types";
 
 interface KanbanTaskCardProps {
-  task: KanbanTask
-  isOverlay?: boolean
+  task: KanbanTask;
+  isOverlay?: boolean;
 }
 
 export const KanbanTaskCard = ({ task, isOverlay }: KanbanTaskCardProps) => {
@@ -33,12 +33,12 @@ export const KanbanTaskCard = ({ task, isOverlay }: KanbanTaskCardProps) => {
     attributes: {
       roleDescription: "Task",
     },
-  })
+  });
 
   const style = {
     transition,
     transform: CSS.Translate.toString(transform),
-  }
+  };
 
   const variants = cva("bg-card text-card-foreground", {
     variants: {
@@ -47,7 +47,7 @@ export const KanbanTaskCard = ({ task, isOverlay }: KanbanTaskCardProps) => {
         overlay: "ring-2 ring-primary",
       },
     },
-  })
+  });
 
   let draggingState: "overlay" | "over" | undefined;
   if (isOverlay) {
@@ -84,5 +84,5 @@ export const KanbanTaskCard = ({ task, isOverlay }: KanbanTaskCardProps) => {
         {task.content}
       </CardContent>
     </Card>
-  )
-}
+  );
+};

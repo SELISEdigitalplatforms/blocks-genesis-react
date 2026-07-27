@@ -58,7 +58,9 @@ function StepperItem({
           initial={false}
           animate={{
             backgroundColor:
-              status === "upcoming" ? "hsl(var(--muted))" : "hsl(var(--primary))",
+              status === "upcoming"
+                ? "hsl(var(--muted))"
+                : "hsl(var(--primary))",
             color:
               status === "upcoming"
                 ? "hsl(var(--muted-foreground))"
@@ -90,7 +92,9 @@ function StepperItem({
           {step.title}
         </span>
         {step.description && (
-          <span className="text-xs text-muted-foreground">{step.description}</span>
+          <span className="text-xs text-muted-foreground">
+            {step.description}
+          </span>
         )}
       </div>
 
@@ -108,14 +112,19 @@ function StepperItem({
 }
 
 const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
-  ({ steps, currentStep, orientation = "horizontal", className, ...props }, ref) => {
+  (
+    { steps, currentStep, orientation = "horizontal", className, ...props },
+    ref,
+  ) => {
     return (
       <ol
         ref={ref}
         aria-label="Progress"
         className={cn(
           "flex w-full",
-          orientation === "vertical" ? "flex-col gap-4" : "flex-row items-start gap-2",
+          orientation === "vertical"
+            ? "flex-col gap-4"
+            : "flex-row items-start gap-2",
           className,
         )}
         {...props}

@@ -15,7 +15,7 @@ const h = vi.hoisted(() => ({
 vi.mock("@/hooks/use-logout", () => ({
   useLogout: () => ({ mutateAsync: h.mutateAsync, isPending: h.isPending }),
 }));
-vi.mock("@/providers/query.provider", () => ({
+vi.mock("@/providers/query-client", () => ({
   getQueryClient: () => ({ clear: h.clear }),
 }));
 vi.mock("@/store", () => ({

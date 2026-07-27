@@ -40,7 +40,8 @@ class IntersectionObserverStub {
   }
 }
 
-globalThis.ResizeObserver ??= ResizeObserverStub as unknown as typeof ResizeObserver;
+globalThis.ResizeObserver ??=
+  ResizeObserverStub as unknown as typeof ResizeObserver;
 globalThis.IntersectionObserver ??=
   IntersectionObserverStub as unknown as typeof IntersectionObserver;
 
@@ -56,15 +57,16 @@ if (!Element.prototype.scrollTo) {
 // src/lib/runtime-env.ts). Provide benign test values so modules that resolve
 // service base URLs at import time do not throw when import.meta.env is absent.
 if (!(window as unknown as { __BLOCKS_ENV__?: unknown }).__BLOCKS_ENV__) {
-  (window as unknown as { __BLOCKS_ENV__: Record<string, string> }).__BLOCKS_ENV__ =
-    new Proxy(
-      {},
-      {
-        get: (_target, prop) =>
-          typeof prop === "string" ? "https://test.local" : undefined,
-        has: () => true,
-      },
-    ) as Record<string, string>;
+  (
+    window as unknown as { __BLOCKS_ENV__: Record<string, string> }
+  ).__BLOCKS_ENV__ = new Proxy(
+    {},
+    {
+      get: (_target, prop) =>
+        typeof prop === "string" ? "https://test.local" : undefined,
+      has: () => true,
+    },
+  ) as Record<string, string>;
 }
 
 if (!Element.prototype.hasPointerCapture) {

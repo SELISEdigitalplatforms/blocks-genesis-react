@@ -13,7 +13,11 @@ const AccordionItem = React.forwardRef<
   React.ComponentRef<typeof AccordionPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>
 >(({ className, ...props }, ref) => (
-  <AccordionPrimitive.Item ref={ref} className={cn("border-b", className)} {...props} />
+  <AccordionPrimitive.Item
+    ref={ref}
+    className={cn("border-b", className)}
+    {...props}
+  />
 ));
 AccordionItem.displayName = "AccordionItem";
 
@@ -21,7 +25,6 @@ const AccordionTrigger = React.forwardRef<
   React.ComponentRef<typeof AccordionPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
 >(({ className, children, ...props }, ref) => {
-  const ChevronDownIcon = ChevronDown as any;
   return (
     <AccordionPrimitive.Header className="flex">
       <AccordionPrimitive.Trigger
@@ -33,7 +36,7 @@ const AccordionTrigger = React.forwardRef<
         {...props}
       >
         {children}
-        <ChevronDownIcon className="h-4 w-4 shrink-0 transition-transform duration-200" />
+        <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   );
@@ -44,7 +47,9 @@ AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName;
  * Subscribes to `data-state` on a Radix element so we can drive framer-motion
  * height animations from it without giving up the primitive's a11y wiring.
  */
-function useRadixDataState(ref: React.RefObject<HTMLElement | null>): "open" | "closed" {
+function useRadixDataState(
+  ref: React.RefObject<HTMLElement | null>,
+): "open" | "closed" {
   const [state, setState] = React.useState<"open" | "closed">("closed");
   React.useEffect(() => {
     const el = ref.current;
@@ -61,7 +66,10 @@ function useRadixDataState(ref: React.RefObject<HTMLElement | null>): "open" | "
   return state;
 }
 
-const accordionTransition: Transition = { duration: 0.28, ease: [0.16, 1, 0.3, 1] };
+const accordionTransition: Transition = {
+  duration: 0.28,
+  ease: [0.16, 1, 0.3, 1],
+};
 
 const AccordionContent = React.forwardRef<
   React.ComponentRef<typeof AccordionPrimitive.Content>,

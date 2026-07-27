@@ -2,4 +2,4 @@ export {
   ImportFileModalContent,
   type ImportFileModalContentProps,
   type ImportFileModalDropzoneOptions,
-} from "./import-file-modal"
+} from "./import-file-modal";

@@ -11,8 +11,9 @@ const h = vi.hoisted(() => ({
 }));
 
 vi.mock("@/hooks/use-blocks-app-config-store", () => ({
-  useBlocksAppConfigStore: (selector: (s: { config: { name: string } }) => unknown) =>
-    selector({ config: { name: h.name } }),
+  useBlocksAppConfigStore: (
+    selector: (s: { config: { name: string } }) => unknown,
+  ) => selector({ config: { name: h.name } }),
 }));
 vi.mock("@/hooks/use-initiate", () => ({
   usePrefetchRedirect: () => ({

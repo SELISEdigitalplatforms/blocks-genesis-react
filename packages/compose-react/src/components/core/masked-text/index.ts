@@ -1,1 +1,1 @@
-export { MaskedText, type MaskedTextProps } from "./masked-text"
+export { MaskedText, type MaskedTextProps } from "./masked-text";

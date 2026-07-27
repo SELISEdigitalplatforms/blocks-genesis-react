@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  id-token: write # REQUIRED for npm Trusted Publishing (OIDC) — tokenless, no 2FA needed in CI
+  id-token: write # REQUIRED for npm Trusted Publishing (OIDC): tokenless, no 2FA needed in CI
   contents: write # push the git tags that `changeset publish` creates
 
 jobs:

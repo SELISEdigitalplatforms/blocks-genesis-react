@@ -13,11 +13,7 @@ describe("WizardStepIndicator", () => {
 
   it("renders a check icon instead of the number when complete", () => {
     const { container } = render(
-      <WizardStepIndicator
-        stepNumber={2}
-        isCurrent={false}
-        isCompleted
-      />,
+      <WizardStepIndicator stepNumber={2} isCurrent={false} isCompleted />,
     );
 
     expect(screen.queryByText("2")).not.toBeInTheDocument();

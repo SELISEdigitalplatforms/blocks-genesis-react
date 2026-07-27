@@ -1,9 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import {
-  formatKBMetaDescription,
-  formatKBTitle,
-  getKBMetaInfo,
-} from "./utils";
+import { formatKBMetaDescription, formatKBTitle, getKBMetaInfo } from "./utils";
 
 describe("notification utils", () => {
   afterEach(() => vi.restoreAllMocks());

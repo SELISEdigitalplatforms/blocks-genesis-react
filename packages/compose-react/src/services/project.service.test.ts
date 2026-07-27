@@ -28,9 +28,9 @@ describe("ProjectService", () => {
     );
   });
 
-  it("getProject targets a single project id", async () => {
-    await projectService.getProject({ projectId: "p1" } as never);
-    expect(h.get).toHaveBeenCalledWith(`${PROJECT_ENDPOINTS.GET}?projectId=p1`);
+  it("getProject targets the project endpoint", async () => {
+    await projectService.getProject();
+    expect(h.get).toHaveBeenCalledWith(PROJECT_ENDPOINTS.GET);
   });
 
   it("getEnvRepositories hits the repos list endpoint", async () => {
