@@ -32,7 +32,7 @@ export default defineConfig({
   external: [
     "react",
     "react-dom",
-    "react-router-dom",
+    "react-router",
     "zustand",
     "zustand/middleware",
     "@tanstack/react-query",

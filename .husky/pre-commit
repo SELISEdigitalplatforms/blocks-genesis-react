@@ -1,3 +1,5 @@
 #!/usr/bin/env sh
 
-pnpm exec lint-staged
+# --relative keeps the argv under the Windows ~8191 char command-line cap;
+# absolute paths overflow it on large commits.
+pnpm exec lint-staged --relative

@@ -10,8 +10,10 @@ catalog:
   tsup: ^8.5.1
   eslint: ^9.39.5
   prettier: ^3.9.6
-  react: ^19.0.0
-  react-dom: ^19.0.0
+  # Floor matches the published peer range in packages/compose-react.
+  # The @types/* packages version independently of React and have no 19.2.8.
+  react: ^19.2.8
+  react-dom: ^19.2.8
   "@types/react": ^19.0.0
   "@types/react-dom": ^19.0.0
   tailwindcss: ^3.4.17
@@ -20,8 +22,8 @@ catalog:
   tailwind-merge: ^2.6.0
   date-fns: ^4.4.0
 overrides:
-  react: ^19.0.0
-  react-dom: ^19.0.0
+  react: ^19.2.8
+  react-dom: ^19.2.8
   "@types/react": ^19.0.0
   "@types/react-dom": ^19.0.0
   fast-uri: 3.1.4
