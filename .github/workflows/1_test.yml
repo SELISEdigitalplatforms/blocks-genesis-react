@@ -9,6 +9,12 @@ jobs:
       contents: read
       checks: write
       pull-requests: write
+    env:
+      # tsup generates .d.ts for all 12 entry points in one worker thread, and
+      # that worker dies with ERR_WORKER_OUT_OF_MEMORY under the default heap.
+      # Workers inherit the parent's limit, so raising it here covers the dts
+      # worker too. The runner has 16 GB, so 8 GB is a safe ceiling.
+      NODE_OPTIONS: --max-old-space-size=8192
     steps:
       - uses: actions/checkout@v5
         with:
