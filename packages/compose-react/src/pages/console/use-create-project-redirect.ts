@@ -2,7 +2,7 @@ import { filteredAppSwitcherData } from "@/components";
 import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { usePrefetchRedirect } from "@/hooks/use-initiate";
 import { getRuntimeEnv } from "@/lib/runtime-env";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export function useCreateProjectRedirect() {
   const { name } = useBlocksAppConfigStore((state) => state.config);

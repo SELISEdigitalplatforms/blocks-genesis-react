@@ -4,7 +4,7 @@ Thank you for your interest in contributing to **blocks-genesis-react** (Blocks 
 
 ## Public API Stability
 
-This repository ships the `@seliseblocks/blocks-kit` npm package, which is consumed by ten downstream SELISE Blocks service repositories. **Any change to a public API is a breaking change for all of them.** That includes renaming or removing an export (from the main entry or any subpath such as `./components`, `./hooks`, `./guards`, `./layouts`, `./lib`, `./providers`, `./pages`, `./store`, `./utils`, `./models`, `./types`), changing a signature, prop type, exported type, or default value, and changing observable behavior of an exported symbol. Do not make such a change casually: propose it in an issue first, and expect it to require a coordinated release across all consumers.
+This repository ships the `@seliseblocks/genesis-os` npm package, which is consumed by ten downstream SELISE Blocks service repositories. **Any change to a public API is a breaking change for all of them.** That includes renaming or removing an export (from the main entry or any subpath such as `./components`, `./hooks`, `./guards`, `./layouts`, `./lib`, `./providers`, `./pages`, `./store`, `./utils`, `./models`, `./types`), changing a signature, prop type, exported type, or default value, and changing observable behavior of an exported symbol. Do not make such a change casually: propose it in an issue first, and expect it to require a coordinated release across all consumers.
 
 ## Table of Contents
 
@@ -93,7 +93,7 @@ fix(ui): keep dialog focus trap active on nested popovers
 Tests are Vitest with jsdom and Testing Library, colocated with the source in `packages/compose-react/src`. Run them from the repository root:
 
 ```bash
-pnpm --filter @seliseblocks/blocks-kit test
+pnpm --filter @seliseblocks/genesis-os test
 ```
 
 or from the package directory:

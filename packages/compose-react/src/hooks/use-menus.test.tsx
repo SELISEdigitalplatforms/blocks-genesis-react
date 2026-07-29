@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import type { ReactNode } from "react";
 import { renderHook } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 import { useIsActiveMenu, useFilteredMenus } from "@/hooks/use-menus";
 
 const wrapper = (entries: string[]) => {

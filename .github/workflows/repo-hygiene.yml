@@ -11,6 +11,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: no stray markdown or AI artifacts
         run: |
-          badmd=$(git ls-files '*.md' | grep -vE '(^|/)(README|LICENSE|CONTRIBUTING|SECURITY|CODE_OF_CONDUCT)\.md$' || true)
+          # Keep this list in sync with the `!<file>.md` un-ignore rules in .gitignore.
+          badmd=$(git ls-files '*.md' | grep -vE '(^|/)(README|LICENSE|CONTRIBUTING|SECURITY|CODE_OF_CONDUCT|CHANGELOG|MIGRATION)\.md$' || true)
           badai=$(git ls-files | grep -iE '(^|/)(\.claude|\.cursor|\.codex|\.hermes|\.aider|\.windsurf|\.gemini|\.kiro|\.trae|graphify-out)(/|$)|(^|/)(\.cursorrules|\.mcp\.json|copilot-instructions\.md)$' || true)
           if [ -n "$badmd$badai" ]; then echo "Policy violations:"; echo "$badmd"; echo "$badai"; exit 1; fi

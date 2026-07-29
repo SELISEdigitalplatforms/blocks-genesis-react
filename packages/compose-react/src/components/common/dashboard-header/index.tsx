@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { ChevronRight, PanelLeft } from "lucide-react";
 import { useContext } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import {
   AppSwitcher,
   ThemeSwitcher,

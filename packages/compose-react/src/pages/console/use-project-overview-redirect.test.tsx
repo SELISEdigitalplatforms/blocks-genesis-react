@@ -22,8 +22,8 @@ vi.mock("@/hooks/use-initiate", () => ({
     redirect: h.redirect,
   }),
 }));
-vi.mock("react-router-dom", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("react-router-dom")>()),
+vi.mock("react-router", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("react-router")>()),
   useNavigate: () => h.navigate,
 }));
 
