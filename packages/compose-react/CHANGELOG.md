@@ -1,5 +1,11 @@
 # @seliseblocks/genesis-os
 
+## 4.0.2
+
+### Patch Changes
+
+- added filtering in app-switcher
+
 ## 4.0.0
 
 ### Major Changes
