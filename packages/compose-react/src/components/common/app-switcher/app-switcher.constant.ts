@@ -8,6 +8,7 @@ import OsIcon from "@/assets/images/apps/v2/OS.svg";
 import ReleaseIcon from "@/assets/images/apps/v2/Release.svg";
 import StudioIcon from "@/assets/images/apps/v2/Studio.svg";
 import UtilitiesIcon from "@/assets/images/apps/v2/Utilities.svg";
+import { getRuntimeEnv } from "@/lib/runtime-env";
 import type { BlocksApp } from "./app-switcher.types";
 
 const APP_SWITCHER_DATA: BlocksApp[] = [
@@ -133,6 +134,29 @@ const APP_SWITCHER_DATA: BlocksApp[] = [
   },
 ];
 
-export const filteredAppSwitcherData = APP_SWITCHER_DATA.filter((app) =>
-  typeof app.isDisabled === "function" ? !app.isDisabled() : !app.isDisabled,
+const parseAllowedServices = (raw: string): Set<string> | null => {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  return new Set(
+    trimmed
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter(Boolean),
+  );
+};
+
+const allowedServiceIds = parseAllowedServices(
+  getRuntimeEnv("BLOCKS_ALLOWED_SERVICES"),
 );
+
+const isAppAllowed = (app: BlocksApp): boolean => {
+  if (!allowedServiceIds) return true;
+  return allowedServiceIds.has(app.id);
+};
+
+export const filteredAppSwitcherData = APP_SWITCHER_DATA.filter((app) => {
+  if (!isAppAllowed(app)) return false;
+  return typeof app.isDisabled === "function"
+    ? !app.isDisabled()
+    : !app.isDisabled;
+});

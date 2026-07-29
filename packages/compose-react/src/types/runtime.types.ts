@@ -37,6 +37,7 @@ export type RuntimeKey =
   | "BLOCKS_OIDC_CLIENT_ID"
   | "BLOCKS_PUBLIC_API_BASE_URL"
   | "BLOCKS_BASE_DOMAIN"
+  | "BLOCKS_ALLOWED_SERVICES"
   | "projectBaseUrl"
   | "userBaseUrl"
   | "notificationBaseUrl";
