@@ -1,13 +1,20 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { LoginPage } from "./login";
 
-const h = vi.hoisted(() => ({ name: "blocks-logic" }));
+const h = vi.hoisted(() => ({
+  name: "blocks-logic",
+  startLogin: vi.fn(),
+}));
 
 vi.mock("@/hooks/use-blocks-app-config-store", () => ({
   useBlocksAppConfigStore: (
     selector: (s: { getConfig: () => { name: string } }) => unknown,
   ) => selector({ getConfig: () => ({ name: h.name }) }),
+}));
+vi.mock("@/services/login.service", () => ({
+  loginService: { startLogin: h.startLogin },
 }));
 vi.mock("./blocks-login", () => ({
   BlocksLoginPage: ({
@@ -27,51 +34,55 @@ vi.mock("./blocks-login", () => ({
   ),
 }));
 
+import { LoginPage } from "./login";
+
+const wrapper = () => {
+  const client = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
+  const Wrapper = ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={client}>{children}</QueryClientProvider>
+  );
+  return Wrapper;
+};
+
 describe("LoginPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (window as unknown as { process: unknown }).process = {
-      env: {
-        BLOCKS_X_BLOCKS_KEY: "tid",
-        BLOCKS_OIDC_CLIENT_ID: "cid",
-        userBaseUrl: "https://idp.test",
-      },
-    };
     Object.defineProperty(window, "location", {
       configurable: true,
-      value: { href: "", origin: "https://app.test" },
+      value: { origin: "https://app.test", href: "" },
     });
+    h.startLogin.mockResolvedValue({});
   });
 
   it("renders the login page with the app name", () => {
-    render(<LoginPage />);
+    render(<LoginPage />, { wrapper: wrapper() });
 
     expect(screen.getByTestId("name")).toHaveTextContent("blocks-logic");
   });
 
-  it("redirects to the initiate response url on login", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        json: () => Promise.resolve({ redirect_uri: "https://idp/authorize" }),
-      }),
-    );
+  it("triggers login and redirects to the initiate response url", async () => {
+    h.startLogin.mockResolvedValue({ redirect_uri: "https://idp/authorize" });
 
-    render(<LoginPage />);
+    render(<LoginPage />, { wrapper: wrapper() });
     fireEvent.click(screen.getByText("login"));
 
     await waitFor(() =>
       expect(window.location.href).toBe("https://idp/authorize"),
     );
+    expect(h.startLogin.mock.calls[0]?.[0]).toEqual({
+      redirectUri: "https://app.test/login/callback",
+    });
   });
 
   it("stops the loading state when no redirect url is returned", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({ json: () => Promise.resolve({}) }),
-    );
+    h.startLogin.mockResolvedValue({});
 
-    render(<LoginPage />);
+    render(<LoginPage />, { wrapper: wrapper() });
     fireEvent.click(screen.getByText("login"));
 
     await waitFor(() =>
@@ -82,9 +93,9 @@ describe("LoginPage", () => {
 
   it("logs and resets loading when the request throws", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
-    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network")));
+    h.startLogin.mockRejectedValue(new Error("network"));
 
-    render(<LoginPage />);
+    render(<LoginPage />, { wrapper: wrapper() });
     fireEvent.click(screen.getByText("login"));
 
     await waitFor(() =>

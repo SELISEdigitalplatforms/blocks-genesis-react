@@ -17,6 +17,7 @@ export * from "./use-fuse/use-debounced-fuse-filter";
 export * from "./use-icon";
 export * from "./use-initiate";
 export * from "./use-language-switcher";
+export * from "./use-login";
 export * from "./use-logo";
 export * from "./use-menus";
 export * from "./use-notifications";
