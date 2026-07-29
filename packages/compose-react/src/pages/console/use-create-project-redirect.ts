@@ -7,7 +7,7 @@ import { useNavigate } from "react-router";
 export function useCreateProjectRedirect() {
   const { name } = useBlocksAppConfigStore((state) => state.config);
   const navigate = useNavigate();
-  const osApp = filteredAppSwitcherData.find((app) => app.key === "blocks-os");
+  const osApp = filteredAppSwitcherData.find((app) => app.id === "blocks-os");
 
   const { isFetching, isReady, redirect } = usePrefetchRedirect({
     clientId: osApp ? getRuntimeEnv(osApp.clientId) : "",
