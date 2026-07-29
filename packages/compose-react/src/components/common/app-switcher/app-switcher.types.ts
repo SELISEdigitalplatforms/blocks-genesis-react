@@ -2,7 +2,7 @@ import type { ServiceName } from "@/store";
 import type { RuntimeKey } from "@/types";
 
 export interface BlocksApp {
-  key: ServiceName;
+  id: ServiceName;
   label: string;
   description: string;
   url: string;

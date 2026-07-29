@@ -71,7 +71,7 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
         })
         .catch((err) => {
           console.error(
-            `[AppSwitcher] Failed to get redirect URL for ${app.key}:`,
+            `[AppSwitcher] Failed to get redirect URL for ${app.id}:`,
             err,
           );
           return null;
@@ -80,7 +80,7 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
   );
 
   const filteredApps = useMemo(
-    () => filteredAppSwitcherData.filter((app) => app.key !== config.name),
+    () => filteredAppSwitcherData.filter((app) => app.id !== config.name),
     [config.name],
   );
 
@@ -94,7 +94,7 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
       getRedirectUrl(app)
         .then((redirectUrl) => {
           if (redirectUrl) {
-            setRedirectUrls((prev) => ({ ...prev, [app.key]: redirectUrl }));
+            setRedirectUrls((prev) => ({ ...prev, [app.id]: redirectUrl }));
           }
         })
         .catch((error) => {
@@ -112,8 +112,8 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
     return filteredApps
       .map((app) => ({
         ...app,
-        initiateUrl: redirectUrls[app.key] ?? app.initiateUrl,
-        isLoading: !redirectUrls[app.key],
+        initiateUrl: redirectUrls[app.id] ?? app.initiateUrl,
+        isLoading: !redirectUrls[app.id],
       }))
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [redirectUrls, filteredApps]);
@@ -144,7 +144,7 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
             </p>
             <div className="grid grid-cols-3">
               {blocksApps.map((app) => (
-                <AppTile key={app.key} app={app} isLoading={app.isLoading} />
+                <AppTile key={app.id} app={app} isLoading={app.isLoading} />
               ))}
             </div>
           </div>
