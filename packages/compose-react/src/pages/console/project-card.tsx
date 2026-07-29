@@ -108,7 +108,7 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
                 className="flex items-center gap-1 shrink-0"
               >
                 <UsersRound size={16} />
-                {"Shared with you"}
+                {"Shared"}
               </Badge>
             }
           />

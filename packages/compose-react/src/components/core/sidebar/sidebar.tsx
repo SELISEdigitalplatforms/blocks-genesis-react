@@ -138,7 +138,12 @@ const SidebarProvider = React.forwardRef<
               } as React.CSSProperties
             }
             className={cn(
-              "group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full",
+              "group/sidebar-wrapper has-[[data-variant=inset]]:bg-sidebar flex min-h-svh w-full",
+              // NOTE: Tailwind v3 arbitrary-variant syntax `has-[[data-variant=inset]]` is required
+              // here. The v4 shorthand `has-data-[variant=inset]` was introduced in commit 25cdbfc
+              // but does not resolve in v3 consumers (v3 does not parse `has-data-[...]` selectors),
+              // so the inset variant background rule goes ungenerated. Keep the v3 syntax until all
+              // consumers ship v4.
               className,
             )}
             ref={ref}
@@ -229,8 +234,12 @@ const Sidebar = React.forwardRef<
             "group-data-[collapsible=offcanvas]:w-0",
             "group-data-[side=right]:rotate-180",
             variant === "floating" || variant === "inset"
-              ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]"
-              : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]",
+              ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"
+              : // NOTE: Tailwind v3 arbitrary-value syntax is required here. The v4 form
+                // `calc(var(--sidebar-width-icon)+(--spacing(4)))` was introduced in commit 25cdbfc
+                // but `(--spacing(4))` is not parsed by the v3 compiler, so the floating/inset
+                // panel gap width rule goes ungenerated in v3 consumers.
+                "group-data-[collapsible=icon]:w-[--sidebar-width-icon]",
           )}
         />
         <div
@@ -241,8 +250,10 @@ const Sidebar = React.forwardRef<
               : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
             // Adjust the padding for floating and inset variants.
             variant === "floating" || variant === "inset"
-              ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
-              : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",
+              ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)]"
+              : // NOTE: Same v3 arbitrary-value syntax requirement as the gap div above
+                // (see comment there); v4 `(--spacing(...))` does not resolve in v3 consumers.
+                "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",
             className,
           )}
           {...props}
