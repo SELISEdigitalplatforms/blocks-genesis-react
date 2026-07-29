@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import { Check } from "lucide-react"
-import { AnimatePresence, motion } from "framer-motion"
+import { Check } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 
-import { cn } from "@/lib/utils"
-import { fadeTransition } from "@/lib/motion-presets"
+import { cn } from "@/lib/utils";
+import { fadeTransition } from "@/lib/motion-presets";
 
 type WizardStepIndicatorProps = {
-  stepNumber: number
-  isCurrent: boolean
-  isCompleted: boolean
-  className?: string
-}
+  stepNumber: number;
+  isCurrent: boolean;
+  isCompleted: boolean;
+  className?: string;
+};
 
 export const WizardStepIndicator = ({
   stepNumber,
@@ -19,13 +19,11 @@ export const WizardStepIndicator = ({
   isCompleted,
   className,
 }: WizardStepIndicatorProps) => {
-  const CheckIcon = Check as any
-
-  let indicatorColor = "hsl(var(--muted-foreground))"
+  let indicatorColor = "hsl(var(--muted-foreground))";
   if (isCompleted) {
-    indicatorColor = "hsl(var(--primary-foreground))"
+    indicatorColor = "hsl(var(--primary-foreground))";
   } else if (isCurrent) {
-    indicatorColor = "hsl(var(--foreground))"
+    indicatorColor = "hsl(var(--foreground))";
   }
 
   return (
@@ -35,7 +33,9 @@ export const WizardStepIndicator = ({
       animate={{
         scale: isCurrent ? 1.06 : 1,
         borderColor:
-          isCompleted || isCurrent ? "hsl(var(--foreground))" : "hsl(var(--border))",
+          isCompleted || isCurrent
+            ? "hsl(var(--foreground))"
+            : "hsl(var(--border))",
         color: indicatorColor,
         backgroundColor: isCompleted ? "hsl(var(--foreground))" : "transparent",
       }}
@@ -54,7 +54,7 @@ export const WizardStepIndicator = ({
             exit={{ scale: 0, opacity: 0 }}
             transition={fadeTransition}
           >
-            <CheckIcon className="size-[18px]" aria-hidden />
+            <Check className="size-[18px]" aria-hidden />
           </motion.span>
         ) : (
           <motion.span
@@ -69,5 +69,5 @@ export const WizardStepIndicator = ({
         )}
       </AnimatePresence>
     </motion.span>
-  )
-}
+  );
+};

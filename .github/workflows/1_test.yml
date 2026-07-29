@@ -1,0 +1,64 @@
+name: Run Tests
+on: workflow_call
+
+jobs:
+  build:
+    name: Test Execution
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    env:
+      # tsup generates .d.ts for all 12 entry points in one worker thread, and
+      # that worker dies with ERR_WORKER_OUT_OF_MEMORY under the default heap.
+      # Workers inherit the parent's limit, so raising it here covers the dts
+      # worker too. The runner has 16 GB, so 8 GB is a safe ceiling.
+      NODE_OPTIONS: --max-old-space-size=8192
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set Environment Variables
+        uses: ./.github/actions/setvars
+        with:
+          varFilePath: ./.github/variables/vars.env
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4 # version comes from package.json "packageManager"
+
+      # pnpm must be installed before setup-node, or `cache: pnpm` cannot find
+      # the store to key against.
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Build
+        run: pnpm build
+
+      # lcov is what the Sonar scanner consumes; the sonar job re-runs this
+      # rather than sharing an artifact, so the two gates stay independent and
+      # genuinely parallel.
+      - name: Test with coverage
+        run: pnpm test:cov
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: packages/*/coverage/
+          if-no-files-found: warn
+          retention-days: 7

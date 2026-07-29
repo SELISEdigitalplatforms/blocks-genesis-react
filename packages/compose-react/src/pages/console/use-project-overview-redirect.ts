@@ -2,7 +2,7 @@ import { filteredAppSwitcherData } from "@/components/common/app-switcher";
 import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { usePrefetchRedirect } from "@/hooks/use-initiate";
 import { getRuntimeEnv } from "@/lib/runtime-env";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 type UseProjectOverviewRedirectProps = {
   tenantGroupId: string;

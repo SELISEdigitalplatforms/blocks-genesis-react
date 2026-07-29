@@ -19,18 +19,6 @@ dist
 # Documentation
 docs/
 
-#graphify
-graphify-out/
-
-#cursor
-.cursor/
-
-#change
-change.md
-
-#AGENTS
-AGENTS.md
-
 # Miscellaneous
 .idea
 coverage
@@ -38,6 +26,9 @@ coverage
 .DS_Store
 *.log
 registry.json
+
+# SonarQube scanner work directories
+.scannerwork/
 
 # --- AI assistant artifacts: never track ---
 .claude/
@@ -64,3 +55,8 @@ copilot-instructions.md
 !CONTRIBUTING.md
 !SECURITY.md
 !CODE_OF_CONDUCT.md
+!CHANGELOG.md
+!MIGRATION.md
+
+# local security scan tooling (contains credentials, never commit)
+scripts/scan.sh

@@ -1,6 +1,6 @@
 import { Button } from "@/components/core/button";
 import { useLogout } from "@/hooks/use-logout";
-import { getQueryClient } from "@/providers/query.provider";
+import { getQueryClient } from "@/providers/query-client";
 import { useAppSettingsStore } from "@/store";
 import { useAuthStore } from "@/store/auth.store";
 import { useProjectStore } from "@/store/project.store";

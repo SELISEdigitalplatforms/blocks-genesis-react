@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import type { Menu } from "@/types";
 import { DashboardRoute } from "./dashboard-route";
@@ -69,11 +69,19 @@ describe("DashboardRoute", () => {
       screen.getByTestId("layout").getAttribute("data-menus")!,
     ) as Menu[];
 
-    expect(scoped[0].path).toBe("/app/abc/dashboard");
-    expect(scoped[1].path).toBe("/app/project/x");
-    expect(scoped[2].type).toBe("separator");
-    expect(scoped[3].path).toBe("/app/abc/settings");
-    expect(scoped[3].children?.[0].path).toBe("/app/abc/settings/general");
+    const menuItem = (entry: Menu | undefined) => {
+      if (!entry || entry.type !== "menu") {
+        throw new Error("expected a menu entry");
+      }
+      return entry;
+    };
+    expect(menuItem(scoped[0]).path).toBe("/app/abc/dashboard");
+    expect(menuItem(scoped[1]).path).toBe("/app/project/x");
+    expect(scoped[2]?.type).toBe("separator");
+    expect(menuItem(scoped[3]).path).toBe("/app/abc/settings");
+    expect(menuItem(menuItem(scoped[3]).children?.[0]).path).toBe(
+      "/app/abc/settings/general",
+    );
   });
 
   it("defaults forwardedTo to the scoped dashboard path", () => {

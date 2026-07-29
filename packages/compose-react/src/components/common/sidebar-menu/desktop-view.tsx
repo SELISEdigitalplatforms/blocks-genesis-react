@@ -15,7 +15,7 @@ import { useFilteredMenus, useIsActiveMenu } from "@/hooks/use-menus";
 import { cn } from "@/lib/utils";
 import { PanelLeft } from "lucide-react";
 import { Fragment, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import type { SideBarMenuProps } from "./types";
 
 export function SidebarMenuDesktop({

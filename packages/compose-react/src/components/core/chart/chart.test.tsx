@@ -13,6 +13,7 @@ vi.mock("recharts", async (importOriginal) => {
 });
 
 import { BarChart, Bar } from "recharts";
+import type { Payload } from "recharts/types/component/DefaultTooltipContent";
 import {
   ChartContainer,
   ChartTooltipContent,
@@ -24,13 +25,12 @@ const config = { sales: { label: "Sales", color: "#f00" } };
 const withContainer = (ui: ReactNode) =>
   render(<ChartContainer config={config}>{ui}</ChartContainer>);
 
-const tooltipPayload = [
+const tooltipPayload: Payload<number, string>[] = [
   {
     dataKey: "sales",
     name: "sales",
     value: 1200,
     color: "#f00",
-    type: "line",
     payload: { fill: "#f00", sales: 1200 },
   },
 ];
@@ -62,7 +62,7 @@ describe("ChartTooltipContent", () => {
         active
         payload={tooltipPayload}
         indicator="dashed"
-        formatter={(_value: number, name: string) => <span>fmt:{name}</span>}
+        formatter={(_value, name) => <span>fmt:{name}</span>}
       />,
     );
     expect(screen.getByText(/fmt:/)).toBeInTheDocument();
@@ -80,14 +80,17 @@ describe("ChartLegendContent", () => {
   it("renders a legend entry per payload item", () => {
     withContainer(
       <ChartLegendContent
-        payload={[{ value: "sales", dataKey: "sales", color: "#f00", type: "line" }]}
+        verticalAlign="bottom"
+        payload={[
+          { value: "sales", dataKey: "sales", color: "#f00", type: "line" },
+        ]}
       />,
     );
     expect(screen.getByText("Sales")).toBeInTheDocument();
   });
 
   it("renders nothing for an empty payload", () => {
-    withContainer(<ChartLegendContent payload={[]} />);
+    withContainer(<ChartLegendContent verticalAlign="bottom" payload={[]} />);
     expect(screen.queryByText("Sales")).not.toBeInTheDocument();
   });
 });

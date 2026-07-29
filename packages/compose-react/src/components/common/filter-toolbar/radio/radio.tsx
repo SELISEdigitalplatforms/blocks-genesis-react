@@ -50,7 +50,8 @@ export function Radio({ label, options, onChange, value }: MultiSelectProps) {
           ref={buttonRef}
           variant="outline"
           size="sm"
-          className="h-8 border-dashed">
+          className="h-8 border-dashed"
+        >
           <div className="flex w-full items-center justify-between">
             <div className="flex items-center">
               <PlusCircledIcon className="mr-2 h-4 w-4" />
@@ -67,7 +68,8 @@ export function Radio({ label, options, onChange, value }: MultiSelectProps) {
                   <Badge
                     variant="secondary"
                     key={selected.value}
-                    className="rounded-sm px-1 font-normal">
+                    className="rounded-sm px-1 font-normal"
+                  >
                     {selected.label}
                   </Badge>
                 </div>
@@ -83,7 +85,8 @@ export function Radio({ label, options, onChange, value }: MultiSelectProps) {
           isMobile
             ? { width: popoverWidth ? `${popoverWidth}px` : "auto" }
             : undefined
-        }>
+        }
+      >
         <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
           <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
           <Input
@@ -100,13 +103,15 @@ export function Radio({ label, options, onChange, value }: MultiSelectProps) {
             <RadioGroup
               onValueChange={onChange}
               value={value}
-              className="gap-0 p-1 text-xs font-thin text-accent-foreground">
+              className="gap-0 p-1 text-xs font-thin text-accent-foreground"
+            >
               {searchedOptions.length > 0 &&
                 searchedOptions.map((option) => (
                   <Label
                     key={option.value}
                     className="flex items-center gap-2 rounded-sm px-2 py-2 hover:bg-accent"
-                    htmlFor={option.value}>
+                    htmlFor={option.value}
+                  >
                     <RadioGroupItem value={option.value} id={option.value} />
                     <span>{option.label}</span>
                   </Label>

@@ -1,10 +1,10 @@
-import type { ReactNode } from "react"
+import type { ReactNode } from "react";
 
 export type WizardStepContentProps = {
-  currentStep: number
-  stepNumber: number
-  children: ReactNode
-}
+  currentStep: number;
+  stepNumber: number;
+  children: ReactNode;
+};
 
 export const WizardStepContent = ({
   currentStep,
@@ -12,8 +12,8 @@ export const WizardStepContent = ({
   children,
 }: WizardStepContentProps) => {
   if (currentStep !== stepNumber) {
-    return null
+    return null;
   }
 
-  return <>{children}</>
-}
+  return <>{children}</>;
+};

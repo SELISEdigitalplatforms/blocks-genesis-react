@@ -1,8 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import type { ReactNode } from "react";
 import { useContext } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 import { SidebarContext } from "@/contexts";
 import { DashboardLayoutProvider } from "@/providers/dashboard-layout.provider";
 
@@ -20,15 +19,19 @@ function Consumer() {
       <button onClick={ctx.toggleSidebarSubMenu}>toggleSub</button>
       <button onClick={ctx.showSidebarSubMenu}>showSub</button>
       <button onClick={() => ctx.updateSubMenuId("m1")}>setId</button>
-      <button onClick={() => ctx.updateServicesSearchTerm("q")}>setSearch</button>
+      <button onClick={() => ctx.updateServicesSearchTerm("q")}>
+        setSearch
+      </button>
     </div>
   );
 }
 
-const renderProvider = (props: Record<string, unknown> = {}) =>
+const renderProvider = (
+  props: { isOpen?: boolean; persist?: boolean; storageKey?: string } = {},
+) =>
   render(
     <MemoryRouter>
-      <DashboardLayoutProvider isOpen {...(props as { isOpen: boolean })}>
+      <DashboardLayoutProvider isOpen {...props}>
         <Consumer />
       </DashboardLayoutProvider>
     </MemoryRouter>,
@@ -79,7 +82,11 @@ describe("DashboardLayoutProvider", () => {
   });
 
   it("persists toggles when persist is enabled", () => {
-    renderProvider({ isOpen: false, persist: true, storageKey: "sidebar-open" });
+    renderProvider({
+      isOpen: false,
+      persist: true,
+      storageKey: "sidebar-open",
+    });
     fireEvent.click(screen.getByText("toggle"));
     expect(localStorage.getItem("sidebar-open")).toBe("true");
   });

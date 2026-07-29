@@ -4,7 +4,7 @@ import { isErrorWithErrors } from "@/utils/error";
 import { useProjectStore } from "@/store";
 import { Archive } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { ConfirmationModal } from "@/components/common/confirmation-modal";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 

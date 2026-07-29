@@ -1,28 +1,14 @@
 import * as React from "react";
 import { Loader2 } from "lucide-react";
-import { cva, type VariantProps } from "class-variance-authority";
+import type { VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
-
-/**
- * Blocks `Spinner` — uses `--loader-color` so it adapts to light / dark
- * automatically. Sizes follow the spec (sm / md / lg).
- */
-const spinnerVariants = cva("animate-spin", {
-  variants: {
-    size: {
-      sm: "size-4",
-      md: "size-6",
-      lg: "size-8",
-    },
-  },
-  defaultVariants: {
-    size: "md",
-  },
-});
+import { spinnerVariants } from "./spinner-variants";
 
 export interface SpinnerProps
-  extends React.SVGAttributes<SVGSVGElement>, VariantProps<typeof spinnerVariants> {
+  extends
+    React.SVGAttributes<SVGSVGElement>,
+    VariantProps<typeof spinnerVariants> {
   /** Optional label exposed to assistive tech via `aria-label`. */
   label?: string;
 }
@@ -41,4 +27,4 @@ const Spinner = React.forwardRef<SVGSVGElement, SpinnerProps>(
 );
 Spinner.displayName = "Spinner";
 
-export { Spinner, spinnerVariants };
+export { Spinner };

@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { ComponentProps } from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 const mutateAsync = vi.fn();
@@ -13,10 +14,10 @@ vi.mock("@/utils/toast", () => ({
 import { Dialog } from "@/components/core/dialog";
 import { DomainForm } from "@/pages/dashboard/dashboard-overview-sections/domain/domain-form";
 
-const renderForm = (props: Record<string, unknown> = {}) =>
+const renderForm = (props: Partial<ComponentProps<typeof DomainForm>> = {}) =>
   render(
     <Dialog open>
-      <DomainForm onAfterSubmit={vi.fn()} {...(props as never)} />
+      <DomainForm onAfterSubmit={vi.fn()} {...props} />
     </Dialog>,
   );
 
@@ -35,7 +36,7 @@ describe("DomainForm", () => {
   it("auto-fills the cookie domain from the entered domain", () => {
     renderForm();
     const inputs = screen.getAllByPlaceholderText("your-domain.com");
-    fireEvent.change(inputs[0], { target: { value: "app.example.com" } });
+    fireEvent.change(inputs[0]!, { target: { value: "app.example.com" } });
     expect((inputs[1] as HTMLInputElement).value).toBe("example.com");
   });
 
@@ -43,10 +44,10 @@ describe("DomainForm", () => {
     const onAfterSubmit = vi.fn();
     renderForm({ onAfterSubmit });
     const inputs = screen.getAllByPlaceholderText("your-domain.com");
-    fireEvent.change(inputs[0], { target: { value: "app.example.com" } });
+    fireEvent.change(inputs[0]!, { target: { value: "app.example.com" } });
     fireEvent.submit(document.querySelector("form")!);
     await waitFor(() => expect(mutateAsync).toHaveBeenCalled());
-    expect(mutateAsync.mock.calls[0][0].application.domain).toBe(
+    expect(mutateAsync.mock.calls[0]?.[0].application.domain).toBe(
       "https://app.example.com",
     );
     await waitFor(() => expect(onAfterSubmit).toHaveBeenCalled());
@@ -63,7 +64,7 @@ describe("DomainForm", () => {
     expect(screen.getByRole("button", { name: "Update" })).toBeInTheDocument();
     fireEvent.submit(document.querySelector("form")!);
     await waitFor(() => expect(mutateAsync).toHaveBeenCalled());
-    expect(mutateAsync.mock.calls[0][0].applicationDomain).toBe(
+    expect(mutateAsync.mock.calls[0]?.[0].applicationDomain).toBe(
       "https://beta.example.com",
     );
   });

@@ -1,31 +1,36 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
+import { motion } from "framer-motion";
 
-import { Button } from "@/components/core/button"
-import { cn } from "@/lib/utils"
-import { fadeTransition } from "@/lib/motion-presets"
+import { Button } from "@/components/core/button";
+import { cn } from "@/lib/utils";
+import { fadeTransition } from "@/lib/motion-presets";
 
-import { WizardStepIndicator } from "./wizard-step-indicator"
-import { useWizardStepper } from "./wizard-stepper-provider"
+import { WizardStepIndicator } from "./wizard-step-indicator";
+import { useWizardStepper } from "./use-wizard-stepper";
 
 export const WizardVerticalTrackBar = () => {
-  const { currentStep, totalSteps, goToStep, completedSteps, getSteps } = useWizardStepper()
-  const steps = getSteps()
+  const { currentStep, totalSteps, goToStep, completedSteps, getSteps } =
+    useWizardStepper();
+  const steps = getSteps();
 
   return (
     <motion.div layout transition={fadeTransition}>
       {steps.map((step, index) => {
-        const stepNumber = index + 1
-        const isCompleted = completedSteps.includes(stepNumber)
-        const isCurrent = currentStep === stepNumber
+        const stepNumber = index + 1;
+        const isCompleted = completedSteps.includes(stepNumber);
+        const isCurrent = currentStep === stepNumber;
 
         return (
           <div
             className={cn("relative flex flex-col [&:not(:last-child)]:flex-1")}
             key={step.id}
           >
-            <motion.div layout className="flex items-center gap-2" transition={fadeTransition}>
+            <motion.div
+              layout
+              className="flex items-center gap-2"
+              transition={fadeTransition}
+            >
               <Button
                 type="button"
                 variant="ghost"
@@ -42,9 +47,10 @@ export const WizardVerticalTrackBar = () => {
               <motion.div
                 layout
                 animate={{
-                  color: isCurrent || isCompleted
-                    ? "hsl(var(--foreground))"
-                    : "hsl(var(--muted-foreground))",
+                  color:
+                    isCurrent || isCompleted
+                      ? "hsl(var(--foreground))"
+                      : "hsl(var(--muted-foreground))",
                 }}
                 transition={fadeTransition}
                 className="ml-4 text-base font-medium"
@@ -66,8 +72,8 @@ export const WizardVerticalTrackBar = () => {
               />
             ) : null}
           </div>
-        )
+        );
       })}
     </motion.div>
-  )
-}
+  );
+};

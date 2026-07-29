@@ -1,5 +1,15 @@
 # Security Policy
 
+## Supported Versions
+
+Security fixes are provided for the latest release of the npm package published from this repository.
+
+| Package                                                                              | Supported versions |
+| ------------------------------------------------------------------------------------ | ------------------ |
+| [`@seliseblocks/genesis-os`](https://www.npmjs.com/package/@seliseblocks/genesis-os) | latest 4.x release |
+
+Older releases do not receive security fixes; upgrade to the latest release to stay covered.
+
 ## Reporting a Vulnerability
 
 If you believe you have found a security vulnerability, please report it to us as soon as possible. We take all reports seriously and will do our best to address the issue promptly.
@@ -9,9 +19,16 @@ If you believe you have found a security vulnerability, please report it to us a
 Instead, please follow these steps:
 
 1. Email us at [blocks@selisegroup.com](mailto:blocks@selisegroup.com) with details of the vulnerability.
-2. Include a thorough description of the issue, including any relevant information on the environment in which the vulnerability was discovered.
+2. Include a thorough description of the issue, the affected package and version, reproduction steps or a proof of concept, and any relevant information about the environment in which it was discovered.
 3. Allow some time for us to review and respond to your report.
 4. We will acknowledge receipt of your report and work with you to understand and validate the issue.
+
+## What to Expect
+
+- We aim to acknowledge your report within 5 business days.
+- We will keep you informed while we validate the issue and work on a fix.
+- Confirmed vulnerabilities are fixed in a new release; we will tell you the target release once the issue is validated.
+- Please keep the report confidential until a fixed release is available.
 
 ## Responsible Disclosure
 
@@ -31,4 +48,3 @@ This security policy applies to the **SELISE `<Blocks/>`** project. Please note 
 We may update this security policy from time to time. Check the file's Git history for the most recent changes.
 
 Thank you for helping to keep **SELISE `<Blocks/>`** secure!
-

@@ -17,7 +17,7 @@ import type { IProject } from "@/models";
 import { useAuthStore } from "@/store/auth.store";
 import { useProjectStore } from "@/store/project.store";
 import { ChevronRight, Settings2, UsersRound } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useProjectOverviewRedirect } from "./use-project-overview-redirect";
 
 const INLINE_LIMIT = 3;

@@ -1,173 +1,195 @@
-# @selisedigitalplatforms/blocks-kit
+# @seliseblocks/genesis-os
 
-A comprehensive React app-shell composition package with reusable components, hooks, layouts, and utilities for building blocks applications.
+React app-shell composition package for SELISE Blocks applications: guards, layouts, providers, pages, stores, hooks, an HTTP client, and a shadcn/Radix based component library. It is the shared frontend foundation consumed by the Blocks service applications (IAM, OS, Data, Logic, Monitor, Release, Studio, Utilities, Localization).
+
+Ships as ESM and CJS with bundled TypeScript declarations. Every module carries a `"use client"` banner, and `sideEffects` is `false`, so bundlers can tree-shake unused exports.
 
 ## Installation
 
 ```bash
-npm install @selisedigitalplatforms/blocks-kit
+npm install @seliseblocks/genesis-os
 # or
-yarn add @selisedigitalplatforms/blocks-kit
+yarn add @seliseblocks/genesis-os
 # or
-pnpm add @selisedigitalplatforms/blocks-kit
+pnpm add @seliseblocks/genesis-os
 ```
 
 ## Peer Dependencies
 
-This package requires the following peer dependencies:
+Your application must provide these packages (`@types/react` is optional, for TypeScript users):
 
 ```json
 {
   "@tanstack/react-query": "^5.0.0",
-  "nuqs": "^2.0.0",
-  "react": "^18.3.1 || ^19.0.0",
-  "react-dom": "^18.3.1 || ^19.0.0",
-  "react-router-dom": "^6.0.0",
+  "nuqs": "^2.9.0",
+  "react": "^19.2.8",
+  "react-dom": "^19.2.8",
+  "react-router": "^8.0.0",
   "zustand": "^5.0.0"
 }
 ```
 
 ## Styling Contract
 
-This package intentionally does **not** ship CSS files. Host applications are responsible for:
+This package intentionally ships **no CSS files**. Host applications are responsible for:
+
+- Tailwind CSS setup, including scanning this package's dist output so its utility classes are generated:
+
+  ```ts
+  // tailwind.config.ts
+  export default {
+    content: ["./app/**/*.{ts,tsx}", "./node_modules/@seliseblocks/genesis-os/dist/**/*.{js,jsx,ts,tsx}"],
+  };
+  ```
 
 - Tailwind CSS setup
 - shared design tokens (CSS variables) for theming
 - Any global CSS imports required by their design system
 
+## Runtime Configuration
+
+Service base URLs and keys are read at runtime, not baked in at build time. Provide them on `window.__BLOCKS_ENV__` before the app boots (typically an inline script in `index.html`), or through `import.meta.env`:
+
+```html
+<script>
+  window.__BLOCKS_ENV__ = {
+    BLOCKS_IAM_BASE_URL: "https://iam.example.com",
+    BLOCKS_LOGIC_BASE_URL: "https://logic.example.com",
+    BLOCKS_X_BLOCKS_KEY: "your-blocks-key",
+  };
+</script>
+```
+
+Read values with `getRuntimeEnv` from `@seliseblocks/genesis-os/lib`. The full key list is the `RuntimeKey` union exported from `@seliseblocks/genesis-os/types` (per-service `*_BASE_URL`, `*_CLIENT_ID`, and `*_CALLBACK_URL` keys plus `BLOCKS_X_BLOCKS_KEY` and others).
+
 ## Quick Start
 
-```tsx
-import { BlocksAppLayout, AuthGuard, useToast, Button } from "@selisedigitalplatforms/blocks-kit";
+Wrap your app in the providers, then compose routes from the guards, layouts, and pages:
 
-function App() {
-  return (
-    <BlocksAppLayout>
-      <AuthGuard>
-        <YourApp />
-      </AuthGuard>
-    </BlocksAppLayout>
-  );
-}
+```tsx
+import { NuqsAdapter } from "nuqs/adapters/react-router/v8";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { createBrowserRouter, Navigate, Outlet, RouterProvider } from "react-router";
+
+import { AuthResolver, ProtectedGuard, PublicGuard } from "@seliseblocks/genesis-os/guards";
+import { ConsoleLayout } from "@seliseblocks/genesis-os/layouts";
+import { CallbackPage, ConsolePage, LoginPage, ProfilePage } from "@seliseblocks/genesis-os/pages";
+import { BlocksAppLayout, QueryProvider, ThemeProvider } from "@seliseblocks/genesis-os/providers";
+
+const router = createBrowserRouter([
+  {
+    path: "/login/callback",
+    element: <CallbackPage defaultRedirectUrl="/app/console" />,
+  },
+  {
+    element: (
+      <AuthResolver>
+        <Outlet />
+      </AuthResolver>
+    ),
+    children: [
+      {
+        element: (
+          <PublicGuard>
+            <Outlet />
+          </PublicGuard>
+        ),
+        children: [{ path: "/login", element: <LoginPage /> }],
+      },
+      {
+        path: "/app",
+        element: (
+          <ProtectedGuard>
+            <ConsoleLayout>
+              <Outlet />
+            </ConsoleLayout>
+          </ProtectedGuard>
+        ),
+        children: [
+          { index: true, element: <Navigate to="console" replace /> },
+          { path: "console", element: <ConsolePage /> },
+          { path: "profile", element: <ProfilePage /> },
+        ],
+      },
+    ],
+  },
+]);
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <QueryProvider>
+      <ThemeProvider>
+        <NuqsAdapter>
+          <BlocksAppLayout
+            config={{
+              name: "blocks-monitor",
+              appLogoUrl: { dark: "/logo-dark.svg", light: "/logo-light.svg" },
+            }}
+          >
+            <RouterProvider router={router} />
+          </BlocksAppLayout>
+        </NuqsAdapter>
+      </ThemeProvider>
+    </QueryProvider>
+  </StrictMode>,
+);
 ```
+
+`BlocksAppLayout` takes a `config` with the service `name` (one of the `ServiceName` union values, for example `"blocks-os"` or `"blocks-monitor"`) and an `appLogoUrl` (a string, or `{ dark, light }` variants).
 
 ## Package Exports
 
-### Main Entry Point (`@selisedigitalplatforms/blocks-kit`)
+The main entry (`@seliseblocks/genesis-os`) re-exports everything below. Subpath imports keep intent clearer and are what the Blocks applications use.
 
-Everything exported from the main entry:
+| Subpath        | Contents                                                                                                                                                                                                                                                 |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `./guards`     | `AuthResolver`, `ProtectedGuard`, `PublicGuard`, `ImpersonationChecker`, `ImpersonationSynchronizer`, `ImpersonationTerminator`                                                                                                                          |
+| `./layouts`    | `AuthLayout`, `ConsoleLayout`, `DashboardLayout`, `DashboardRoute`, `OidcLayout`, `PublicLayout`, `useOidcContext`                                                                                                                                       |
+| `./providers`  | `BlocksAppLayout`, `QueryProvider`, `ThemeProvider`, `DashboardLayoutProvider`, `getQueryClient`                                                                                                                                                         |
+| `./pages`      | `CallbackPage`, `ConsolePage`, `DashboardOverview`, `LoginPage`, `ProfilePage`                                                                                                                                                                           |
+| `./store`      | `useAuthStore`, `useAppSettingsStore`, `useImpersonateStore`, `useLanguageViewStore`, `useProjectStore`, `useUserStore`, `CreateAppConfigStore`                                                                                                          |
+| `./hooks`      | See [Hooks](#hooks) below                                                                                                                                                                                                                                |
+| `./components` | See [Components](#components) below                                                                                                                                                                                                                      |
+| `./lib`        | See [HTTP Client and Lib](#http-client-and-lib) below                                                                                                                                                                                                    |
+| `./utils`      | General-purpose helpers, see [Utils](#utils) below                                                                                                                                                                                                       |
+| `./models`     | Domain models: `AuthStateShape`, `AuthTokenPair`, `BaseUser`, `UserDetails`, `IProject`, `IProjectGroup`, `IDomain`, `IEnvRepository`, `INotification`, `IMyOrganization`, `ImpersonationState`, `RegisteredService`, and related payload/response types |
+| `./types`      | Shared types: `ApiResponse`, `ApiError`, `ApiErrorResponse`, `ApiPaginatedResponse`, `BaseRequestParams`, `Menu`, `NavigationMenuItem`, `NavigationNode`, `RuntimeKey`, `ProjectKey`, `Id`                                                               |
 
-| Category       | Exports                                                                                                                    |
-| -------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| **Guards**     | `AuthGuard`, `ImpersonationGuard`, `ProtectedGuard`, `PublicGuard`                                                         |
-| **Layouts**    | `AuthLayout`, `BlocksAppLayout`, `ConsoleLayout`, `DashboardLayout`, `OidcLayout`, `ProjectOverviewLayout`, `PublicLayout` |
-| **Providers**  | (Check `./providers` subpath export)                                                                                       |
-| **Store**      | (Check `./store` subpath export)                                                                                           |
-| **Pages**      | `CallbackPage`, `ConsolePage`, `DashboardOverviewPage`                                                                     |
-| **Lib**        | `HttpClient`, `cookieStorage`, `motionPresets`, `runtimeEnv`                                                               |
-| **Components** | (Check `./components` subpath export)                                                                                      |
-| **Hooks**      | (Check `./hooks` subpath export for full list, or import directly from main entry)                                         |
-| **Utils**      | (Check `./utils` subpath export)                                                                                           |
-| **Models**     | (Check `./models` subpath export)                                                                                          |
+### Components
 
-### Subpath Exports
+`@seliseblocks/genesis-os/components` bundles two groups:
 
-#### `@selisedigitalplatforms/blocks-kit/components`
+- **Core components** (Radix UI + shadcn based): `Accordion`, `Alert`, `AlertDialog`, `AspectRatio`, `Avatar`, `Badge`, `Breadcrumb`, `Button`, `Calendar`, `Card`, `Carousel`, `ChartContainer`, `Checkbox`, `Collapsible`, `Command`, `ContextMenu`, `CopyToClipboardButton`, `DateRangePicker`, `Dialog`, `Drawer`, `DropdownMenu`, `FileUploader`, `Form`, `HoverCard`, `InfiniteScroller`, `Input`, `InputOTP`, `KanbanBoard`, `Label`, `MaskedText`, `Menubar`, `MultiSelect`, `NavigationMenu`, `Pagination`, `PasswordInput`, `Popover`, `Progress`, `RadioGroup`, `RenderConditionally`, `RenderAlternatively`, `ResizablePanel`, `ScrollArea`, `Select`, `Separator`, `Sheet`, `Sidebar`, `Skeleton`, `Slider`, `Spinner`, `Stepper`, `Switch`, `Table`, `TablePagination`, `Tabs`, `Textarea`, `Timeline`, `Toast`, `Toaster`, `Toggle`, `ToggleGroup`, `Tooltip`, and the `WizardStepper` family, along with their subcomponents (`CardContent`, `DialogTrigger`, `SelectItem`, and so on).
 
-All UI components organized into:
-
-- **Core Components** (Radix UI based):
-  - `Accordion`, `Alert`, `AlertDialog`, `AspectRatio`, `Avatar`, `Badge`, `Breadcrumb`, `Button`, `Calendar`, `Card`, `Carousel`, `Chart`, `Checkbox`, `Collapsible`, `Command`, `ContextMenu`, `CopyToClipboardButton`, `DateRangePicker`, `Dialog`, `Drawer`, `DropdownMenu`, `FileUploader`, `Form`, `HoverCard`, `ImportFileModal`, `InfiniteScroller`, `Input`, `InputOTP`, `KanbanBoard`, `Label`, `MaskedText`, `Menubar`, `MultiSelect`, `NavigationMenu`, `Pagination`, `PasswordInput`, `Popover`, `Progress`, `RadioGroup`, `RenderConditionally`, `RenderAlternatively`, `Resizable`, `ScrollArea`, `Select`, `Separator`, `Sheet`, `Sidebar`, `Skeleton`, `Slider`, `Spinner`, `Stepper`, `Switch`, `Table`, `TablePagination`, `Tabs`, `Textarea`, `Timeline`, `Toast`, `Toaster`, `Toggle`, `ToggleGroup`, `Tooltip`, `WizardStepper`
-
-- **Common Components**:
-  - `AppSwitcher`, `ArchiveProject`, `BackToConsoleNavigator`, `ConfirmationModal`, `ConsoleHeader`, `CopyableSnippet`, `DashboardHeader`, `DashboardSectionCard`, `EnvironmentCard`, `EnvironmentList`, `EnvironmentSelected`, `ErrorBoundary`, `ErrorDisplay`, `LanguageSelector`, `LoaderSpinner`, `LoadingButton`, `LoginHeader`, `Logo`, `LogoutButton`, `ModeToggle`, `Notification`, `NotificationBell`, `NotificationHeader`, `NotificationItem`, `NotificationList`, `ProjectList`, `ProjectDetail`, `ProjectEdit`, `ProjectActions`, `SidebarMenu`, `ThemeSwitcher`, `UserDropdownMenu`, and more
-
-#### `@selisedigitalplatforms/blocks-kit/hooks`
+- **Common composites**: `AppSwitcher`, `ArchiveProject`, `BackToConsoleNavigator`, `ConfirmationModal`, `ConsoleHeader`, `CopyableSnippet`, `DashboardHeader`, `DashboardSectionCard`, `DataTable`, `EnvironmentCard`, `EnvironmentList`, `EnvironmentSelected`, `ErrorBoundary`, `ErrorDisplay`, `FilterToolbar`, `ImportFileModal`, `LanguageSelector`, `LoaderSpinner`, `LoadingButton`, `LoginHeader`, `Logo`, `LogoutButton`, `ModeToggle`, `Notification`, `NotificationBell`, `NotificationHeader`, `NotificationItem`, `NotificationList`, `ProjectList`, `ProjectDetail`, `ProjectEdit`, `ProjectActions`, `SidebarMenu`, `ThemeSwitcher`, `UserDropdownMenu`, and more.
 
 ```tsx
-import { useBoolean, useCopyToClipboard, useCountdown, useDebounced, useDebouncedFuseFilter, useFuseIndex, useFuseSearch, useLanguage, useLanguageSwitcher, useLogo, useLogout, useMediaQuery, useMenus, useMobile, useNotifications, useOrganization, usePathSegments, usePopoverWidth, useProject, useQueryClientKit, useQueryStatesKit, useServiceRegistry, useTheme, useImpersonation, useToast, useIcon, useInitiate, useBlocksAppConfigStore } from "@selisedigitalplatforms/blocks-kit/hooks";
-```
-
-#### `@selisedigitalplatforms/blocks-kit/store`
-
-Zustand store for blocks app configuration.
-
-#### `@selisedigitalplatforms/blocks-kit/providers`
-
-React context providers for app state.
-
-#### `@selisedigitalplatforms/blocks-kit/guards`
-
-Route guard components:
-
-- `AuthGuard`
-- `ImpersonationGuard`
-- `ProtectedGuard`
-- `PublicGuard`
-
-#### `@selisedigitalplatforms/blocks-kit/layouts`
-
-Layout components:
-
-- `AuthLayout`
-- `BlocksAppLayout`
-- `ConsoleLayout`
-- `DashboardLayout`
-- `OidcLayout`
-- `ProjectOverviewLayout`
-- `PublicLayout`
-
-#### `@selisedigitalplatforms/blocks-kit/http`
-
-HTTP client utilities:
-
-- `HttpClient`
-- `HttpError`
-- `createHttpClient`
-- `httpClient` (default instance)
-
-#### `@selisedigitalplatforms/blocks-kit/utils`
-
-Utility functions for common operations.
-
-#### `@selisedigitalplatforms/blocks-kit/models`
-
-TypeScript interfaces and types:
-
-- `IAuth`, `IImpersonation`, `INotification`, `IOrganization`, `IProject`, `IServiceRegistry`, `IUser`
-
-#### `@selisedigitalplatforms/blocks-kit/types`
-
-Shared TypeScript types.
-
-#### `@selisedigitalplatforms/blocks-kit/pages`
-
-Pre-built page components:
-
-- `CallbackPage`
-- `ConsolePage`
-- `DashboardOverviewPage`
-
-## Usage Examples
-
-### Using a Core Component
-
-```tsx
-import { Button, Card } from "@selisedigitalplatforms/blocks-kit/components";
+import { Button, Card, CardContent } from "@seliseblocks/genesis-os/components";
 
 function MyComponent() {
   return (
     <Card>
-      <Button variant="default">Click Me</Button>
+      <CardContent>
+        <Button variant="default">Click Me</Button>
+      </CardContent>
     </Card>
   );
 }
 ```
 
-### Using Hooks
+### Hooks
+
+State and UI helpers: `useBoolean`, `useCopyToClipboard`, `useCountDown`, `useDebounce`, `useMediaQuery`, `useIsMobile`, `usePathSegments`, `usePopoverWidth`, `useTheme`, `useToast`, `useIcon`, `useLogo`, `useScopedPath`, `useBlocksAppConfigStore`.
+
+Search: `useFuseIndex`, `useFuseSearch`, `useDebouncedFuseFilter`.
+
+Query helpers: `useQueryClientKit`, `useQueryStatesKit`, `createQueryKeyFactory`.
+
+Domain data (TanStack Query backed): `useGetProject`, `useGetProjects`, `useUpdateProject`, `useDisableProject`, `useGetEnvRepositories`, `useGetAllServices`, `useGetMyOrganizations`, `useGetNotifications`, `useMarkAsRead`, `useMarkAllAsRead`, `useStartImpersonation`, `useStopImpersonation`, `useImpersonationStatusChecker`, `useInitiateRedirect`, `usePrefetchRedirect`, `useLanguage`, `useLanguageSwitcher`, `useLogout`, `useFilteredMenus`, `useIsActiveMenu`.
 
 ```tsx
-import { useToast, useBoolean } from "@selisedigitalplatforms/blocks-kit/hooks";
+import { useBoolean, useToast } from "@seliseblocks/genesis-os/hooks";
 
 function MyComponent() {
   const { toast } = useToast();
@@ -177,7 +199,7 @@ function MyComponent() {
     <button
       onClick={() => {
         toggle();
-        toast({ title: "Button clicked!" });
+        toast({ title: isOpen ? "Closed" : "Opened" });
       }}
     >
       Toggle
@@ -186,39 +208,43 @@ function MyComponent() {
 }
 ```
 
-### Using Layouts and Guards
+### HTTP Client and Lib
+
+`@seliseblocks/genesis-os/lib` exports:
+
+- `HttpClient` and `HttpError`: a fetch-based client with Blocks key headers, token refresh queueing, and auth-failure redirects
+- Preconfigured instances wired to the runtime env: `iamClient`, `logicClient`, `notificationClient`
+- `getRuntimeEnv`, `createRuntimeEnvGetter`, `resolveBaseUrl`, `resolveEnv`
+- `CookieStorage`, `cn`, theme helpers (`applyTheme`, `getSystemTheme`), and motion presets (`fadeInUp`, `fadeInScale`, `fadeTransition`, `motionEase`, `staggerContainer`, `staggerItem`)
 
 ```tsx
-import { BlocksAppLayout, DashboardLayout, ProtectedGuard } from "@selisedigitalplatforms/blocks-kit";
+import { getRuntimeEnv, HttpClient, logicClient } from "@seliseblocks/genesis-os/lib";
 
-function App() {
-  return (
-    <BlocksAppLayout>
-      <ProtectedGuard>
-        <DashboardLayout>
-          <YourDashboardContent />
-        </DashboardLayout>
-      </ProtectedGuard>
-    </BlocksAppLayout>
-  );
+// Use a preconfigured instance:
+async function fetchProjects() {
+  return logicClient.get("/api/Project/Gets?page=0&pageSize=100");
 }
+
+// Or configure your own:
+const client = new HttpClient({
+  baseURL: () => getRuntimeEnv("BLOCKS_LOGIC_BASE_URL"),
+  blocksKey: () => getRuntimeEnv("BLOCKS_X_BLOCKS_KEY"),
+});
 ```
 
-### Using HTTP Client
+### Utils
 
-```tsx
-import { httpClient } from "@selisedigitalplatforms/blocks-kit/http";
+`@seliseblocks/genesis-os/utils` covers formatting (`formatDate`, `formatFullDate`, `formatNumber`, `formatCurrency`, `formatBytes`, `formatFileSize`, `formatDuration`), objects and arrays (`pick`, `omit`, `deepClone`, `deepEqual`, `deepMerge`, `groupBy`, `uniqueBy`), functions (`debounce`, `throttle`, `memoize`, `sleep`), validation (`isEmail`, `isUrl`, `isUuid`, `isPhone`, `isValidDomain`, `isValidSubdomain`), query strings (`parseQueryString`, `stringifyQueryString`), ids (`generateId`, `getUniqueID`), storage (`createStorage`, `createCookieStore`), error handling (`getErrorMessage`, `handleErrorMessages`, `hasErrorCode`), and toast helpers (`showSuccessToast`, `showErrorToast`, `showInfoToast`).
 
-async function fetchData() {
-  const data = await httpClient.get("/api/resource");
-  return data;
-}
-```
+## Versioning and Compatibility
+
+- The package is on a `0.0.x` release line and is versioned and published with [Changesets](https://github.com/changesets/changesets). While the major version is 0, any release may contain breaking changes; pin or use a caret range consciously.
+- This package is consumed by ten downstream Blocks service repositories. Its exported names, signatures, types, and defaults are treated as a public API; changes to them are coordinated across all consumers. See [CONTRIBUTING](https://github.com/SELISEdigitalplatforms/blocks-genesis-react/blob/main/CONTRIBUTING.md) in the repository.
 
 ## Changelog
 
-See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes.
+Release notes are generated by Changesets into `CHANGELOG.md`, which is included in the published npm package.
 
 ## License
 
-MIT © SELISE Blocks
+MIT (c) SELISE Blocks

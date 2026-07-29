@@ -69,14 +69,16 @@ export const CopyToClipboardButton = ({
         )}
         initial={false}
         animate={{ opacity: isHoverable ? undefined : 1 }}
-        transition={fadeTransition}>
+        transition={fadeTransition}
+      >
         <Button
           type="button"
           variant="ghost"
           className="peer h-auto p-1 transition-colors hover:bg-muted"
           onClick={handleCopy}
           disabled={isCopying}
-          aria-label={isCopying ? copiedLabel : copyLabel}>
+          aria-label={isCopying ? copiedLabel : copyLabel}
+        >
           <AnimatePresence mode="wait" initial={false}>
             {isCopying ? (
               <motion.span
@@ -84,7 +86,8 @@ export const CopyToClipboardButton = ({
                 initial={{ scale: 0.6, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.6, opacity: 0 }}
-                transition={fadeTransition}>
+                transition={fadeTransition}
+              >
                 <Check
                   className="size-4 text-green-600 dark:text-green-500"
                   aria-hidden
@@ -96,7 +99,8 @@ export const CopyToClipboardButton = ({
                 initial={{ scale: 0.6, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.6, opacity: 0 }}
-                transition={fadeTransition}>
+                transition={fadeTransition}
+              >
                 <Copy className="size-4 text-muted-foreground" aria-hidden />
               </motion.span>
             )}
@@ -106,7 +110,8 @@ export const CopyToClipboardButton = ({
           layout
           className="pointer-events-none absolute left-8 top-1/2 z-10 hidden -translate-y-1/2 whitespace-nowrap rounded bg-popover px-2 py-1 text-xs text-popover-foreground shadow-md peer-hover:block"
           animate={{ opacity: isCopying ? 1 : 0.9 }}
-          transition={fadeTransition}>
+          transition={fadeTransition}
+        >
           {isCopying ? copiedLabel : copyLabel}
         </motion.span>
       </motion.div>

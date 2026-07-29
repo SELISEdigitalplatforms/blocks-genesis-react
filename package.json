@@ -8,6 +8,8 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:cov": "turbo run test:cov",
     "format": "prettier --write \"**/*.{ts,tsx,md,css,json}\" --ignore-path .gitignore",
     "changeset": "changeset",
     "version-packages": "changeset version",
@@ -15,15 +17,15 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.31.0",
-    "@commitlint/cli": "^19.8.1",
-    "@commitlint/config-conventional": "^19.8.1",
+    "@changesets/cli": "^2.31.1",
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
     "eslint": "catalog:",
     "husky": "^9.1.7",
-    "lint-staged": "^15.5.2",
+    "lint-staged": "^17.2.0",
     "prettier": "catalog:",
-    "prettier-plugin-tailwindcss": "^0.6.14",
-    "turbo": "^2.9.16",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "turbo": "^2.10.7",
     "typescript": "^5.9.3"
   },
   "lint-staged": {
@@ -36,7 +38,7 @@
     ]
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.13"
   },
   "packageManager": "pnpm@11.1.1"
 }

@@ -1,28 +1,24 @@
-import { useDndContext } from "@dnd-kit/core"
-import { SortableContext, useSortable } from "@dnd-kit/sortable"
-import { CSS } from "@dnd-kit/utilities"
-import { cva } from "class-variance-authority"
-import { GripVertical } from "lucide-react"
-import * as React from "react"
-import { useMemo } from "react"
+import { useDndContext } from "@dnd-kit/core";
+import { SortableContext, useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { cva } from "class-variance-authority";
+import { GripVertical } from "lucide-react";
+import * as React from "react";
+import { useMemo } from "react";
 
-import { Button } from "@/components/core/button"
-import { Card, CardContent, CardHeader } from "@/components/core/card"
-import { ScrollArea, ScrollBar } from "@/components/core/scroll-area"
+import { Button } from "@/components/core/button";
+import { Card, CardContent, CardHeader } from "@/components/core/card";
+import { ScrollArea, ScrollBar } from "@/components/core/scroll-area";
 
-import { KanbanTaskCard } from "./task-card"
-import type {
-  KanbanColumn,
-  KanbanColumnDragData,
-  KanbanTask,
-} from "./types"
+import { KanbanTaskCard } from "./task-card";
+import type { KanbanColumn, KanbanColumnDragData, KanbanTask } from "./types";
 
-export type { KanbanColumn } from "./types"
+export type { KanbanColumn } from "./types";
 
 interface KanbanBoardColumnProps {
-  column: KanbanColumn
-  tasks: KanbanTask[]
-  isOverlay?: boolean
+  column: KanbanColumn;
+  tasks: KanbanTask[];
+  isOverlay?: boolean;
 }
 
 export const KanbanBoardColumn = ({
@@ -30,7 +26,7 @@ export const KanbanBoardColumn = ({
   tasks,
   isOverlay,
 }: KanbanBoardColumnProps) => {
-  const tasksIds = useMemo(() => tasks.map((task) => task.id), [tasks])
+  const tasksIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
 
   const {
     setNodeRef,
@@ -48,12 +44,12 @@ export const KanbanBoardColumn = ({
     attributes: {
       roleDescription: `Column: ${column.title}`,
     },
-  })
+  });
 
   const style = {
     transition,
     transform: CSS.Translate.toString(transform),
-  }
+  };
 
   const variants = cva(
     "flex h-[500px] max-h-[500px] w-[350px] max-w-full shrink-0 snap-center flex-col",
@@ -65,8 +61,8 @@ export const KanbanBoardColumn = ({
           overlay: "ring-2 ring-primary",
         },
       },
-    }
-  )
+    },
+  );
 
   let draggingState: "overlay" | "over" | undefined;
   if (isOverlay) {
@@ -107,15 +103,15 @@ export const KanbanBoardColumn = ({
         </CardContent>
       </ScrollArea>
     </Card>
-  )
-}
+  );
+};
 
 export const KanbanBoardContainer = ({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) => {
-  const dndContext = useDndContext()
+  const dndContext = useDndContext();
 
   const variations = cva("flex px-2 pb-4 md:px-0 lg:justify-center", {
     variants: {
@@ -124,7 +120,7 @@ export const KanbanBoardContainer = ({
         active: "snap-none",
       },
     },
-  })
+  });
 
   return (
     <ScrollArea
@@ -137,5 +133,5 @@ export const KanbanBoardContainer = ({
       </div>
       <ScrollBar orientation="horizontal" />
     </ScrollArea>
-  )
-}
+  );
+};

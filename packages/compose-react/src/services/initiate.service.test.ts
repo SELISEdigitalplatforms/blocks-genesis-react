@@ -22,11 +22,14 @@ describe("InitiateService.fetchRedirectUrl", () => {
     await expect(initiateService.fetchRedirectUrl(params)).resolves.toBe(
       "https://go.test",
     );
-    expect(fetchMock.mock.calls[0][0]).toContain("https://iam.test");
+    expect(fetchMock.mock.calls[0]?.[0]).toContain("https://iam.test");
   });
 
   it("throws on a non-ok response", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: false, status: 500 }),
+    );
     await expect(initiateService.fetchRedirectUrl(params)).rejects.toThrow(
       /HTTP 500/,
     );
@@ -50,7 +53,7 @@ describe("InitiateService.fetchRedirectUrl", () => {
     });
     vi.stubGlobal("fetch", fetchMock);
     await initiateService.fetchRedirectUrl(params);
-    const headers = fetchMock.mock.calls[0][1].headers;
+    const headers = fetchMock.mock.calls[0]?.[1].headers;
     expect(headers["X-Blocks-Key"]).toBeUndefined();
   });
 });

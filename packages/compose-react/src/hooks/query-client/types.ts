@@ -36,9 +36,7 @@ export type QueryKeyRecord = {
  * Value accepted by the blocks-kit query-key factory.
  */
 export type QueryKeyPart =
-  | QueryKeyPrimitive
-  | QueryKeyRecord
-  | readonly QueryKeyPart[];
+  QueryKeyPrimitive | QueryKeyRecord | readonly QueryKeyPart[];
 
 /**
  * Query key produced by `createQueryKeyFactory`.
