@@ -27,6 +27,10 @@ overrides:
   "@types/react": ^19.0.0
   "@types/react-dom": ^19.0.0
   fast-uri: 3.1.4
-  "brace-expansion@5": 5.0.8
-  "brace-expansion@1": 1.1.16
+  # GHSA-mh99-v99m-4gvg is fixed only in 5.0.8; no patched 1.x exists, so the
+  # whole range is pinned and patches/minimatch@3.1.5.patch adapts the lone
+  # v1-style consumer to the named expand export.
+  brace-expansion: 5.0.8
   esbuild: 0.28.1
+patchedDependencies:
+  minimatch@3.1.5: patches/minimatch@3.1.5.patch
