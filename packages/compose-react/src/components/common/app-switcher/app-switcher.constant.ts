@@ -12,7 +12,7 @@ import type { BlocksApp } from "./app-switcher.types";
 
 const APP_SWITCHER_DATA: BlocksApp[] = [
   {
-    key: "blocks-iam",
+    id: "blocks-iam",
     label: "IAM",
     description: "Identity & Access",
     url: window.process?.env.BLOCKS_IAM_BASE_URL || "",
@@ -24,7 +24,7 @@ const APP_SWITCHER_DATA: BlocksApp[] = [
     isDisabled: false,
   },
   {
-    key: "blocks-localization",
+    id: "blocks-localization",
     label: "Localization",
     description: "Localization",
     url: window.process?.env.BLOCKS_LOCALIZATION_BASE_URL || "",
@@ -36,7 +36,7 @@ const APP_SWITCHER_DATA: BlocksApp[] = [
     isDisabled: false,
   },
   {
-    key: "blocks-agents",
+    id: "blocks-agents",
     label: "Agents",
     description: "AI Platform",
     url: window.process?.env.BLOCKS_AGENTS_BASE_URL || "",
@@ -48,7 +48,7 @@ const APP_SWITCHER_DATA: BlocksApp[] = [
     isDisabled: false,
   },
   {
-    key: "blocks-data",
+    id: "blocks-data",
     label: "Data",
     description: "Data Integration",
     url: window.process?.env.BLOCKS_DATA_BASE_URL || "",
@@ -60,7 +60,7 @@ const APP_SWITCHER_DATA: BlocksApp[] = [
     isDisabled: false,
   },
   {
-    key: "blocks-os",
+    id: "blocks-os",
     label: "OS",
     description: "Operating System",
     url: window.process?.env.BLOCKS_OS_BASE_URL || "",
@@ -72,7 +72,7 @@ const APP_SWITCHER_DATA: BlocksApp[] = [
     isDisabled: false,
   },
   {
-    key: "blocks-utilities",
+    id: "blocks-utilities",
     label: "Utilities",
     description: "Utility Tools",
     url: window.process?.env.BLOCKS_UTILITIES_BASE_URL || "",
@@ -84,7 +84,7 @@ const APP_SWITCHER_DATA: BlocksApp[] = [
     isDisabled: false,
   },
   {
-    key: "blocks-logic",
+    id: "blocks-logic",
     label: "Logic",
     description: "Business Logic",
     url: window.process?.env.BLOCKS_LOGIC_BASE_URL || "",
@@ -96,7 +96,7 @@ const APP_SWITCHER_DATA: BlocksApp[] = [
     isDisabled: false,
   },
   {
-    key: "blocks-monitor",
+    id: "blocks-monitor",
     label: "Monitor",
     description: "Monitoring & Logs",
     url: window.process?.env.BLOCKS_MONITOR_BASE_URL || "",
@@ -108,7 +108,7 @@ const APP_SWITCHER_DATA: BlocksApp[] = [
     isDisabled: false,
   },
   {
-    key: "blocks-release",
+    id: "blocks-release",
     label: "Release",
     description: "CI/CD & Releases",
     url: window.process?.env.BLOCKS_RELEASE_BASE_URL || "",
@@ -120,7 +120,7 @@ const APP_SWITCHER_DATA: BlocksApp[] = [
     isDisabled: false,
   },
   {
-    key: "blocks-studio",
+    id: "blocks-studio",
     label: "Studio",
     description: "Development Platform",
     url: window.process?.env.BLOCKS_STUDIO_BASE_URL || "",

@@ -17,9 +17,9 @@ describe("filteredAppSwitcherData", () => {
     }
   });
 
-  it("gives every app a key and a label", () => {
+  it("gives every app a id and a label", () => {
     for (const app of filteredAppSwitcherData) {
-      expect(app.key).toBeTruthy();
+      expect(app.id).toBeTruthy();
       expect(app.label).toBeTruthy();
     }
   });
