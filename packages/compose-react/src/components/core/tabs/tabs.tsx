@@ -38,7 +38,10 @@ const TabsTrigger = React.forwardRef<
 ));
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 
-const tabsContentTransition: Transition = { duration: 0.22, ease: [0.16, 1, 0.3, 1] };
+const tabsContentTransition: Transition = {
+  duration: 0.22,
+  ease: [0.16, 1, 0.3, 1],
+};
 
 const TabsContent = React.forwardRef<
   React.ComponentRef<typeof TabsPrimitive.Content>,

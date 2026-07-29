@@ -1,9 +1,7 @@
 import type { AuthTokenPair } from "@/models/auth.model";
 
 export type HeadersInitValue =
-  | [string, string][]
-  | Record<string, string>
-  | Headers;
+  [string, string][] | Record<string, string> | Headers;
 export type RequestBody =
   | string
   | object

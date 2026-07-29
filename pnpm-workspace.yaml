@@ -8,22 +8,24 @@ allowBuilds:
 catalog:
   typescript: ^5.9.3
   tsup: ^8.5.1
-  eslint: ^9.39.4
-  prettier: ^3.8.3
-  react: ^18.3.1
-  react-dom: ^18.3.1
-  "@types/react": ^18.3.31
-  "@types/react-dom": ^18.3.7
+  eslint: ^9.39.5
+  prettier: ^3.9.6
+  # Floor matches the published peer range in packages/compose-react.
+  # The @types/* packages version independently of React and have no 19.2.8.
+  react: ^19.2.8
+  react-dom: ^19.2.8
+  "@types/react": ^19.0.0
+  "@types/react-dom": ^19.0.0
   tailwindcss: ^3.4.17
   class-variance-authority: ^0.7.1
   clsx: ^2.1.1
   tailwind-merge: ^2.6.0
   date-fns: ^4.4.0
 overrides:
-  react: 18.3.1
-  react-dom: 18.3.1
-  "@types/react": 18.3.1
-  "@types/react-dom": 18.3.1
+  react: ^19.2.8
+  react-dom: ^19.2.8
+  "@types/react": ^19.0.0
+  "@types/react-dom": ^19.0.0
   fast-uri: 3.1.4
   "brace-expansion@5": 5.0.8
   "brace-expansion@1": 1.1.16

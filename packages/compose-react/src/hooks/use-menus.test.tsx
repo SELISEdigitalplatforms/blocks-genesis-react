@@ -1,14 +1,15 @@
 import { describe, it, expect } from "vitest";
 import type { ReactNode } from "react";
 import { renderHook } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 import { useIsActiveMenu, useFilteredMenus } from "@/hooks/use-menus";
 
-const wrapper =
-  (entries: string[]) =>
-  ({ children }: { children: ReactNode }) => (
+const wrapper = (entries: string[]) => {
+  const Wrapper = ({ children }: { children: ReactNode }) => (
     <MemoryRouter initialEntries={entries}>{children}</MemoryRouter>
   );
+  return Wrapper;
+};
 
 describe("useIsActiveMenu", () => {
   it("marks a path active when the location starts with it", () => {
@@ -63,10 +64,6 @@ describe("useFilteredMenus", () => {
       () => useFilteredMenus(withSeparator as never),
       { wrapper: wrapper(["/a"]) },
     );
-    expect(result.current.map((m) => m.id)).toEqual([
-      "a",
-      "separator-1",
-      "b",
-    ]);
+    expect(result.current.map((m) => m.id)).toEqual(["a", "separator-1", "b"]);
   });
 });

@@ -8,8 +8,8 @@ import {
   NavigationMenuTrigger,
   NavigationMenuLink,
   NavigationMenuIndicator,
-  navigationMenuTriggerStyle,
 } from "@/components/core/navigation-menu/navigation-menu";
+import { navigationMenuTriggerStyle } from "@/components/core/navigation-menu/navigation-menu-trigger-style";
 
 describe("NavigationMenu", () => {
   it("renders the trigger and the open item's content", () => {

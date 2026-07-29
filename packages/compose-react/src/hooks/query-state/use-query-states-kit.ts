@@ -127,7 +127,7 @@ export type UseQueryStatesKitReturn<TSchema extends QueryStatesKitSchema> = {
  *
  * Integration note:
  * - Next.js: configure the nuqs Next adapter/provider per nuqs documentation.
- * - React Router: wrap your app with `NuqsAdapter` from `nuqs/adapters/react-router/v6`.
+ * - React Router: wrap your app with `NuqsAdapter` from `nuqs/adapters/react-router/v8`.
  *
  * @typeParam TSchema Query-state schema map based on `nuqs` parser builders.
  * @param options Hook configuration (`schema`, `defaults`, and optional behavior).

@@ -5,3 +5,4 @@ export * from "./dashboard-route";
 export * from "./oidc-layout";
 export * from "./public-layout";
 export * from "./layout.types";
+export { useOidcContext, type OidcContextValue } from "./oidc-context";

@@ -30,24 +30,32 @@ const METHODS: HttpMethod[] = ["GET", "POST", "PUT", "PATCH", "DELETE"];
  * `schemes/host/basePath`, then fall back to the origin of the swagger.json
  * URL itself (e.g. "https://dev-monitor.blocksdevelopers.com:5001").
  */
+/** Trim trailing slashes without regex; /\/+$/ backtracks super-linearly. */
+const trimTrailingSlashes = (value: string): string => {
+  let end = value.length;
+  while (end > 0 && value[end - 1] === "/") {
+    end -= 1;
+  }
+  return value.slice(0, end);
+};
+
 const resolveBaseUrl = (
   swagger: ISwaggerDocument,
   swaggerUrl: string,
   explicitBaseUrl?: RuntimeKey,
 ): string => {
   if (explicitBaseUrl) {
-    return getRuntimeEnv(explicitBaseUrl).replace(/\/+$/, "");
+    return trimTrailingSlashes(getRuntimeEnv(explicitBaseUrl));
   }
 
   if (swagger.servers?.[0]?.url) {
-    return swagger.servers[0].url.replace(/\/+$/, "");
+    return trimTrailingSlashes(swagger.servers[0].url);
   }
 
   if (swagger.host) {
     const scheme = swagger.schemes?.[0] ?? "https";
-    return `${scheme}://${swagger.host}${swagger.basePath ?? ""}`.replace(
-      /\/+$/,
-      "",
+    return trimTrailingSlashes(
+      `${scheme}://${swagger.host}${swagger.basePath ?? ""}`,
     );
   }
 
@@ -77,7 +85,7 @@ const humanizeFromPath = (path: string): string => {
     .trim();
 };
 
-const parseSwaggerDocument = (
+export const parseSwaggerDocument = (
   swagger: ISwaggerDocument,
   swaggerUrl: string,
   explicitBaseUrl?: RuntimeKey,
@@ -143,7 +151,12 @@ export const useSwaggerEndpoints = (
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["swagger-endpoints", swaggerUrl],
-    queryFn: () => fetchSwaggerDocument(swaggerUrl),
+    queryFn: () => {
+      if (!swaggerUrl) {
+        return Promise.reject(new Error("Swagger URL is not configured"));
+      }
+      return fetchSwaggerDocument(swaggerUrl);
+    },
     enabled: Boolean(swaggerUrl) && enabled,
     staleTime,
   });

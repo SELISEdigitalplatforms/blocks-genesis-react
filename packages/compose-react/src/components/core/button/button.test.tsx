@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { Button, buttonVariants } from "@/components/core/button/button";
+import { Button } from "@/components/core/button/button";
+import { buttonVariants } from "@/components/core/button/button-variants";
 
 describe("Button", () => {
   it("renders its children inside a button element", () => {

@@ -41,7 +41,8 @@ export const SortHeader = ({
   return (
     <div
       className={cn("flex cursor-pointer items-center gap-2", className)}
-      onClick={onClickHandler}>
+      onClick={onClickHandler}
+    >
       <span className="font-bold text-medium-emphasis">{label}</span>
       <RenderConditionally condition={isSortingEnabled && isActive}>
         <Icon

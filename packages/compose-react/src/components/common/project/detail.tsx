@@ -25,7 +25,6 @@ const ProjectDetailItem = ({ label, children }: ProjectDetailItemProps) => (
   </div>
 );
 
-
 const LoadingSkeleton = () => {
   return (
     <div className="rounded-lg border border-border bg-card">

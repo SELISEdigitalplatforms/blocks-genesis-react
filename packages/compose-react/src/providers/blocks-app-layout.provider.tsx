@@ -19,7 +19,13 @@ declare global {
   }
 }
 
-window.process = { env: window.__BLOCKS_ENV__ as Record<string, string> };
+// window is typed Window & typeof globalThis, and @types/node contributes a
+// global `process` whose type this browser shim cannot satisfy. Assign through
+// a plain Window reference so only the declaration above applies.
+const browserWindow: Window = window;
+browserWindow.process = {
+  env: window.__BLOCKS_ENV__ as Partial<Record<RuntimeKey, string>>,
+};
 
 export const BlocksAppLayout = ({ children, config }: BlocksAppLayoutProps) => {
   const [store] = useState(() => CreateAppConfigStore(config));

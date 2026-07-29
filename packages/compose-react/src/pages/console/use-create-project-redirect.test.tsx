@@ -10,8 +10,9 @@ const h = vi.hoisted(() => ({
 }));
 
 vi.mock("@/hooks/use-blocks-app-config-store", () => ({
-  useBlocksAppConfigStore: (selector: (s: { config: { name: string } }) => unknown) =>
-    selector({ config: { name: h.name } }),
+  useBlocksAppConfigStore: (
+    selector: (s: { config: { name: string } }) => unknown,
+  ) => selector({ config: { name: h.name } }),
 }));
 vi.mock("@/hooks/use-initiate", () => ({
   usePrefetchRedirect: () => ({
@@ -20,8 +21,8 @@ vi.mock("@/hooks/use-initiate", () => ({
     redirect: h.redirect,
   }),
 }));
-vi.mock("react-router-dom", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("react-router-dom")>()),
+vi.mock("react-router", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("react-router")>()),
   useNavigate: () => h.navigate,
 }));
 

@@ -13,7 +13,11 @@ import {
 } from "@/components/core/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { fadeTransition, staggerContainer, staggerItem } from "@/lib/motion-presets";
+import {
+  fadeTransition,
+  staggerContainer,
+  staggerItem,
+} from "@/lib/motion-presets";
 
 export type TimelineEventBase = {
   time?: string;
@@ -53,7 +57,10 @@ export const Timeline = <TEvent extends TimelineEventBase>({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem className="cursor-pointer" onClick={() => onRevert?.(event)}>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => onRevert?.(event)}
+            >
               <RotateCcw className="size-4" aria-hidden />
               <span className="ml-2">{revertLabel}</span>
             </DropdownMenuItem>
@@ -70,13 +77,18 @@ export const Timeline = <TEvent extends TimelineEventBase>({
           onClick={() => onRevert?.(event)}
         >
           <RotateCcw className="size-4" aria-hidden />
-          <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">{revertLabel}</span>
+          <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+            {revertLabel}
+          </span>
         </Button>
       </motion.div>
     );
 
     return (
-      <motion.div className="relative flex w-full flex-row justify-between" layout>
+      <motion.div
+        className="relative flex w-full flex-row justify-between"
+        layout
+      >
         <p className="text-muted-foreground w-[75%] text-xs font-medium leading-5 md:w-[55%] md:text-base md:leading-6">
           {event.description}
         </p>
@@ -142,7 +154,9 @@ export const Timeline = <TEvent extends TimelineEventBase>({
           <div className="relative w-full">
             <div className="absolute -top-1.5 w-full pl-[18px] md:pl-5">
               <div className="flex w-full">
-                {rightContent ? rightContent(event) : defaultRightContent(event)}
+                {rightContent
+                  ? rightContent(event)
+                  : defaultRightContent(event)}
               </div>
             </div>
           </div>

@@ -11,7 +11,10 @@ const wrapper = ({ children }: { children: ReactNode }) => (
 describe("useSortQueryParams", () => {
   it("defaults to the provided initial sort values", () => {
     const { result } = renderHook(
-      () => useSortQueryParams({ initial: { property: "name", isDescending: true } }),
+      () =>
+        useSortQueryParams({
+          initial: { property: "name", isDescending: true },
+        }),
       { wrapper },
     );
 
@@ -25,7 +28,10 @@ describe("useSortQueryParams", () => {
     const { result } = renderHook(() => useSortQueryParams({}), { wrapper });
 
     act(() =>
-      result.current.setSortQueryParams({ property: "date", isDescending: true }),
+      result.current.setSortQueryParams({
+        property: "date",
+        isDescending: true,
+      }),
     );
 
     expect(result.current.sortQueryParams).toEqual({
@@ -38,7 +44,10 @@ describe("useSortQueryParams", () => {
     const { result } = renderHook(() => useSortQueryParams({}), { wrapper });
 
     act(() =>
-      result.current.setSortQueryParams({ property: "date", isDescending: true }),
+      result.current.setSortQueryParams({
+        property: "date",
+        isDescending: true,
+      }),
     );
     act(() => result.current.reset());
 

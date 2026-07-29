@@ -6,8 +6,7 @@ import { ProjectCliSnippet } from "./cli-snippet";
 const h = vi.hoisted(() => ({
   getProject: vi.fn(),
   selectedProject: { itemId: "item-1", tenantId: "t" } as
-    | { itemId: string; tenantId: string }
-    | undefined,
+    { itemId: string; tenantId: string } | undefined,
 }));
 
 vi.mock("@/components", () => ({
@@ -37,7 +36,9 @@ describe("ProjectCliSnippet", () => {
 
     render(<ProjectCliSnippet />);
 
-    expect(screen.queryByText("Frontend Setup commands")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Frontend Setup commands"),
+    ).not.toBeInTheDocument();
     expect(screen.getAllByTestId("skeleton").length).toBeGreaterThan(0);
   });
 
@@ -57,8 +58,8 @@ describe("ProjectCliSnippet", () => {
     render(<ProjectCliSnippet />);
 
     expect(screen.getByText("Frontend Setup commands")).toBeInTheDocument();
-    expect(
-      screen.getAllByText(/blocks new web my_app/).length,
-    ).toBeGreaterThan(0);
+    expect(screen.getAllByText(/blocks new web my_app/).length).toBeGreaterThan(
+      0,
+    );
   });
 });

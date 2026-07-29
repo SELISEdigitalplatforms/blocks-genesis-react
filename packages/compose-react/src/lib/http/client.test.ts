@@ -11,7 +11,7 @@ const h = vi.hoisted(() => ({
 vi.mock("@/lib/runtime-env", () => ({
   getRuntimeEnv: (key: string) => h.runtimeEnv[key] ?? "",
 }));
-vi.mock("@/providers/query.provider", () => ({
+vi.mock("@/providers/query-client", () => ({
   getQueryClient: () => ({ cancelQueries: h.cancelQueries, clear: h.clear }),
 }));
 vi.mock("@/store/auth.store", () => ({
@@ -24,7 +24,6 @@ vi.mock("@/store/project.store", () => ({
 }));
 
 import { HttpClient } from "@/lib/http/client";
-import { HttpError } from "@/lib/http/error";
 
 type ResOpts = {
   status?: number;
@@ -44,7 +43,9 @@ const res = (opts: ResOpts) => {
     ok: opts.ok ?? (status >= 200 && status < 300),
     headers: {
       get: (key: string) =>
-        key.toLowerCase() === "content-type" ? (opts.contentType ?? null) : null,
+        key.toLowerCase() === "content-type"
+          ? (opts.contentType ?? null)
+          : null,
     },
     json: async () => {
       if (opts.jsonThrows) throw new Error("bad json");
@@ -60,9 +61,14 @@ const originalLocation = window.location;
 let fetchMock: ReturnType<typeof vi.fn>;
 
 const makeClient = (over: Record<string, unknown> = {}) =>
-  new HttpClient({ baseURL: "https://api.test", blocksKey: "tenant-1", ...over });
+  new HttpClient({
+    baseURL: "https://api.test",
+    blocksKey: "tenant-1",
+    ...over,
+  });
 
-const lastConfig = () => fetchMock.mock.calls[fetchMock.mock.calls.length - 1][1];
+const lastConfig = () =>
+  fetchMock.mock.calls[fetchMock.mock.calls.length - 1]![1];
 
 const setLocation = (pathname: string) => {
   const replace = vi.fn();
@@ -95,7 +101,7 @@ describe("HttpClient request basics", () => {
     );
     const out = await makeClient().get("/users");
     expect(out).toEqual({ ok: 1 });
-    const [url, cfg] = fetchMock.mock.calls[0];
+    const [url, cfg] = fetchMock.mock.calls[0]!;
     expect(url).toBe("https://api.test/users");
     expect(cfg.method).toBe("GET");
     expect(cfg.credentials).toBe("include");
@@ -112,7 +118,7 @@ describe("HttpClient request basics", () => {
       baseURL: () => "https://fn.test",
       blocksKey: () => "fn-key",
     }).get("/x");
-    const [url, cfg] = fetchMock.mock.calls[0];
+    const [url, cfg] = fetchMock.mock.calls[0]!;
     expect(url).toBe("https://fn.test/x");
     expect((cfg.headers as Headers).get("X-Blocks-Key")).toBe("fn-key");
   });
@@ -132,7 +138,7 @@ describe("HttpClient request basics", () => {
     await makeClient().get("https://abs.test/y", undefined, {
       absoluteUrl: true,
     });
-    expect(fetchMock.mock.calls[0][0]).toBe("https://abs.test/y");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("https://abs.test/y");
   });
 
   it("omits credentials when withCredentials is false", async () => {
@@ -319,7 +325,7 @@ describe("HttpClient token refresh", () => {
     expect(out).toEqual({ ok: 2 });
     expect(fetchMock).toHaveBeenCalledTimes(3);
     expect(onTokenRefresh).toHaveBeenCalledTimes(1);
-    expect(fetchMock.mock.calls[1][0]).toContain("/api/oidc/token");
+    expect(fetchMock.mock.calls[1]?.[0]).toContain("/api/oidc/token");
   });
 
   it("resets state and redirects to login when refresh fails", async () => {

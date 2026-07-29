@@ -1,12 +1,15 @@
 import { describe, it, expect, vi } from "vitest";
+import type { ComponentProps } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Dialog } from "@/components/core/dialog";
 import { ImportFileModalContent } from "@/components/core/import-file-modal/import-file-modal";
 
-const renderModal = (props: Record<string, unknown> = {}) =>
+const renderModal = (
+  props: Partial<ComponentProps<typeof ImportFileModalContent>> = {},
+) =>
   render(
     <Dialog open>
-      <ImportFileModalContent dialogTitle="Import" {...(props as never)} />
+      <ImportFileModalContent dialogTitle="Import" {...props} />
     </Dialog>,
   );
 

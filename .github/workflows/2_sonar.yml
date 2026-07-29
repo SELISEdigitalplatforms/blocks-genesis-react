@@ -1,0 +1,107 @@
+name: Analyze Code Quality
+on:
+  workflow_call:
+    inputs:
+      run_quality_gate:
+        description: >
+          Fail the job if the SonarQube quality gate fails. Enabled on pull
+          requests (this is the merge blocker); disabled on push to the release
+          branch, where the gate has already been enforced by the PR check on
+          the very same commit.
+        type: boolean
+        required: false
+        default: true
+    secrets:
+      SONAR_TOKEN:
+        required: true
+
+jobs:
+  build:
+    name: SonarQube Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    env:
+      # This job runs the full test suite for coverage; give it the same headroom
+      # as the test gate so a heap limit cannot mask a real quality-gate result.
+      NODE_OPTIONS: --max-old-space-size=8192
+
+    steps:
+      # Sonar needs full history to attribute issues to authors and to diff a PR
+      # against its base branch.
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set Environment Variables
+        uses: ./.github/actions/setvars
+        with:
+          varFilePath: ./.github/variables/vars.env
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      # pnpm must be installed before setup-node, or `cache: pnpm` cannot find
+      # the store to key against.
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Coverage is produced here rather than pulled from the test job, so this
+      # gate has no dependency on it and the two run genuinely in parallel.
+      - name: Test with coverage
+        run: pnpm test:cov
+
+      - name: Collect lcov report paths
+        id: lcov
+        run: |
+          set -euo pipefail
+          # A monorepo yields one lcov per workspace; the scanner takes them
+          # comma-separated. Globbing keeps this correct as packages are added.
+          paths=$(find packages tooling -path '*/coverage/lcov.info' -not -path '*/node_modules/*' | paste -sd, -)
+          echo "lcov reports: ${paths:-<none>}"
+          echo "paths=$paths" >> "$GITHUB_OUTPUT"
+
+      - name: Cache SonarQube scanner
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: SonarQube Analysis
+        uses: SonarSource/sonarqube-scan-action@22918119ff8e1ca75a623e15c8296b6ea4fbe28f # v8.2.1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ env.SONARQUBE_HOST }}
+        with:
+          args: >
+            -Dsonar.projectKey=${{ env.SONAR_KEY }}
+            -Dsonar.projectName=${{ env.REPO_NAME }}
+            -Dsonar.organization=${{ env.AUTHOR }}
+            -Dsonar.sources=packages,tooling
+            -Dsonar.tests=packages
+            -Dsonar.test.inclusions=**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,**/__tests__/**
+            -Dsonar.javascript.lcov.reportPaths=${{ steps.lcov.outputs.paths }}
+            -Dsonar.sourceEncoding=UTF-8
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/coverage/**,**/*.d.ts,**/.turbo/**
+            -Dsonar.coverage.exclusions=**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,**/__tests__/**,**/*.stories.*,**/index.ts,**/*.config.ts,**/*.config.js
+
+      # The merge blocker. Skipped on push (see the input's description) so a
+      # release is not gated twice on an identical commit.
+      - name: SonarQube Quality Gate check
+        if: ${{ inputs.run_quality_gate }}
+        uses: sonarsource/sonarqube-quality-gate-action@cf038b0e0cdecfa9e56c198bbb7d21d751d62c3b # v1.2.0
+        timeout-minutes: 5 # fail the step rather than hang if Sonar never reports
+        with:
+          scanMetadataReportFile: .scannerwork/report-task.txt
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ env.SONARQUBE_HOST }}

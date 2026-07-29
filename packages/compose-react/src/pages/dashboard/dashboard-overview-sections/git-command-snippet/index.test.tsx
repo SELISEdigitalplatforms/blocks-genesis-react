@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { ReactNode } from "react";
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 
 const h = vi.hoisted(() => ({
   project: { data: undefined as unknown, isLoading: false },
@@ -27,7 +27,9 @@ beforeEach(() => {
     .getState()
     .setSelectedProject({ itemId: "p1", tenantGroupId: "tg1" } as never);
   h.project = {
-    data: { data: { environment: "prod", customDomain: "x.com", tenantId: "t1" } },
+    data: {
+      data: { environment: "prod", customDomain: "x.com", tenantId: "t1" },
+    },
     isLoading: false,
   };
   h.repos = { data: { data: [] }, isLoading: false, isFetching: false };

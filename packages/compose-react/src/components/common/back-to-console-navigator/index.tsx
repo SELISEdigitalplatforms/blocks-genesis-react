@@ -1,5 +1,5 @@
 import { Button } from "@/components";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 export function BackToConsoleNavigator() {
   return (

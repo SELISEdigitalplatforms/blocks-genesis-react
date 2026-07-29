@@ -69,7 +69,8 @@ export const SearchInput: React.FC<SearchInputProps> = ({
           "h-full p-1 pr-0 hover:bg-transparent",
           !value && "invisible",
         )}
-        onClick={handleClear}>
+        onClick={handleClear}
+      >
         <X className="h-4 w-4 text-muted-foreground" />
       </Button>
     </div>

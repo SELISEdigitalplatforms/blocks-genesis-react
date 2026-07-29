@@ -14,7 +14,8 @@ import {
 } from "@/utils/validators";
 
 describe("isEmail", () => {
-  it("accepts a well-formed address", () => expect(isEmail("a@b.co")).toBe(true));
+  it("accepts a well-formed address", () =>
+    expect(isEmail("a@b.co")).toBe(true));
   it("rejects an address without a domain dot", () =>
     expect(isEmail("a@b")).toBe(false));
 });

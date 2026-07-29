@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import type { ReactNode } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 import { TooltipProvider } from "@/components/core/tooltip";
 import { DesktopMenuItem } from "@/components/core/menus/desktop-menu-item";
 
@@ -31,7 +31,10 @@ describe("DesktopMenuItem", () => {
 
   it("renders a leaf menu badge when present", () => {
     wrap(
-      <DesktopMenuItem menu={{ ...leaf, badge: "New" } as never} isSidebarOpen />,
+      <DesktopMenuItem
+        menu={{ ...leaf, badge: "New" } as never}
+        isSidebarOpen
+      />,
     );
     expect(screen.getByText("New")).toBeInTheDocument();
   });

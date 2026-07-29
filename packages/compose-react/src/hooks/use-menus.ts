@@ -1,6 +1,6 @@
 import type { Menu } from "@/types";
 import { useCallback, useMemo } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 
 const projectOverviewMenuIds = new Set([
   "environments",

@@ -6,7 +6,11 @@ import type { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/core/button";
 import { Calendar } from "@/components/core/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/core/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/core/popover";
 
 function formatFullDate(date: Date): string {
   return format(date, "PPP");
@@ -41,8 +45,22 @@ function formatRange(range: DateRange | undefined): string | null {
  * Visual reference: the date-range filter used in the parent app's
  * Localization → Translations table (e.g. "Create Date" filter).
  */
-const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePickerProps>(
-  ({ label, value, onChange, numberOfMonths = 2, disabled, className, align = "start" }, ref) => {
+const DateRangePicker = React.forwardRef<
+  HTMLButtonElement,
+  DateRangePickerProps
+>(
+  (
+    {
+      label,
+      value,
+      onChange,
+      numberOfMonths = 2,
+      disabled,
+      className,
+      align = "start",
+    },
+    ref,
+  ) => {
     const [open, setOpen] = React.useState(false);
     /** Draft selection — only committed to `onChange` when "Apply" is pressed. */
     const [draft, setDraft] = React.useState<DateRange | undefined>(value);
@@ -53,7 +71,6 @@ const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePickerProps
     }, [open, value]);
 
     const formatted = formatRange(value);
-    const CalendarIconComponent = CalendarIcon as any;
 
     return (
       <Popover open={open} onOpenChange={setOpen}>
@@ -64,7 +81,7 @@ const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePickerProps
             size="sm"
             className={cn("h-8 gap-2 rounded-full font-normal", className)}
           >
-            <CalendarIconComponent className="h-4 w-4" />
+            <CalendarIcon className="h-4 w-4" />
             <span className="truncate">{formatted ?? label}</span>
           </Button>
         </PopoverTrigger>
