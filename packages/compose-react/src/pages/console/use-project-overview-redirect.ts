@@ -13,7 +13,7 @@ export function useProjectOverviewRedirect({
 }: UseProjectOverviewRedirectProps) {
   const navigate = useNavigate();
   const { name } = useBlocksAppConfigStore((state) => state.config);
-  const osApp = filteredAppSwitcherData.find((app) => app.key === "blocks-os");
+  const osApp = filteredAppSwitcherData.find((app) => app.id === "blocks-os");
   const redirectedRoute = `/app/project/${tenantGroupId}/environments`;
 
   const { isFetching, isReady, redirect } = usePrefetchRedirect({
