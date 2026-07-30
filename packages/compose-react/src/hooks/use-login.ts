@@ -8,6 +8,10 @@ export interface UseLoginResult {
   error: Error | null;
 }
 
+// `useRef` is the synchronous dedupe guard: React batches the state update
+// triggered by `mutate()`, so `mutation.isPending` does not flip to `true`
+// within the same event tick in which `start()` was first invoked. Without
+// this guard, rapid clicks would each fire a fresh `mutate()`.
 export function useLogin(): UseLoginResult {
   const inFlight = useRef(false);
 
@@ -28,7 +32,8 @@ export function useLogin(): UseLoginResult {
   });
 
   const start = useCallback(() => {
-    if (inFlight.current || mutation.isPending) return;
+    if (inFlight.current) return;
+    if (mutation.isPending) return;
     inFlight.current = true;
     mutation.mutate({
       redirectUri: `${window.location.origin}/login/callback`,

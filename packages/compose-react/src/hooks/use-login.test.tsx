@@ -35,7 +35,9 @@ describe("useLogin", () => {
 
     const { result } = renderHook(() => useLogin(), { wrapper: wrapper() });
 
-    act(() => result.current.start());
+    await act(async () => {
+      result.current.start();
+    });
 
     await waitFor(() =>
       expect(window.location.href).toBe("https://idp/authorize"),
@@ -51,7 +53,9 @@ describe("useLogin", () => {
 
     const { result } = renderHook(() => useLogin(), { wrapper: wrapper() });
 
-    act(() => result.current.start());
+    await act(async () => {
+      result.current.start();
+    });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(window.location.href).toBe("");
@@ -63,7 +67,9 @@ describe("useLogin", () => {
 
     const { result } = renderHook(() => useLogin(), { wrapper: wrapper() });
 
-    act(() => result.current.start());
+    await act(async () => {
+      result.current.start();
+    });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     await waitFor(() => expect(result.current.error?.message).toBe("network"));
@@ -78,15 +84,21 @@ describe("useLogin", () => {
 
     const { result } = renderHook(() => useLogin(), { wrapper: wrapper() });
 
-    act(() => {
+    await act(async () => {
       result.current.start();
       result.current.start();
       result.current.start();
+      // Flush microtasks so the first mutate() reaches mutationFn before
+      // the guarded duplicates are dropped.
+      await Promise.resolve();
     });
 
     expect(h.startLogin).toHaveBeenCalledTimes(1);
 
-    act(() => resolveLogin({}));
+    await act(async () => {
+      resolveLogin({});
+      await Promise.resolve();
+    });
     await waitFor(() => expect(result.current.isLoading).toBe(false));
   });
 });
