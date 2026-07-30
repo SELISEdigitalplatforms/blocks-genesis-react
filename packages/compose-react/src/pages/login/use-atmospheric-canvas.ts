@@ -26,11 +26,19 @@ export function useAtmosphericCanvas(
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    let raf = 0;
+    // Track every scheduled frame so cleanup can cancel all of them, not
+    // just whichever handle `draw` happened to leave in a single variable.
+    const rafHandles = new Set<number>();
     let t = 0;
     let dpr = window.devicePixelRatio || 1;
     let w = 0;
     let h = 0;
+
+    const schedule = (cb: FrameRequestCallback): number => {
+      const handle = requestAnimationFrame(cb);
+      rafHandles.add(handle);
+      return handle;
+    };
 
     const resize = () => {
       dpr = window.devicePixelRatio || 1;
@@ -94,14 +102,15 @@ export function useAtmosphericCanvas(
       ctx.fillRect(0, 0, w / dpr, h / dpr);
 
       t++;
-      raf = requestAnimationFrame(draw);
+      schedule(draw);
     };
 
     resize();
     window.addEventListener("resize", resize);
-    raf = requestAnimationFrame(draw);
+    schedule(draw);
     return () => {
-      cancelAnimationFrame(raf);
+      rafHandles.forEach((handle) => cancelAnimationFrame(handle));
+      rafHandles.clear();
       window.removeEventListener("resize", resize);
     };
   }, [canvasRef]);
