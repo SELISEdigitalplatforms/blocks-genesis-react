@@ -48,7 +48,12 @@ const AppTile = ({
  * popover does not render an empty section.
  */
 export function AppSwitcherContent({ apps }: AppSwitcherContentProps) {
-  if (apps.length === 0) return null;
+  if (!apps.length)
+    return (
+      <div className="bg-muted/50 border-t p-3 flex h-12 items-center justify-center">
+        <p className="text-xs">No apps found</p>
+      </div>
+    );
 
   return (
     <div className="bg-muted/50 border-t px-3 pb-4 pt-3">
