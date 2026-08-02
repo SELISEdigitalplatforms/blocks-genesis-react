@@ -23,6 +23,7 @@ const APP_SWITCHER_DATA: BlocksApp[] = [
     initiateUrl: "",
     isLoading: false,
     isDisabled: false,
+    forwardedTo: "/app/profile",
   },
   {
     id: "blocks-localization",

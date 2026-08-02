@@ -13,6 +13,7 @@ import { Grip } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { filteredAppSwitcherData } from "./app-switcher.constant";
 import type { BlocksApp } from "./app-switcher.types";
+import { RenderConditionally } from "@/components/core/render-elements";
 
 const AppIcon = ({ icon, label }: { icon: React.ReactNode; label: string }) => {
   return (
@@ -67,7 +68,7 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
         .fetchRedirectUrl({
           clientId: getRuntimeEnv(app.clientId),
           redirectUri: getRuntimeEnv(app.redirectUri),
-          forwardedTo: resolvedForwardedTo,
+          forwardedTo: app.forwardedTo ?? resolvedForwardedTo,
         })
         .catch((err) => {
           console.error(
@@ -137,7 +138,7 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
         sideOffset={8}
         className="w-60 overflow-hidden rounded-2xl p-0 shadow-xl"
       >
-        {blocksApps.length > 0 && (
+        <RenderConditionally condition={blocksApps.length > 0}>
           <div className="bg-muted/50 border-t px-3 pb-4 pt-3">
             <p className="text-muted-foreground mb-2 px-1 text-[13px] font-semibold">
               SELISE Blocks
@@ -148,7 +149,7 @@ export const AppSwitcher = ({ forwardedTo }: AppSwitcherProps) => {
               ))}
             </div>
           </div>
-        )}
+        </RenderConditionally>
       </PopoverContent>
     </Popover>
   );
