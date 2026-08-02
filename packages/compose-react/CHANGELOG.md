@@ -1,5 +1,11 @@
 # @seliseblocks/genesis-os
 
+## 4.0.5
+
+### Patch Changes
+
+- refactored app-switcher
+
 ## 4.0.4
 
 ### Patch changes
