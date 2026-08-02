@@ -1,10 +1,16 @@
 # @seliseblocks/genesis-os
 
+## 4.0.4
+
+### Patch changes
+
+- added forwarded path for each app, so that they can switch to their own designated path.
+
 ## 4.0.3
 
 ### Patch Changes
 
-- added forwarded path for each app, so that they can switch to their own designated path.
+- Refactored the login functionality
 
 ## 4.0.2
 
@@ -13,6 +19,8 @@
 - added filtering in app-switcher
 
 ## 4.0.0
+
+- Upgraded to react v19.0.0 and react-dom
 
 ### Major Changes
 
