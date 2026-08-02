@@ -1,5 +1,11 @@
 # @seliseblocks/genesis-os
 
+## 4.0.3
+
+### Patch Changes
+
+- added forwarded path for each app, so that they can switch to their own designated path.
+
 ## 4.0.2
 
 ### Patch Changes
