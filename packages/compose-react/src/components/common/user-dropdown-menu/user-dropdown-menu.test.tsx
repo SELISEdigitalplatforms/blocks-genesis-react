@@ -16,6 +16,11 @@ vi.mock("@/hooks/use-logout", () => ({ useLogout: () => h.logout }));
 vi.mock("@/hooks/use-organization", () => ({
   useGetMyOrganizations: () => h.orgs,
 }));
+vi.mock("@/hooks/use-blocks-app-config-store", () => ({
+  useBlocksAppConfigStore: (
+    selector: (s: { config: { name: string } }) => unknown,
+  ) => selector({ config: { name: "blocks-os" } }),
+}));
 vi.mock("@/providers", () => ({ getQueryClient: () => ({ clear: h.clear }) }));
 
 import { UserDropdownMenu } from "@/components/common/user-dropdown-menu/user-dropdown-menu";
