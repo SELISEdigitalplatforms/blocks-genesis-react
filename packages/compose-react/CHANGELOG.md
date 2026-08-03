@@ -1,5 +1,11 @@
 # @seliseblocks/genesis-os
 
+## 4.2.0
+
+### Minor Changes
+
+- added new agent panel feature
+
 ## 4.1.0
 
 ### Minor Changes
