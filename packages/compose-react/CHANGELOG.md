@@ -1,5 +1,39 @@
 # @seliseblocks/genesis-os
 
+## 4.2.0
+
+### Minor Changes
+
+- added new agent panel feature
+
+## 4.1.0
+
+### Minor Changes
+
+- Add a reusable AI agent chat panel (`AgentPanel`, `AgentPanelProvider`, `AgentPanelTrigger`) that any consuming app can drop into a dashboard route. The panel docks to the right on desktop and physically pushes the dashboard content inward via a CSS variable, and rises as a vaul bottom drawer on mobile. Open state supports controlled and uncontrolled modes, syncs to `window.location.hash` by default, and toggles via a configurable keyboard shortcut (default `Cmd/Ctrl+J`). Exports are added under `@/components/core/agent-panel` and the package's main entry; the dashboard layout now renders the provider automatically.
+
+### Patch Changes
+
+- fixed safari app switching in a new tab
+
+## 4.0.5
+
+### Patch Changes
+
+- refactored app-switcher
+
+## 4.0.4
+
+### Patch changes
+
+- added forwarded path for each app, so that they can switch to their own designated path.
+
+## 4.0.3
+
+### Patch Changes
+
+- Refactored the login functionality
+
 ## 4.0.2
 
 ### Patch Changes
@@ -7,6 +41,8 @@
 - added filtering in app-switcher
 
 ## 4.0.0
+
+- Upgraded to react v19.0.0 and react-dom
 
 ### Major Changes
 
