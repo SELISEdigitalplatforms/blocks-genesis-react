@@ -6,10 +6,11 @@ import {
 } from "@/hooks/use-impersonation";
 import { useGetProjects } from "@/hooks/use-project";
 import { HttpError } from "@/lib/http/error";
+import type { ImpersonationRequest } from "@/models";
+import { projectService } from "@/services/project.service";
 import { useImpersonateStore, useProjectStore } from "@/store";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { projectService } from "@/services/project.service";
-import type { ImpersonationRequest } from "@/models";
+import { useParams } from "react-router";
 
 export const ImpersonationChecker = ({
   children,
@@ -83,14 +84,39 @@ export function ImpersonationSynchronizer({
     useImpersonateStore();
   const { mutateAsync } = useStartImpersonation();
   const { data: _data } = useGetProjects({ enabled: true });
-
   const { selectedProject, setSelectedProject, projects, setTenantGroup } =
     useProjectStore();
   const isTriggering = useRef(false);
   const [isImpersonating, setIsImpersonating] = useState(false);
+  const { itemId } = useParams<{ itemId: string }>();
 
-  // Only safe to call once the token is already impersonated into the tenant we
-  // want — the endpoint resolves the project from the token, not from an argument.
+  // Keep refs in sync so runImpersonation always reads latest values
+  // without needing to be in its own dependency array
+  const impersonatedTenantIdRef = useRef(impersonatedTenantId);
+  const selectedProjectRef = useRef(selectedProject);
+  const projectsRef = useRef(projects);
+
+  impersonatedTenantIdRef.current = impersonatedTenantId;
+  selectedProjectRef.current = selectedProject;
+  projectsRef.current = projects;
+
+  // Seed effect — unchanged logic, correct field match
+  useEffect(() => {
+    if (!itemId || !projects.length) return;
+    if (selectedProject?.itemId === itemId) return;
+    const match = projects.find((p) => p.itemId === itemId);
+    if (match) {
+      setSelectedProject(match);
+      setTenantGroup(match.tenantGroupId);
+    }
+  }, [
+    itemId,
+    selectedProject?.itemId,
+    projects,
+    setSelectedProject,
+    setTenantGroup,
+  ]);
+
   const getImpersonatedProject = async () => {
     try {
       const res = projectService.getProject();
@@ -100,14 +126,20 @@ export function ImpersonationSynchronizer({
     }
   };
 
+  // Stable callback — reads latest values from refs, not from closure.
+  // This means it never recreates due to selectedProject/projects/impersonatedTenantId
+  // changing, which was causing the double-fire in Safari.
   const runImpersonation = useCallback(async () => {
+    const impersonatedTenantId = impersonatedTenantIdRef.current;
+    const selectedProject = selectedProjectRef.current;
+    const projects = projectsRef.current;
+
     isTriggering.current = true;
     setIsImpersonating(true);
     try {
-      if (impersonatedTenantId) {
-        let project = projects.find(
-          (project) => project.tenantId === impersonatedTenantId,
-        );
+      // Cold-start: token already impersonated but store empty (projects still loading)
+      if (impersonatedTenantId && !selectedProject) {
+        let project = projects.find((p) => p.tenantId === impersonatedTenantId);
         if (!project) project = await getImpersonatedProject();
         if (!project) {
           isTriggering.current = false;
@@ -121,7 +153,7 @@ export function ImpersonationSynchronizer({
         return;
       }
 
-      // need to impersonate for the selected project
+      // Project-switch: selectedProject was set by seed effect or user action
       const payload: ImpersonationRequest = {
         targeted_tenant_id: selectedProject?.tenantId || "",
       };
@@ -135,24 +167,20 @@ export function ImpersonationSynchronizer({
       isTriggering.current = false;
       setIsImpersonating(false);
     }
-  }, [
-    impersonatedTenantId,
-    selectedProject?.tenantId,
-    mutateAsync,
-    projects,
-    setSelectedProject,
-    setTenantGroup,
-    impersonate,
-  ]);
+  }, [mutateAsync, impersonate, setSelectedProject, setTenantGroup]); // only truly stable deps
 
+  // Trigger effect only depends on the two scalar values that signal a mismatch.
+  // runImpersonation is intentionally absent — it's now stable and reads via refs.
   useEffect(() => {
     if (!impersonatedTenantId && !selectedProject?.tenantId) return;
     if (isTriggering.current) return;
     if (impersonatedTenantId === selectedProject?.tenantId) return;
-    runImpersonation();
-  }, [impersonatedTenantId, selectedProject?.tenantId, runImpersonation]);
+    void runImpersonation();
+  }, [impersonatedTenantId, selectedProject?.tenantId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (isImpersonating) return <AppLoadingSpinner />;
-  if (!isImpersonated || isTriggering.current) return null;
+  if (!isImpersonated || isTriggering.current) {
+    return itemId ? <AppLoadingSpinner /> : null;
+  }
   return <>{children}</>;
 }
