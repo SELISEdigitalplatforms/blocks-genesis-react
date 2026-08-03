@@ -1,6 +1,5 @@
 import AgentsIcon from "@/assets/images/apps/v2/Agents.svg";
 import DataIcon from "@/assets/images/apps/v2/Data.svg";
-import IamIcon from "@/assets/images/apps/v2/IAM.svg";
 import LocalizationIcon from "@/assets/images/apps/v2/Localization.svg";
 import LogicIcon from "@/assets/images/apps/v2/Logic.svg";
 import MonitorIcon from "@/assets/images/apps/v2/Monitor.svg";
@@ -12,19 +11,6 @@ import { getRuntimeEnv } from "@/lib/runtime-env";
 import type { BlocksApp } from "./app-switcher.types";
 
 const APP_SWITCHER_DATA: BlocksApp[] = [
-  {
-    id: "blocks-iam",
-    label: "IAM",
-    description: "Identity & Access",
-    url: window.process?.env.BLOCKS_IAM_BASE_URL || "",
-    icon: IamIcon,
-    clientId: "BLOCKS_IAM_CLIENT_ID",
-    redirectUri: "BLOCKS_IAM_CALLBACK_URL",
-    initiateUrl: "",
-    isLoading: false,
-    isDisabled: false,
-    forwardedTo: "/app/profile",
-  },
   {
     id: "blocks-localization",
     label: "Localization",
