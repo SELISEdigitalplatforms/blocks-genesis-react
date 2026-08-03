@@ -45,13 +45,12 @@ describe("filteredAppSwitcherData", () => {
   it("filters by BLOCKS_ALLOWED_SERVICES whitelist", async () => {
     h.env = {
       BLOCKS_ALLOWED_SERVICES:
-        "blocks-os,blocks-iam,blocks-logic,blocks-data,blocks-localization",
+        "blocks-os,blocks-logic,blocks-data,blocks-localization",
     };
     const { filteredAppSwitcherData } =
       await import("@/components/common/app-switcher/app-switcher.constant");
     expect(filteredAppSwitcherData.map((a) => a.id).sort()).toEqual([
       "blocks-data",
-      "blocks-iam",
       "blocks-localization",
       "blocks-logic",
       "blocks-os",
@@ -61,11 +60,11 @@ describe("filteredAppSwitcherData", () => {
   it("treats whitespace around comma-separated entries as a single token", async () => {
     h.env = {
       BLOCKS_ALLOWED_SERVICES:
-        " blocks-os , blocks-iam , blocks-logic , blocks-data , blocks-localization , blocks-monitor , blocks-release , blocks-studio , blocks-utilities , blocks-agents ",
+        " blocks-os , blocks-logic , blocks-data , blocks-localization , blocks-monitor , blocks-release , blocks-studio , blocks-utilities , blocks-agents ",
     };
     const { filteredAppSwitcherData } =
       await import("@/components/common/app-switcher/app-switcher.constant");
-    expect(filteredAppSwitcherData.length).toBe(10);
+    expect(filteredAppSwitcherData.length).toBe(9);
   });
 
   it("falls back to all enabled apps when the env var is empty", async () => {

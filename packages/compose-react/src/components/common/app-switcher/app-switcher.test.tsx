@@ -4,7 +4,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 vi.mock("@/hooks/use-blocks-app-config-store", () => ({
   useBlocksAppConfigStore: (
     selector: (s: { getConfig: () => { name: string } }) => unknown,
-  ) => selector({ getConfig: () => ({ name: "blocks-os" }) }),
+  ) => selector({ getConfig: () => ({ name: "blocks-iam" }) }),
 }));
 vi.mock("@/services/initiate.service", () => ({
   initiateService: {
@@ -19,13 +19,13 @@ describe("AppSwitcher", () => {
     render(<AppSwitcher />);
     fireEvent.click(screen.getByRole("button", { name: "SELISE Blocks apps" }));
     expect(screen.getByText("SELISE Blocks")).toBeInTheDocument();
-    expect(await screen.findByText("IAM")).toBeInTheDocument();
+    expect(await screen.findByText("OS")).toBeInTheDocument();
   });
 
   it("renders a grid of app tiles once redirect URLs resolve", async () => {
     render(<AppSwitcher />);
     fireEvent.click(screen.getByRole("button", { name: "SELISE Blocks apps" }));
-    await screen.findByText("IAM");
+    await screen.findByText("OS");
     expect(screen.getAllByRole("link").length).toBeGreaterThan(1);
   });
 });
