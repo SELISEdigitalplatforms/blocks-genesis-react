@@ -23,6 +23,7 @@ import {
 import { cn } from "@/lib";
 import { useGetMyOrganizations } from "@/hooks/use-organization";
 import { useGetUserInfo } from "@/hooks/use-user";
+import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 
 function UserAvatar({ size = "sm" }: { size?: "sm" | "lg" }) {
   const { userDetails: userData } = useUserStore();
@@ -56,6 +57,7 @@ function UserAvatar({ size = "sm" }: { size?: "sm" | "lg" }) {
 }
 
 export function UserDropdownMenu() {
+  const { name } = useBlocksAppConfigStore((state) => state.config);
   const { data } = useGetUserInfo();
   const userData = data?.data;
   const { isPending, mutateAsync } = useLogout();
@@ -127,21 +129,22 @@ export function UserDropdownMenu() {
             )}
           </div>
         </div>
+        <RenderConditionally condition={name !== "blocks-iam"}>
+          <DropdownMenuSeparator className="my-0 bg-border/80" />
 
-        <DropdownMenuSeparator className="my-0 bg-border/80" />
-
-        {/* My Profile */}
-        <DropdownMenuGroup className="p-1.5">
-          <DropdownMenuItem
-            asChild
-            className="cursor-pointer rounded-md px-4 py-3.5"
-          >
-            <Link to="/app/profile" className="flex items-center gap-4">
-              <UserRound className="h-5 w-5 shrink-0 text-foreground/90" />
-              <span className="text-sm font-medium">My Profile</span>
-            </Link>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
+          {/* My Profile */}
+          <DropdownMenuGroup className="p-1.5">
+            <DropdownMenuItem
+              asChild
+              className="cursor-pointer rounded-md px-4 py-3.5"
+            >
+              <Link to="/app/profile" className="flex items-center gap-4">
+                <UserRound className="h-5 w-5 shrink-0 text-foreground/90" />
+                <span className="text-sm font-medium">My Profile</span>
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </RenderConditionally>
 
         <RenderConditionally condition={organizations.length > 0}>
           <DropdownMenuSeparator className="my-0 bg-border/80" />
