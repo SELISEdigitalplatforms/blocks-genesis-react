@@ -66,12 +66,9 @@ describe("useAppRedirectUrls", () => {
 
     await waitFor(() => {
       const iam = result.current.find((a) => a.id === "blocks-iam");
-      return iam?.initiateUrl === "https://redirect.test";
+      expect(iam?.initiateUrl).toBe("https://redirect.test");
+      expect(iam?.isLoading).toBe(false);
     });
-
-    const iam = result.current.find((a) => a.id === "blocks-iam");
-    expect(iam?.initiateUrl).toBe("https://redirect.test");
-    expect(iam?.isLoading).toBe(false);
   });
 
   it("marks unresolved apps as loading", () => {
