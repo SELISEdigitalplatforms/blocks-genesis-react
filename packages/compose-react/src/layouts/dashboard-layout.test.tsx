@@ -20,6 +20,11 @@ vi.mock("@/providers/dashboard-layout.provider", () => ({
     <>{children}</>
   ),
 }));
+vi.mock("@/components/core/agent-panel", () => ({
+  AgentPanelProvider: ({ children }: { children: ReactNode }) => (
+    <>{children}</>
+  ),
+}));
 
 describe("DashboardLayout", () => {
   it("renders the sidebar, header and children", () => {
