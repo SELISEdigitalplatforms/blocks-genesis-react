@@ -5,6 +5,7 @@ export * from "./use-copy-to-clipboard";
 export * from "./use-countdown";
 export * from "./use-debounced";
 export * from "./use-fuse";
+export * from "./use-keyboard-shortcut";
 export * from "./use-language";
 export * from "./use-media-query";
 export * from "./use-mobile";
