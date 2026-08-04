@@ -15,7 +15,7 @@ const useAppState = () => {
 
 export type PublicGuardProps = {
   children: React.ReactNode;
-  defaultProtectedPath?: string;
+  defaultProtectedPath?: "/app/console";
 };
 
 export function PublicGuard({
