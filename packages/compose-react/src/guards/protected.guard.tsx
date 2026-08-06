@@ -5,7 +5,7 @@ import { useAuthStore } from "../store/auth.store";
 
 interface ProtectedGuardProps {
   children: React.ReactNode;
-  defaultPublicPath?: string;
+  defaultPublicPath?: "/login";
 }
 
 export function ProtectedGuard({
