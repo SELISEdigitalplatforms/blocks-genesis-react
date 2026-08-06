@@ -60,3 +60,17 @@ copilot-instructions.md
 
 # local security scan tooling (contains credentials, never commit)
 scripts/scan.sh
+
+# --- open-source baseline: secrets, build output, local agent files ---
+.env.*
+!.env.example
+bin/
+obj/
+build/
+out/
+QWEN.md
+.clinerules
+.windsurfrules
+results/
+.sonarqube/
+*-secrets.json
