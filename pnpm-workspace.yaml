@@ -21,16 +21,18 @@ catalog:
   clsx: ^2.1.1
   tailwind-merge: ^2.6.0
   date-fns: ^4.4.0
+minimumReleaseAgeExclude:
+  - brace-expansion@1.1.17
+  - undici@7.29.0
+  - fast-uri@3.1.5
+  - brace-expansion@5.0.9
+  - brace-expansion@1.1.18
 overrides:
   react: ^19.2.8
   react-dom: ^19.2.8
   "@types/react": ^19.0.0
   "@types/react-dom": ^19.0.0
-  fast-uri: 3.1.4
-  # GHSA-mh99-v99m-4gvg is fixed only in 5.0.8; no patched 1.x exists, so the
-  # whole range is pinned and patches/minimatch@3.1.5.patch adapts the lone
-  # v1-style consumer to the named expand export.
-  brace-expansion: 5.0.8
+  fast-uri: 3.1.5
+  "brace-expansion@5": 5.0.9
+  "brace-expansion@1": 1.1.18
   esbuild: 0.28.1
-patchedDependencies:
-  minimatch@3.1.5: patches/minimatch@3.1.5.patch

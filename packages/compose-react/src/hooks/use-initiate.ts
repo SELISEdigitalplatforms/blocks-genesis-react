@@ -2,34 +2,39 @@ import {
   initiateService,
   type InitiateParams,
 } from "@/services/initiate.service";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 export function useInitiateRedirect({
   clientId,
   redirectUri,
   forwardedTo,
 }: InitiateParams) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  const hasInitiated = useRef(false);
+  const query = useQuery({
+    queryKey: ["initiate", "redirect", clientId, redirectUri, forwardedTo],
+    queryFn: () =>
+      initiateService.fetchRedirectUrl({ clientId, redirectUri, forwardedTo }),
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    retry: false,
+  });
 
   useEffect(() => {
-    if (hasInitiated.current) return;
-    hasInitiated.current = true;
+    if (query.data) {
+      window.location.replace(query.data);
+    }
+  }, [query.data]);
 
-    initiateService
-      .fetchRedirectUrl({ clientId, redirectUri, forwardedTo })
-      .then((url) => window.location.replace(url))
-      .catch((err) => {
-        const wrapped =
-          err instanceof Error ? err : new Error("Failed to redirect");
-        setError(wrapped);
-        console.error("[useInitiateRedirect]", wrapped);
-      })
-      .finally(() => setIsLoading(false));
-  }, [clientId, redirectUri, forwardedTo]);
+  const error =
+    query.error instanceof Error
+      ? query.error
+      : query.error
+        ? new Error("Failed to redirect")
+        : null;
 
-  return { isLoading, error };
+  return { isLoading: query.isLoading, error };
 }
 
 interface UsePrefetchRedirectOptions extends InitiateParams {
@@ -42,29 +47,25 @@ export function usePrefetchRedirect({
   forwardedTo,
   enabled = true,
 }: UsePrefetchRedirectOptions) {
-  const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
-  const [isFetching, setIsFetching] = useState(false);
-  const hasFetched = useRef(false);
-
-  useEffect(() => {
-    if (!enabled || hasFetched.current) return;
-    hasFetched.current = true;
-
-    setIsFetching(true);
-    initiateService
-      .fetchRedirectUrl({ clientId, redirectUri, forwardedTo })
-      .then(setRedirectUrl)
-      .catch((err) => console.error("[usePrefetchRedirect]", err))
-      .finally(() => setIsFetching(false));
-  }, [enabled, clientId, redirectUri, forwardedTo]);
+  const query = useQuery({
+    queryKey: ["initiate", "prefetch", clientId, redirectUri, forwardedTo],
+    queryFn: () =>
+      initiateService.fetchRedirectUrl({ clientId, redirectUri, forwardedTo }),
+    enabled,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    retry: false,
+  });
 
   const redirect = useCallback(() => {
-    if (redirectUrl) window.location.replace(redirectUrl);
-  }, [redirectUrl]);
+    if (query.data) window.location.replace(query.data);
+  }, [query.data]);
 
   return {
-    isFetching,
-    isReady: !isFetching && !!redirectUrl,
+    isFetching: query.isFetching,
+    isReady: !query.isFetching && !!query.data,
     redirect,
   };
 }

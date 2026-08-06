@@ -1,5 +1,6 @@
-import { renderHook, waitFor } from "@testing-library/react";
-import { act } from "react";
+import { renderHook, waitFor, act } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useInitiateRedirect, usePrefetchRedirect } from "./use-initiate";
 
@@ -16,6 +17,19 @@ const params = {
   forwardedTo: "/home",
 };
 
+const wrapper = () => {
+  const client = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
+  const Wrapper = ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={client}>{children}</QueryClientProvider>
+  );
+  return Wrapper;
+};
+
 describe("use-initiate hooks", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -30,7 +44,9 @@ describe("use-initiate hooks", () => {
     it("redirects to the resolved url and stops loading", async () => {
       h.fetchRedirectUrl.mockResolvedValue("https://dest/go");
 
-      const { result } = renderHook(() => useInitiateRedirect(params));
+      const { result } = renderHook(() => useInitiateRedirect(params), {
+        wrapper: wrapper(),
+      });
 
       await waitFor(() => expect(result.current.isLoading).toBe(false));
       expect(replaceMock).toHaveBeenCalledWith("https://dest/go");
@@ -41,7 +57,9 @@ describe("use-initiate hooks", () => {
       const boom = new Error("network down");
       h.fetchRedirectUrl.mockRejectedValue(boom);
 
-      const { result } = renderHook(() => useInitiateRedirect(params));
+      const { result } = renderHook(() => useInitiateRedirect(params), {
+        wrapper: wrapper(),
+      });
 
       await waitFor(() => expect(result.current.error).toBe(boom));
       expect(result.current.isLoading).toBe(false);
@@ -50,7 +68,9 @@ describe("use-initiate hooks", () => {
     it("wraps a non-Error rejection with a default message", async () => {
       h.fetchRedirectUrl.mockRejectedValue("string failure");
 
-      const { result } = renderHook(() => useInitiateRedirect(params));
+      const { result } = renderHook(() => useInitiateRedirect(params), {
+        wrapper: wrapper(),
+      });
 
       await waitFor(() =>
         expect(result.current.error?.message).toBe("Failed to redirect"),
@@ -60,8 +80,11 @@ describe("use-initiate hooks", () => {
     it("initiates the redirect only once across rerenders", async () => {
       h.fetchRedirectUrl.mockResolvedValue("https://dest/go");
 
-      const { rerender, result } = renderHook(() =>
-        useInitiateRedirect(params),
+      const { rerender, result } = renderHook(
+        () => useInitiateRedirect(params),
+        {
+          wrapper: wrapper(),
+        },
       );
       await waitFor(() => expect(result.current.isLoading).toBe(false));
       rerender();
@@ -74,7 +97,9 @@ describe("use-initiate hooks", () => {
     it("prefetches the url and becomes ready, then redirects on demand", async () => {
       h.fetchRedirectUrl.mockResolvedValue("https://dest/prefetch");
 
-      const { result } = renderHook(() => usePrefetchRedirect(params));
+      const { result } = renderHook(() => usePrefetchRedirect(params), {
+        wrapper: wrapper(),
+      });
 
       await waitFor(() => expect(result.current.isReady).toBe(true));
       expect(result.current.isFetching).toBe(false);
@@ -84,8 +109,9 @@ describe("use-initiate hooks", () => {
     });
 
     it("does nothing when disabled", async () => {
-      const { result } = renderHook(() =>
-        usePrefetchRedirect({ ...params, enabled: false }),
+      const { result } = renderHook(
+        () => usePrefetchRedirect({ ...params, enabled: false }),
+        { wrapper: wrapper() },
       );
 
       expect(h.fetchRedirectUrl).not.toHaveBeenCalled();
@@ -98,7 +124,9 @@ describe("use-initiate hooks", () => {
     it("logs and stays not-ready when the prefetch rejects", async () => {
       h.fetchRedirectUrl.mockRejectedValue(new Error("nope"));
 
-      const { result } = renderHook(() => usePrefetchRedirect(params));
+      const { result } = renderHook(() => usePrefetchRedirect(params), {
+        wrapper: wrapper(),
+      });
 
       await waitFor(() => expect(result.current.isFetching).toBe(false));
       expect(result.current.isReady).toBe(false);

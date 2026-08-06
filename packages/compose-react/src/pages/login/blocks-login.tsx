@@ -1,29 +1,11 @@
 import { LoginHeader } from "@/components/common/login-header/login-header";
 import { Badge } from "@/components/core/badge";
 import { Button } from "@/components/core/button";
-import { useEffect, useMemo, useRef } from "react";
-import { DEFAULT_BLOCKS_PRODUCTS } from "./login.constant";
+import { useRef } from "react";
 import { blocksLoginStyles } from "./login.styles";
-import type {
-  BlocksLoginPageProps,
-  BlocksProduct,
-  LoginCarouselItem,
-  LoginCarouselStack,
-} from "./login.types";
-
-/** Split "blocks IAM" -> ["blocks", "IAM"] so the hero can render two lines. */
-function splitAppName(appName: string): [string, string] {
-  const idx = appName.indexOf(" ");
-  if (idx === -1) return [appName, ""];
-  return [appName.slice(0, idx), appName.slice(idx + 1)];
-}
-
-// Type guard to distinguish between BlocksProduct and LoginCarouselItem
-const isBlocksProduct = (
-  item: BlocksProduct | LoginCarouselItem,
-): item is BlocksProduct => {
-  return "appName" in item;
-};
+import type { BlocksLoginPageProps, LoginCarouselStack } from "./login.types";
+import { useAtmosphericCanvas } from "./use-atmospheric-canvas";
+import { isBlocksProduct, useLoginCarousel } from "./use-login-carousel";
 
 export const BlocksLoginPage = ({
   name,
@@ -35,146 +17,18 @@ export const BlocksLoginPage = ({
   footerLink = { label: "Visit Blocks", url: "https://seliseblocks.com" },
   carouselItems,
 }: BlocksLoginPageProps) => {
-  const active = useMemo(() => {
-    // Filter to BlocksProduct entries only, fall back to the built-in list.
-    // This replaces the unsafe `as BlocksProduct[]` cast.
-    const products =
-      carouselItems?.filter(isBlocksProduct) ?? DEFAULT_BLOCKS_PRODUCTS;
-    return products.find((p) => p.name === name) ?? products[0];
-  }, [name, carouselItems]);
-
-  const otherProducts = useMemo(
-    () => DEFAULT_BLOCKS_PRODUCTS.filter((p) => p.name !== active?.name),
-    [active?.name],
-  );
-  const carouselSource = carouselItems ?? otherProducts;
-  const [titleHead, titleTail] = splitAppName(active?.appName ?? "");
-  const heroSubtitle = active?.tagline;
-  const features = active?.featureChips;
-  // const derivedKeywordPrefix = active?.descriptionTitle;
-  // const derivedKeywords = active?.keywords;
-
-  // const [keywordIdx, setKeywordIdx] = useState(0);
-  // const [keywordVisible, setKeywordVisible] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  useAtmosphericCanvas(canvasRef);
 
-  // const resolvedKeywords = useMemo(
-  //   () => derivedKeywords ?? [],
-  //   [derivedKeywords],
-  // );
-
-  // useEffect(() => {
-  //   const id = setInterval(() => {
-  //     setKeywordVisible(false);
-  //     setTimeout(() => {
-  //       setKeywordIdx((p) => (p + 1) % resolvedKeywords.length);
-  //       setKeywordVisible(true);
-  //     }, 280);
-  //   }, 2800);
-  //   return () => clearInterval(id);
-  // }, [resolvedKeywords.length]);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    let raf = 0;
-    let t = 0;
-    let dpr = window.devicePixelRatio || 1;
-    let w = 0;
-    let h = 0;
-
-    const resize = () => {
-      dpr = window.devicePixelRatio || 1;
-      w = canvas.width = Math.floor(window.innerWidth * dpr);
-      h = canvas.height = Math.floor(window.innerHeight * dpr);
-      canvas.style.width = window.innerWidth + "px";
-      canvas.style.height = window.innerHeight + "px";
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-
-    const hslToRgb = (hue: number, s: number, l: number) => {
-      s /= 100;
-      l /= 100;
-      const k = (n: number) => (n + hue / 30) % 12;
-      const a = s * Math.min(l, 1 - l);
-      const f = (n: number) =>
-        l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
-      return [
-        Math.round(f(0) * 255),
-        Math.round(f(8) * 255),
-        Math.round(f(4) * 255),
-      ];
-    };
-
-    const draw = () => {
-      const time = t * 0.008;
-      const baseHue = 185 + 15 * Math.sin(time);
-      const c1 = hslToRgb(baseHue, 100, 50);
-      const c2 = hslToRgb(baseHue + 15, 100, 50);
-      const c3 = hslToRgb(baseHue - 15, 100, 50);
-      const cx = (w / dpr) * 0.5;
-      const cy = (h / dpr) * 0.5;
-      ctx.clearRect(0, 0, w / dpr, h / dpr);
-
-      const r1 = (Math.max(w, h) / dpr) * 0.6;
-      const g1 = ctx.createRadialGradient(
-        cx * 0.6,
-        cy * 0.7,
-        0,
-        cx * 0.6,
-        cy * 0.7,
-        r1,
-      );
-      g1.addColorStop(0, `rgba(${c1[0]},${c1[1]},${c1[2]},0.18)`);
-      g1.addColorStop(1, `rgba(${c1[0]},${c1[1]},${c1[2]},0)`);
-      ctx.fillStyle = g1;
-      ctx.fillRect(0, 0, w / dpr, h / dpr);
-
-      const r2 = (Math.max(w, h) / dpr) * 0.5;
-      const g2 = ctx.createRadialGradient(
-        cx * 1.3,
-        cy * 0.4,
-        0,
-        cx * 1.3,
-        cy * 0.4,
-        r2,
-      );
-      g2.addColorStop(0, `rgba(${c2[0]},${c2[1]},${c2[2]},0.12)`);
-      g2.addColorStop(1, `rgba(${c2[0]},${c2[1]},${c2[2]},0)`);
-      ctx.fillStyle = g2;
-      ctx.fillRect(0, 0, w / dpr, h / dpr);
-
-      const r3 = (Math.max(w, h) / dpr) * 0.45;
-      const g3 = ctx.createRadialGradient(
-        cx * 0.3,
-        cy * 1.2,
-        0,
-        cx * 0.3,
-        cy * 1.2,
-        r3,
-      );
-      g3.addColorStop(0, `rgba(${c3[0]},${c3[1]},${c3[2]},0.10)`);
-      g3.addColorStop(1, `rgba(${c3[0]},${c3[1]},${c3[2]},0)`);
-      ctx.fillStyle = g3;
-      ctx.fillRect(0, 0, w / dpr, h / dpr);
-
-      t++;
-      raf = requestAnimationFrame(draw);
-    };
-
-    resize();
-    window.addEventListener("resize", resize);
-    raf = requestAnimationFrame(draw);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
-  // Duplicate for seamless infinite scroll
-  const carouselCards = [...carouselSource, ...carouselSource];
+  const {
+    active,
+    carouselSource,
+    carouselCards,
+    titleHead,
+    titleTail,
+    heroSubtitle,
+    features,
+  } = useLoginCarousel({ name, carouselItems });
 
   return (
     <div className="blocksLogin-page">
@@ -282,14 +136,6 @@ export const BlocksLoginPage = ({
             )}
           </h1>
           <p className="title-sub">{heroSubtitle}</p>
-          {/* <p className="keywords">
-            {derivedKeywordPrefix}{" "}
-            <span
-              className="keyword-anim"
-              style={{ opacity: keywordVisible ? 1 : 0 }}>
-              {resolvedKeywords[keywordIdx]}
-            </span>
-          </p> */}
           <p className="desc">{active?.description}</p>
 
           {features && features?.length > 0 && (

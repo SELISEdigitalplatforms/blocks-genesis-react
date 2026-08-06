@@ -56,15 +56,20 @@ if (!Element.prototype.scrollTo) {
 // The app reads runtime configuration from window.__BLOCKS_ENV__ first (see
 // src/lib/runtime-env.ts). Provide benign test values so modules that resolve
 // service base URLs at import time do not throw when import.meta.env is absent.
+// BLOCKS_ALLOWED_SERVICES must remain unset (the app filters apps by its
+// value at module load time and "https://test.local" would invalidate every
+// entry).
 if (!(window as unknown as { __BLOCKS_ENV__?: unknown }).__BLOCKS_ENV__) {
   (
     window as unknown as { __BLOCKS_ENV__: Record<string, string> }
   ).__BLOCKS_ENV__ = new Proxy(
     {},
     {
-      get: (_target, prop) =>
-        typeof prop === "string" ? "https://test.local" : undefined,
-      has: () => true,
+      get: (_target, prop) => {
+        if (prop === "BLOCKS_ALLOWED_SERVICES") return undefined;
+        return typeof prop === "string" ? "https://test.local" : undefined;
+      },
+      has: (_target, prop) => prop !== "BLOCKS_ALLOWED_SERVICES",
     },
   ) as Record<string, string>;
 }

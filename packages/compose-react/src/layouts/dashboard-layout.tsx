@@ -1,4 +1,5 @@
 import { DashboardHeader, SidebarMenuDesktop } from "@/components";
+import { AgentPanelProvider } from "@/components/core/agent-panel";
 import {
   ImpersonationChecker,
   ImpersonationSynchronizer,
@@ -21,24 +22,29 @@ export function DashboardLayout({
 }: DashboardLayoutProps) {
   const content = (
     <DashboardLayoutProvider isOpen={true} persist>
-      <div className="flex w-full overflow-hidden">
-        <SidebarMenuDesktop
-          redirectPaths={redirectPaths}
-          navigationMenus={navigationMenus}
-        />
-        <div className="flex h-screen min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          <DashboardHeader
+      <AgentPanelProvider>
+        <div className="flex w-full overflow-hidden">
+          <SidebarMenuDesktop
             redirectPaths={redirectPaths}
             navigationMenus={navigationMenus}
-            forwardedTo={forwardedTo}
           />
-          <div className="relative flex min-h-0 w-full flex-1 overflow-hidden bg-[hsl(var(--surface-app))]">
-            <div className="min-h-0 w-full flex-1 overflow-y-auto overflow-x-hidden">
-              {children}
+          <div className="flex h-screen min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+            <DashboardHeader
+              redirectPaths={redirectPaths}
+              navigationMenus={navigationMenus}
+              forwardedTo={forwardedTo}
+            />
+            <div className="relative flex min-h-0 w-full flex-1 overflow-hidden bg-[hsl(var(--surface-app))]">
+              <div
+                data-slot="dashboard-main"
+                className="min-h-0 w-full flex-1 overflow-y-auto overflow-x-hidden transition-[margin] duration-300 ease-in-out lg:mr-[var(--agent-panel-width)]"
+              >
+                {children}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </AgentPanelProvider>
     </DashboardLayoutProvider>
   );
 
