@@ -4,7 +4,6 @@ export type SidebarContextValue = {
   isSidebarOpen: boolean;
   toggleSidebar: () => void;
   closeSidebar: () => void;
-  closeWithoutPersist: () => void;
   isSidebarSubMenuOpen: boolean;
   toggleSidebarSubMenu: () => void;
   showSidebarSubMenu: () => void;
@@ -18,7 +17,6 @@ export const defaultContextValue: SidebarContextValue = {
   isSidebarOpen: false,
   toggleSidebar: () => undefined,
   closeSidebar: () => undefined,
-  closeWithoutPersist: () => undefined,
   isSidebarSubMenuOpen: false,
   toggleSidebarSubMenu: () => undefined,
   showSidebarSubMenu: () => undefined,

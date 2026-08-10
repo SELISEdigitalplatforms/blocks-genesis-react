@@ -21,7 +21,7 @@ export function DashboardLayout({
   forwardedTo,
 }: DashboardLayoutProps) {
   const content = (
-    <DashboardLayoutProvider isOpen={true} persist>
+    <DashboardLayoutProvider isOpen={true}>
       <RightSidePanelProvider
         resizable
         topOffset={"var(--header-height, 60px)"}
