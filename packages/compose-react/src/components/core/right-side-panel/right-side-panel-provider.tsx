@@ -12,9 +12,15 @@ import type {
   RightSidePanelContextValue,
   RightSidePanelSizing,
 } from "@/contexts/dashboard-layout/right-side-panel.types";
+import { useLayoutSettingsStore } from "@/store/layout-settings.store";
 
 const HASH_PREFIX = "#";
 const DEFAULT_HASH_KEY = "right-side-panel";
+const DEFAULT_SIZING_VALUES = {
+  width: "24rem",
+  minWidth: "20rem",
+  maxWidth: "50vw",
+};
 
 function parseWidth(value: number | string, fallback: string): string {
   if (typeof value === "number") return `${value}px`;
@@ -50,6 +56,8 @@ export interface RightSidePanelProviderProps {
   className?: string;
   /** Optional style passthrough for the wrapper element. */
   style?: React.CSSProperties;
+  /** Optional top offset for the panel (in pixels). Default `0px`. */
+  topOffset?: number | string;
 }
 
 export function RightSidePanelProvider({
@@ -60,26 +68,33 @@ export function RightSidePanelProvider({
   syncHash = true,
   hashKey = DEFAULT_HASH_KEY,
   shortcut = "mod+j",
-  width = "24rem",
-  minWidth = "20rem",
-  maxWidth = "50vw",
+  width = DEFAULT_SIZING_VALUES.width,
+  minWidth = DEFAULT_SIZING_VALUES.minWidth,
+  maxWidth = DEFAULT_SIZING_VALUES.maxWidth,
   resizable = false,
   panelId,
   className,
   style,
+  topOffset = "0px",
 }: RightSidePanelProviderProps) {
   const isMobile = useIsMobile();
   const isControlled = openProp !== undefined;
   const generatedId = React.useId();
   const resolvedPanelId = panelId ?? `right-side-panel-${generatedId}`;
+  const resolvedTopOffset = parseWidth(topOffset, "0px");
+
+  const { layout } = useLayoutSettingsStore();
 
   const sizing = React.useMemo<RightSidePanelSizing>(
     () => ({
-      width: parseWidth(width, "24rem"),
-      minWidth: parseWidth(minWidth, "20rem"),
-      maxWidth: parseWidth(maxWidth, "50vw"),
+      width: parseWidth(width, DEFAULT_SIZING_VALUES.width),
+      minWidth: parseWidth(minWidth, DEFAULT_SIZING_VALUES.minWidth),
+      maxWidth: parseWidth(maxWidth, DEFAULT_SIZING_VALUES.maxWidth),
     }),
     [width, minWidth, maxWidth],
+  );
+  const [liveWidth, setLiveWidth] = React.useState<string>(
+    () => layout.rightSidePanelWidth ?? sizing.width,
   );
 
   const readHash = React.useCallback((): boolean => {
@@ -118,8 +133,6 @@ export function RightSidePanelProvider({
     setOpen(false);
   }, [setOpen]);
 
-  const [liveWidth, setLiveWidth] = React.useState<string>("0px");
-
   useKeyboardShortcut(shortcut, toggle);
 
   React.useEffect(() => {
@@ -149,9 +162,15 @@ export function RightSidePanelProvider({
     }
   }, [open, syncHash, isControlled, hashKey]);
 
+  // Add this effect. Zustand's persist fires a store update when it finishes
+  // rehydrating, which re-renders this component and triggers this effect.
+  // It also fires on every drag-end (setLayoutSetting call), but that's a
+  // no-op because the value is already identical to liveWidth.
   React.useEffect(() => {
-    setLiveWidth(open ? sizing.width : "0px");
-  }, [open, sizing.width]);
+    if (layout.rightSidePanelWidth) {
+      setLiveWidth(layout.rightSidePanelWidth);
+    }
+  }, [layout.rightSidePanelWidth]);
 
   const contextValue = React.useMemo<RightSidePanelContextValue>(
     () => ({
@@ -165,6 +184,7 @@ export function RightSidePanelProvider({
       resizable,
       panelId: resolvedPanelId,
       isMobile,
+      topOffset: resolvedTopOffset,
     }),
     [
       open,
@@ -176,6 +196,7 @@ export function RightSidePanelProvider({
       resizable,
       resolvedPanelId,
       isMobile,
+      resolvedTopOffset,
     ],
   );
 

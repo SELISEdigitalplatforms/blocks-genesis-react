@@ -15,4 +15,5 @@ export type RightSidePanelContextValue = {
   resizable: boolean;
   panelId: string;
   isMobile: boolean;
+  topOffset: string;
 };

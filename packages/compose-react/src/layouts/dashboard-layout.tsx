@@ -22,7 +22,10 @@ export function DashboardLayout({
 }: DashboardLayoutProps) {
   const content = (
     <DashboardLayoutProvider isOpen={true} persist>
-      <RightSidePanelProvider>
+      <RightSidePanelProvider
+        resizable
+        topOffset={"var(--header-height, 60px)"}
+      >
         <div className="flex w-full overflow-hidden">
           <SidebarMenuDesktop
             redirectPaths={redirectPaths}
@@ -37,7 +40,7 @@ export function DashboardLayout({
             <div className="relative flex min-h-0 w-full flex-1 overflow-hidden bg-[hsl(var(--surface-app))]">
               <div
                 data-slot="dashboard-main"
-                className="min-h-0 w-full flex-1 overflow-y-auto overflow-x-hidden transition-[margin] duration-300 ease-in-out lg:mr-[var(--agent-panel-width)]"
+                className="min-h-0 w-full flex-1 overflow-y-auto overflow-x-hidden transition-[margin] duration-300 ease-in-out lg:mr-[var(--right-side-panel-width)]"
               >
                 {children}
               </div>

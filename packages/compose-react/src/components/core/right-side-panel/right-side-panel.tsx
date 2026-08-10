@@ -6,6 +6,9 @@ import { Drawer as DrawerPrimitive } from "vaul";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRightSidePanel } from "./use-right-side-panel";
+import { useLayoutSettingsStore } from "@/store/layout-settings.store";
+import { RenderConditionally } from "../render-elements/render-conditionally";
+import { RightSidePanelResizer } from "./right-side-panel-resizer";
 
 type RenderPropArg = { close: () => void; open: boolean };
 
@@ -52,87 +55,62 @@ function DesktopPanel({
   children,
   id,
 }: Pick<RightSidePanelProps, "className" | "ariaLabel" | "children" | "id">) {
-  const { open, close, panelId, sizing, resizable, setLiveWidth } =
-    useRightSidePanel();
+  const {
+    open,
+    close,
+    panelId,
+    sizing,
+    resizable,
+    liveWidth,
+    setLiveWidth,
+    topOffset,
+  } = useRightSidePanel();
+  const { setLayoutSetting } = useLayoutSettingsStore();
   const containerRef = React.useRef<HTMLDivElement | null>(null);
 
-  React.useEffect(() => {
-    if (!resizable) return;
-    const node = containerRef.current;
-    if (!node) return;
-    const handle = node.querySelector<HTMLElement>("[data-resize-handle]");
-    if (!handle) return;
-
-    let startX = 0;
-    let startPx = 0;
-    let widthPx = 0;
-    let captured = false;
-
-    const minPx = parsePx(sizing.minWidth);
-    const maxPx = resolveMaxPx(sizing.maxWidth, window.innerWidth);
-
-    const onMove = (event: PointerEvent) => {
-      const delta = startX - event.clientX;
-      const next = clampWidth(startPx + delta, minPx, maxPx);
-      widthPx = next;
-      // Direct DOM mutation — bypasses portal boundary, no React re-render needed
-      node.style.setProperty("--right-side-panel-resolved-width", `${next}px`);
-      // Still needed: updates --right-side-panel-width on the wrapper div,
-      // which the main content margin CAN read (it's inside the wrapper, not portalled)
-      setLiveWidth(`${next}px`);
-    };
-
-    const onUp = (event: PointerEvent) => {
-      try {
-        if (captured && handle.hasPointerCapture(event.pointerId)) {
-          handle.releasePointerCapture(event.pointerId);
-        }
-      } catch {
-        // ignore
-      }
-      captured = false;
-      handle.removeEventListener("pointermove", onMove);
-      handle.removeEventListener("pointerup", onUp);
-      handle.removeEventListener("pointercancel", onUp);
-      node.style.setProperty(
+  React.useLayoutEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    if (open) {
+      container.style.setProperty(
         "--right-side-panel-resolved-width",
-        `${widthPx}px`,
+        liveWidth,
       );
-    };
-
-    const onDown = (event: PointerEvent) => {
-      event.preventDefault();
-      const rect = node.getBoundingClientRect();
-      startX = event.clientX;
-      startPx = rect.width;
-      widthPx = startPx;
-      try {
-        handle.setPointerCapture(event.pointerId);
-        captured = true;
-      } catch {
-        captured = false;
-      }
-      handle.addEventListener("pointermove", onMove);
-      handle.addEventListener("pointerup", onUp);
-      handle.addEventListener("pointercancel", onUp);
-    };
-
-    handle.addEventListener("pointerdown", onDown);
-    return () => {
-      handle.removeEventListener("pointerdown", onDown);
-      handle.removeEventListener("pointermove", onMove);
-      handle.removeEventListener("pointerup", onUp);
-      handle.removeEventListener("pointercancel", onUp);
-    };
-  }, [resizable, sizing, setLiveWidth]);
-
-  React.useEffect(() => {
-    if (!open && containerRef.current) {
-      containerRef.current.style.removeProperty(
-        "--right-side-panel-resolved-width",
-      );
+    } else {
+      container.style.removeProperty("--right-side-panel-resolved-width");
     }
-  }, [open]);
+  }, [open, liveWidth]);
+
+  const onHandlePointerDown = React.useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      const panel = containerRef.current;
+      if (!panel) return;
+      const startX = event.clientX;
+      const startPx = panel.getBoundingClientRect().width;
+      const minPx = parsePx(sizing.minWidth);
+      const maxPx = resolveMaxPx(sizing.maxWidth, window.innerWidth);
+
+      const onMove = (e: PointerEvent) => {
+        const next = clampWidth(startPx + (startX - e.clientX), minPx, maxPx);
+        panel.style.setProperty(
+          "--right-side-panel-resolved-width",
+          `${next}px`,
+        );
+        setLiveWidth(`${next}px`);
+      };
+      const onUp = (e: PointerEvent) => {
+        document.removeEventListener("pointermove", onMove);
+        document.removeEventListener("pointerup", onUp);
+        const final = clampWidth(startPx + (startX - e.clientX), minPx, maxPx);
+        setLayoutSetting("rightSidePanelWidth", `${final}px`);
+      };
+      document.addEventListener("pointermove", onMove);
+      document.addEventListener("pointerup", onUp);
+    },
+    [sizing, setLiveWidth, setLayoutSetting],
+  );
+
   return (
     <DialogPrimitive.Root
       modal={false}
@@ -153,30 +131,26 @@ function DesktopPanel({
           data-slot="right-side-panel"
           data-state={open ? "open" : "closed"}
           aria-label={ariaLabel ?? "Side panel"}
+          aria-hidden={!open}
           className={cn(
-            "bg-background fixed inset-y-0 right-0 z-50 flex h-full flex-col border-l shadow-lg",
+            "bg-background fixed bottom-0 right-0 z-50 flex flex-col border-l shadow-lg",
             "transition-transform duration-300 ease-in-out",
             "data-[state=closed]:translate-x-full data-[state=open]:translate-x-0",
             className,
           )}
           style={
             {
-              width: `var(--right-side-panel-resolved-width, var(--right-side-panel-width, ${sizing.width}))`,
+              top: topOffset,
+              width: `var(--right-side-panel-resolved-width, ${liveWidth})`,
               minWidth: sizing.minWidth,
               maxWidth: sizing.maxWidth,
             } as React.CSSProperties
           }
         >
           {children}
-          {resizable && (
-            <div
-              data-resize-handle
-              role="separator"
-              aria-orientation="vertical"
-              aria-label="Resize panel"
-              className="bg-border hover:bg-primary/50 absolute inset-y-0 -left-0.5 w-1.5 cursor-ew-resize touch-none transition-colors"
-            />
-          )}
+          <RenderConditionally condition={resizable}>
+            <RightSidePanelResizer onHandlePointerDown={onHandlePointerDown} />
+          </RenderConditionally>
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
