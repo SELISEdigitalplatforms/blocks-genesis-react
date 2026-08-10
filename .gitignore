@@ -60,3 +60,15 @@ copilot-instructions.md
 
 # local security scan tooling (contains credentials, never commit)
 scripts/scan.sh
+
+# --- local AI / scan workspace (do not commit) ---
+results/
+.sonarqube/
+*-secrets.json
+.env.*
+!.env.example
+
+# --- AI agent instruction files (do not commit) ---
+QWEN.md
+.clinerules
+.windsurfrules
