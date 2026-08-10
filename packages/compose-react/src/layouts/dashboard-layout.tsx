@@ -1,5 +1,5 @@
 import { DashboardHeader, SidebarMenuDesktop } from "@/components";
-import { AgentPanelProvider } from "@/components/core/agent-panel";
+import { RightSidePanelProvider } from "@/components/core/right-side-panel";
 import {
   ImpersonationChecker,
   ImpersonationSynchronizer,
@@ -22,7 +22,7 @@ export function DashboardLayout({
 }: DashboardLayoutProps) {
   const content = (
     <DashboardLayoutProvider isOpen={true} persist>
-      <AgentPanelProvider>
+      <RightSidePanelProvider>
         <div className="flex w-full overflow-hidden">
           <SidebarMenuDesktop
             redirectPaths={redirectPaths}
@@ -44,7 +44,7 @@ export function DashboardLayout({
             </div>
           </div>
         </div>
-      </AgentPanelProvider>
+      </RightSidePanelProvider>
     </DashboardLayoutProvider>
   );
 

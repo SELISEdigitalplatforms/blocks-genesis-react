@@ -7,14 +7,14 @@ import {
   useKeyboardShortcut,
   type KeyboardShortcutCombo,
 } from "@/hooks/use-keyboard-shortcut";
-import { AgentPanelContext } from "@/contexts/dashboard-layout/agent-panel.context";
+import { RightSidePanelContext } from "@/contexts/dashboard-layout/right-side-panel.context";
 import type {
-  AgentPanelContextValue,
-  AgentPanelSizing,
-} from "@/contexts/dashboard-layout/agent-panel.types";
+  RightSidePanelContextValue,
+  RightSidePanelSizing,
+} from "@/contexts/dashboard-layout/right-side-panel.types";
 
 const HASH_PREFIX = "#";
-const DEFAULT_HASH_KEY = "agent";
+const DEFAULT_HASH_KEY = "right-side-panel";
 
 function parseWidth(value: number | string, fallback: string): string {
   if (typeof value === "number") return `${value}px`;
@@ -22,7 +22,7 @@ function parseWidth(value: number | string, fallback: string): string {
   return fallback;
 }
 
-export interface AgentPanelProviderProps {
+export interface RightSidePanelProviderProps {
   children?: React.ReactNode;
   /** Uncontrolled initial open state. Ignored when `open` is provided. */
   defaultOpen?: boolean;
@@ -30,7 +30,7 @@ export interface AgentPanelProviderProps {
   open?: boolean;
   /** Controlled change handler. Required when `open` is provided. */
   onOpenChange?: (open: boolean) => void;
-  /** Sync open state to `window.location.hash` (e.g. `#agent`). Default `true`. */
+  /** Sync open state to `window.location.hash` (e.g. `#right-side-panel`). Default `true`. */
   syncHash?: boolean;
   /** The hash key (without `#`) used when `syncHash` is enabled. */
   hashKey?: string;
@@ -52,7 +52,7 @@ export interface AgentPanelProviderProps {
   style?: React.CSSProperties;
 }
 
-export function AgentPanelProvider({
+export function RightSidePanelProvider({
   children,
   defaultOpen = false,
   open: openProp,
@@ -67,13 +67,13 @@ export function AgentPanelProvider({
   panelId,
   className,
   style,
-}: AgentPanelProviderProps) {
+}: RightSidePanelProviderProps) {
   const isMobile = useIsMobile();
   const isControlled = openProp !== undefined;
   const generatedId = React.useId();
-  const resolvedPanelId = panelId ?? `agent-panel-${generatedId}`;
+  const resolvedPanelId = panelId ?? `right-side-panel-${generatedId}`;
 
-  const sizing = React.useMemo<AgentPanelSizing>(
+  const sizing = React.useMemo<RightSidePanelSizing>(
     () => ({
       width: parseWidth(width, "24rem"),
       minWidth: parseWidth(minWidth, "20rem"),
@@ -122,7 +122,6 @@ export function AgentPanelProvider({
 
   useKeyboardShortcut(shortcut, toggle);
 
-  // Hash sync effect.
   React.useEffect(() => {
     if (!syncHash || isControlled || typeof window === "undefined") return;
 
@@ -150,13 +149,11 @@ export function AgentPanelProvider({
     }
   }, [open, syncHash, isControlled, hashKey]);
 
-  // Reset live width when panel toggles so the transition starts from the
-  // resting state and the handle does not "jump" on close.
   React.useEffect(() => {
-    if (!open) setLiveWidth("0px");
-  }, [open]);
+    setLiveWidth(open ? sizing.width : "0px");
+  }, [open, sizing.width]);
 
-  const contextValue = React.useMemo<AgentPanelContextValue>(
+  const contextValue = React.useMemo<RightSidePanelContextValue>(
     () => ({
       open,
       setOpen,
@@ -183,28 +180,28 @@ export function AgentPanelProvider({
   );
 
   return (
-    <AgentPanelContext.Provider value={contextValue}>
+    <RightSidePanelContext.Provider value={contextValue}>
       <div
-        data-slot="agent-panel-provider"
+        data-slot="right-side-panel-provider"
         data-state={open ? "open" : "closed"}
         data-panel-id={resolvedPanelId}
         className={cn("relative w-full", className)}
         style={
           {
-            "--agent-panel-width": open
+            "--right-side-panel-width": open
               ? resizable
                 ? liveWidth
                 : sizing.width
               : "0px",
-            "--agent-panel-min-width": sizing.minWidth,
-            "--agent-panel-max-width": sizing.maxWidth,
-            "--agent-panel-live-width": liveWidth,
+            "--right-side-panel-min-width": sizing.minWidth,
+            "--right-side-panel-max-width": sizing.maxWidth,
+            "--right-side-panel-live-width": liveWidth,
             ...style,
           } as React.CSSProperties
         }
       >
         {children}
       </div>
-    </AgentPanelContext.Provider>
+    </RightSidePanelContext.Provider>
   );
 }

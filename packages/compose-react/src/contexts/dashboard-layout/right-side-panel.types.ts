@@ -1,15 +1,15 @@
-export type AgentPanelSizing = {
+export type RightSidePanelSizing = {
   width: string;
   minWidth: string;
   maxWidth: string;
 };
 
-export type AgentPanelContextValue = {
+export type RightSidePanelContextValue = {
   open: boolean;
   setOpen: (next: boolean | ((prev: boolean) => boolean)) => void;
   toggle: () => void;
   close: () => void;
-  sizing: AgentPanelSizing;
+  sizing: RightSidePanelSizing;
   liveWidth: string;
   setLiveWidth: (next: string) => void;
   resizable: boolean;
