@@ -21,12 +21,18 @@ catalog:
   clsx: ^2.1.1
   tailwind-merge: ^2.6.0
   date-fns: ^4.4.0
+minimumReleaseAgeExclude:
+  - brace-expansion@1.1.17
+  - undici@7.29.0
+  - fast-uri@3.1.5
+  - brace-expansion@5.0.9
+  - brace-expansion@1.1.18
 overrides:
   react: ^19.2.8
   react-dom: ^19.2.8
   "@types/react": ^19.0.0
   "@types/react-dom": ^19.0.0
-  fast-uri: 3.1.4
-  "brace-expansion@5": 5.0.8
-  "brace-expansion@1": 1.1.16
+  fast-uri: 3.1.5
+  "brace-expansion@5": 5.0.9
+  "brace-expansion@1": 1.1.18
   esbuild: 0.28.1
