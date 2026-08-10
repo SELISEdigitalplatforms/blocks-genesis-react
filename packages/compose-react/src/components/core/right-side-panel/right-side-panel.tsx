@@ -5,11 +5,14 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Drawer as DrawerPrimitive } from "vaul";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAgentPanel } from "./use-agent-panel";
+import { useRightSidePanel } from "./use-right-side-panel";
+import { useLayoutSettingsStore } from "@/store/layout-settings.store";
+import { RenderConditionally } from "../render-elements/render-conditionally";
+import { RightSidePanelResizer } from "./right-side-panel-resizer";
 
 type RenderPropArg = { close: () => void; open: boolean };
 
-export interface AgentPanelProps {
+export interface RightSidePanelProps {
   /** Accessible label for the panel content. */
   ariaLabel?: string;
   /** Render the entire panel via this function. Receives `{ close, open }`. */
@@ -22,16 +25,16 @@ export interface AgentPanelProps {
   id?: string;
 }
 
-function clampWidth(
-  value: number,
-  sizing: { minWidth: string; maxWidth: string },
-): number {
-  if (typeof window === "undefined") return value;
-  const min = parsePx(sizing.minWidth);
-  const maxRaw = sizing.maxWidth.endsWith("vw")
-    ? (parseFloat(sizing.maxWidth) / 100) * window.innerWidth
-    : parsePx(sizing.maxWidth);
-  return Math.max(min, Math.min(maxRaw, value));
+function clampWidth(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
+
+function resolveMaxPx(maxWidth: string, viewportWidth: number): number {
+  if (typeof window === "undefined") return 0;
+  if (maxWidth.endsWith("vw")) {
+    return (parseFloat(maxWidth) / 100) * viewportWidth;
+  }
+  return parsePx(maxWidth);
 }
 
 function parsePx(value: string): number {
@@ -51,53 +54,66 @@ function DesktopPanel({
   ariaLabel,
   children,
   id,
-}: Pick<AgentPanelProps, "className" | "ariaLabel" | "children" | "id">) {
-  const { open, close, panelId, sizing, resizable, setLiveWidth } =
-    useAgentPanel();
+}: Pick<RightSidePanelProps, "className" | "ariaLabel" | "children" | "id">) {
+  const {
+    open,
+    close,
+    panelId,
+    sizing,
+    resizable,
+    liveWidth,
+    setLiveWidth,
+    topOffset,
+  } = useRightSidePanel();
+  const { setLayoutSetting } = useLayoutSettingsStore();
   const containerRef = React.useRef<HTMLDivElement | null>(null);
 
-  React.useEffect(() => {
-    if (!resizable) return;
-    const node = containerRef.current;
-    if (!node) return;
+  React.useLayoutEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    if (open) {
+      container.style.setProperty(
+        "--right-side-panel-resolved-width",
+        liveWidth,
+      );
+    } else {
+      container.style.removeProperty("--right-side-panel-resolved-width");
+    }
+  }, [open, liveWidth]);
 
-    let startX = 0;
-    let startPx = 0;
-    let widthPx = parsePx(sizing.width);
-
-    const onMove = (event: PointerEvent) => {
-      const delta = startX - event.clientX;
-      const next = clampWidth(startPx + delta, sizing);
-      widthPx = next;
-      setLiveWidth(`${next}px`);
-    };
-
-    const onUp = () => {
-      document.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerup", onUp);
-      node.style.setProperty("--agent-panel-resolved-width", `${widthPx}px`);
-    };
-
-    const onDown = (event: PointerEvent) => {
+  const onHandlePointerDown = React.useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
       event.preventDefault();
-      startX = event.clientX;
-      const rect = node.getBoundingClientRect();
-      startPx = rect.width;
-      widthPx = startPx;
+      const panel = containerRef.current;
+      if (!panel) return;
+      const startX = event.clientX;
+      const startPx = panel.getBoundingClientRect().width;
+      const minPx = parsePx(sizing.minWidth);
+      const maxPx = resolveMaxPx(sizing.maxWidth, window.innerWidth);
+
+      const onMove = (e: PointerEvent) => {
+        const next = clampWidth(startPx + (startX - e.clientX), minPx, maxPx);
+        panel.style.setProperty(
+          "--right-side-panel-resolved-width",
+          `${next}px`,
+        );
+        setLiveWidth(`${next}px`);
+      };
+      const onUp = (e: PointerEvent) => {
+        document.removeEventListener("pointermove", onMove);
+        document.removeEventListener("pointerup", onUp);
+        const final = clampWidth(startPx + (startX - e.clientX), minPx, maxPx);
+        setLayoutSetting("rightSidePanelWidth", `${final}px`);
+      };
       document.addEventListener("pointermove", onMove);
       document.addEventListener("pointerup", onUp);
-    };
-
-    const handle = node.querySelector<HTMLElement>("[data-resize-handle]");
-    if (!handle) return;
-    handle.addEventListener("pointerdown", onDown);
-    return () => {
-      handle.removeEventListener("pointerdown", onDown);
-    };
-  }, [resizable, sizing, setLiveWidth]);
+    },
+    [sizing, setLiveWidth, setLayoutSetting],
+  );
 
   return (
     <DialogPrimitive.Root
+      modal={false}
       open={open}
       onOpenChange={(next) => {
         if (!next) close();
@@ -105,37 +121,36 @@ function DesktopPanel({
     >
       <DialogPrimitive.Portal>
         <DialogPrimitive.Content
+          forceMount
+          aria-modal={false}
           id={id ?? panelId}
           ref={containerRef}
-          data-slot="agent-panel"
+          onPointerDownOutside={(e) => e.preventDefault()}
+          onInteractOutside={(e) => e.preventDefault()}
+          onFocusOutside={(e) => e.preventDefault()}
+          data-slot="right-side-panel"
           data-state={open ? "open" : "closed"}
-          aria-label={ariaLabel ?? "AI assistant"}
+          aria-label={ariaLabel ?? "Side panel"}
+          aria-hidden={!open}
           className={cn(
-            "bg-background fixed inset-y-0 right-0 z-50 flex h-full flex-col border-l shadow-lg",
-            "transition-[transform,width] duration-300 ease-in-out",
+            "bg-background fixed bottom-0 right-0 z-50 flex flex-col border-l shadow-lg",
+            "transition-transform duration-300 ease-in-out",
             "data-[state=closed]:translate-x-full data-[state=open]:translate-x-0",
             className,
           )}
           style={
             {
-              width: `var(--agent-panel-resolved-width, ${sizing.width})`,
+              top: topOffset,
+              width: `var(--right-side-panel-resolved-width, ${liveWidth})`,
               minWidth: sizing.minWidth,
               maxWidth: sizing.maxWidth,
             } as React.CSSProperties
           }
-          onPointerDownOutside={(event) => event.preventDefault()}
-          onInteractOutside={(event) => event.preventDefault()}
         >
           {children}
-          {resizable && (
-            <div
-              data-resize-handle
-              role="separator"
-              aria-orientation="vertical"
-              aria-label="Resize panel"
-              className="bg-border hover:bg-primary/50 absolute inset-y-0 left-0 w-1 cursor-ew-resize touch-none transition-colors"
-            />
-          )}
+          <RenderConditionally condition={resizable}>
+            <RightSidePanelResizer onHandlePointerDown={onHandlePointerDown} />
+          </RenderConditionally>
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
@@ -147,10 +162,11 @@ function MobilePanel({
   children,
   className,
   id,
-}: Pick<AgentPanelProps, "ariaLabel" | "children" | "className" | "id">) {
-  const { open, close, panelId } = useAgentPanel();
+}: Pick<RightSidePanelProps, "ariaLabel" | "children" | "className" | "id">) {
+  const { open, close, panelId } = useRightSidePanel();
   return (
     <DrawerPrimitive.Root
+      modal={false}
       open={open}
       onOpenChange={(next) => {
         if (!next) close();
@@ -160,9 +176,9 @@ function MobilePanel({
         <DrawerPrimitive.Overlay className="fixed inset-0 z-50 bg-black/80" />
         <DrawerPrimitive.Content
           id={id ?? panelId}
-          data-slot="agent-panel"
+          data-slot="right-side-panel"
           data-state={open ? "open" : "closed"}
-          aria-label={ariaLabel ?? "AI assistant"}
+          aria-label={ariaLabel ?? "Side panel"}
           className={cn(
             "bg-background fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto max-h-[90vh] flex-col rounded-t-[10px] border",
             className,
@@ -176,14 +192,14 @@ function MobilePanel({
   );
 }
 
-export function AgentPanel({
+export function RightSidePanel({
   ariaLabel,
   className,
   children,
   content,
   id,
-}: AgentPanelProps) {
-  const ctx = useAgentPanel();
+}: RightSidePanelProps) {
+  const ctx = useRightSidePanel();
   const body = content
     ? content({ close: ctx.close, open: ctx.open })
     : children;
@@ -201,15 +217,15 @@ export function AgentPanel({
     </DesktopPanel>
   );
 }
-AgentPanel.displayName = "AgentPanel";
+RightSidePanel.displayName = "RightSidePanel";
 
-const AgentPanelHeader = React.forwardRef<
+const RightSidePanelHeader = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    data-slot="agent-panel-header"
+    data-slot="right-side-panel-header"
     className={cn(
       "flex shrink-0 items-start justify-between gap-3 border-b p-4",
       className,
@@ -217,15 +233,15 @@ const AgentPanelHeader = React.forwardRef<
     {...props}
   />
 ));
-AgentPanelHeader.displayName = "AgentPanelHeader";
+RightSidePanelHeader.displayName = "RightSidePanelHeader";
 
-const AgentPanelTitle = React.forwardRef<
+const RightSidePanelTitle = React.forwardRef<
   HTMLHeadingElement,
   React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
   <h2
     ref={ref}
-    data-slot="agent-panel-title"
+    data-slot="right-side-panel-title"
     className={cn(
       "text-base font-semibold leading-none tracking-tight",
       className,
@@ -233,31 +249,31 @@ const AgentPanelTitle = React.forwardRef<
     {...props}
   />
 ));
-AgentPanelTitle.displayName = "AgentPanelTitle";
+RightSidePanelTitle.displayName = "RightSidePanelTitle";
 
-const AgentPanelDescription = React.forwardRef<
+const RightSidePanelDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    data-slot="agent-panel-description"
+    data-slot="right-side-panel-description"
     className={cn("text-muted-foreground text-sm", className)}
     {...props}
   />
 ));
-AgentPanelDescription.displayName = "AgentPanelDescription";
+RightSidePanelDescription.displayName = "RightSidePanelDescription";
 
-const AgentPanelClose = React.forwardRef<
+const RightSidePanelClose = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({ className, ...props }, ref) => {
-  const { isMobile, close } = useAgentPanel();
+  const { isMobile, close } = useRightSidePanel();
   const Comp = isMobile ? DrawerPrimitive.Close : DialogPrimitive.Close;
   return (
     <Comp
       ref={ref as React.Ref<HTMLButtonElement>}
-      data-slot="agent-panel-close"
+      data-slot="right-side-panel-close"
       aria-label="Close panel"
       className={cn(
         "ring-offset-background focus:ring-ring rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2",
@@ -274,39 +290,39 @@ const AgentPanelClose = React.forwardRef<
     </Comp>
   );
 });
-AgentPanelClose.displayName = "AgentPanelClose";
+RightSidePanelClose.displayName = "RightSidePanelClose";
 
-const AgentPanelBody = React.forwardRef<
+const RightSidePanelBody = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    data-slot="agent-panel-body"
+    data-slot="right-side-panel-body"
     className={cn("min-h-0 flex-1 overflow-y-auto p-4", className)}
     {...props}
   />
 ));
-AgentPanelBody.displayName = "AgentPanelBody";
+RightSidePanelBody.displayName = "RightSidePanelBody";
 
-const AgentPanelFooter = React.forwardRef<
+const RightSidePanelFooter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    data-slot="agent-panel-footer"
+    data-slot="right-side-panel-footer"
     className={cn("shrink-0 border-t p-4", className)}
     {...props}
   />
 ));
-AgentPanelFooter.displayName = "AgentPanelFooter";
+RightSidePanelFooter.displayName = "RightSidePanelFooter";
 
 export {
-  AgentPanelHeader,
-  AgentPanelTitle,
-  AgentPanelDescription,
-  AgentPanelClose,
-  AgentPanelBody,
-  AgentPanelFooter,
+  RightSidePanelHeader,
+  RightSidePanelTitle,
+  RightSidePanelDescription,
+  RightSidePanelClose,
+  RightSidePanelBody,
+  RightSidePanelFooter,
 };

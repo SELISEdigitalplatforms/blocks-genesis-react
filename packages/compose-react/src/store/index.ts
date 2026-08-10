@@ -4,4 +4,5 @@ export * from "./impersonate.store";
 export * from "./project.store";
 export * from "./app-config.store";
 export * from "./language-view.store";
+export * from "./layout-settings.store";
 export * from "./user.store";

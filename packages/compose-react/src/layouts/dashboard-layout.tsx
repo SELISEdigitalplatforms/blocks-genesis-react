@@ -1,5 +1,5 @@
 import { DashboardHeader, SidebarMenuDesktop } from "@/components";
-import { AgentPanelProvider } from "@/components/core/agent-panel";
+import { RightSidePanelProvider } from "@/components/core/right-side-panel";
 import {
   ImpersonationChecker,
   ImpersonationSynchronizer,
@@ -21,8 +21,8 @@ export function DashboardLayout({
   forwardedTo,
 }: DashboardLayoutProps) {
   const content = (
-    <DashboardLayoutProvider isOpen={true} persist>
-      <AgentPanelProvider>
+    <DashboardLayoutProvider isOpen={true}>
+      <RightSidePanelProvider resizable topOffset="60px">
         <div className="flex w-full overflow-hidden">
           <SidebarMenuDesktop
             redirectPaths={redirectPaths}
@@ -37,14 +37,14 @@ export function DashboardLayout({
             <div className="relative flex min-h-0 w-full flex-1 overflow-hidden bg-[hsl(var(--surface-app))]">
               <div
                 data-slot="dashboard-main"
-                className="min-h-0 w-full flex-1 overflow-y-auto overflow-x-hidden transition-[margin] duration-300 ease-in-out lg:mr-[var(--agent-panel-width)]"
+                className="min-h-0 w-full flex-1 overflow-y-auto overflow-x-hidden transition-[margin] duration-300 ease-in-out lg:mr-[var(--right-side-panel-width)]"
               >
                 {children}
               </div>
             </div>
           </div>
         </div>
-      </AgentPanelProvider>
+      </RightSidePanelProvider>
     </DashboardLayoutProvider>
   );
 

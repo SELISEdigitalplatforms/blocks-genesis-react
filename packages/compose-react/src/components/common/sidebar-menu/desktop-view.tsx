@@ -32,7 +32,7 @@ export function SidebarMenuDesktop({
 
   return (
     <div
-      className={`hidden h-screen shrink-0 flex-col border-r bg-background transition-all md:flex ${isSidebarOpen ? "min-w-60" : "w-14"}`}
+      className={`hidden h-screen shrink-0 flex-col border-r bg-background transition-[width] duration-300 ease-in-out md:flex ${isSidebarOpen ? "w-60" : "w-14"}`}
     >
       <div className="flex h-[60px] shrink-0 items-center justify-between border-b bg-background px-3">
         <Link

@@ -1,10 +1,10 @@
 /* eslint-disable react-refresh/only-export-components */
 export { SidebarContext } from "./sidebar.context";
 export {
-  AgentPanelContext,
-  defaultAgentPanelContextValue,
-} from "./agent-panel.context";
+  RightSidePanelContext,
+  defaultRightSidePanelContextValue,
+} from "./right-side-panel.context";
 export type {
-  AgentPanelContextValue,
-  AgentPanelSizing,
-} from "./agent-panel.types";
+  RightSidePanelContextValue,
+  RightSidePanelSizing,
+} from "./right-side-panel.types";

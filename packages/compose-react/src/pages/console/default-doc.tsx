@@ -58,7 +58,7 @@ const data = [
     description:
       "Established standards that help project managers and technical leaders minimize project risks.",
     image: docsImage,
-    url: "https://github.com/SELISEdigitalplatforms/Wiki-BlocksGuideline-Code/wiki",
+    url: "https://docs.seliseblocks.com",
   },
   {
     label: "Code",
