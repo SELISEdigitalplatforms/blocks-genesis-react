@@ -5,17 +5,17 @@ import { MessageSquare } from "lucide-react";
 import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/core/button";
-import { useAgentPanel } from "./use-agent-panel";
+import { useRightSidePanel } from "./use-right-side-panel";
 
-export type AgentPanelTriggerPosition =
+export type RightSidePanelTriggerPosition =
   "bottom-right" | "bottom-left" | "inline";
 
-export interface AgentPanelTriggerProps extends Omit<
+export interface RightSidePanelTriggerProps extends Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
   "children"
 > {
   asChild?: boolean;
-  position?: AgentPanelTriggerPosition;
+  position?: RightSidePanelTriggerPosition;
   icon?: React.ReactNode;
   label?: string;
   /** Shortcut for `aria-label`. */
@@ -23,17 +23,17 @@ export interface AgentPanelTriggerProps extends Omit<
   children?: React.ReactNode;
 }
 
-const positionClasses: Record<AgentPanelTriggerPosition, string> = {
+const positionClasses: Record<RightSidePanelTriggerPosition, string> = {
   "bottom-right":
-    "fixed bottom-4 right-4 z-40 rounded-full shadow-lg transition-[right] duration-300 ease-in-out data-[state=open]:right-[var(--agent-panel-width,0px)]",
+    "fixed bottom-4 right-4 z-40 rounded-full shadow-lg transition-[right] duration-300 ease-in-out data-[state=open]:right-[var(--right-side-panel-width,0px)]",
   "bottom-left":
-    "fixed bottom-4 left-4 z-40 rounded-full shadow-lg transition-[left] duration-300 ease-in-out data-[state=open]:left-[var(--agent-panel-width,0px)]",
+    "fixed bottom-4 left-4 z-40 rounded-full shadow-lg transition-[left] duration-300 ease-in-out data-[state=open]:left-[var(--right-side-panel-width,0px)]",
   inline: "relative",
 };
 
-export const AgentPanelTrigger = React.forwardRef<
+export const RightSidePanelTrigger = React.forwardRef<
   HTMLButtonElement,
-  AgentPanelTriggerProps
+  RightSidePanelTriggerProps
 >(
   (
     {
@@ -50,21 +50,22 @@ export const AgentPanelTrigger = React.forwardRef<
     },
     ref,
   ) => {
-    const { open, toggle, panelId } = useAgentPanel();
+    const { open, toggle, panelId } = useRightSidePanel();
     const Comp = asChild ? Slot : Button;
     const isFloating = position !== "inline";
-    const computedLabel = ariaLabel ?? label ?? "Toggle AI assistant";
+    const computedLabel = ariaLabel ?? label ?? "Toggle side panel";
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
       onClick?.(event);
       if (!event.defaultPrevented) toggle();
     };
+    if (open) return null; // completely removes it from the DOM
 
     return (
       <Comp
         ref={ref as React.Ref<HTMLButtonElement>}
         type={asChild ? undefined : (type ?? "button")}
-        data-slot="agent-panel-trigger"
+        data-slot="right-side-panel-trigger"
         data-state={open ? "open" : "closed"}
         aria-label={computedLabel}
         aria-expanded={open}
@@ -88,4 +89,4 @@ export const AgentPanelTrigger = React.forwardRef<
     );
   },
 );
-AgentPanelTrigger.displayName = "AgentPanelTrigger";
+RightSidePanelTrigger.displayName = "RightSidePanelTrigger";

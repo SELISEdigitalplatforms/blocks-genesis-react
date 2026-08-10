@@ -1,6 +1,7 @@
 import { SidebarContext } from "@/contexts";
 import { useIsActiveMenu } from "@/hooks/use-menus";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useLayoutSettingsStore } from "@/store/layout-settings.store";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 // Below this width (but above the mobile breakpoint handled by
@@ -13,58 +14,40 @@ export function DashboardLayoutProvider({
   children,
   isOpen,
   isSubMenuOpen = false,
-  storageKey = "sidebar-open",
-  persist = false,
 }: {
   children: React.ReactNode;
   isOpen: boolean;
   isSubMenuOpen?: boolean;
-  storageKey?: string;
-  persist?: boolean;
 }) {
   const { isActivePath: isServicesPath } = useIsActiveMenu("/app/services");
   const isMobile = useIsMobile();
-  const isMountedRef = useRef(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(isOpen);
+  const { layout, setLayoutSetting } = useLayoutSettingsStore();
+  const isLeftSidebarOpen = layout.isLeftSidebarOpen;
+
   const [isSidebarSubMenuOpen, setIsSidebarSubMenuOpen] =
     useState(isSubMenuOpen);
   const [subMenuId, setSubMenuId] = useState<string | null>(null);
   const [servicesSearchTerm, setServicesSearchTerm] = useState("");
 
-  // The user's last *manual* open/closed choice (toggle, persisted load),
-  // kept separate from the live isSidebarOpen value so tablet-width
-  // auto-collapse can be purely visual and reversible.
-  const manualSidebarOpenRef = useRef(isOpen);
-  // "desktop" | "tablet" classification as of the last time this was
-  // computed while non-mobile. null forces a fresh evaluation next time
-  // (used when coming back from mobile, where width may have jumped any
-  // amount).
+  // Desktop ↔ tablet classification as of the last time this was computed
+  // while non-mobile. null forces a fresh evaluation next time (used when
+  // coming back from mobile, where width may have jumped any amount).
   const previousRangeRef = useRef<"desktop" | "tablet" | null>(null);
+  const [isTablet, setIsTablet] = useState(false);
 
+  // Seed the store from the isOpen prop on first mount, when the store
+  // has no preference yet. Subsequent isOpen prop changes are ignored
+  // (matches the original useState(isOpen) semantics).
   useEffect(() => {
-    if (persist && !isMountedRef.current) {
-      isMountedRef.current = true;
-      if (!isMobile) {
-        const stored = localStorage.getItem(storageKey);
-        if (stored !== null) {
-          const storedOpen = JSON.parse(stored) as boolean;
-          manualSidebarOpenRef.current = storedOpen;
-          setIsSidebarOpen(storedOpen);
-          return;
-        }
-      } else {
-        setIsSidebarOpen(false);
-      }
+    if (isLeftSidebarOpen === undefined) {
+      setLayoutSetting("isLeftSidebarOpen", isOpen);
     }
-  }, [isMobile, persist, storageKey]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  useEffect(() => {
-    if (!persist) {
-      setIsSidebarOpen(!isMobile);
-    } else if (isMobile) {
-      setIsSidebarOpen(false);
-    }
-  }, [isMobile, persist]);
+  // Live state: respect the user's manual preference on desktop, but
+  // force-closed on tablet (auto-collapse) and mobile.
+  const isSidebarOpen = !isMobile && !isTablet && (isLeftSidebarOpen ?? isOpen);
 
   // Tablet-width auto-collapse. Only reacts to actually crossing the
   // breakpoint, not every resize tick, so a manual toggle while inside a
@@ -72,6 +55,7 @@ export function DashboardLayoutProvider({
   useEffect(() => {
     if (isMobile) {
       previousRangeRef.current = null;
+      setIsTablet(false);
       return;
     }
 
@@ -86,9 +70,7 @@ export function DashboardLayoutProvider({
       }
       previousRangeRef.current = currentRange;
 
-      setIsSidebarOpen(
-        currentRange === "tablet" ? false : manualSidebarOpenRef.current,
-      );
+      setIsTablet(currentRange === "tablet");
     };
 
     const handleResize = () => {
@@ -124,30 +106,13 @@ export function DashboardLayoutProvider({
   }, [isSidebarOpen, isMobile]);
 
   const toggleSidebar = useCallback(() => {
-    setIsSidebarOpen((prev) => {
-      const nextState = !prev;
-      manualSidebarOpenRef.current = nextState;
-      if (persist && !isMobile) {
-        localStorage.setItem(storageKey, JSON.stringify(nextState));
-      }
-      if (nextState) {
-        setIsSidebarSubMenuOpen(false);
-      }
-      return nextState;
-    });
-  }, [isMobile, persist, storageKey]);
+    setLayoutSetting("isLeftSidebarOpen", !(isLeftSidebarOpen ?? isOpen));
+    setIsSidebarSubMenuOpen(false);
+  }, [isLeftSidebarOpen, isOpen, setLayoutSetting]);
 
   const closeSidebar = useCallback(() => {
-    manualSidebarOpenRef.current = false;
-    setIsSidebarOpen(false);
-    if (persist && !isMobile) {
-      localStorage.setItem(storageKey, JSON.stringify(false));
-    }
-  }, [isMobile, persist, storageKey]);
-
-  const closeWithoutPersist = useCallback(() => {
-    setIsSidebarOpen(false);
-  }, []);
+    setLayoutSetting("isLeftSidebarOpen", false);
+  }, [setLayoutSetting]);
 
   const toggleSidebarSubMenu = useCallback(() => {
     setIsSidebarSubMenuOpen((prev) => !prev);
@@ -172,7 +137,6 @@ export function DashboardLayoutProvider({
       isSidebarOpen,
       toggleSidebar,
       closeSidebar,
-      closeWithoutPersist,
       isSidebarSubMenuOpen,
       toggleSidebarSubMenu,
       showSidebarSubMenu,
@@ -185,7 +149,6 @@ export function DashboardLayoutProvider({
       isSidebarOpen,
       toggleSidebar,
       closeSidebar,
-      closeWithoutPersist,
       isSidebarSubMenuOpen,
       toggleSidebarSubMenu,
       showSidebarSubMenu,

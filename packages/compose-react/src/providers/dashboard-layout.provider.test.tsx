@@ -4,6 +4,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { SidebarContext } from "@/contexts";
 import { DashboardLayoutProvider } from "@/providers/dashboard-layout.provider";
+import { useLayoutSettingsStore } from "@/store/layout-settings.store";
 
 function Consumer() {
   const ctx = useContext(SidebarContext)!;
@@ -15,7 +16,6 @@ function Consumer() {
       <span data-testid="search">{ctx.servicesSearchTerm}</span>
       <button onClick={ctx.toggleSidebar}>toggle</button>
       <button onClick={ctx.closeSidebar}>close</button>
-      <button onClick={ctx.closeWithoutPersist}>closeNP</button>
       <button onClick={ctx.toggleSidebarSubMenu}>toggleSub</button>
       <button onClick={ctx.showSidebarSubMenu}>showSub</button>
       <button onClick={() => ctx.updateSubMenuId("m1")}>setId</button>
@@ -26,9 +26,7 @@ function Consumer() {
   );
 }
 
-const renderProvider = (
-  props: { isOpen?: boolean; persist?: boolean; storageKey?: string } = {},
-) =>
+const renderProvider = (props: { isOpen?: boolean } = {}) =>
   render(
     <MemoryRouter>
       <DashboardLayoutProvider isOpen {...props}>
@@ -39,6 +37,7 @@ const renderProvider = (
 
 beforeEach(() => {
   localStorage.clear();
+  useLayoutSettingsStore.getState().resetLayout();
 });
 
 describe("DashboardLayoutProvider", () => {
@@ -49,13 +48,13 @@ describe("DashboardLayoutProvider", () => {
     expect(screen.getByTestId("open")).toHaveTextContent("false");
   });
 
-  it("closes the sidebar via closeSidebar and closeWithoutPersist", () => {
+  it("closes the sidebar via closeSidebar", () => {
     renderProvider();
     fireEvent.click(screen.getByText("close"));
     expect(screen.getByTestId("open")).toHaveTextContent("false");
-    fireEvent.click(screen.getByText("toggle"));
-    fireEvent.click(screen.getByText("closeNP"));
-    expect(screen.getByTestId("open")).toHaveTextContent("false");
+    expect(useLayoutSettingsStore.getState().layout.isLeftSidebarOpen).toBe(
+      false,
+    );
   });
 
   it("manages the sub-menu open state", () => {
@@ -75,19 +74,19 @@ describe("DashboardLayoutProvider", () => {
     expect(screen.getByTestId("search")).toHaveTextContent("q");
   });
 
-  it("loads the persisted open state on mount", () => {
-    localStorage.setItem("sidebar-open", "false");
-    renderProvider({ isOpen: true, persist: true, storageKey: "sidebar-open" });
+  it("loads the persisted open state from the store on mount", () => {
+    useLayoutSettingsStore.setState({
+      layout: { isLeftSidebarOpen: false },
+    });
+    renderProvider({ isOpen: true });
     expect(screen.getByTestId("open")).toHaveTextContent("false");
   });
 
-  it("persists toggles when persist is enabled", () => {
-    renderProvider({
-      isOpen: false,
-      persist: true,
-      storageKey: "sidebar-open",
-    });
+  it("persists toggles to the layout-settings store", () => {
+    renderProvider({ isOpen: false });
     fireEvent.click(screen.getByText("toggle"));
-    expect(localStorage.getItem("sidebar-open")).toBe("true");
+    expect(useLayoutSettingsStore.getState().layout.isLeftSidebarOpen).toBe(
+      true,
+    );
   });
 });
