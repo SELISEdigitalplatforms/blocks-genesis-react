@@ -12,6 +12,7 @@ export const defaultRightSidePanelContextValue: RightSidePanelContextValue = {
   resizable: false,
   panelId: "right-side-panel",
   isMobile: false,
+  topOffset: "0px",
 };
 
 export const RightSidePanelContext = createContext<RightSidePanelContextValue>(

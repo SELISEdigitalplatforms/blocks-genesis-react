@@ -214,6 +214,6 @@ describe("RightSidePanel (resize drag)", () => {
     // that pointermove updates the panel width in real time (the original
     // implementation only wrote the resolved width on pointerup, so the
     // panel never visually changed during a drag).
-    expect(style).toMatch(/--right-side-panel-width/);
+    expect(style).toMatch(/--right-side-panel-resolved-width/);
   });
 });
