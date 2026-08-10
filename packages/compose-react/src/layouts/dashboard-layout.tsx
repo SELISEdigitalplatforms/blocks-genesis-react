@@ -22,10 +22,7 @@ export function DashboardLayout({
 }: DashboardLayoutProps) {
   const content = (
     <DashboardLayoutProvider isOpen={true}>
-      <RightSidePanelProvider
-        resizable
-        topOffset={"var(--header-height, 60px)"}
-      >
+      <RightSidePanelProvider resizable topOffset="60px">
         <div className="flex w-full overflow-hidden">
           <SidebarMenuDesktop
             redirectPaths={redirectPaths}
