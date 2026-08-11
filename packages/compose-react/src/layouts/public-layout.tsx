@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import type * as React from "react";
-import { PublicGuard } from "../guards/public.guard";
+import type React from "react";
+import { PublicGuard } from "@/guards/public.guard";
 
 export function PublicLayout({ children }: { children?: React.ReactNode }) {
   return (
