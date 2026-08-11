@@ -7,14 +7,20 @@ import {
   useKeyboardShortcut,
   type KeyboardShortcutCombo,
 } from "@/hooks/use-keyboard-shortcut";
-import { AgentPanelContext } from "@/contexts/dashboard-layout/agent-panel.context";
+import { RightSidePanelContext } from "@/contexts/dashboard-layout/right-side-panel.context";
 import type {
-  AgentPanelContextValue,
-  AgentPanelSizing,
-} from "@/contexts/dashboard-layout/agent-panel.types";
+  RightSidePanelContextValue,
+  RightSidePanelSizing,
+} from "@/contexts/dashboard-layout/right-side-panel.types";
+import { useLayoutSettingsStore } from "@/store/layout-settings.store";
 
 const HASH_PREFIX = "#";
-const DEFAULT_HASH_KEY = "agent";
+const DEFAULT_HASH_KEY = "right-side-panel";
+const DEFAULT_SIZING_VALUES = {
+  width: "24rem",
+  minWidth: "20rem",
+  maxWidth: "50vw",
+};
 
 function parseWidth(value: number | string, fallback: string): string {
   if (typeof value === "number") return `${value}px`;
@@ -22,7 +28,7 @@ function parseWidth(value: number | string, fallback: string): string {
   return fallback;
 }
 
-export interface AgentPanelProviderProps {
+export interface RightSidePanelProviderProps {
   children?: React.ReactNode;
   /** Uncontrolled initial open state. Ignored when `open` is provided. */
   defaultOpen?: boolean;
@@ -30,7 +36,7 @@ export interface AgentPanelProviderProps {
   open?: boolean;
   /** Controlled change handler. Required when `open` is provided. */
   onOpenChange?: (open: boolean) => void;
-  /** Sync open state to `window.location.hash` (e.g. `#agent`). Default `true`. */
+  /** Sync open state to `window.location.hash` (e.g. `#right-side-panel`). Default `true`. */
   syncHash?: boolean;
   /** The hash key (without `#`) used when `syncHash` is enabled. */
   hashKey?: string;
@@ -50,9 +56,11 @@ export interface AgentPanelProviderProps {
   className?: string;
   /** Optional style passthrough for the wrapper element. */
   style?: React.CSSProperties;
+  /** Optional top offset for the panel (in pixels). Default `0px`. */
+  topOffset?: number | string;
 }
 
-export function AgentPanelProvider({
+export function RightSidePanelProvider({
   children,
   defaultOpen = false,
   open: openProp,
@@ -60,26 +68,33 @@ export function AgentPanelProvider({
   syncHash = true,
   hashKey = DEFAULT_HASH_KEY,
   shortcut = "mod+j",
-  width = "24rem",
-  minWidth = "20rem",
-  maxWidth = "50vw",
+  width = DEFAULT_SIZING_VALUES.width,
+  minWidth = DEFAULT_SIZING_VALUES.minWidth,
+  maxWidth = DEFAULT_SIZING_VALUES.maxWidth,
   resizable = false,
   panelId,
   className,
   style,
-}: AgentPanelProviderProps) {
+  topOffset = "0px",
+}: RightSidePanelProviderProps) {
   const isMobile = useIsMobile();
   const isControlled = openProp !== undefined;
   const generatedId = React.useId();
-  const resolvedPanelId = panelId ?? `agent-panel-${generatedId}`;
+  const resolvedPanelId = panelId ?? `right-side-panel-${generatedId}`;
+  const resolvedTopOffset = parseWidth(topOffset, "0px");
 
-  const sizing = React.useMemo<AgentPanelSizing>(
+  const { layout } = useLayoutSettingsStore();
+
+  const sizing = React.useMemo<RightSidePanelSizing>(
     () => ({
-      width: parseWidth(width, "24rem"),
-      minWidth: parseWidth(minWidth, "20rem"),
-      maxWidth: parseWidth(maxWidth, "50vw"),
+      width: parseWidth(width, DEFAULT_SIZING_VALUES.width),
+      minWidth: parseWidth(minWidth, DEFAULT_SIZING_VALUES.minWidth),
+      maxWidth: parseWidth(maxWidth, DEFAULT_SIZING_VALUES.maxWidth),
     }),
     [width, minWidth, maxWidth],
+  );
+  const [liveWidth, setLiveWidth] = React.useState<string>(
+    () => layout.rightSidePanelWidth ?? sizing.width,
   );
 
   const readHash = React.useCallback((): boolean => {
@@ -118,11 +133,8 @@ export function AgentPanelProvider({
     setOpen(false);
   }, [setOpen]);
 
-  const [liveWidth, setLiveWidth] = React.useState<string>("0px");
-
   useKeyboardShortcut(shortcut, toggle);
 
-  // Hash sync effect.
   React.useEffect(() => {
     if (!syncHash || isControlled || typeof window === "undefined") return;
 
@@ -150,13 +162,17 @@ export function AgentPanelProvider({
     }
   }, [open, syncHash, isControlled, hashKey]);
 
-  // Reset live width when panel toggles so the transition starts from the
-  // resting state and the handle does not "jump" on close.
+  // Add this effect. Zustand's persist fires a store update when it finishes
+  // rehydrating, which re-renders this component and triggers this effect.
+  // It also fires on every drag-end (setLayoutSetting call), but that's a
+  // no-op because the value is already identical to liveWidth.
   React.useEffect(() => {
-    if (!open) setLiveWidth("0px");
-  }, [open]);
+    if (layout.rightSidePanelWidth) {
+      setLiveWidth(layout.rightSidePanelWidth);
+    }
+  }, [layout.rightSidePanelWidth]);
 
-  const contextValue = React.useMemo<AgentPanelContextValue>(
+  const contextValue = React.useMemo<RightSidePanelContextValue>(
     () => ({
       open,
       setOpen,
@@ -168,6 +184,7 @@ export function AgentPanelProvider({
       resizable,
       panelId: resolvedPanelId,
       isMobile,
+      topOffset: resolvedTopOffset,
     }),
     [
       open,
@@ -179,32 +196,33 @@ export function AgentPanelProvider({
       resizable,
       resolvedPanelId,
       isMobile,
+      resolvedTopOffset,
     ],
   );
 
   return (
-    <AgentPanelContext.Provider value={contextValue}>
+    <RightSidePanelContext.Provider value={contextValue}>
       <div
-        data-slot="agent-panel-provider"
+        data-slot="right-side-panel-provider"
         data-state={open ? "open" : "closed"}
         data-panel-id={resolvedPanelId}
         className={cn("relative w-full", className)}
         style={
           {
-            "--agent-panel-width": open
+            "--right-side-panel-width": open
               ? resizable
                 ? liveWidth
                 : sizing.width
               : "0px",
-            "--agent-panel-min-width": sizing.minWidth,
-            "--agent-panel-max-width": sizing.maxWidth,
-            "--agent-panel-live-width": liveWidth,
+            "--right-side-panel-min-width": sizing.minWidth,
+            "--right-side-panel-max-width": sizing.maxWidth,
+            "--right-side-panel-live-width": liveWidth,
             ...style,
           } as React.CSSProperties
         }
       >
         {children}
       </div>
-    </AgentPanelContext.Provider>
+    </RightSidePanelContext.Provider>
   );
 }

@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import {
-  AgentPanel,
-  AgentPanelBody,
-  AgentPanelClose,
-  AgentPanelDescription,
-  AgentPanelFooter,
-  AgentPanelHeader,
-  AgentPanelProvider,
-  AgentPanelTitle,
-  AgentPanelTrigger,
+  RightSidePanel,
+  RightSidePanelBody,
+  RightSidePanelClose,
+  RightSidePanelDescription,
+  RightSidePanelFooter,
+  RightSidePanelHeader,
+  RightSidePanelProvider,
+  RightSidePanelTitle,
+  RightSidePanelTrigger,
 } from "./index";
 
 function Probe({
@@ -19,6 +19,7 @@ function Probe({
   syncHash,
   shortcut,
   width,
+  resizable,
 }: {
   defaultOpen?: boolean;
   open?: boolean;
@@ -26,31 +27,33 @@ function Probe({
   syncHash?: boolean;
   shortcut?: false | string;
   width?: number | string;
+  resizable?: boolean;
 }) {
   return (
-    <AgentPanelProvider
+    <RightSidePanelProvider
       defaultOpen={defaultOpen}
       open={open}
       onOpenChange={onOpenChange}
       syncHash={syncHash}
       shortcut={shortcut}
       width={width}
+      resizable={resizable}
     >
-      <AgentPanelTrigger ariaLabel="Open assistant" />
-      <AgentPanel ariaLabel="Assistant">
-        <AgentPanelHeader>
-          <AgentPanelTitle>Assistant</AgentPanelTitle>
-          <AgentPanelDescription>Ask anything</AgentPanelDescription>
-          <AgentPanelClose />
-        </AgentPanelHeader>
-        <AgentPanelBody>Body content</AgentPanelBody>
-        <AgentPanelFooter>Footer content</AgentPanelFooter>
-      </AgentPanel>
-    </AgentPanelProvider>
+      <RightSidePanelTrigger ariaLabel="Open assistant" />
+      <RightSidePanel ariaLabel="Assistant">
+        <RightSidePanelHeader>
+          <RightSidePanelTitle>Assistant</RightSidePanelTitle>
+          <RightSidePanelDescription>Ask anything</RightSidePanelDescription>
+          <RightSidePanelClose />
+        </RightSidePanelHeader>
+        <RightSidePanelBody>Body content</RightSidePanelBody>
+        <RightSidePanelFooter>Footer content</RightSidePanelFooter>
+      </RightSidePanel>
+    </RightSidePanelProvider>
   );
 }
 
-describe("AgentPanelProvider", () => {
+describe("RightSidePanelProvider", () => {
   beforeEach(() => {
     if (window.location.hash) {
       window.history.replaceState(
@@ -74,10 +77,10 @@ describe("AgentPanelProvider", () => {
     );
   });
 
-  it("writes #agent to the location hash when syncHash is enabled", async () => {
+  it("writes #right-side-panel to the location hash when syncHash is enabled", async () => {
     render(<Probe syncHash />);
     fireEvent.click(screen.getByRole("button", { name: /open assistant/i }));
-    await waitFor(() => expect(window.location.hash).toBe("#agent"));
+    await waitFor(() => expect(window.location.hash).toBe("#right-side-panel"));
   });
 
   it("does not write to the hash when syncHash is false", async () => {
@@ -86,8 +89,8 @@ describe("AgentPanelProvider", () => {
     expect(window.location.hash).toBe("");
   });
 
-  it("opens when the URL already contains #agent on mount", async () => {
-    window.history.replaceState(null, "", "#agent");
+  it("opens when the URL already contains #right-side-panel on mount", async () => {
+    window.history.replaceState(null, "", "#right-side-panel");
     render(<Probe syncHash />);
     await waitFor(() =>
       expect(screen.getByText("Assistant")).toBeInTheDocument(),
@@ -128,16 +131,16 @@ describe("AgentPanelProvider", () => {
   });
 });
 
-describe("AgentPanelTrigger (asChild)", () => {
+describe("RightSidePanelTrigger (asChild)", () => {
   it("forwards onClick and aria attributes to the child element", () => {
     render(
-      <AgentPanelProvider>
-        <AgentPanelTrigger asChild>
+      <RightSidePanelProvider>
+        <RightSidePanelTrigger asChild>
           <a href="#x" data-testid="trigger">
             Open
           </a>
-        </AgentPanelTrigger>
-      </AgentPanelProvider>,
+        </RightSidePanelTrigger>
+      </RightSidePanelProvider>,
     );
     const link = screen.getByTestId("trigger");
     expect(link.tagName).toBe("A");
@@ -146,11 +149,11 @@ describe("AgentPanelTrigger (asChild)", () => {
   });
 });
 
-describe("AgentPanel (content render prop)", () => {
+describe("RightSidePanel (content render prop)", () => {
   it("renders a fully custom panel when content is provided", async () => {
     render(
-      <AgentPanelProvider defaultOpen>
-        <AgentPanel
+      <RightSidePanelProvider defaultOpen>
+        <RightSidePanel
           content={({ close }) => (
             <div>
               <span>custom body</span>
@@ -158,12 +161,59 @@ describe("AgentPanel (content render prop)", () => {
             </div>
           )}
         />
-      </AgentPanelProvider>,
+      </RightSidePanelProvider>,
     );
     expect(screen.getByText("custom body")).toBeInTheDocument();
     fireEvent.click(screen.getByText("dismiss"));
     await waitFor(() =>
       expect(screen.queryByText("custom body")).not.toBeInTheDocument(),
     );
+  });
+});
+
+describe("RightSidePanel (non-modal outside click)", () => {
+  it("does not close the panel when clicking outside of it", async () => {
+    render(
+      <>
+        <button data-testid="outside">outside</button>
+        <Probe defaultOpen />
+      </>,
+    );
+    expect(screen.getByText("Assistant")).toBeInTheDocument();
+    fireEvent.pointerDown(screen.getByTestId("outside"));
+    await waitFor(() =>
+      expect(screen.getByText("Assistant")).toBeInTheDocument(),
+    );
+  });
+});
+
+describe("RightSidePanel (resize drag)", () => {
+  it("renders the resize handle when resizable is true", () => {
+    render(<Probe defaultOpen resizable />);
+    const handle = document.querySelector<HTMLElement>("[data-resize-handle]");
+    expect(handle).toBeInTheDocument();
+    expect(handle).toHaveAttribute("role", "separator");
+    expect(handle).toHaveAttribute("aria-orientation", "vertical");
+    expect(handle).toHaveAttribute("aria-label", "Resize panel");
+  });
+
+  it("does not render a resize handle when resizable is false", () => {
+    render(<Probe defaultOpen />);
+    const handle = document.querySelector<HTMLElement>("[data-resize-handle]");
+    expect(handle).not.toBeInTheDocument();
+  });
+
+  it("uses a CSS variable fallback chain so the live width reaches the panel", () => {
+    render(<Probe defaultOpen resizable width="24rem" />);
+    const panel = document.querySelector<HTMLElement>(
+      '[data-slot="right-side-panel"]',
+    );
+    expect(panel).toBeInTheDocument();
+    const style = panel!.getAttribute("style") ?? "";
+    // The panel's width must reference the provider's live width var so
+    // that pointermove updates the panel width in real time (the original
+    // implementation only wrote the resolved width on pointerup, so the
+    // panel never visually changed during a drag).
+    expect(style).toMatch(/--right-side-panel-resolved-width/);
   });
 });

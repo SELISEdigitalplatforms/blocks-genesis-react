@@ -1,6 +1,6 @@
 export * from "./tabs";
 export * from "./sidebar";
-export * from "./agent-panel";
+export * from "./right-side-panel";
 export * from "./drawer";
 export * from "./pagination";
 export * from "./form";
