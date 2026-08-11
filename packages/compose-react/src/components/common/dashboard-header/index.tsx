@@ -18,6 +18,7 @@ import { useProjectStore } from "@/store";
 import { SidebarContext } from "@/contexts/dashboard-layout/sidebar.context";
 import type { ForwardToPaths } from "@/types";
 import { Button } from "@/components/core/button";
+import { HeaderHeight } from "@/constants/layout.constant";
 
 type DashboardHeaderProps = SideBarMenuProps & {
   forwardedTo?: ForwardToPaths;
@@ -34,7 +35,12 @@ export function DashboardHeader(props: DashboardHeaderProps) {
 
   return (
     <>
-      <header className="relative z-40 flex h-[60px] shrink-0 items-center justify-between gap-4 border-b bg-background px-5 sm:px-6">
+      <header
+        style={{ height: HeaderHeight }}
+        className={
+          "relative z-40 flex shrink-0 items-center justify-between gap-4 border-b bg-background px-5 sm:px-6"
+        }
+      >
         <div className="md:hidden">
           <SidebarMobileView
             redirectPaths={redirectPaths}
