@@ -4,6 +4,11 @@
   "description": "React app-shell composition package for SELISE Genesis OS",
   "author": "SELISE Blocks",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SELISEdigitalplatforms/blocks-genesis-react.git",
+    "directory": "packages/compose-react"
+  },
   "type": "module",
   "sideEffects": false,
   "exports": {
