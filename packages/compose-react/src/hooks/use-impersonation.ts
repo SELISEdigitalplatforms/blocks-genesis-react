@@ -17,6 +17,7 @@ export const useImpersonationStatusChecker = () => {
     queryFn: () => impersonationService.impersonationStatus(),
     staleTime: 0,
     refetchOnMount: "always",
+    refetchOnWindowFocus: "always",
   });
 };
 

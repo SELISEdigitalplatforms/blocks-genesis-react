@@ -35,6 +35,10 @@ export function DashboardLayoutProvider({
   const previousRangeRef = useRef<"desktop" | "tablet" | null>(null);
   const [isTablet, setIsTablet] = useState(false);
 
+  // Remember the user's last manual preference before auto-collapse so it
+  // can be restored when the viewport returns to desktop width.
+  const userPreferenceRef = useRef<boolean | undefined>(undefined);
+
   // Seed the store from the isOpen prop on first mount, when the store
   // has no preference yet. Subsequent isOpen prop changes are ignored
   // (matches the original useState(isOpen) semantics).
@@ -70,6 +74,16 @@ export function DashboardLayoutProvider({
       }
       previousRangeRef.current = currentRange;
 
+      if (currentRange === "tablet") {
+        // Stash the user's manual preference before the auto-collapse
+        // overwrites it, so we can restore it when going back to desktop.
+        userPreferenceRef.current = isLeftSidebarOpen;
+        setLayoutSetting("isLeftSidebarOpen", false);
+      } else if (userPreferenceRef.current !== undefined) {
+        setLayoutSetting("isLeftSidebarOpen", userPreferenceRef.current);
+        userPreferenceRef.current = undefined;
+      }
+
       setIsTablet(currentRange === "tablet");
     };
 
@@ -84,7 +98,7 @@ export function DashboardLayoutProvider({
       clearTimeout(debounceTimer);
       window.removeEventListener("resize", handleResize);
     };
-  }, [isMobile]);
+  }, [isMobile, isLeftSidebarOpen, setLayoutSetting]);
 
   useEffect(() => {
     const menuId = localStorage.getItem("subMenuId");
@@ -106,9 +120,12 @@ export function DashboardLayoutProvider({
   }, [isSidebarOpen, isMobile]);
 
   const toggleSidebar = useCallback(() => {
+    if (isMobile || isTablet) {
+      return;
+    }
     setLayoutSetting("isLeftSidebarOpen", !(isLeftSidebarOpen ?? isOpen));
     setIsSidebarSubMenuOpen(false);
-  }, [isLeftSidebarOpen, isOpen, setLayoutSetting]);
+  }, [isMobile, isTablet, isLeftSidebarOpen, isOpen, setLayoutSetting]);
 
   const closeSidebar = useCallback(() => {
     setLayoutSetting("isLeftSidebarOpen", false);

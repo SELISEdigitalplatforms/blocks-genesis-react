@@ -7,6 +7,7 @@ import {
 import type * as React from "react";
 import type { LayoutProps } from "./layout.types";
 import { DashboardLayoutProvider } from "@/providers/dashboard-layout.provider";
+import { HeaderHeight } from "@/constants/layout.constant";
 
 export interface DashboardLayoutProps extends LayoutProps {
   children?: React.ReactNode;
@@ -22,7 +23,7 @@ export function DashboardLayout({
 }: DashboardLayoutProps) {
   const content = (
     <DashboardLayoutProvider isOpen={true}>
-      <RightSidePanelProvider resizable topOffset="60px">
+      <RightSidePanelProvider resizable topOffset={HeaderHeight}>
         <div className="flex w-full overflow-hidden">
           <SidebarMenuDesktop
             redirectPaths={redirectPaths}

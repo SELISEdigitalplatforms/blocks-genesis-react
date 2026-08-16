@@ -1,10 +1,15 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { useContext } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { SidebarContext } from "@/contexts";
 import { DashboardLayoutProvider } from "@/providers/dashboard-layout.provider";
 import { useLayoutSettingsStore } from "@/store/layout-settings.store";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+vi.mock("@/hooks/use-mobile", () => ({
+  useIsMobile: vi.fn(),
+}));
 
 function Consumer() {
   const ctx = useContext(SidebarContext)!;
@@ -87,6 +92,63 @@ describe("DashboardLayoutProvider", () => {
     fireEvent.click(screen.getByText("toggle"));
     expect(useLayoutSettingsStore.getState().layout.isLeftSidebarOpen).toBe(
       true,
+    );
+  });
+
+  it("updates the store when the viewport auto-collapses to tablet width", async () => {
+    vi.mocked(useIsMobile).mockReturnValue(false);
+
+    // Desktop width: sidebar opens and store gets seeded to true.
+    window.innerWidth = 1280;
+    window.dispatchEvent(new Event("resize"));
+    renderProvider({ isOpen: true });
+    expect(useLayoutSettingsStore.getState().layout.isLeftSidebarOpen).toBe(
+      true,
+    );
+
+    // Shrink past the tablet breakpoint → store should flip to false so it
+    // reflects what the user actually sees, and the manual preference is
+    // stashed for restoration.
+    window.innerWidth = 800;
+    window.dispatchEvent(new Event("resize"));
+    await new Promise((r) => setTimeout(r, 200));
+    expect(screen.getByTestId("open")).toHaveTextContent("false");
+    expect(useLayoutSettingsStore.getState().layout.isLeftSidebarOpen).toBe(
+      false,
+    );
+
+    // Grow back to desktop → user's previous preference (true) is restored.
+    window.innerWidth = 1280;
+    window.dispatchEvent(new Event("resize"));
+    await new Promise((r) => setTimeout(r, 200));
+    expect(screen.getByTestId("open")).toHaveTextContent("true");
+    expect(useLayoutSettingsStore.getState().layout.isLeftSidebarOpen).toBe(
+      true,
+    );
+  });
+
+  it("does not toggle the sidebar while the viewport is shrunk", async () => {
+    vi.mocked(useIsMobile).mockReturnValue(false);
+
+    window.innerWidth = 1280;
+    window.dispatchEvent(new Event("resize"));
+    renderProvider({ isOpen: true });
+    expect(useLayoutSettingsStore.getState().layout.isLeftSidebarOpen).toBe(
+      true,
+    );
+
+    // Shrink into tablet range.
+    window.innerWidth = 800;
+    window.dispatchEvent(new Event("resize"));
+    await new Promise((r) => setTimeout(r, 200));
+    expect(useLayoutSettingsStore.getState().layout.isLeftSidebarOpen).toBe(
+      false,
+    );
+
+    // Toggling while shrunk should not flip the store back to true.
+    fireEvent.click(screen.getByText("toggle"));
+    expect(useLayoutSettingsStore.getState().layout.isLeftSidebarOpen).toBe(
+      false,
     );
   });
 });

@@ -14,15 +14,15 @@ type MenuItemType = Extract<Menu, { type: "menu" }>;
 
 const parentClasses = (isSidebarOpen: boolean, isActive: boolean) =>
   cn(
-    "group relative flex h-10 w-full cursor-pointer items-center gap-3 p-1.5 text-base text-[hsl(var(--low-emphasis))] hover:text-[hsl(var(--high-emphasis))]",
-    isSidebarOpen ? "px-4" : "justify-center px-0",
+    "group relative flex h-10 w-full cursor-pointer items-center p-1.5 text-base text-[hsl(var(--low-emphasis))] transition-[padding,gap] duration-200 hover:text-[hsl(var(--high-emphasis))]",
+    isSidebarOpen ? "gap-3 px-4" : "gap-0 justify-center px-0",
     isActive && "!text-primary",
   );
 
 const childClasses = (isSidebarOpen: boolean, isActive: boolean) =>
   cn(
-    "group relative flex h-10 w-full items-center gap-2 text-base transition-colors",
-    isSidebarOpen ? "px-4 pl-8" : "justify-center px-4",
+    "group relative flex h-10 w-full items-center text-base transition-[padding,gap,color] duration-200",
+    isSidebarOpen ? "gap-2 px-4 pl-8" : "gap-0 justify-center px-4",
     isActive
       ? "!text-primary"
       : "text-[hsl(var(--low-emphasis))] hover:text-[hsl(var(--high-emphasis))]",
@@ -50,7 +50,14 @@ const ChildMenuItem = ({ menu, isSidebarOpen }: ChildMenuItemProps) => {
         )}
       >
         {menu.icon ? <menu.icon className="h-5 w-5 shrink-0" /> : null}
-        {isSidebarOpen ? <span>{menu.name}</span> : null}
+        <span
+          className={cn(
+            "inline-block overflow-hidden whitespace-nowrap transition-all duration-200",
+            isSidebarOpen ? "w-auto opacity-100" : "w-0 opacity-0",
+          )}
+        >
+          {menu.name}
+        </span>
         {isActiveMenu ? (
           <div className="absolute right-0 top-2.5 h-5 w-1 rounded-lg bg-primary" />
         ) : null}
@@ -74,14 +81,19 @@ function DesktopLeafMenuItem({
         <Link
           to={menu.path}
           className={cn(
-            "flex items-center gap-3",
-            !isSidebarOpen && "justify-center",
+            "flex w-full items-center transition-[gap] duration-200",
+            isSidebarOpen ? "gap-3" : "justify-center gap-0",
             menu.disabled && "pointer-events-none opacity-50",
           )}
         >
           {menu.icon ? <menu.icon className="h-5 w-5 shrink-0" /> : null}
-          {isSidebarOpen ? (
-            <span className="relative">
+          <span
+            className={cn(
+              "inline-block overflow-hidden whitespace-nowrap transition-all duration-200",
+              isSidebarOpen ? "w-auto opacity-100" : "w-0 opacity-0",
+            )}
+          >
+            <span className="relative inline-block">
               {menu.name}
               {menu.badge ? (
                 <Badge
@@ -92,7 +104,7 @@ function DesktopLeafMenuItem({
                 </Badge>
               ) : null}
             </span>
-          ) : null}
+          </span>
         </Link>
         {isActiveMenu ? (
           <div className="absolute right-0 top-2.5 h-5 w-1 rounded-lg bg-primary" />
@@ -185,13 +197,18 @@ export function DesktopMenuItem({
         >
           <div
             className={cn(
-              "flex items-center gap-3",
-              !isSidebarOpen && "w-full justify-center",
+              "flex items-center transition-[gap] duration-200",
+              isSidebarOpen ? "gap-3" : "w-full justify-center gap-0",
             )}
           >
             {menu.icon ? <menu.icon className="h-5 w-5 shrink-0" /> : null}
-            <RenderConditionally condition={isSidebarOpen}>
-              <span className="relative">
+            <span
+              className={cn(
+                "inline-block overflow-hidden whitespace-nowrap transition-all duration-200",
+                isSidebarOpen ? "w-auto opacity-100" : "w-0 opacity-0",
+              )}
+            >
+              <span className="relative inline-block">
                 {menu.name}
                 <RenderConditionally condition={!!menu.badge}>
                   <Badge
@@ -202,16 +219,15 @@ export function DesktopMenuItem({
                   </Badge>
                 </RenderConditionally>
               </span>
-            </RenderConditionally>
+            </span>
           </div>
-          <RenderConditionally condition={isSidebarOpen}>
-            <ChevronRight
-              className={cn(
-                "ml-auto h-4 w-4 transition-transform",
-                isOpen && "rotate-90",
-              )}
-            />
-          </RenderConditionally>
+          <ChevronRight
+            className={cn(
+              "ml-auto h-4 w-4 shrink-0 transition-all duration-200",
+              isSidebarOpen ? "opacity-100" : "w-0 opacity-0",
+              isOpen && "rotate-90",
+            )}
+          />
 
           <RenderConditionally condition={isActiveMenu}>
             <ActiveBadge />
