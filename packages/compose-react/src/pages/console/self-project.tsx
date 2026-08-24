@@ -84,6 +84,7 @@ export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
               <ProjectCard
                 project={project.projects[0]}
                 projects={project.projects}
+                isShared={project.isShared}
               />
             )}
           </motion.div>

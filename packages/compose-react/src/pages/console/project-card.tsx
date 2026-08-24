@@ -14,7 +14,6 @@ import {
 } from "@/components/core/tooltip/tooltip";
 import { environmentOptions } from "@/constants/environment-options";
 import type { IProject } from "@/models";
-import { useAuthStore } from "@/store/auth.store";
 import { useProjectStore } from "@/store/project.store";
 import { ChevronRight, Settings2, UsersRound } from "lucide-react";
 import { useNavigate } from "react-router";
@@ -25,12 +24,16 @@ const INLINE_LIMIT = 3;
 type ProjectCardProps = {
   project: IProject;
   projects: IProject[];
+  isShared: boolean;
 };
 
-export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
+export const ProjectCard = ({
+  project,
+  projects,
+  isShared,
+}: ProjectCardProps) => {
   const navigate = useNavigate();
   const { setTenantGroup, setSelectedProject } = useProjectStore();
-  const { user } = useAuthStore();
   const { handleClick, isDisabled, isFetching } = useProjectOverviewRedirect({
     tenantGroupId: project.tenantGroupId,
   });
@@ -72,7 +75,6 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
     ? projects.slice(0, INLINE_LIMIT)
     : projects;
   const overflowCount = projects.length - INLINE_LIMIT;
-  const isOwner = user?.sub === project?.createdBy;
 
   return (
     <Card className="border-border/60 bg-card hover:border-primary/30 group flex h-40 flex-col overflow-hidden rounded-xl border p-4 shadow-sm transition-all duration-200 hover:shadow-md">
@@ -84,8 +86,17 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
         </div>
         <div className="shrink-0">
           <RenderAlternatively
-            condition={isOwner}
+            condition={isShared}
             whenTrue={
+              <Badge
+                variant={"outline"}
+                className="flex items-center gap-1 shrink-0"
+              >
+                <UsersRound size={16} />
+                {"Shared"}
+              </Badge>
+            }
+            whenFalse={
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -101,15 +112,6 @@ export const ProjectCard = ({ project, projects }: ProjectCardProps) => {
                 </TooltipTrigger>
                 <TooltipContent>Configure Project</TooltipContent>
               </Tooltip>
-            }
-            whenFalse={
-              <Badge
-                variant={"outline"}
-                className="flex items-center gap-1 shrink-0"
-              >
-                <UsersRound size={16} />
-                {"Shared"}
-              </Badge>
             }
           />
         </div>
