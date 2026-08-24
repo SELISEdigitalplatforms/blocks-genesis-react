@@ -37,6 +37,7 @@ const envA = {
   tenantGroupId: "tg1",
   itemId: "iA",
   environment: "prod",
+  isShared: false,
 };
 
 const wrap = (ui: ReactNode) =>
@@ -56,24 +57,44 @@ beforeEach(() => {
 
 describe("ProjectCard", () => {
   it("renders the project name and environment chips", () => {
-    wrap(<ProjectCard project={project as never} projects={[envA] as never} />);
+    wrap(
+      <ProjectCard
+        project={project as never}
+        projects={[envA] as never}
+        isShared={false}
+      />,
+    );
     expect(screen.getByText("My Project")).toBeInTheDocument();
   });
 
   it("shows 'No environments' when there are none", () => {
-    wrap(<ProjectCard project={project as never} projects={[]} />);
+    wrap(
+      <ProjectCard project={project as never} projects={[]} isShared={false} />,
+    );
     expect(screen.getByText("No environments")).toBeInTheDocument();
   });
 
   it("configures the project when the settings button is clicked", () => {
-    wrap(<ProjectCard project={project as never} projects={[envA] as never} />);
+    wrap(
+      <ProjectCard
+        project={project as never}
+        projects={[envA] as never}
+        isShared={false}
+      />,
+    );
     fireEvent.click(screen.getAllByRole("button")[0]!);
     expect(h.handleClick).toHaveBeenCalled();
     expect(useProjectStore.getState().selectedTenantGroup).toBe("tg1");
   });
 
   it("navigates to an environment dashboard on chip click", () => {
-    wrap(<ProjectCard project={project as never} projects={[envA] as never} />);
+    wrap(
+      <ProjectCard
+        project={project as never}
+        projects={[envA] as never}
+        isShared={false}
+      />,
+    );
     const buttons = screen.getAllByRole("button");
     fireEvent.click(buttons[buttons.length - 1]!);
     expect(navigate).toHaveBeenCalledWith("/app/iA/dashboard");
@@ -86,7 +107,13 @@ describe("ProjectCard", () => {
       { ...envA, itemId: "i3", environment: "dev" },
       { ...envA, itemId: "i4", environment: "qa" },
     ];
-    wrap(<ProjectCard project={project as never} projects={many as never} />);
+    wrap(
+      <ProjectCard
+        project={project as never}
+        projects={many as never}
+        isShared={false}
+      />,
+    );
     expect(screen.getByText("+1 more")).toBeInTheDocument();
   });
 });
