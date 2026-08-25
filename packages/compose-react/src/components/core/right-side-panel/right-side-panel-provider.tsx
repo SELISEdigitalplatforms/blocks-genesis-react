@@ -40,7 +40,7 @@ export interface RightSidePanelProviderProps {
   syncHash?: boolean;
   /** The hash key (without `#`) used when `syncHash` is enabled. */
   hashKey?: string;
-  /** Keyboard shortcut to toggle the panel. `false` disables it. Default `"mod+j"`. */
+  /** Keyboard shortcut to toggle the panel. `false` disables it. Default `"mod+."`. */
   shortcut?: KeyboardShortcutCombo;
   /** Resolved CSS length for the panel width on desktop. Default `24rem`. */
   width?: number | string;
@@ -67,7 +67,7 @@ export function RightSidePanelProvider({
   onOpenChange,
   syncHash = true,
   hashKey = DEFAULT_HASH_KEY,
-  shortcut = "mod+j",
+  shortcut = "mod+.",
   width = DEFAULT_SIZING_VALUES.width,
   minWidth = DEFAULT_SIZING_VALUES.minWidth,
   maxWidth = DEFAULT_SIZING_VALUES.maxWidth,
@@ -76,7 +76,7 @@ export function RightSidePanelProvider({
   className,
   style,
   topOffset = "0px",
-}: RightSidePanelProviderProps) {
+}: Readonly<RightSidePanelProviderProps>) {
   const isMobile = useIsMobile();
   const isControlled = openProp !== undefined;
   const generatedId = React.useId();
