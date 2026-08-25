@@ -76,7 +76,7 @@ export function RightSidePanelProvider({
   className,
   style,
   topOffset = "0px",
-}: RightSidePanelProviderProps) {
+}: Readonly<RightSidePanelProviderProps>) {
   const isMobile = useIsMobile();
   const isControlled = openProp !== undefined;
   const generatedId = React.useId();
