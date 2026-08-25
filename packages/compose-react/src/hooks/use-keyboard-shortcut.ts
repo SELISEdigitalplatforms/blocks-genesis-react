@@ -66,7 +66,7 @@ function matchesCombo(parsed: ParsedCombo, event: KeyboardEvent): boolean {
 /**
  * Bind a keyboard combo to a handler at the document level.
  *
- * - `combo` follows the `"mod+j" | "ctrl+shift+k" | "escape" | false` syntax.
+ * - `combo` follows the `"mod+." | "ctrl+shift+k" | "escape" | false` syntax.
  *   `mod` resolves to `Cmd` on macOS and `Ctrl` elsewhere. Pass `false` to
  *   disable the listener entirely.
  * - The handler is suppressed when focus is inside an editable element

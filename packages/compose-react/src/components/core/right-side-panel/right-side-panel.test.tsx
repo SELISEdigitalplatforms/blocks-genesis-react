@@ -105,9 +105,9 @@ describe("RightSidePanelProvider", () => {
     expect(screen.queryByText("Assistant")).not.toBeInTheDocument();
   });
 
-  it("toggles via the default mod+j shortcut outside editable elements", async () => {
+  it("toggles via the default mod+. shortcut outside editable elements", async () => {
     render(<Probe />);
-    fireEvent.keyDown(document, { key: "j", ctrlKey: true });
+    fireEvent.keyDown(document, { key: ".", ctrlKey: true });
     await waitFor(() =>
       expect(screen.getByText("Assistant")).toBeInTheDocument(),
     );
@@ -120,13 +120,13 @@ describe("RightSidePanelProvider", () => {
         <Probe />
       </>,
     );
-    fireEvent.keyDown(screen.getByTestId("text"), { key: "j", ctrlKey: true });
+    fireEvent.keyDown(screen.getByTestId("text"), { key: ".", ctrlKey: true });
     expect(screen.queryByText("Assistant")).not.toBeInTheDocument();
   });
 
   it("does not bind the shortcut listener when shortcut=false", () => {
     render(<Probe shortcut={false} />);
-    fireEvent.keyDown(document, { key: "j", metaKey: true });
+    fireEvent.keyDown(document, { key: ".", metaKey: true });
     expect(screen.queryByText("Assistant")).not.toBeInTheDocument();
   });
 });
