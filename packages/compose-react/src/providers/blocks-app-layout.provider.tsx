@@ -37,10 +37,17 @@ export const BlocksAppLayout = ({ children, config }: BlocksAppLayoutProps) => {
     window.process.env.projectBaseUrl =
       window.process.env[projectBaseUrlKey] ?? "";
 
-    const userBaseUrlKey = "BLOCKS_IAM_BASE_URL";
-    window.process.env["userBaseUrl"] = userBaseUrlKey
-      ? window.process?.env[userBaseUrlKey] || ""
-      : "";
+    // When the host app IS blocks-iam, the IAM API is same-origin with this SPA
+    // (the client is built into server/Api/wwwroot and one Kestrel serves both),
+    // so the browser origin is authoritative. BLOCKS_IAM_BASE_URL is baked into
+    // wwwroot at container start, before the app can know which host it will be
+    // served on, so it points at the canonical host even on a per-PR preview —
+    // which would send the preview's own login/me/status calls to shared dev.
+    // Every other app talks to IAM cross-origin and keeps using the config value.
+    window.process.env["userBaseUrl"] =
+      config.name === "blocks-iam"
+        ? window.location.origin
+        : window.process?.env["BLOCKS_IAM_BASE_URL"] || "";
 
     const notificationBaseUrlKey = "BLOCKS_LOGIC_BASE_URL";
     window.process.env["notificationBaseUrl"] = notificationBaseUrlKey

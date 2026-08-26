@@ -428,3 +428,71 @@ describe("HttpClient stream", () => {
     });
   });
 });
+
+describe("HttpClient onError", () => {
+  it("reports a transport failure as transport, with the original error intact", async () => {
+    const onError = vi.fn();
+    fetchMock.mockRejectedValueOnce(new TypeError("Failed to fetch"));
+
+    await expect(makeClient({ onError }).get("/thing")).rejects.toBeTruthy();
+
+    expect(onError).toHaveBeenCalledTimes(1);
+    const failure = onError.mock.calls[0]![0];
+    expect(failure).toMatchObject({
+      url: "https://api.test/thing",
+      method: "GET",
+      transport: true,
+    });
+    // The whole point of the hook: the pre-normalisation error is still available here, even
+    // though the caller only ever sees an HttpError(500).
+    expect(failure.error).toBeInstanceOf(TypeError);
+    expect(failure.normalized.status).toBe(500);
+  });
+
+  it("reports a server response as not transport", async () => {
+    const onError = vi.fn();
+    fetchMock.mockResolvedValueOnce(
+      res({ status: 404, contentType: "application/json", json: {} }),
+    );
+
+    await expect(makeClient({ onError }).get("/thing")).rejects.toBeTruthy();
+
+    expect(onError.mock.calls[0]![0]).toMatchObject({
+      transport: false,
+      method: "GET",
+    });
+  });
+
+  it("reports stream failures too", async () => {
+    const onError = vi.fn();
+    fetchMock.mockRejectedValueOnce(new TypeError("Failed to fetch"));
+
+    await expect(
+      makeClient({ onError }).stream("/stream", {}),
+    ).rejects.toBeTruthy();
+
+    expect(onError.mock.calls[0]![0]).toMatchObject({
+      method: "POST",
+      transport: true,
+    });
+  });
+
+  it("never lets a throwing reporter change what the caller sees", async () => {
+    const onError = vi.fn(() => {
+      throw new Error("reporter is broken");
+    });
+    fetchMock.mockRejectedValueOnce(new TypeError("Failed to fetch"));
+
+    await expect(makeClient({ onError }).get("/thing")).rejects.toMatchObject({
+      status: 500,
+    });
+  });
+
+  it("is optional", async () => {
+    fetchMock.mockRejectedValueOnce(new TypeError("Failed to fetch"));
+
+    await expect(makeClient().get("/thing")).rejects.toMatchObject({
+      status: 500,
+    });
+  });
+});

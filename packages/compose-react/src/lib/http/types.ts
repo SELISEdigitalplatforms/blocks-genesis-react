@@ -1,4 +1,5 @@
 import type { AuthTokenPair } from "@/models/auth.model";
+import type { HttpError } from "./error";
 
 export type HeadersInitValue =
   [string, string][] | Record<string, string> | Headers;
@@ -37,6 +38,26 @@ export type RequestQueueItem<T> = BaseRequestQueueItem<T> & {
   requestOption: RequestOptions;
 };
 
+/**
+ * What a request failure looked like, reported before the error is normalised.
+ *
+ * `normalizeRequestError` turns everything -- including a `fetch` that never reached the server --
+ * into an `HttpError` with status 500, so by the time a caller sees the error it can no longer tell
+ * a real server fault from an unreachable API. `transport` preserves that distinction, which is the
+ * difference between an error worth alerting on and one the server has already reported itself.
+ */
+export interface HttpRequestFailure {
+  /** The error as thrown, before normalisation. */
+  error: unknown;
+  /** What the caller will actually receive. */
+  normalized: HttpError;
+  /** Absolute request URL. */
+  url: string;
+  method: RequestOptions["method"];
+  /** True when the request never produced an HTTP response (DNS, CORS, TLS, offline, abort). */
+  transport: boolean;
+}
+
 export interface HttpClientConfig {
   baseURL: string | (() => string);
   blocksKey: string | (() => string);
@@ -48,4 +69,9 @@ export interface HttpClientConfig {
   loginRedirectPath?: string;
   /** Set false to fully delegate auth-failure handling to onUnauthorized instead of auto-redirecting. Defaults to true. */
   autoRedirectOnAuthFailure?: boolean;
+  /**
+   * Called for every failed request. Observational only -- the error is thrown to the caller either
+   * way, and anything this throws is swallowed, so a reporting failure can never break a request.
+   */
+  onError?: (failure: HttpRequestFailure) => void;
 }
