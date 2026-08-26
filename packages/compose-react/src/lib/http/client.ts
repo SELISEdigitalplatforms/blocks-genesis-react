@@ -1,4 +1,5 @@
 import { getRuntimeEnv } from "@/lib/runtime-env";
+import { resolveBaseUrl } from "./util";
 import { AUTH_ENDPOINTS } from "@/constants/endpoint.constant";
 import type { AuthTokenPair } from "@/models";
 import type {
@@ -116,7 +117,11 @@ export class HttpClient {
       if (this.onTokenRefresh) await this.onTokenRefresh();
 
       const clientId = getRuntimeEnv("BLOCKS_OIDC_CLIENT_ID");
-      const baseUrl = getRuntimeEnv("BLOCKS_IAM_BASE_URL");
+      // Resolve IAM the same way iamClient does, so a blocks-iam preview refreshes
+      // against itself rather than shared dev. Deliberately NOT this.getBaseURL():
+      // non-IAM apps refresh against IAM, not against their own service. Falls back
+      // to BLOCKS_IAM_BASE_URL when userBaseUrl has not been set yet.
+      const baseUrl = resolveBaseUrl("user");
       const blocksKey = this.getBlocksKey();
 
       if (!clientId || !baseUrl || !blocksKey) {
