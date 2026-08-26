@@ -1,12 +1,9 @@
 import { ErrorBoundary, Provider } from "@rollbar/react";
-import Rollbar from "rollbar";
 import { useEffect, useMemo, type ComponentType, type ReactNode } from "react";
 import { getQueryClient } from "@/providers/query-client";
 import { attachQueryErrorReporting } from "./report-query-errors";
-import {
-  createRollbarConfig,
-  type RollbarConfigOptions,
-} from "./rollbar.config";
+import { type RollbarConfigOptions } from "./rollbar.config";
+import { getRollbar } from "./rollbar.instance";
 
 export interface RollbarFallbackProps {
   error: Error | null;
@@ -64,10 +61,11 @@ export const RollbarProvider = ({
   fallback = DefaultFallback,
   ...configOptions
 }: RollbarProviderProps) => {
-  // One instance for the life of the app. Reconstructing it on re-render would reinstall the
-  // window handlers and lose Rollbar's own telemetry buffer.
+  // Shared with anything reporting from outside the tree, and stable for the life of the app:
+  // reconstructing it on re-render would reinstall the window handlers and drop Rollbar's own
+  // telemetry buffer.
   const rollbar = useMemo(
-    () => new Rollbar(createRollbarConfig(configOptions)),
+    () => getRollbar(configOptions),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );

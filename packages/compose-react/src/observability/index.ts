@@ -5,6 +5,7 @@
  * module graph, and apps that have not adopted reporting should not pay for it.
  */
 export * from "./rollbar.config";
+export * from "./rollbar.instance";
 export * from "./rollbar.provider";
 export * from "./report-http-errors";
 export * from "./report-query-errors";
