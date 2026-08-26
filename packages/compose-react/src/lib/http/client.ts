@@ -4,6 +4,7 @@ import { AUTH_ENDPOINTS } from "@/constants/endpoint.constant";
 import type { AuthTokenPair } from "@/models";
 import type {
   HttpClientConfig,
+  HttpRequestFailure,
   HttpClientOptions,
   HeadersInitValue,
   RequestOptions,
@@ -25,6 +26,7 @@ export class HttpClient {
   private excludedPaths: string[];
   private loginRedirectPath: string;
   private autoRedirectOnAuthFailure: boolean;
+  private onError?: (failure: HttpRequestFailure) => void;
 
   // Per-instance, not module-level — two HttpClient instances pointed at
   // different baseURLs/tenants must never share a refresh lock.
@@ -39,6 +41,7 @@ export class HttpClient {
     this.loginRedirectPath =
       config.loginRedirectPath ?? DEFAULT_LOGIN_REDIRECT_PATH;
     this.autoRedirectOnAuthFailure = config.autoRedirectOnAuthFailure ?? true;
+    this.onError = config.onError;
   }
 
   private getBaseURL(): string {
@@ -197,6 +200,41 @@ export class HttpClient {
     return new HttpError(500, { errors: { general: "Something went wrong" } });
   }
 
+  /**
+   * Normalises a request failure and hands it to `onError` before it is thrown.
+   *
+   * Reporting happens here rather than at the call sites because this is the last point at which
+   * the original error still exists: `normalizeRequestError` collapses everything to an
+   * `HttpError` with status 500, so afterwards a transport failure is indistinguishable from a
+   * server fault. Anything `onError` throws is swallowed -- a reporting failure must never turn a
+   * handled request failure into an unhandled one.
+   */
+  private failRequest(
+    error: unknown,
+    url: string,
+    method: RequestOptions["method"],
+  ): HttpError {
+    const normalized = this.normalizeRequestError(error);
+
+    if (this.onError) {
+      try {
+        this.onError({
+          error,
+          normalized,
+          url,
+          method,
+          // Not already an HttpError means no HTTP response ever came back: DNS, CORS, TLS,
+          // offline, abort, or a bug in this client.
+          transport: !(error instanceof HttpError),
+        });
+      } catch {
+        // Intentionally swallowed.
+      }
+    }
+
+    return normalized;
+  }
+
   private async parseSuccessResponse<T>(response: Response): Promise<T> {
     const contentType = response.headers.get("content-type")?.toLowerCase();
     if (!contentType) return { success: true, status: response.status } as T;
@@ -268,7 +306,7 @@ export class HttpClient {
 
       return this.parseSuccessResponse<T>(response);
     } catch (error) {
-      throw this.normalizeRequestError(error);
+      throw this.failRequest(error, fullUrl, method);
     }
   }
 
@@ -365,7 +403,7 @@ export class HttpClient {
 
       return response.body;
     } catch (error) {
-      throw this.normalizeRequestError(error);
+      throw this.failRequest(error, fullUrl, "POST");
     }
   }
 }

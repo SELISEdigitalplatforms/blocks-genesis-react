@@ -38,6 +38,8 @@ export type RuntimeKey =
   | "BLOCKS_PUBLIC_API_BASE_URL"
   | "BLOCKS_BASE_DOMAIN"
   | "BLOCKS_ALLOWED_SERVICES"
+  | "BLOCKS_ROLLBAR_CLIENT_TOKEN"
+  | "BLOCKS_ROLLBAR_ENV"
   | "projectBaseUrl"
   | "userBaseUrl"
   | "notificationBaseUrl";

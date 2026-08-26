@@ -47,6 +47,11 @@
       "import": "./dist/hooks/index.js",
       "require": "./dist/hooks/index.cjs"
     },
+    "./observability": {
+      "types": "./dist/observability/index.d.ts",
+      "import": "./dist/observability/index.js",
+      "require": "./dist/observability/index.cjs"
+    },
     "./lib": {
       "types": "./dist/lib/index.d.ts",
       "import": "./dist/lib/index.js",
@@ -95,6 +100,7 @@
     "@hookform/resolvers": "^5.4.3",
     "@microsoft/signalr": "^10.0.0",
     "@radix-ui/react-accordion": "^1.2.20",
+    "@rollbar/react": "^1.0.0",
     "@radix-ui/react-alert-dialog": "^1.1.23",
     "@radix-ui/react-aspect-ratio": "^1.1.15",
     "@radix-ui/react-avatar": "^1.2.6",
@@ -138,6 +144,7 @@
     "react-hook-form": "^7.83.0",
     "react-resizable-panels": "^3.0.6",
     "recharts": "2.15.4",
+    "rollbar": "^3.1.0",
     "tailwind-merge": "^3.6.0",
     "vaul": "^1.1.2",
     "zod": "^3.25.76"
