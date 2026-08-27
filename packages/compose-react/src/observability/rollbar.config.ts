@@ -34,6 +34,19 @@ const DEFAULT_IGNORED_MESSAGES = [
   "Script error.",
 ];
 
+/**
+ * Stands in for a real token when none is seeded.
+ *
+ * `@rollbar/react`'s `Provider` rejects an instance whose `options.accessToken` is falsy -- it
+ * throws "`instance` must be a configured instance of Rollbar" from its own constructor, which is
+ * above the error boundary, so an unconfigured app renders nothing at all. Reporting is switched
+ * off by `enabled`, not by the token: the notifier refuses to send before it reaches a transport
+ * and telemetry instrumentation is never installed. A placeholder therefore costs nothing and
+ * keeps reporting genuinely optional, which is the point -- no tier should go blank because a
+ * secret has not been seeded yet.
+ */
+export const UNCONFIGURED_ACCESS_TOKEN = "rollbar-reporting-disabled";
+
 export interface RollbarConfigOptions {
   /**
    * The app reporting, e.g. `"blocks-os"`. Pass the same name the app already gives
@@ -60,7 +73,7 @@ export const createRollbarConfig = (
   const accessToken = getRuntimeEnv("BLOCKS_ROLLBAR_CLIENT_TOKEN");
 
   return {
-    accessToken,
+    accessToken: accessToken || UNCONFIGURED_ACCESS_TOKEN,
     // Reporting is opt-in on a seeded token. Unconfigured environments -- developer machines,
     // tests, any tier not yet seeded -- get an inert client rather than a broken one, so the error
     // boundary still behaves exactly as it does in production.
