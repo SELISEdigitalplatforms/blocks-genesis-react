@@ -9,7 +9,10 @@ vi.mock("@/lib/runtime-env", () => ({
   getRuntimeEnv: (key: string) => h.runtimeEnv[key] ?? "",
 }));
 
-import { createRollbarConfig } from "./rollbar.config";
+import {
+  createRollbarConfig,
+  UNCONFIGURED_ACCESS_TOKEN,
+} from "./rollbar.config";
 
 describe("createRollbarConfig", () => {
   beforeEach(() => {
@@ -18,9 +21,17 @@ describe("createRollbarConfig", () => {
 
   it("stays disabled until a client token is seeded", () => {
     expect(createRollbarConfig({ service: "blocks-os" })).toMatchObject({
-      accessToken: "",
       enabled: false,
     });
+  });
+
+  // An empty token is what `@rollbar/react`'s Provider rejects outright, and it rejects it from a
+  // constructor that sits above the error boundary -- so the unconfigured case has to carry a
+  // stand-in or the whole app renders nothing.
+  it("still carries a token when unconfigured, so the provider can be mounted", () => {
+    expect(createRollbarConfig({ service: "blocks-os" }).accessToken).toBe(
+      UNCONFIGURED_ACCESS_TOKEN,
+    );
   });
 
   it("enables reporting once a token is present", () => {
