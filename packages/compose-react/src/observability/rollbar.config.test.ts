@@ -47,7 +47,7 @@ describe("createRollbarConfig", () => {
 
   it("identifies the service and which half of it is reporting", () => {
     expect(
-      createRollbarConfig({ service: "blocks-iam" }).payload,
+      createRollbarConfig({ service: "blocks-iam" }).payload?.custom,
     ).toMatchObject({ service: "blocks-iam", component: "client" });
   });
 
