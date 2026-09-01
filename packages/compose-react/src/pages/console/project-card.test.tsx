@@ -87,6 +87,24 @@ describe("ProjectCard", () => {
     expect(useProjectStore.getState().selectedTenantGroup).toBe("tg1");
   });
 
+  it("opens a shared project from the icon beside its Shared tag", () => {
+    wrap(
+      <ProjectCard
+        project={project as never}
+        projects={[envA] as never}
+        isShared
+      />,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Open shared project" }),
+    );
+
+    expect(h.handleClick).toHaveBeenCalled();
+    expect(useProjectStore.getState().selectedTenantGroup).toBe("tg1");
+    expect(screen.getByText("Shared")).toBeInTheDocument();
+  });
+
   it("navigates to an environment dashboard on chip click", () => {
     wrap(
       <ProjectCard
