@@ -87,10 +87,18 @@ export const createRollbarConfig = (
       ...(options.extraIgnoredMessages ?? []),
     ],
     payload: {
-      // `service` identifies the app, `component` which half of it. Two fields rather than one
-      // `blocks-os-client` string, so either can be filtered on without parsing.
-      service: options.service,
-      component: "client",
+      // Under `custom`, not at the root of `data`. Rollbar recognises a fixed set of top-level
+      // fields and gives unknown ones "no special handling" -- they are stored but not indexed as
+      // custom metadata, so a root-level `service` is neither queryable nor in the same place the
+      // .NET side puts it. Here both sides land at `data.custom.*`, which is also where a webhook
+      // receiver finds them: `data.item.last_occurrence.custom.service`.
+      //
+      // `service` identifies the app and `component` which half of it, as two fields rather than
+      // one `blocks-os-client` string, so either can be filtered on without parsing.
+      custom: {
+        service: options.service,
+        component: "client",
+      },
       client: {
         javascript: {
           source_map_enabled: Boolean(options.codeVersion),

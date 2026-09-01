@@ -88,13 +88,31 @@ export const ProjectCard = ({
           <RenderAlternatively
             condition={isShared}
             whenTrue={
-              <Badge
-                variant={"outline"}
-                className="flex items-center gap-1 shrink-0"
-              >
-                <UsersRound size={16} />
-                {"Shared"}
-              </Badge>
+              <div className="flex items-center gap-1">
+                <Badge
+                  variant={"outline"}
+                  className="flex items-center gap-1 shrink-0"
+                >
+                  <UsersRound size={16} />
+                  {"Shared"}
+                </Badge>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      data-testid="project-card-open-shared"
+                      variant="ghost"
+                      className="text-primary hover:bg-primary/10 h-8 w-8 shrink-0 transition-colors"
+                      disabled={isDisabled || isFetching}
+                      onClick={onConfigureClick}
+                      aria-label="Open shared project"
+                    >
+                      <Settings2 size={16} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Open Project</TooltipContent>
+                </Tooltip>
+              </div>
             }
             whenFalse={
               <Tooltip>
