@@ -5,3 +5,4 @@ export * from "./user.model";
 export * from "./notification.model";
 export * from "./organization.model";
 export * from "./service-registry.model";
+export * from "./signup.model";
