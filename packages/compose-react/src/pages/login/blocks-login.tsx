@@ -15,6 +15,7 @@ export const BlocksLoginPage = ({
   loginLabel = "Log in to your account",
   docsUrl = "https://docs.seliseblocks.com/",
   footerLink = { label: "Visit Blocks", url: "https://seliseblocks.com" },
+  signUpUrl,
   carouselItems,
 }: BlocksLoginPageProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -121,7 +122,7 @@ export const BlocksLoginPage = ({
         }}
       />
 
-      <LoginHeader />
+      <LoginHeader signUpUrl={signUpUrl} />
 
       <main className="main">
         <div className="col-left">
@@ -179,6 +180,24 @@ export const BlocksLoginPage = ({
               </svg>
             </a>
           </div>
+          {signUpUrl && (
+            <p className="cta-signup">
+              Not a member?{" "}
+              <a href={signUpUrl} className="cta-signup-link">
+                Sign up
+                <svg
+                  width="11"
+                  height="11"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </a>
+            </p>
+          )}
         </div>
 
         <div className="col-right">

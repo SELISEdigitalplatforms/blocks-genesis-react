@@ -38,6 +38,8 @@ export interface BlocksLoginPageProps {
   loginLabel?: string;
   docsUrl?: string;
   footerLink?: { label: string; url: string };
+  /** IAM signup page URL. Omitted when the tenant has signup switched off. */
+  signUpUrl?: string;
   // Was LoginCarouselItem[] — widened to accept either shape
   carouselItems?: (LoginCarouselItem | BlocksProduct)[];
 }
