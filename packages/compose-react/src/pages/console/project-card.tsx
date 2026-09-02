@@ -25,12 +25,22 @@ type ProjectCardProps = {
   project: IProject;
   projects: IProject[];
   isShared: boolean;
+  /**
+   * Whether the viewer may open the project-overview shell.
+   *
+   * False for a shared project whose owner has granted no menu: that route admits nobody
+   * without a grant and redirects straight back to the console, so the button reads as a
+   * page that refuses to load rather than as a permissions boundary. Defaults to true —
+   * an owner holds every menu implicitly.
+   */
+  canOpen?: boolean;
 };
 
 export const ProjectCard = ({
   project,
   projects,
   isShared,
+  canOpen = true,
 }: ProjectCardProps) => {
   const navigate = useNavigate();
   const { setTenantGroup, setSelectedProject } = useProjectStore();
@@ -96,22 +106,24 @@ export const ProjectCard = ({
                   <UsersRound size={16} />
                   {"Shared"}
                 </Badge>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      size="icon"
-                      data-testid="project-card-open-shared"
-                      variant="ghost"
-                      className="text-primary hover:bg-primary/10 h-8 w-8 shrink-0 transition-colors"
-                      disabled={isDisabled || isFetching}
-                      onClick={onConfigureClick}
-                      aria-label="Open shared project"
-                    >
-                      <Settings2 size={16} />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Open Project</TooltipContent>
-                </Tooltip>
+                {canOpen && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="icon"
+                        data-testid="project-card-open-shared"
+                        variant="ghost"
+                        className="text-primary hover:bg-primary/10 h-8 w-8 shrink-0 transition-colors"
+                        disabled={isDisabled || isFetching}
+                        onClick={onConfigureClick}
+                        aria-label="Open shared project"
+                      >
+                        <Settings2 size={16} />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Open Project</TooltipContent>
+                  </Tooltip>
+                )}
               </div>
             }
             whenFalse={

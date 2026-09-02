@@ -32,6 +32,15 @@ export interface IProjectGroup {
   projects: IProject[];
   nonSharedProject: IProject[];
   isShared: boolean;
+  /**
+   * The caller's `menu::action` grants in this group, unioned across their environments.
+   * Empty for a shared group whose owner has granted nothing; empty as well for a group the
+   * caller owns, where ownership already implies everything.
+   *
+   * Optional because an API older than the field omits it entirely — read a missing value as
+   * "unknown", never as "nothing granted".
+   */
+  accessPolicies?: string[];
 }
 
 export interface IEnvRepository {

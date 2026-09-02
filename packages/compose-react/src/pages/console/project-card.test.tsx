@@ -105,6 +105,22 @@ describe("ProjectCard", () => {
     expect(screen.getByText("Shared")).toBeInTheDocument();
   });
 
+  it("hides the open icon on a shared project with nothing granted", () => {
+    wrap(
+      <ProjectCard
+        project={project as never}
+        projects={[envA] as never}
+        isShared
+        canOpen={false}
+      />,
+    );
+
+    expect(screen.getByText("Shared")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Open shared project" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("navigates to an environment dashboard on chip click", () => {
     wrap(
       <ProjectCard
