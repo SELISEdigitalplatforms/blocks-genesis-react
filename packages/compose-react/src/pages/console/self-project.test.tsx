@@ -11,8 +11,16 @@ vi.mock("@/components/common/project", () => ({
   ProjectCardLoadingSkeleton: () => <div data-testid="skeleton" />,
 }));
 vi.mock("./project-card", () => ({
-  ProjectCard: ({ project }: { project: { name: string } }) => (
-    <div data-testid="project-card">{project.name}</div>
+  ProjectCard: ({
+    project,
+    canOpen,
+  }: {
+    project: { name: string };
+    canOpen?: boolean;
+  }) => (
+    <div data-testid="project-card" data-can-open={String(canOpen)}>
+      {project.name}
+    </div>
   ),
 }));
 vi.mock("./add-project-card", () => ({
@@ -25,6 +33,12 @@ vi.mock("./console-create", () => ({
 const group = (id: string, name: string) => ({
   tenantGroupId: id,
   projects: [{ tenantId: id, name }],
+});
+
+const sharedGroup = (id: string, name: string, accessPolicies?: string[]) => ({
+  ...group(id, name),
+  isShared: true,
+  accessPolicies,
 });
 
 describe("SelfProject", () => {
@@ -83,5 +97,27 @@ describe("SelfProject", () => {
         "Please delete an existing project to create a new one.",
       ),
     ).toBeInTheDocument();
+  });
+
+  it("lets a card be opened unless it is shared with nothing granted", () => {
+    h.getProjects.mockReturnValue({
+      data: [
+        group("g1", "Owned"),
+        sharedGroup("g2", "Granted", ["people::view"]),
+        sharedGroup("g3", "Grantless", []),
+        sharedGroup("g4", "Unknown"),
+      ],
+      isLoading: false,
+      isFetching: false,
+    });
+
+    render(<SelfProject canCreateProject />);
+
+    const canOpen = screen
+      .getAllByTestId("project-card")
+      .map((card) => card.getAttribute("data-can-open"));
+
+    // The last is an API older than `accessPolicies`: unknown reads as open, not as denied.
+    expect(canOpen).toEqual(["true", "true", "false", "true"]);
   });
 });

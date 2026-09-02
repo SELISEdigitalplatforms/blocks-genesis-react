@@ -1,5 +1,6 @@
 import { ProjectCardLoadingSkeleton } from "@/components/common/project";
 import { useGetProjects } from "@/hooks/use-project";
+import type { IProjectGroup } from "@/models";
 import { motion } from "framer-motion";
 import { AddProjectCard } from "./add-project-card";
 import ConsoleCreateProject from "./console-create";
@@ -18,6 +19,19 @@ const cardVariants = {
     },
   }),
 };
+
+/**
+ * Whether the card should offer a way into the project-overview shell.
+ *
+ * A group the caller owns always does. A shared one does only while the owner has granted at
+ * least one menu: the overview route turns a grantless contributor around at the door, so
+ * offering the button there just reloads the console under them.
+ *
+ * `accessPolicies` missing altogether means an API older than the field, not an empty grant —
+ * keep the button rather than take it away on a guess.
+ */
+const canOpenProject = (group: IProjectGroup) =>
+  !group.isShared || !group.accessPolicies || group.accessPolicies.length > 0;
 
 const SelfProjectLoading = () => {
   return (
@@ -85,6 +99,7 @@ export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
                 project={project.projects[0]}
                 projects={project.projects}
                 isShared={project.isShared}
+                canOpen={canOpenProject(project)}
               />
             )}
           </motion.div>

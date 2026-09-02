@@ -1,5 +1,16 @@
 # @seliseblocks/genesis-os
 
+## 4.3.1
+
+### Patch Changes
+
+- Hide the open-project icon on a shared project card when the owner has granted the viewer no
+  menu. The project-overview route admits nobody without a grant and redirects back to the
+  console, so the icon looked like a page that refused to load. `IProjectGroup` now carries the
+  `accessPolicies` the API already returned, and `ProjectCard` takes a `canOpen` prop (default
+  `true`). A response without `accessPolicies` at all is read as unknown, not as denied, so an
+  older API keeps the previous behaviour.
+
 ## 4.2.0
 
 ### Minor Changes
