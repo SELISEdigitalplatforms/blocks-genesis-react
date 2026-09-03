@@ -122,7 +122,7 @@ export const BlocksLoginPage = ({
         }}
       />
 
-      <LoginHeader signUpUrl={signUpUrl} />
+      <LoginHeader />
 
       <main className="main">
         <div className="col-left">

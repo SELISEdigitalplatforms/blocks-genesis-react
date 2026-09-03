@@ -26,7 +26,27 @@ const OPTIONS = {
 
 const OPTION_ORDER: ThemeOption[] = ["system", "light", "dark"];
 
-export function ThemeSwitcher() {
+/** Layout, positioning and focus behavior — kept regardless of `className`. */
+const TRIGGER_BASE_CLASSES =
+  "relative z-50 inline-flex h-9 items-center justify-center gap-2 px-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+/** Default typography, dropped entirely when the caller supplies its own `className`. */
+const TRIGGER_DEFAULT_TYPOGRAPHY_CLASSES =
+  "text-sm font-medium text-muted-foreground hover:text-foreground";
+
+export type ThemeSwitcherProps = {
+  /**
+   * Replaces the default typography (font size/weight/color) so the trigger can match a
+   * surrounding nav's own styling. Layout, positioning and the focus ring are unaffected.
+   */
+  className?: string;
+  /** Set to false where the surrounding nav already reads as a menu (e.g. a bespoke navbar). */
+  showChevron?: boolean;
+};
+
+export function ThemeSwitcher({
+  className,
+  showChevron = true,
+}: ThemeSwitcherProps = {}) {
   const { theme, setTheme } = useTheme();
   const { Icon: ThemeIcon, label: themeLabel } = OPTIONS[theme];
 
@@ -36,14 +56,19 @@ export function ThemeSwitcher() {
         <button
           type="button"
           aria-label="Change theme"
-          className="relative z-50 inline-flex h-9 items-center justify-center gap-2 px-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className={cn(
+            TRIGGER_BASE_CLASSES,
+            className ?? TRIGGER_DEFAULT_TYPOGRAPHY_CLASSES,
+          )}
         >
           <ThemeIcon className="h-4 w-4" aria-hidden />
           <span>{themeLabel}</span>
-          <ChevronDown
-            className="h-3.5 w-3.5 text-muted-foreground"
-            aria-hidden
-          />
+          {showChevron && (
+            <ChevronDown
+              className="h-3.5 w-3.5 text-muted-foreground"
+              aria-hidden
+            />
+          )}
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-40">
@@ -62,7 +87,10 @@ export function ThemeSwitcher() {
               <DropdownMenuRadioItem
                 key={value}
                 value={value}
-                className="gap-2 py-2"
+                className={cn(
+                  "gap-2 border border-transparent py-2 hover:border-input",
+                  isActive && "text-primary",
+                )}
               >
                 <Icon
                   className={cn(
@@ -71,7 +99,9 @@ export function ThemeSwitcher() {
                   )}
                   aria-hidden
                 />
-                <span className={cn(isActive && "font-medium")}>{label}</span>
+                <span className={cn(isActive && "text-foreground font-medium")}>
+                  {label}
+                </span>
               </DropdownMenuRadioItem>
             );
           })}
