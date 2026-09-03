@@ -176,18 +176,6 @@ export const blocksLoginStyles = `
 .blocksLogin-page .nav-link:hover { color: var(--fg); text-shadow: 0 0 12px var(--accent-glow); }
 .blocksLogin-page .nav-link:hover::after { width: 100%; }
 
-.blocksLogin-page .nav-cta {
-  font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
-  font-weight: 600; color: var(--accent2); text-decoration: none;
-  padding: 7px 16px; border-radius: 6px;
-  border: 1px solid rgba(0,102,178,0.35); background: rgba(0,102,178,0.06);
-  transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-}
-.blocksLogin-page .nav-cta:hover {
-  background: rgba(0,102,178,0.12); border-color: var(--accent);
-  box-shadow: 0 0 12px rgba(0,102,178,0.12);
-}
-
 .blocksLogin-page .main {
   flex: 1; min-height: 0; display: grid;
   grid-template-columns: 1fr 400px; gap: 56px;
@@ -504,7 +492,6 @@ export const blocksLoginStyles = `
   .blocksLogin-page .feature-pill { padding: 5px 10px; font-size: 0.58rem; }
   .blocksLogin-page .cta-row { gap: 18px; }
   .blocksLogin-page .cta-signup { font-size: 0.78rem; }
-  .blocksLogin-page .nav-cta { padding: 6px 12px; font-size: 0.62rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

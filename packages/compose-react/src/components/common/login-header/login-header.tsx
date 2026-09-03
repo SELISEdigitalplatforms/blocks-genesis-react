@@ -6,15 +6,12 @@ export type LoginHeaderProps = {
   docsUrl?: string;
   blocksUrl?: string;
   githubUrl?: string;
-  /** IAM signup page URL. The pill is omitted entirely when this is absent. */
-  signUpUrl?: string;
 };
 
 export const LoginHeader = ({
   docsUrl = "https://docs.seliseblocks.com/",
   blocksUrl = "https://seliseblocks.com",
   githubUrl = "https://github.com/SELISEdigitalplatforms",
-  signUpUrl,
 }: LoginHeaderProps) => {
   const {
     config: { appLogoUrl },
@@ -58,12 +55,10 @@ export const LoginHeader = ({
         >
           GitHub
         </a>
-        {signUpUrl && (
-          <a href={signUpUrl} className="nav-cta">
-            Sign up
-          </a>
-        )}
-        <ThemeSwitcher />
+        <ThemeSwitcher
+          className="nav-link inline-flex items-center gap-1.5"
+          showChevron={false}
+        />
       </div>
     </nav>
   );
