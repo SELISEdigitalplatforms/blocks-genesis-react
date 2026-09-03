@@ -1,41 +1,62 @@
-import { Monitor, Moon, Sun, type LucideIcon } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/core/tabs/tabs";
+import { ChevronDown, Monitor, Moon, Sun, type LucideIcon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/core/dropdown-menu/dropdown-menu";
 import { useTheme } from "@/hooks/use-theme";
 
 type ThemeOption = "light" | "dark" | "system";
 
-const OPTIONS: Array<{
-  value: ThemeOption;
-  Icon: LucideIcon;
-  label: string;
-}> = [
-  { value: "system", Icon: Monitor, label: "Auto" },
-  { value: "light", Icon: Sun, label: "Light" },
-  { value: "dark", Icon: Moon, label: "Dark" },
-];
+const OPTIONS = {
+  system: { Icon: Monitor, label: "Auto" },
+  light: { Icon: Sun, label: "Light" },
+  dark: { Icon: Moon, label: "Dark" },
+} satisfies Record<
+  ThemeOption,
+  {
+    Icon: LucideIcon;
+    label: string;
+  }
+>;
+
+const OPTION_ORDER: ThemeOption[] = ["system", "light", "dark"];
 
 export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
+  const ThemeIcon = OPTIONS[theme].Icon;
 
   return (
-    <Tabs
-      value={theme}
-      onValueChange={(value) => setTheme(value as ThemeOption)}
-    >
-      <TabsList className="h-auto gap-0.5 rounded-md !bg-transparent p-0.5">
-        {OPTIONS.map(({ value, Icon, label }) => (
-          <TabsTrigger
-            key={value}
-            value={value}
-            className="group h-auto rounded-sm px-2 py-1 text-xs font-medium data-[state=active]:bg-[hsl(var(--primary)/0.1)] data-[state=active]:text-[hsl(var(--primary))] data-[state=inactive]:text-[hsl(var(--muted-foreground)/0.9)] data-[state=active]:shadow-sm data-[state=inactive]:hover:text-[hsl(var(--foreground)/0.9)]"
-          >
-            <Icon size={13} aria-hidden />
-            <span className="ml-1.5 hidden group-data-[state=active]:inline">
-              {label}
-            </span>
-          </TabsTrigger>
-        ))}
-      </TabsList>
-    </Tabs>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-label="Change theme"
+          className="relative z-50 inline-flex h-9 items-center justify-center gap-1 rounded-full border border-transparent px-2.5 text-muted-foreground transition-all hover:border-input hover:bg-accent hover:text-accent-foreground hover:shadow-sm"
+        >
+          <ThemeIcon className="h-4 w-4" aria-hidden />
+          <ChevronDown className="h-4 w-4" aria-hidden />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuRadioGroup
+          value={theme}
+          onValueChange={(value) => setTheme(value as ThemeOption)}
+        >
+          {OPTION_ORDER.map((value) => {
+            const { Icon, label } = OPTIONS[value];
+
+            return (
+              <DropdownMenuRadioItem key={value} value={value}>
+                <Icon aria-hidden />
+                {label}
+              </DropdownMenuRadioItem>
+            );
+          })}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
