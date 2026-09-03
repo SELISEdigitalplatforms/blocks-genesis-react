@@ -41,7 +41,7 @@ const SEARCH_OPTIONS = {
 };
 
 export const useProjectListState = (projectGroups: IProjectGroup[]) => {
-  const [viewMode, setViewModeState] = useState<ProjectViewMode>(readViewMode);
+  const [viewMode, setViewMode] = useState<ProjectViewMode>(readViewMode);
   const [searchText, setSearchText] = useState("");
   const [environmentFilter, setEnvironmentFilter] = useState<string[]>([]);
   const [sort, setSort] = useState<ProjectSort>(DEFAULT_SORT);
@@ -100,8 +100,8 @@ export const useProjectListState = (projectGroups: IProjectGroup[]) => {
     return [...knownOptions, ...unknownOptions];
   }, [projectGroups]);
 
-  const setViewMode = useCallback((nextViewMode: ProjectViewMode) => {
-    setViewModeState(nextViewMode);
+  const persistViewMode = useCallback((nextViewMode: ProjectViewMode) => {
+    setViewMode(nextViewMode);
     projectViewStorage.set(VIEW_MODE_KEY, nextViewMode);
   }, []);
 
@@ -118,7 +118,7 @@ export const useProjectListState = (projectGroups: IProjectGroup[]) => {
     setEnvironmentFilter,
     setSearchText,
     setSort,
-    setViewMode,
+    setViewMode: persistViewMode,
     sort,
     viewMode,
     visibleProjectGroups,

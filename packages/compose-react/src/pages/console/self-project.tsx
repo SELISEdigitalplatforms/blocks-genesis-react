@@ -6,6 +6,7 @@ import { Button } from "@/components/core/button/button";
 import { Skeleton } from "@/components/core/skeleton";
 import { useGetProjects } from "@/hooks/use-project";
 import { motion } from "framer-motion";
+import type { ReactNode } from "react";
 import { AddProjectCard } from "./add-project-card";
 import ConsoleCreateProject from "./console-create";
 import { ProjectCard } from "./project-card";
@@ -79,6 +80,51 @@ export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
   const hasNoMatches =
     projectGroups.length > 0 && visibleProjectGroups.length === 0;
 
+  let projectsContent: ReactNode;
+  if (isPending) {
+    projectsContent = <SelfProjectLoading viewMode={viewMode} />;
+  } else if (viewMode === "grid") {
+    projectsContent = (
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {showAddProject && (
+          <motion.div
+            variants={cardVariants}
+            custom={0}
+            initial="hidden"
+            animate="visible"
+          >
+            <AddProjectCard />
+          </motion.div>
+        )}
+        {visibleProjectGroups.map((project, index) => (
+          <motion.div
+            key={project.tenantGroupId}
+            variants={cardVariants}
+            custom={showAddProject ? index + 1 : index}
+            initial="hidden"
+            animate="visible"
+          >
+            {project.projects[0] && (
+              <ProjectCard
+                project={project.projects[0]}
+                projects={project.projects}
+                isShared={project.isShared}
+                canOpen={canOpenProject(project)}
+              />
+            )}
+          </motion.div>
+        ))}
+      </div>
+    );
+  } else {
+    projectsContent = (
+      <ProjectList
+        projectGroups={visibleProjectGroups}
+        showAddProject={showAddProject}
+      />
+    );
+  }
+
   return (
     <section className="flex flex-col gap-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
@@ -112,45 +158,7 @@ export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
           viewMode={viewMode}
         />
       )}
-      {isPending ? (
-        <SelfProjectLoading viewMode={viewMode} />
-      ) : viewMode === "grid" ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {showAddProject && (
-            <motion.div
-              variants={cardVariants}
-              custom={0}
-              initial="hidden"
-              animate="visible"
-            >
-              <AddProjectCard />
-            </motion.div>
-          )}
-          {visibleProjectGroups.map((project, index) => (
-            <motion.div
-              key={project.tenantGroupId}
-              variants={cardVariants}
-              custom={showAddProject ? index + 1 : index}
-              initial="hidden"
-              animate="visible"
-            >
-              {project.projects[0] && (
-                <ProjectCard
-                  project={project.projects[0]}
-                  projects={project.projects}
-                  isShared={project.isShared}
-                  canOpen={canOpenProject(project)}
-                />
-              )}
-            </motion.div>
-          ))}
-        </div>
-      ) : (
-        <ProjectList
-          projectGroups={visibleProjectGroups}
-          showAddProject={showAddProject}
-        />
-      )}
+      {projectsContent}
       {hasNoMatches && (
         <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed px-6 py-10 text-center">
           <p className="text-sm font-medium text-muted-foreground">
