@@ -49,7 +49,7 @@ export function MultiSelect({
           ref={buttonRef}
           variant="outline"
           size="sm"
-          className="h-8 border-dashed"
+          className="h-8 rounded-md border-dashed"
         >
           <div className="flex w-full items-center justify-between">
             <div className="flex items-center">
@@ -67,7 +67,7 @@ export function MultiSelect({
                 <div className="flex space-x-1">
                   {selectedValues.length > 2 ? (
                     <Badge
-                      variant="secondary"
+                      variant="outline"
                       className="rounded-sm px-1 font-normal"
                     >
                       {selectedValues.length} selected
@@ -77,7 +77,7 @@ export function MultiSelect({
                       .filter((option) => selectedValues.includes(option.value))
                       .map((option) => (
                         <Badge
-                          variant="secondary"
+                          variant="outline"
                           key={option.value}
                           className="rounded-sm px-1 font-normal"
                         >

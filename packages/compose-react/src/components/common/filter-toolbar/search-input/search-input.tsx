@@ -49,7 +49,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   };
 
   return (
-    <div className="flex items-center rounded-sm border px-2">
+    <div className="rounded-md border bg-background flex items-center px-2">
       <Search className="mr-2 h-4 w-4 text-muted-foreground" />
       <Input
         ref={inputRef}

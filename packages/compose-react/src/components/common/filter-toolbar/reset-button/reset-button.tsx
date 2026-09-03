@@ -12,7 +12,7 @@ export const ResetButton = ({ onClick }: ResetButtonProps) => {
       type="button"
       variant="outline"
       onClick={onClick}
-      className="h-8 px-2 lg:px-3"
+      className="h-8 rounded-md px-2 lg:px-3"
     >
       Reset
       <X className="ml-2 h-4 w-4" />

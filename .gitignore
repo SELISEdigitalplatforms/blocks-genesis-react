@@ -50,6 +50,7 @@ copilot-instructions.md
 
 # --- markdown policy: only standard docs tracked ---
 *.md
+!.changeset/*.md
 !README.md
 !LICENSE.md
 !CONTRIBUTING.md
