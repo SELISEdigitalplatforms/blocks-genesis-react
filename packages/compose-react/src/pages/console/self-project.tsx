@@ -1,10 +1,14 @@
 import { ProjectCardLoadingSkeleton } from "@/components/common/project";
+import { Button } from "@/components/core/button/button";
 import { useGetProjects } from "@/hooks/use-project";
-import type { IProjectGroup } from "@/models";
 import { motion } from "framer-motion";
 import { AddProjectCard } from "./add-project-card";
 import ConsoleCreateProject from "./console-create";
 import { ProjectCard } from "./project-card";
+import { ProjectList } from "./project-list";
+import { canOpenProject } from "./project-list-utils";
+import { ProjectToolbar } from "./project-toolbar";
+import { useProjectListState } from "./use-project-list-state";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.97 },
@@ -19,19 +23,6 @@ const cardVariants = {
     },
   }),
 };
-
-/**
- * Whether the card should offer a way into the project-overview shell.
- *
- * A group the caller owns always does. A shared one does only while the owner has granted at
- * least one menu: the overview route turns a grantless contributor around at the door, so
- * offering the button there just reloads the console under them.
- *
- * `accessPolicies` missing altogether means an API older than the field, not an empty grant —
- * keep the button rather than take it away on a guess.
- */
-const canOpenProject = (group: IProjectGroup) =>
-  !group.isShared || !group.accessPolicies || group.accessPolicies.length > 0;
 
 const SelfProjectLoading = () => {
   return (
@@ -51,12 +42,30 @@ export type SelfProjectProps = {
 
 export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
   const { data, isLoading, isFetching } = useGetProjects({ enabled: true });
+  const projectGroups = data || [];
+  const {
+    availableEnvironmentOptions,
+    environmentFilter,
+    resetFilters,
+    searchText,
+    setEnvironmentFilter,
+    setSearchText,
+    setSort,
+    setViewMode,
+    sort,
+    viewMode,
+    visibleProjectGroups,
+  } = useProjectListState(projectGroups);
 
   if (isLoading || isFetching) return <SelfProjectLoading />;
-  const projectGroups = data || [];
 
   if (!projectGroups.length && canCreateProject)
     return <ConsoleCreateProject />;
+
+  const showAddProject =
+    projectGroups.length < 10 && searchText.trim().length === 0;
+  const hasNoMatches =
+    projectGroups.length > 0 && visibleProjectGroups.length === 0;
 
   return (
     <section className="flex flex-col gap-4">
@@ -75,36 +84,77 @@ export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
           </span>
         )}
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {projectGroups.length < 10 && (
-          <motion.div
-            variants={cardVariants}
-            custom={0}
-            initial="hidden"
-            animate="visible"
+      {projectGroups.length > 0 && (
+        <ProjectToolbar
+          availableEnvironmentOptions={availableEnvironmentOptions}
+          environmentFilter={environmentFilter}
+          onEnvironmentFilterChange={setEnvironmentFilter}
+          onReset={resetFilters}
+          onSearchTextChange={setSearchText}
+          onViewModeChange={setViewMode}
+          searchText={searchText}
+          viewMode={viewMode}
+        />
+      )}
+      {viewMode === "grid" ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {showAddProject && (
+            <motion.div
+              variants={cardVariants}
+              custom={0}
+              initial="hidden"
+              animate="visible"
+            >
+              <AddProjectCard />
+            </motion.div>
+          )}
+          {visibleProjectGroups.map((project, index) => (
+            <motion.div
+              key={project.tenantGroupId}
+              variants={cardVariants}
+              custom={showAddProject ? index + 1 : index}
+              initial="hidden"
+              animate="visible"
+            >
+              {project.projects[0] && (
+                <ProjectCard
+                  project={project.projects[0]}
+                  projects={project.projects}
+                  isShared={project.isShared}
+                  canOpen={canOpenProject(project)}
+                />
+              )}
+            </motion.div>
+          ))}
+        </div>
+      ) : (
+        <ProjectList
+          projectGroups={visibleProjectGroups}
+          showAddProject={showAddProject}
+          sort={sort}
+          onSortChange={setSort}
+        />
+      )}
+      {hasNoMatches && (
+        <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed px-6 py-10 text-center">
+          <p className="text-sm font-medium text-muted-foreground">
+            {searchText.trim()
+              ? "No projects match your search"
+              : "No projects match the selected filters"}
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              if (searchText.trim()) setSearchText("");
+              else setEnvironmentFilter([]);
+            }}
           >
-            <AddProjectCard />
-          </motion.div>
-        )}
-        {projectGroups.map((project, i) => (
-          <motion.div
-            key={project.tenantGroupId}
-            variants={cardVariants}
-            custom={projectGroups.length < 10 ? i + 1 : i}
-            initial="hidden"
-            animate="visible"
-          >
-            {project.projects[0] && (
-              <ProjectCard
-                project={project.projects[0]}
-                projects={project.projects}
-                isShared={project.isShared}
-                canOpen={canOpenProject(project)}
-              />
-            )}
-          </motion.div>
-        ))}
-      </div>
+            {searchText.trim() ? "Clear search" : "Clear filters"}
+          </Button>
+        </div>
+      )}
     </section>
   );
 };

@@ -1,5 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import type { IProjectGroup } from "@/models";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { ProjectSort } from "./use-project-list-state";
 import { SelfProject } from "./self-project";
 
 const h = vi.hoisted(() => ({ getProjects: vi.fn() }));
@@ -9,6 +12,11 @@ vi.mock("@/hooks/use-project", () => ({
 }));
 vi.mock("@/components/common/project", () => ({
   ProjectCardLoadingSkeleton: () => <div data-testid="skeleton" />,
+}));
+vi.mock("@/hooks", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/hooks")>()),
+  useIsMobile: () => false,
+  usePopoverWidth: () => [{ current: null }, undefined],
 }));
 vi.mock("./project-card", () => ({
   ProjectCard: ({
@@ -26,13 +34,62 @@ vi.mock("./project-card", () => ({
 vi.mock("./add-project-card", () => ({
   AddProjectCard: () => <div data-testid="add-card" />,
 }));
+vi.mock("./project-list", () => ({
+  ProjectList: ({
+    onSortChange,
+    projectGroups,
+    showAddProject,
+    sort,
+  }: {
+    onSortChange: (sort: ProjectSort) => void;
+    projectGroups: IProjectGroup[];
+    showAddProject: boolean;
+    sort: ProjectSort;
+  }) => (
+    <div data-testid="project-list">
+      <button
+        type="button"
+        onClick={() =>
+          onSortChange({
+            property: "name",
+            isDescending: sort.property === "name" ? !sort.isDescending : false,
+          })
+        }
+      >
+        Sort Name
+      </button>
+      {showAddProject && <div data-testid="add-project-list-row" />}
+      {projectGroups.map((projectGroup) => (
+        <div key={projectGroup.tenantGroupId} data-testid="list-project">
+          {projectGroup.projects[0]?.name}
+        </div>
+      ))}
+    </div>
+  ),
+}));
 vi.mock("./console-create", () => ({
   default: () => <div data-testid="console-create" />,
 }));
 
-const group = (id: string, name: string) => ({
+const group = (
+  id: string,
+  name: string,
+  environment = "dev",
+  lastUpdatedDate = "2026-09-01T00:00:00.000Z",
+) => ({
   tenantGroupId: id,
-  projects: [{ tenantId: id, name }],
+  projects: [
+    {
+      environment,
+      itemId: `${id}-${environment}`,
+      lastUpdatedDate,
+      name,
+      tenantGroupId: id,
+      tenantId: id,
+    },
+  ],
+  nonSharedProject: [],
+  isShared: false,
 });
 
 const sharedGroup = (id: string, name: string, accessPolicies?: string[]) => ({
@@ -42,7 +99,10 @@ const sharedGroup = (id: string, name: string, accessPolicies?: string[]) => ({
 });
 
 describe("SelfProject", () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+  });
 
   it("shows the loading skeletons while fetching", () => {
     h.getProjects.mockReturnValue({ isLoading: true, isFetching: true });
@@ -63,9 +123,15 @@ describe("SelfProject", () => {
     render(<SelfProject canCreateProject />);
 
     expect(screen.getByTestId("console-create")).toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText("Search projects..."),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("radio", { name: "List view" }),
+    ).not.toBeInTheDocument();
   });
 
-  it("lists project cards with the add card when below the limit", () => {
+  it("defaults to the grid with the toolbar and add card", () => {
     h.getProjects.mockReturnValue({
       data: [group("g1", "Alpha"), group("g2", "Beta")],
       isLoading: false,
@@ -77,6 +143,157 @@ describe("SelfProject", () => {
     expect(screen.getByText("Your Blocks Projects")).toBeInTheDocument();
     expect(screen.getAllByTestId("project-card")).toHaveLength(2);
     expect(screen.getByTestId("add-card")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Search projects..."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Environment/ }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "Grid view" })).toHaveAttribute(
+      "data-state",
+      "on",
+    );
+  });
+
+  it("searches the same project set in grid and list and hides the add action", async () => {
+    h.getProjects.mockReturnValue({
+      data: [group("g1", "Alpha Portal"), group("g2", "Beta Service")],
+      isLoading: false,
+      isFetching: false,
+    });
+
+    render(<SelfProject canCreateProject />);
+    fireEvent.change(screen.getByPlaceholderText("Search projects..."), {
+      target: { value: "Alpha" },
+    });
+
+    await waitFor(() =>
+      expect(screen.getAllByTestId("project-card")).toHaveLength(1),
+    );
+    expect(screen.getByText("Alpha Portal")).toBeInTheDocument();
+    expect(screen.queryByText("Beta Service")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("add-card")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("radio", { name: "List view" }));
+    expect(screen.getAllByTestId("list-project")).toHaveLength(1);
+    expect(screen.getByText("Alpha Portal")).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("add-project-list-row"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("filters both views when any sibling has a selected environment", async () => {
+    const user = userEvent.setup();
+    const alpha = group("g1", "Alpha Portal");
+    alpha.projects.push({
+      ...alpha.projects[0]!,
+      environment: "prod",
+      itemId: "g1-prod",
+    });
+    h.getProjects.mockReturnValue({
+      data: [alpha, group("g2", "Beta Service", "test")],
+      isLoading: false,
+      isFetching: false,
+    });
+
+    render(<SelfProject canCreateProject />);
+    await user.click(screen.getByRole("button", { name: /Environment/ }));
+    await user.click(await screen.findByText("Production"));
+
+    expect(screen.getAllByTestId("project-card")).toHaveLength(1);
+    expect(screen.getByText("Alpha Portal")).toBeInTheDocument();
+    expect(screen.getByTestId("add-card")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("radio", { name: "List view" }));
+    expect(screen.getAllByTestId("list-project")).toHaveLength(1);
+    expect(screen.getByText("Alpha Portal")).toBeInTheDocument();
+    expect(screen.getByTestId("add-project-list-row")).toBeInTheDocument();
+  });
+
+  it("shows and clears the no-match state in either view", async () => {
+    h.getProjects.mockReturnValue({
+      data: [group("g1", "Alpha"), group("g2", "Beta")],
+      isLoading: false,
+      isFetching: false,
+    });
+
+    render(<SelfProject canCreateProject />);
+    fireEvent.change(screen.getByPlaceholderText("Search projects..."), {
+      target: { value: "zzzznotarealproject" },
+    });
+
+    await screen.findByText("No projects match your search");
+    expect(screen.queryByTestId("add-card")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("radio", { name: "List view" }));
+    expect(
+      screen.getByText("No projects match your search"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("add-project-list-row"),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear search" }));
+    expect(screen.getAllByTestId("list-project")).toHaveLength(2);
+    expect(screen.getByTestId("add-project-list-row")).toBeInTheDocument();
+  });
+
+  it("persists list view while keeping search, filters, and sort session-only", async () => {
+    const user = userEvent.setup();
+    h.getProjects.mockReturnValue({
+      data: [group("g1", "Alpha"), group("g2", "Beta", "test")],
+      isLoading: false,
+      isFetching: false,
+    });
+
+    const first = render(<SelfProject canCreateProject />);
+    await user.click(screen.getByRole("radio", { name: "List view" }));
+    await user.click(screen.getByRole("button", { name: /Environment/ }));
+    await user.click(await screen.findByText("Development"));
+    expect(screen.getAllByTestId("list-project")).toHaveLength(1);
+    first.unmount();
+
+    render(<SelfProject canCreateProject />);
+    expect(screen.getByTestId("project-list")).toBeInTheDocument();
+    expect(screen.getAllByTestId("list-project")).toHaveLength(2);
+    expect(screen.getByTestId("add-project-list-row")).toBeInTheDocument();
+    expect(
+      JSON.parse(localStorage.getItem("console:projectsViewMode") || ""),
+    ).toMatchObject({ value: "list" });
+  });
+
+  it("keeps the selected list sort order after returning to grid", () => {
+    localStorage.setItem(
+      "console:projectsViewMode",
+      JSON.stringify({ value: "list" }),
+    );
+    h.getProjects.mockReturnValue({
+      data: [
+        group("g1", "Alpha", "dev", "2026-08-01T00:00:00.000Z"),
+        group("g2", "Beta", "test", "2026-09-01T00:00:00.000Z"),
+      ],
+      isLoading: false,
+      isFetching: false,
+    });
+
+    render(<SelfProject canCreateProject />);
+    expect(
+      screen.getAllByTestId("list-project").map((row) => row.textContent),
+    ).toEqual(["Beta", "Alpha"]);
+
+    fireEvent.click(screen.getByRole("button", { name: "Sort Name" }));
+    expect(
+      screen.getAllByTestId("list-project").map((row) => row.textContent),
+    ).toEqual(["Alpha", "Beta"]);
+    fireEvent.click(screen.getByRole("button", { name: "Sort Name" }));
+    expect(
+      screen.getAllByTestId("list-project").map((row) => row.textContent),
+    ).toEqual(["Beta", "Alpha"]);
+
+    fireEvent.click(screen.getByRole("radio", { name: "Grid view" }));
+    expect(
+      screen.getAllByTestId("project-card").map((card) => card.textContent),
+    ).toEqual(["Beta", "Alpha"]);
   });
 
   it("hides the add card and warns when at the project limit", () => {
@@ -92,6 +309,33 @@ describe("SelfProject", () => {
     render(<SelfProject canCreateProject />);
 
     expect(screen.queryByTestId("add-card")).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Please delete an existing project to create a new one.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("keeps the ten-group limit under filtering and in list view", async () => {
+    const user = userEvent.setup();
+    const groups = Array.from({ length: 10 }, (_value, index) =>
+      group(`g${index}`, `P${index}`, index < 3 ? "dev" : "test"),
+    );
+    h.getProjects.mockReturnValue({
+      data: groups,
+      isLoading: false,
+      isFetching: false,
+    });
+
+    render(<SelfProject canCreateProject />);
+    await user.click(screen.getByRole("button", { name: /Environment/ }));
+    await user.click(await screen.findByText("Development"));
+    await user.click(screen.getByRole("radio", { name: "List view" }));
+
+    expect(screen.getAllByTestId("list-project")).toHaveLength(3);
+    expect(
+      screen.queryByTestId("add-project-list-row"),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByText(
         "Please delete an existing project to create a new one.",
