@@ -28,7 +28,7 @@ export const ProjectCard = ({
   canOpen = true,
 }: ProjectCardProps) => {
   return (
-    <Card className="border-border/60 bg-card hover:border-primary/30 group flex h-40 flex-col overflow-hidden rounded-2xl border p-4 shadow-sm transition-all duration-200 hover:shadow-md">
+    <Card className="border-border/60 bg-card hover:border-primary/30 group flex h-40 flex-col overflow-hidden rounded-xl border p-4 shadow-sm transition-all duration-200 hover:shadow-md">
       <div className="relative flex items-start justify-between gap-2">
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <CardTitle className="line-clamp-3 break-all text-base font-semibold leading-snug">

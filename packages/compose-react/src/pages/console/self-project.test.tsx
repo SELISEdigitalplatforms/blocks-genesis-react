@@ -2,7 +2,6 @@ import type { IProjectGroup } from "@/models";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { ProjectSort } from "./use-project-list-state";
 import { SelfProject } from "./self-project";
 
 const h = vi.hoisted(() => ({ getProjects: vi.fn() }));
@@ -12,6 +11,7 @@ vi.mock("@/hooks/use-project", () => ({
 }));
 vi.mock("@/components/common/project", () => ({
   ProjectCardLoadingSkeleton: () => <div data-testid="skeleton" />,
+  ProjectListRowLoadingSkeleton: () => <div data-testid="list-skeleton" />,
 }));
 vi.mock("@/hooks", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/hooks")>()),
@@ -36,28 +36,13 @@ vi.mock("./add-project-card", () => ({
 }));
 vi.mock("./project-list", () => ({
   ProjectList: ({
-    onSortChange,
     projectGroups,
     showAddProject,
-    sort,
   }: {
-    onSortChange: (sort: ProjectSort) => void;
     projectGroups: IProjectGroup[];
     showAddProject: boolean;
-    sort: ProjectSort;
   }) => (
     <div data-testid="project-list">
-      <button
-        type="button"
-        onClick={() =>
-          onSortChange({
-            property: "name",
-            isDescending: sort.property === "name" ? !sort.isDescending : false,
-          })
-        }
-      >
-        Sort Name
-      </button>
       {showAddProject && <div data-testid="add-project-list-row" />}
       {projectGroups.map((projectGroup) => (
         <div key={projectGroup.tenantGroupId} data-testid="list-project">
@@ -104,13 +89,41 @@ describe("SelfProject", () => {
     localStorage.clear();
   });
 
-  it("shows the loading skeletons while fetching", () => {
+  it("shows the grid loading skeletons while fetching in grid view, keeping static chrome visible", () => {
     h.getProjects.mockReturnValue({ isLoading: true, isFetching: true });
 
     render(<SelfProject />);
 
     expect(screen.getAllByTestId("skeleton").length).toBeGreaterThan(0);
-    expect(screen.queryByText("Your Blocks Projects")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("list-skeleton")).not.toBeInTheDocument();
+    expect(screen.getByText("Your Blocks Projects")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Search projects..."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("radio", { name: "Grid view" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByTestId("project-card")).not.toBeInTheDocument();
+  });
+
+  it("shows the list loading skeletons while fetching in list view", () => {
+    localStorage.setItem(
+      "console:projectsViewMode",
+      JSON.stringify({ value: "list" }),
+    );
+    h.getProjects.mockReturnValue({ isLoading: true, isFetching: true });
+
+    render(<SelfProject />);
+
+    expect(screen.getAllByTestId("list-skeleton").length).toBeGreaterThan(0);
+    expect(screen.queryByTestId("skeleton")).not.toBeInTheDocument();
+    expect(screen.getByText("Your Blocks Projects")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Search projects..."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("radio", { name: "List view" }),
+    ).toBeInTheDocument();
   });
 
   it("renders the create-project flow when empty and creation is allowed", () => {
@@ -238,7 +251,7 @@ describe("SelfProject", () => {
     expect(screen.getByTestId("add-project-list-row")).toBeInTheDocument();
   });
 
-  it("persists list view while keeping search, filters, and sort session-only", async () => {
+  it("persists list view while keeping search and filters session-only", async () => {
     const user = userEvent.setup();
     h.getProjects.mockReturnValue({
       data: [group("g1", "Alpha"), group("g2", "Beta", "test")],
@@ -262,7 +275,7 @@ describe("SelfProject", () => {
     ).toMatchObject({ value: "list" });
   });
 
-  it("keeps the selected list sort order after returning to grid", () => {
+  it("orders both views by most recently updated by default", () => {
     localStorage.setItem(
       "console:projectsViewMode",
       JSON.stringify({ value: "list" }),
@@ -277,15 +290,6 @@ describe("SelfProject", () => {
     });
 
     render(<SelfProject canCreateProject />);
-    expect(
-      screen.getAllByTestId("list-project").map((row) => row.textContent),
-    ).toEqual(["Beta", "Alpha"]);
-
-    fireEvent.click(screen.getByRole("button", { name: "Sort Name" }));
-    expect(
-      screen.getAllByTestId("list-project").map((row) => row.textContent),
-    ).toEqual(["Alpha", "Beta"]);
-    fireEvent.click(screen.getByRole("button", { name: "Sort Name" }));
     expect(
       screen.getAllByTestId("list-project").map((row) => row.textContent),
     ).toEqual(["Beta", "Alpha"]);

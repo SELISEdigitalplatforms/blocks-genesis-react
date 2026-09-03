@@ -49,7 +49,7 @@ export function MultiSelect({
           ref={buttonRef}
           variant="outline"
           size="sm"
-          className="h-8 border-dashed"
+          className="h-8 rounded-md border-dashed"
         >
           <div className="flex w-full items-center justify-between">
             <div className="flex items-center">

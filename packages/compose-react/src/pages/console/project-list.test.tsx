@@ -1,7 +1,7 @@
 import { TooltipProvider } from "@/components/core/tooltip/tooltip";
 import type { IProject, IProjectGroup } from "@/models";
 import { useProjectStore } from "@/store/project.store";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { MemoryRouter } from "react-router";
@@ -89,8 +89,6 @@ const baseProps = {
     group({ id: "beta", name: "Beta", updated: "2026-09-02T00:00:00.000Z" }),
   ],
   showAddProject: true,
-  sort: { property: "lastUpdatedDate", isDescending: true } as const,
-  onSortChange: vi.fn(),
 };
 
 beforeEach(() => {
@@ -98,7 +96,6 @@ beforeEach(() => {
   h.navigate.mockReset();
   h.overviewClick.mockReset();
   h.isMobile = false;
-  baseProps.onSortChange.mockReset();
   useProjectStore.getState().resetProjectStore();
   vi.useFakeTimers();
   vi.setSystemTime(new Date("2026-09-03T00:00:00.000Z"));
@@ -107,42 +104,14 @@ beforeEach(() => {
 afterEach(() => vi.useRealTimers());
 
 describe("ProjectList", () => {
-  it("renders the desktop columns, rows, relative updates, and add action", () => {
+  it("renders the desktop rows, relative updates, and add action with no column headers", () => {
     wrap(<ProjectList {...baseProps} />);
 
     expect(screen.getByRole("table")).toBeInTheDocument();
-    expect(
-      screen.getAllByRole("columnheader").map((cell) => cell.textContent),
-    ).toEqual(["Name", "Environments", "Shared", "Last Updated", "Actions"]);
+    expect(screen.queryAllByRole("columnheader")).toHaveLength(0);
     expect(screen.getAllByTestId("project-list-row")).toHaveLength(2);
-    expect(screen.getByText("2 days ago")).toBeInTheDocument();
+    expect(screen.getByText("Updated 2 days ago")).toBeInTheDocument();
     expect(screen.getByTestId("add-project-list-row")).toBeInTheDocument();
-  });
-
-  it("emits ascending then descending sort values for a repeated Name click", () => {
-    const { rerender } = wrap(<ProjectList {...baseProps} />);
-
-    fireEvent.click(screen.getByText("Name"));
-    expect(baseProps.onSortChange).toHaveBeenLastCalledWith({
-      property: "name",
-      isDescending: false,
-    });
-
-    rerender(
-      <MemoryRouter>
-        <TooltipProvider>
-          <ProjectList
-            {...baseProps}
-            sort={{ property: "name", isDescending: false }}
-          />
-        </TooltipProvider>
-      </MemoryRouter>,
-    );
-    fireEvent.click(screen.getByText("Name"));
-    expect(baseProps.onSortChange).toHaveBeenLastCalledWith({
-      property: "name",
-      isDescending: true,
-    });
   });
 
   it("matches the grid overflow behavior after three environments", async () => {

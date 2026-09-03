@@ -1,15 +1,7 @@
-import { SortHeader } from "@/components/common/filter-toolbar/sort-header";
 import { Badge } from "@/components/core/badge";
 import { Button } from "@/components/core/button/button";
 import { Card, CardTitle } from "@/components/core/card/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/core/table";
+import { Table, TableBody, TableCell, TableRow } from "@/components/core/table";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { IProjectGroup } from "@/models";
 import { formatDistanceToNow } from "date-fns";
@@ -22,13 +14,10 @@ import {
   getProjectGroupName,
 } from "./project-list-utils";
 import { useCreateProjectRedirect } from "./use-create-project-redirect";
-import type { ProjectSort } from "./use-project-list-state";
 
 type ProjectListProps = {
   projectGroups: IProjectGroup[];
   showAddProject: boolean;
-  sort: ProjectSort;
-  onSortChange: (sort: ProjectSort) => void;
 };
 
 const getLastUpdatedLabel = (group: IProjectGroup) => {
@@ -36,6 +25,18 @@ const getLastUpdatedLabel = (group: IProjectGroup) => {
   return timestamp === 0
     ? "Unknown"
     : formatDistanceToNow(timestamp, { addSuffix: true });
+};
+
+/**
+ * Desktop rows have no "Last Updated" column header (see the card-styling note
+ * below), so the cell value carries that context itself instead of a bare relative
+ * timestamp.
+ */
+const getLastUpdatedCellLabel = (group: IProjectGroup) => {
+  const timestamp = getLatestProjectUpdate(group);
+  return timestamp === 0
+    ? "Not updated yet"
+    : `Updated ${formatDistanceToNow(timestamp, { addSuffix: true })}`;
 };
 
 /**
@@ -52,7 +53,7 @@ const getLastUpdatedLabel = (group: IProjectGroup) => {
  * shows through square behind the rounded corners. Per-cell background is clipped to
  * that cell's own radius instead.
  */
-const CARD_RADIUS = "1rem";
+const CARD_RADIUS = "0.75rem";
 /** Vertical gap between rows. */
 const ROW_SPACING = "0 0.5rem";
 
@@ -97,7 +98,7 @@ const AddProjectListAction = ({ mobile = false }: { mobile?: boolean }) => {
     return (
       <Card
         data-testid="add-project-list-row"
-        className="border-primary/30 rounded-2xl border border-dashed p-2"
+        className="border-primary/30 rounded-xl border border-dashed p-2"
       >
         {action}
       </Card>
@@ -130,7 +131,7 @@ const ProjectMobileList = ({
         <Card
           key={group.tenantGroupId}
           data-testid="project-list-row"
-          className="border-border/60 space-y-3 rounded-2xl border p-4 shadow-sm"
+          className="border-border/60 space-y-3 rounded-xl border p-4 shadow-sm"
         >
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 space-y-2">
@@ -160,8 +161,6 @@ const ProjectMobileList = ({
 export const ProjectList = ({
   projectGroups,
   showAddProject,
-  sort,
-  onSortChange,
 }: ProjectListProps) => {
   const isMobile = useIsMobile();
 
@@ -179,31 +178,6 @@ export const ProjectList = ({
       data-testid="project-list-table"
       style={{ borderCollapse: "separate", borderSpacing: ROW_SPACING }}
     >
-      <TableHeader>
-        <TableRow className="border-0 hover:bg-transparent">
-          <TableHead>
-            <SortHeader
-              id="name"
-              label="Name"
-              value={sort}
-              onChange={(value) => onSortChange(value as ProjectSort)}
-            />
-          </TableHead>
-          <TableHead>Environments</TableHead>
-          <TableHead>Shared</TableHead>
-          <TableHead>
-            <SortHeader
-              id="lastUpdatedDate"
-              label="Last Updated"
-              value={sort}
-              onChange={(value) => onSortChange(value as ProjectSort)}
-            />
-          </TableHead>
-          <TableHead className="text-right">
-            <span className="sr-only">Actions</span>
-          </TableHead>
-        </TableRow>
-      </TableHeader>
       <TableBody>
         {showAddProject && <AddProjectListAction />}
         {projectGroups.map((group) => {
@@ -228,7 +202,7 @@ export const ProjectList = ({
                 <SharedStatus isShared={group.isShared} />
               </TableCell>
               <TableCell className="bg-card whitespace-nowrap py-2 text-muted-foreground">
-                {getLastUpdatedLabel(group)}
+                {getLastUpdatedCellLabel(group)}
               </TableCell>
               <TableCell
                 className="bg-card py-2 text-right"
