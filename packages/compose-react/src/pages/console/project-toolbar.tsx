@@ -31,20 +31,23 @@ export const ProjectToolbar = ({
 
   return (
     <div
-      className="flex flex-wrap items-center gap-3"
+      className="flex flex-wrap items-center justify-between gap-3"
       aria-label="Project filters and view"
     >
-      <SearchInput
-        value={searchText}
-        onChange={onSearchTextChange}
-        placeholder="Search projects..."
-      />
-      <MultiSelect
-        label="Environment"
-        options={availableEnvironmentOptions}
-        value={environmentFilter}
-        onChange={onEnvironmentFilterChange}
-      />
+      <div className="flex flex-wrap items-center gap-3">
+        <SearchInput
+          value={searchText}
+          onChange={onSearchTextChange}
+          placeholder="Search projects..."
+        />
+        <MultiSelect
+          label="Environment"
+          options={availableEnvironmentOptions}
+          value={environmentFilter}
+          onChange={onEnvironmentFilterChange}
+        />
+        {hasActiveFilters && <ResetButton onClick={onReset} />}
+      </div>
       <ToggleGroup
         type="single"
         variant="outline"
@@ -54,16 +57,23 @@ export const ProjectToolbar = ({
           if (value === "grid" || value === "list") onViewModeChange(value);
         }}
         aria-label="Project view"
-        className="rounded-md border p-0.5"
+        className="h-8 rounded-md border bg-background p-0.5"
       >
-        <ToggleGroupItem value="grid" aria-label="Grid view">
+        <ToggleGroupItem
+          value="grid"
+          aria-label="Grid view"
+          className="h-7 w-7 min-w-0 border-0 px-0"
+        >
           <LayoutGrid className="h-4 w-4" />
         </ToggleGroupItem>
-        <ToggleGroupItem value="list" aria-label="List view">
+        <ToggleGroupItem
+          value="list"
+          aria-label="List view"
+          className="h-7 w-7 min-w-0 border-0 px-0"
+        >
           <List className="h-4 w-4" />
         </ToggleGroupItem>
       </ToggleGroup>
-      {hasActiveFilters && <ResetButton onClick={onReset} />}
     </div>
   );
 };
