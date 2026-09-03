@@ -15,6 +15,21 @@ type ProjectActionButtonProps = {
   canOpen?: boolean;
 };
 
+const getActionLabels = (canOpen: boolean, isShared: boolean) => {
+  if (canOpen) {
+    return isShared
+      ? { accessibleLabel: "Open shared project", tooltipLabel: "Open Project" }
+      : {
+          accessibleLabel: "Configure project",
+          tooltipLabel: "Configure Project",
+        };
+  }
+  return {
+    accessibleLabel: "Project access unavailable",
+    tooltipLabel: "Project access unavailable",
+  };
+};
+
 export const ProjectActionButton = ({
   project,
   isShared,
@@ -26,16 +41,7 @@ export const ProjectActionButton = ({
   });
 
   const isActionDisabled = !canOpen || isDisabled || isFetching;
-  const accessibleLabel = !canOpen
-    ? "Project access unavailable"
-    : isShared
-      ? "Open shared project"
-      : "Configure project";
-  const tooltipLabel = !canOpen
-    ? "Project access unavailable"
-    : isShared
-      ? "Open Project"
-      : "Configure Project";
+  const { accessibleLabel, tooltipLabel } = getActionLabels(canOpen, isShared);
 
   const onClick = () => {
     setTenantGroup(project.tenantGroupId);
