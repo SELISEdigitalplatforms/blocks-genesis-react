@@ -5,7 +5,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const h = vi.hoisted(() => ({
   name: "blocks-logic",
-  startLogin: vi.fn(),
+  startFlow: vi.fn(),
+  getSignUpSetting: vi.fn(),
+}));
+
+vi.mock("@/services/signup.service", () => ({
+  signUpService: { getSignUpSetting: h.getSignUpSetting },
 }));
 
 vi.mock("@/hooks/use-blocks-app-config-store", () => ({
@@ -14,22 +19,28 @@ vi.mock("@/hooks/use-blocks-app-config-store", () => ({
   ) => selector({ getConfig: () => ({ name: h.name }) }),
 }));
 vi.mock("@/services/login.service", () => ({
-  loginService: { startLogin: h.startLogin },
+  loginService: { startFlow: h.startFlow },
 }));
 vi.mock("./blocks-login", () => ({
   BlocksLoginPage: ({
     name,
     onLogin,
     isLoading,
+    showSignUp,
+    onSignUp,
   }: {
     name: string;
     onLogin: () => void;
     isLoading: boolean;
+    showSignUp?: boolean;
+    onSignUp?: () => void;
   }) => (
     <div>
       <span data-testid="name">{name}</span>
       <span data-testid="loading">{String(isLoading)}</span>
+      <span data-testid="show-signup">{String(showSignUp)}</span>
       <button onClick={onLogin}>login</button>
+      <button onClick={onSignUp}>signup</button>
     </div>
   ),
 }));
@@ -56,7 +67,14 @@ describe("LoginPage", () => {
       configurable: true,
       value: { origin: "https://app.test", href: "" },
     });
-    h.startLogin.mockResolvedValue({});
+    h.startFlow.mockResolvedValue({});
+    h.getSignUpSetting.mockResolvedValue({
+      isSignUpEnable: true,
+      isEmailPasswordSignUpEnabled: true,
+      isSSoSignUpEnabled: false,
+      defaultRolesForNewUser: [],
+      defaultPermissionsForNewUser: [],
+    });
   });
 
   it("renders the login page with the app name", () => {
@@ -66,7 +84,7 @@ describe("LoginPage", () => {
   });
 
   it("triggers login and redirects to the initiate response url", async () => {
-    h.startLogin.mockResolvedValue({ redirect_uri: "https://idp/authorize" });
+    h.startFlow.mockResolvedValue({ redirect_uri: "https://idp/authorize" });
 
     render(<LoginPage />, { wrapper: wrapper() });
     fireEvent.click(screen.getByText("login"));
@@ -74,13 +92,13 @@ describe("LoginPage", () => {
     await waitFor(() =>
       expect(window.location.href).toBe("https://idp/authorize"),
     );
-    expect(h.startLogin.mock.calls[0]?.[0]).toEqual({
+    expect(h.startFlow.mock.calls[0]?.[0]).toEqual({
       redirectUri: "https://app.test/login/callback",
     });
   });
 
   it("stops the loading state when no redirect url is returned", async () => {
-    h.startLogin.mockResolvedValue({});
+    h.startFlow.mockResolvedValue({});
 
     render(<LoginPage />, { wrapper: wrapper() });
     fireEvent.click(screen.getByText("login"));
@@ -91,9 +109,29 @@ describe("LoginPage", () => {
     expect(window.location.href).toBe("");
   });
 
+  it("asks for the signup flow and redirects to the signup page", async () => {
+    h.startFlow.mockResolvedValue({
+      redirect_uri: "https://iam.test/oidc/signup/tenant-1",
+      flow: "signup",
+    });
+
+    render(<LoginPage />, { wrapper: wrapper() });
+    fireEvent.click(screen.getByText("signup"));
+
+    await waitFor(() =>
+      expect(window.location.href).toBe(
+        "https://iam.test/oidc/signup/tenant-1",
+      ),
+    );
+    expect(h.startFlow.mock.calls[0]?.[0]).toEqual({
+      redirectUri: "https://app.test/login/callback",
+      flow: "signup",
+    });
+  });
+
   it("logs and resets loading when the request throws", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
-    h.startLogin.mockRejectedValue(new Error("network"));
+    h.startFlow.mockRejectedValue(new Error("network"));
 
     render(<LoginPage />, { wrapper: wrapper() });
     fireEvent.click(screen.getByText("login"));

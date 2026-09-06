@@ -20,9 +20,9 @@ beforeEach(() => {
   };
 });
 
-describe("LoginService.startLogin", () => {
+describe("LoginService.startFlow", () => {
   it("calls the initiate endpoint with the redirect uri, client id and blocks key", async () => {
-    await loginService.startLogin({ redirectUri: "https://app/cb" });
+    await loginService.startFlow({ redirectUri: "https://app/cb" });
 
     const [url, headers] = c.get.mock.calls[0] ?? [];
     expect(url).toContain(IAM_ENDPOINTS.INITIATE);
@@ -35,7 +35,7 @@ describe("LoginService.startLogin", () => {
   it("omits the X-Blocks-Key header when the key is missing", async () => {
     h.env = { BLOCKS_OIDC_CLIENT_ID: "cid" };
 
-    await loginService.startLogin({ redirectUri: "https://app/cb" });
+    await loginService.startFlow({ redirectUri: "https://app/cb" });
 
     const headers = c.get.mock.calls[0]?.[1];
     expect(headers).toEqual({});
@@ -45,7 +45,25 @@ describe("LoginService.startLogin", () => {
     c.get.mockResolvedValue({ redirect_uri: "https://idp/go" });
 
     await expect(
-      loginService.startLogin({ redirectUri: "https://app/cb" }),
+      loginService.startFlow({ redirectUri: "https://app/cb" }),
     ).resolves.toEqual({ redirect_uri: "https://idp/go" });
+  });
+
+  it("sends no flow parameter for login, so the request is unchanged", async () => {
+    await loginService.startFlow({
+      redirectUri: "https://app/cb",
+      flow: "login",
+    });
+
+    expect(c.get.mock.calls[0]?.[0]).not.toContain("flow=");
+  });
+
+  it("asks for the signup flow when requested", async () => {
+    await loginService.startFlow({
+      redirectUri: "https://app/cb",
+      flow: "signup",
+    });
+
+    expect(c.get.mock.calls[0]?.[0]).toContain("flow=signup");
   });
 });
