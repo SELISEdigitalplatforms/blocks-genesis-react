@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const h = vi.hoisted(() => ({ startLogin: vi.fn() }));
+const h = vi.hoisted(() => ({ startFlow: vi.fn() }));
 vi.mock("@/services/login.service", () => ({ loginService: h }));
 
 import { useLogin } from "./use-login";
@@ -22,7 +22,7 @@ const wrapper = () => {
 };
 
 beforeEach(() => {
-  h.startLogin.mockReset();
+  h.startFlow.mockReset();
   Object.defineProperty(window, "location", {
     configurable: true,
     value: { origin: "https://app.test", href: "" },
@@ -31,7 +31,7 @@ beforeEach(() => {
 
 describe("useLogin", () => {
   it("starts login and navigates to the redirect_uri on success", async () => {
-    h.startLogin.mockResolvedValue({ redirect_uri: "https://idp/authorize" });
+    h.startFlow.mockResolvedValue({ redirect_uri: "https://idp/authorize" });
 
     const { result } = renderHook(() => useLogin(), { wrapper: wrapper() });
 
@@ -42,14 +42,14 @@ describe("useLogin", () => {
     await waitFor(() =>
       expect(window.location.href).toBe("https://idp/authorize"),
     );
-    expect(h.startLogin.mock.calls[0]?.[0]).toEqual({
+    expect(h.startFlow.mock.calls[0]?.[0]).toEqual({
       redirectUri: "https://app.test/login/callback",
     });
     expect(result.current.isLoading).toBe(false);
   });
 
   it("does not navigate when no redirect_uri is returned", async () => {
-    h.startLogin.mockResolvedValue({});
+    h.startFlow.mockResolvedValue({});
 
     const { result } = renderHook(() => useLogin(), { wrapper: wrapper() });
 
@@ -63,7 +63,7 @@ describe("useLogin", () => {
 
   it("surfaces thrown errors via the error field and resets loading", async () => {
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    h.startLogin.mockRejectedValue(new Error("network"));
+    h.startFlow.mockRejectedValue(new Error("network"));
 
     const { result } = renderHook(() => useLogin(), { wrapper: wrapper() });
 
@@ -78,7 +78,7 @@ describe("useLogin", () => {
 
   it("dedupes concurrent start() calls", async () => {
     let resolveLogin: (value: unknown) => void = () => {};
-    h.startLogin.mockImplementation(
+    h.startFlow.mockImplementation(
       () => new Promise((resolve) => (resolveLogin = resolve)),
     );
 
@@ -93,7 +93,7 @@ describe("useLogin", () => {
       await Promise.resolve();
     });
 
-    expect(h.startLogin).toHaveBeenCalledTimes(1);
+    expect(h.startFlow).toHaveBeenCalledTimes(1);
 
     await act(async () => {
       resolveLogin({});

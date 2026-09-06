@@ -15,7 +15,9 @@ export const BlocksLoginPage = ({
   loginLabel = "Log in to your account",
   docsUrl = "https://docs.seliseblocks.com/",
   footerLink = { label: "Visit Blocks", url: "https://seliseblocks.com" },
-  signUpUrl,
+  showSignUp = false,
+  onSignUp,
+  isSignUpLoading = false,
   carouselItems,
 }: BlocksLoginPageProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -180,11 +182,16 @@ export const BlocksLoginPage = ({
               </svg>
             </a>
           </div>
-          {signUpUrl && (
+          {showSignUp && (
             <p className="cta-signup">
               Not a member?{" "}
-              <a href={signUpUrl} className="cta-signup-link">
-                Sign up
+              <button
+                type="button"
+                onClick={onSignUp}
+                disabled={isSignUpLoading}
+                className="cta-signup-link"
+              >
+                {isSignUpLoading ? "Redirecting…" : "Sign up"}
                 <svg
                   width="11"
                   height="11"
@@ -195,7 +202,7 @@ export const BlocksLoginPage = ({
                 >
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
-              </a>
+              </button>
             </p>
           )}
         </div>

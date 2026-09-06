@@ -328,10 +328,15 @@ export const blocksLoginStyles = `
   display: inline-flex; align-items: center; gap: 6px;
   color: var(--accent2); text-decoration: none; font-weight: 600;
   transition: gap 0.25s var(--ease-out-expo), text-shadow 0.25s ease;
+  /* Renders as a button: it asks IAM for the signup URL rather than linking to one,
+     so the UA button styling has to be reset back to the inline-link look. */
+  background: none; border: 0; padding: 0; margin: 0;
+  font: inherit; font-weight: 600; cursor: pointer;
 }
-.blocksLogin-page .cta-signup-link:hover { gap: 10px; text-shadow: 0 0 10px var(--accent2-glow); }
+.blocksLogin-page .cta-signup-link:disabled { cursor: default; opacity: 0.7; }
+.blocksLogin-page .cta-signup-link:hover:not(:disabled) { gap: 10px; text-shadow: 0 0 10px var(--accent2-glow); }
 .blocksLogin-page .cta-signup-link svg { transition: transform 0.25s var(--ease-out-expo); }
-.blocksLogin-page .cta-signup-link:hover svg { transform: translateX(3px); }
+.blocksLogin-page .cta-signup-link:hover:not(:disabled) svg { transform: translateX(3px); }
 
 .blocksLogin-page .col-right {
   display: flex; flex-direction: column; min-height: 0; overflow: hidden;

@@ -1,6 +1,6 @@
 import { useCallback, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { loginService } from "@/services/login.service";
+import { loginService, type LoginStartParams } from "@/services/login.service";
 
 export interface UseLoginResult {
   start: () => void;
@@ -17,7 +17,7 @@ export function useLogin(): UseLoginResult {
 
   const mutation = useMutation({
     mutationKey: ["login", "start"],
-    mutationFn: loginService.startLogin,
+    mutationFn: (params: LoginStartParams) => loginService.startFlow(params),
     onSuccess: (data) => {
       if (data?.redirect_uri) {
         window.location.href = data.redirect_uri;
