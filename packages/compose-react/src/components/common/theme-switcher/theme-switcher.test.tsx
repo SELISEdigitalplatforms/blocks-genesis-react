@@ -27,13 +27,13 @@ describe("ThemeSwitcher", () => {
   });
 
   it.each([
-    ["system", "light", "monitor", "Auto"],
-    ["system", "dark", "monitor", "Auto"],
-    ["light", "light", "sun", "Light"],
-    ["dark", "dark", "moon", "Dark"],
+    ["system", "light", "monitor"],
+    ["system", "dark", "monitor"],
+    ["light", "light", "sun"],
+    ["dark", "dark", "moon"],
   ] as const)(
-    "shows the %s theme icon and label when the resolved theme is %s",
-    (theme, resolvedTheme, icon, label) => {
+    "shows only the %s theme icon when the resolved theme is %s",
+    (theme, resolvedTheme, icon) => {
       h.theme = theme;
       h.resolvedTheme = resolvedTheme;
 
@@ -41,7 +41,7 @@ describe("ThemeSwitcher", () => {
 
       const trigger = screen.getByRole("button", { name: "Change theme" });
       expect(trigger).toHaveAttribute("type", "button");
-      expect(trigger).toHaveTextContent(label);
+      expect(trigger).toHaveTextContent("");
       expect(trigger.querySelectorAll("svg")).toHaveLength(2);
       expect(trigger.querySelector(`.lucide-${icon}`)).toBeInTheDocument();
       expect(trigger.querySelector(".lucide-chevron-down")).toBeInTheDocument();
@@ -109,14 +109,12 @@ describe("ThemeSwitcher", () => {
     const { rerender } = render(<ThemeSwitcher />);
     const trigger = screen.getByRole("button", { name: "Change theme" });
     expect(trigger.querySelector(".lucide-moon")).toBeInTheDocument();
-    expect(trigger).toHaveTextContent("Dark");
 
     h.theme = "light";
     rerender(<ThemeSwitcher />);
 
     expect(trigger.querySelector(".lucide-sun")).toBeInTheDocument();
     expect(trigger.querySelector(".lucide-moon")).not.toBeInTheDocument();
-    expect(trigger).toHaveTextContent("Light");
   });
 
   it("dismisses the menu with Escape without selecting a theme", async () => {

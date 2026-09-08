@@ -28,7 +28,7 @@ const OPTION_ORDER: ThemeOption[] = ["system", "light", "dark"];
 
 /** Layout, positioning and focus behavior — kept regardless of `className`. */
 const TRIGGER_BASE_CLASSES =
-  "relative z-50 inline-flex h-9 items-center justify-center gap-2 px-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+  "relative z-50 inline-flex h-9 items-center justify-center gap-1 px-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 /** Default typography, dropped entirely when the caller supplies its own `className`. */
 const TRIGGER_DEFAULT_TYPOGRAPHY_CLASSES =
   "text-sm font-medium text-muted-foreground hover:text-foreground";
@@ -48,7 +48,7 @@ export function ThemeSwitcher({
   showChevron = true,
 }: ThemeSwitcherProps = {}) {
   const { theme, setTheme } = useTheme();
-  const { Icon: ThemeIcon, label: themeLabel } = OPTIONS[theme];
+  const { Icon: ThemeIcon } = OPTIONS[theme];
 
   return (
     <DropdownMenu>
@@ -62,7 +62,6 @@ export function ThemeSwitcher({
           )}
         >
           <ThemeIcon className="h-4 w-4" aria-hidden />
-          <span>{themeLabel}</span>
           {showChevron && (
             <ChevronDown
               className="h-3.5 w-3.5 text-muted-foreground"
