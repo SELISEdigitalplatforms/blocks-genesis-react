@@ -7,9 +7,9 @@ describe("DefaultDoc", () => {
     render(<DefaultDoc />);
 
     expect(screen.getAllByRole("link")).toHaveLength(3);
-    expect(screen.getByText("Docs")).toBeInTheDocument();
-    expect(screen.getByText("Build with CLI")).toBeInTheDocument();
-    expect(screen.getByText("Code with Skills")).toBeInTheDocument();
+    expect(screen.getByText("Read Docs")).toBeInTheDocument();
+    expect(screen.getByText("Install CLI")).toBeInTheDocument();
+    expect(screen.getByText("Bootstrap")).toBeInTheDocument();
     expect(screen.getByText("Learn")).toBeInTheDocument();
     expect(screen.getByText("Build")).toBeInTheDocument();
     expect(screen.getByText("Automate")).toBeInTheDocument();
@@ -19,19 +19,15 @@ describe("DefaultDoc", () => {
   it("points each card at its external resource", () => {
     render(<DefaultDoc />);
 
-    expect(screen.getByRole("link", { name: /^Docs:/ })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /^Read Docs:/ })).toHaveAttribute(
       "href",
       "https://docs.seliseblocks.com",
     );
-    expect(
-      screen.getByRole("link", { name: /^Build with CLI:/ }),
-    ).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /^Install CLI:/ })).toHaveAttribute(
       "href",
       "https://github.com/SELISEdigitalplatforms/blocks-cli",
     );
-    expect(
-      screen.getByRole("link", { name: /^Code with Skills:/ }),
-    ).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /^Bootstrap:/ })).toHaveAttribute(
       "href",
       "https://github.com/SELISEdigitalplatforms/blocks-skills",
     );

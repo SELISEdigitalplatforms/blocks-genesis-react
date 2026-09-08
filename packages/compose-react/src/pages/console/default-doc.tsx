@@ -7,9 +7,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import docsImage from "@/assets/images/console/resource-docs-v3.png";
-import cliImage from "@/assets/images/console/resource-cli-v3.png";
-import skillsImage from "@/assets/images/console/resource-skills-v3.png";
+import docsImage from "@/assets/images/console/resource-docs.svg";
+import cliImage from "@/assets/images/console/resource-cli.svg";
+import skillsImage from "@/assets/images/console/resource-skills.svg";
 
 type Resource = {
   eyebrow: string;
@@ -18,39 +18,35 @@ type Resource = {
   description: string;
   url: string;
   icon: LucideIcon;
-  imageClassName?: string;
 };
 
 const resources: Resource[] = [
   {
     eyebrow: "Learn",
-    label: "Docs",
+    label: "Read Docs",
     description:
-      "Established standards and guides that help teams minimize project risk and ship consistently.",
+      "Established standards and guides that help teams minimize project risk and ship consistently -> Learn the possibilities that you can unlock with Selise Blocks.",
     image: docsImage,
     url: "https://docs.seliseblocks.com",
     icon: BookOpenText,
   },
   {
     eyebrow: "Build",
-    label: "Build with CLI",
+    label: "Install CLI",
     description:
-      "Public npm packages for building with Blocks — a CLI for project setup plus a framework-neutral frontend SDK.",
+      "Public npm packages for building with Blocks — a CLI for project setup plus a framework-neutral frontend SDK. -> Blocks CLI tool unlocks all the configurations of Blocks project without having to leave your IDE.",
     image: cliImage,
     url: "https://github.com/SELISEdigitalplatforms/blocks-cli",
     icon: SquareTerminal,
   },
   {
     eyebrow: "Automate",
-    label: "Code with Skills",
+    label: "Bootstrap",
     description:
-      "Describe what you want in plain language and an agent maps it to a focused, ready-to-run Blocks workflow.",
+      "Describe what you want in plain language and an agent maps it to a focused, ready-to-run Blocks workflow. -> Quick start for your coding agent to initialize your blocks project, install the cli and the necessary skills.",
     image: skillsImage,
     url: "https://github.com/SELISEdigitalplatforms/blocks-skills",
     icon: Sparkles,
-    // Near-square art (481×512) vs the landscape siblings (512×341): cap its
-    // height so all three read at the same optical weight.
-    imageClassName: "h-[82%]",
   },
 ];
 
@@ -75,7 +71,6 @@ const BentoCard = ({
   description,
   url,
   icon: Icon,
-  imageClassName,
 }: Resource) => (
   <a
     href={url}
@@ -92,16 +87,11 @@ const BentoCard = ({
     <div className="pointer-events-none relative flex h-36 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[hsl(var(--surface-app))]">
       <div className="absolute inset-0 bg-[radial-gradient(hsl(var(--border-default))_1px,transparent_1px)] opacity-55 [background-size:18px_18px]" />
       <div className="absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/[0.08] blur-2xl transition-transform duration-500 group-hover:scale-125 group-focus-visible:scale-125" />
-      <div className="relative flex h-28 w-48 items-center justify-center">
-        <img
-          src={image}
-          alt=""
-          className={cn(
-            "h-full w-auto max-w-full select-none object-contain drop-shadow-md transition-transform duration-500 ease-out group-hover:scale-[1.035] group-focus-visible:scale-[1.035]",
-            imageClassName,
-          )}
-        />
-      </div>
+      <img
+        src={image}
+        alt=""
+        className="relative h-28 w-40 select-none object-contain transition-transform duration-500 ease-out group-hover:scale-[1.04] group-focus-visible:scale-[1.04]"
+      />
     </div>
 
     <div className="relative z-10 flex min-h-0 flex-1 flex-col px-3 pb-3 pt-4">
