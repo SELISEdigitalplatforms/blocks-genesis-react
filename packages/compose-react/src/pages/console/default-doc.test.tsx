@@ -16,8 +16,8 @@ describe("DefaultDoc", () => {
     expect(screen.getByText("Build")).toBeInTheDocument();
     expect(screen.getByText("Automate")).toBeInTheDocument();
     expect(screen.getByText("Start Reading")).toBeInTheDocument();
-    expect(screen.getAllByText("Install CLI")).toHaveLength(2);
-    expect(screen.getByText("Get Bootstrapped")).toBeInTheDocument();
+    expect(screen.getByText("See Installation Steps")).toBeInTheDocument();
+    expect(screen.getByText("Set Up Your Agent")).toBeInTheDocument();
   });
 
   it("points each card at its external resource", () => {
