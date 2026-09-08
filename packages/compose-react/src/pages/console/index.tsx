@@ -28,7 +28,6 @@ export const ConsolePage = ({ canCreateProject = false }: ConsolePageProps) => {
             <span className="bg-primary/10 text-primary inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold tracking-wide">
               Resources
             </span>
-            <div className="h-px flex-1 bg-[hsl(var(--border-default))]" />
           </div>
           <DefaultDoc />
         </section>

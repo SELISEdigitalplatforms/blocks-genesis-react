@@ -1,0 +1,33 @@
+<svg width="160" height="120" viewBox="0 0 160 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cli-shell" x1="28" y1="24" x2="132" y2="94" gradientUnits="userSpaceOnUse">
+      <stop stop-color="hsl(218 78% 44%)"/>
+      <stop offset="1" stop-color="hsl(218 78% 32%)"/>
+    </linearGradient>
+    <linearGradient id="cli-bar" x1="29" y1="25" x2="131" y2="44" gradientUnits="userSpaceOnUse">
+      <stop stop-color="hsl(218 78% 58%)"/>
+      <stop offset="1" stop-color="hsl(218 78% 44%)"/>
+    </linearGradient>
+    <filter id="cli-shadow" x="18" y="15" width="126" height="98" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="9" stdDeviation="7" flood-color="hsl(218 78% 32%)" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+
+  <ellipse cx="78" cy="99" rx="49" ry="8" fill="hsl(218 78% 32%)" fill-opacity="0.08"/>
+  <g filter="url(#cli-shadow)">
+    <path d="M28 31C28 26.6 31.6 23 36 23H124C128.4 23 132 26.6 132 31V87C132 91.4 128.4 95 124 95H36C31.6 95 28 91.4 28 87V31Z" fill="url(#cli-shell)"/>
+    <path d="M28 31C28 26.6 31.6 23 36 23H124C128.4 23 132 26.6 132 31V42H28V31Z" fill="url(#cli-bar)"/>
+    <circle cx="39" cy="32.5" r="3" fill="hsl(218 78% 95%)"/>
+    <circle cx="49" cy="32.5" r="3" fill="hsl(218 78% 90%)"/>
+    <circle cx="59" cy="32.5" r="3" fill="hsl(218 78% 75%)"/>
+    <path d="M42 57L51 64L42 71" stroke="hsl(218 78% 90%)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M59 72H80" stroke="hsl(218 78% 90%)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M42 82H68" stroke="hsl(218 78% 58%)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M75 82H91" stroke="hsl(218 78% 44%)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M107 50L126 61V82L107 93L88 82V61L107 50Z" fill="hsl(218 78% 44%)"/>
+    <path d="M88 61L107 72L126 61L107 50L88 61Z" fill="hsl(218 78% 58%)"/>
+    <path d="M107 72V93L126 82V61L107 72Z" fill="hsl(218 78% 32%)"/>
+    <path d="M96 61L107 67.5L118 61L107 54.5L96 61Z" fill="hsl(218 78% 90%)" fill-opacity="0.75"/>
+  </g>
+  <path d="M138 43C138 39.7 140.7 37 144 37C140.7 37 138 34.3 138 31C138 34.3 135.3 37 132 37C135.3 37 138 39.7 138 43Z" fill="hsl(218 78% 58%)"/>
+</svg>

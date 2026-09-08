@@ -1,87 +1,137 @@
-import { ArrowUpRight } from "lucide-react";
-import { motion } from "framer-motion";
-import docsImage from "@/assets/images/console/console_timeline.png";
-import codeImage from "@/assets/images/console/console_coding.png";
-import cloudImage from "@/assets/images/console/console_data-center.png";
+import type { ReactNode } from "react";
+import {
+  ArrowUpRight,
+  BookOpenText,
+  Sparkles,
+  SquareTerminal,
+  type LucideIcon,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import docsImage from "@/assets/images/console/resource-docs.svg";
+import cliImage from "@/assets/images/console/resource-cli.svg";
+import skillsImage from "@/assets/images/console/resource-skills.svg";
 
-type DocCardProps = {
+type Resource = {
+  eyebrow: string;
   label: string;
   image: string;
   description: string;
   url: string;
+  icon: LucideIcon;
+  actionLabel: string;
 };
 
-const DocCard = ({ label, image, description, url }: DocCardProps) => {
-  return (
-    <motion.a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="hover:border-primary/40 hover:shadow-primary/5 group flex flex-col overflow-hidden rounded-2xl border border-[hsl(var(--border-default))] bg-[hsl(var(--card))] shadow-sm transition-all duration-300 hover:shadow-xl"
-    >
-      <div className="relative flex items-center justify-center overflow-hidden bg-[hsl(var(--surface-app))] px-8 py-10">
-        <div className="absolute inset-0 bg-[radial-gradient(hsl(var(--border-default))_1px,transparent_1px)] opacity-60 [background-size:18px_18px]" />
-        <img
-          src={image}
-          width={148}
-          height={148}
-          alt={label}
-          className="relative object-contain drop-shadow-sm transition-transform duration-500 group-hover:scale-105"
-        />
-      </div>
-
-      <div className="flex flex-1 flex-col gap-2 p-5">
-        <div className="flex items-start justify-between gap-2">
-          <h4 className="text-base font-semibold text-[hsl(var(--high-emphasis))]">
-            {label}
-          </h4>
-          <ArrowUpRight className="text-muted-foreground group-hover:text-primary mt-0.5 h-4 w-4 shrink-0 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-        </div>
-        <p className="text-muted-foreground text-sm leading-relaxed">
-          {description}
-        </p>
-        <span className="text-primary mt-auto pt-3 text-xs font-medium opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-          Explore →
-        </span>
-      </div>
-    </motion.a>
-  );
-};
-
-const data = [
+const resources: Resource[] = [
   {
-    label: "Docs",
+    eyebrow: "Learn",
+    label: "Read Docs",
     description:
-      "Established standards that help project managers and technical leaders minimize project risks.",
+      "Established standards and guides that help teams minimize project risk and ship consistently. Learn the possibilities that you can unlock with Selise Blocks.",
     image: docsImage,
     url: "https://docs.seliseblocks.com",
+    icon: BookOpenText,
+    actionLabel: "Start Reading",
   },
   {
-    label: "Code",
+    eyebrow: "Build",
+    label: "Install CLI",
     description:
-      "A repository of well-documented, reusable, tried and tested core components for developers.",
-    image: codeImage,
-    url: "https://github.com/SELISEdigitalplatforms",
+      "Public npm packages for building with Blocks: a CLI for project setup plus a framework-neutral frontend SDK. Blocks CLI tool unlocks all the configurations of Blocks project without having to leave your IDE.",
+    image: cliImage,
+    url: "https://github.com/SELISEdigitalplatforms/blocks-cli",
+    icon: SquareTerminal,
+    actionLabel: "See Installation Steps",
   },
   {
-    label: "Cloud",
+    eyebrow: "Automate",
+    label: "Bootstrap",
     description:
-      "High-performing, optimized, and 24/7 monitored enterprise cloud deployment.",
-    image: cloudImage,
-    url: "https://selisegroup.com/blocks/",
+      "Describe what you want in plain language and an agent maps it to a focused, ready-to-run Blocks workflow. Quick start for your coding agent to initialize your blocks project, install the cli and the necessary skills.",
+    image: skillsImage,
+    url: "https://github.com/SELISEdigitalplatforms/blocks-skills",
+    icon: Sparkles,
+    actionLabel: "Set Up Your Agent",
   },
 ];
 
-export const DefaultDoc = () => {
-  return (
-    <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-      {data.map((item) => (
-        <DocCard key={item.url} {...item} />
-      ))}
+const BentoGrid = ({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) => (
+  <div
+    className={cn("grid w-full grid-cols-1 gap-4 lg:grid-cols-3", className)}
+  >
+    {children}
+  </div>
+);
+
+const BentoCard = ({
+  eyebrow,
+  label,
+  image,
+  description,
+  url,
+  icon: Icon,
+  actionLabel,
+}: Resource) => (
+  <a
+    href={url}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label={`${label}: ${description}`}
+    className={cn(
+      "group relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-[hsl(var(--border-default))] bg-[hsl(var(--card))] p-2 outline-none transform-gpu",
+      "shadow-[0_1px_2px_hsl(var(--foreground)/0.04),0_8px_24px_-20px_hsl(var(--foreground)/0.22)]",
+      "transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_16px_32px_-22px_hsl(var(--primary)/0.32)]",
+      "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+    )}
+  >
+    <div className="pointer-events-none relative flex h-36 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[hsl(var(--surface-app))]">
+      <div className="absolute inset-0 bg-[radial-gradient(hsl(var(--border-default))_1px,transparent_1px)] opacity-55 [background-size:18px_18px]" />
+      <div className="absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/[0.08] blur-2xl transition-transform duration-500 group-hover:scale-125 group-focus-visible:scale-125" />
+      <img
+        src={image}
+        alt=""
+        className="relative h-28 w-40 select-none object-contain transition-transform duration-500 ease-out group-hover:scale-[1.04] group-focus-visible:scale-[1.04]"
+      />
     </div>
-  );
-};
+
+    <div className="relative z-10 flex min-h-0 flex-1 flex-col px-3 pb-3 pt-4">
+      <div className="flex h-11 shrink-0 items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[hsl(var(--surface-app))] text-primary transition-colors duration-300 group-hover:bg-primary/[0.08] group-focus-visible:bg-primary/[0.08]">
+          <Icon className="h-4 w-4" aria-hidden="true" />
+        </div>
+        <div className="flex min-w-0 flex-1 flex-col justify-center text-left">
+          <span className="block text-[10px] font-bold uppercase leading-4 tracking-[0.16em] text-primary">
+            {eyebrow}
+          </span>
+          <h3 className="truncate text-lg font-semibold leading-6 tracking-tight text-[hsl(var(--high-emphasis))]">
+            {label}
+          </h3>
+        </div>
+      </div>
+
+      <p className="mt-3 line-clamp-3 h-[3.75rem] shrink-0 text-sm leading-5 text-muted-foreground">
+        {description}
+      </p>
+
+      <div className="mt-auto pt-3">
+        <span className="flex h-10 w-full items-center justify-between rounded-xl bg-[hsl(var(--surface-app))] px-3.5 text-[13px] font-semibold text-primary transition-[background-color,color,box-shadow] duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:shadow-sm group-focus-visible:bg-primary group-focus-visible:text-primary-foreground">
+          <span>{actionLabel}</span>
+          <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-focus-visible:-translate-y-0.5 group-focus-visible:translate-x-0.5" />
+        </span>
+      </div>
+    </div>
+  </a>
+);
+
+export const DefaultDoc = () => (
+  <BentoGrid>
+    {resources.map((resource) => (
+      <BentoCard key={resource.url} {...resource} />
+    ))}
+  </BentoGrid>
+);
