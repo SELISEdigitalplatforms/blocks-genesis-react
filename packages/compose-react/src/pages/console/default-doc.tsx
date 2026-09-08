@@ -18,6 +18,7 @@ type Resource = {
   description: string;
   url: string;
   icon: LucideIcon;
+  actionLabel: string;
 };
 
 const resources: Resource[] = [
@@ -25,28 +26,31 @@ const resources: Resource[] = [
     eyebrow: "Learn",
     label: "Read Docs",
     description:
-      "Established standards and guides that help teams minimize project risk and ship consistently -> Learn the possibilities that you can unlock with Selise Blocks.",
+      "Established standards and guides that help teams minimize project risk and ship consistently. Learn the possibilities that you can unlock with Selise Blocks.",
     image: docsImage,
     url: "https://docs.seliseblocks.com",
     icon: BookOpenText,
+    actionLabel: "Start Reading",
   },
   {
     eyebrow: "Build",
     label: "Install CLI",
     description:
-      "Public npm packages for building with Blocks — a CLI for project setup plus a framework-neutral frontend SDK. -> Blocks CLI tool unlocks all the configurations of Blocks project without having to leave your IDE.",
+      "Public npm packages for building with Blocks: a CLI for project setup plus a framework-neutral frontend SDK. Blocks CLI tool unlocks all the configurations of Blocks project without having to leave your IDE.",
     image: cliImage,
     url: "https://github.com/SELISEdigitalplatforms/blocks-cli",
     icon: SquareTerminal,
+    actionLabel: "See Installation Steps",
   },
   {
     eyebrow: "Automate",
     label: "Bootstrap",
     description:
-      "Describe what you want in plain language and an agent maps it to a focused, ready-to-run Blocks workflow. -> Quick start for your coding agent to initialize your blocks project, install the cli and the necessary skills.",
+      "Describe what you want in plain language and an agent maps it to a focused, ready-to-run Blocks workflow. Quick start for your coding agent to initialize your blocks project, install the cli and the necessary skills.",
     image: skillsImage,
     url: "https://github.com/SELISEdigitalplatforms/blocks-skills",
     icon: Sparkles,
+    actionLabel: "Set Up Your Agent",
   },
 ];
 
@@ -71,6 +75,7 @@ const BentoCard = ({
   description,
   url,
   icon: Icon,
+  actionLabel,
 }: Resource) => (
   <a
     href={url}
@@ -115,7 +120,7 @@ const BentoCard = ({
 
       <div className="mt-auto pt-3">
         <span className="flex h-10 w-full items-center justify-between rounded-xl bg-[hsl(var(--surface-app))] px-3.5 text-[13px] font-semibold text-primary transition-[background-color,color,box-shadow] duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:shadow-sm group-focus-visible:bg-primary group-focus-visible:text-primary-foreground">
-          <span>Explore resource</span>
+          <span>{actionLabel}</span>
           <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-focus-visible:-translate-y-0.5 group-focus-visible:translate-x-0.5" />
         </span>
       </div>

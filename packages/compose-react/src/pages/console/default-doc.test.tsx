@@ -8,12 +8,16 @@ describe("DefaultDoc", () => {
 
     expect(screen.getAllByRole("link")).toHaveLength(3);
     expect(screen.getByText("Read Docs")).toBeInTheDocument();
-    expect(screen.getByText("Install CLI")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Install CLI" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Bootstrap")).toBeInTheDocument();
     expect(screen.getByText("Learn")).toBeInTheDocument();
     expect(screen.getByText("Build")).toBeInTheDocument();
     expect(screen.getByText("Automate")).toBeInTheDocument();
-    expect(screen.getAllByText("Explore resource")).toHaveLength(3);
+    expect(screen.getByText("Start Reading")).toBeInTheDocument();
+    expect(screen.getAllByText("Install CLI")).toHaveLength(2);
+    expect(screen.getByText("Get Bootstrapped")).toBeInTheDocument();
   });
 
   it("points each card at its external resource", () => {
