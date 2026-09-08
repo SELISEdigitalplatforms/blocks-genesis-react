@@ -1,38 +1,38 @@
 <svg width="160" height="120" viewBox="0 0 160 120" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="skills-top" x1="48" y1="30" x2="113" y2="68" gradientUnits="userSpaceOnUse">
+      <stop stop-color="hsl(208 16% 79%)"/>
+      <stop offset="1" stop-color="hsl(209 28% 68%)"/>
+    </linearGradient>
+    <linearGradient id="skills-left" x1="43" y1="49" x2="80" y2="99" gradientUnits="userSpaceOnUse">
       <stop stop-color="hsl(209 28% 68%)"/>
       <stop offset="1" stop-color="hsl(212 34% 58%)"/>
     </linearGradient>
-    <linearGradient id="skills-left" x1="43" y1="49" x2="80" y2="99" gradientUnits="userSpaceOnUse">
-      <stop stop-color="hsl(214 39% 48%)"/>
-      <stop offset="1" stop-color="hsl(218 78% 32%)"/>
-    </linearGradient>
     <linearGradient id="skills-right" x1="80" y1="62" x2="119" y2="97" gradientUnits="userSpaceOnUse">
-      <stop stop-color="hsl(218 78% 32%)"/>
-      <stop offset="1" stop-color="hsl(220 88% 22%)"/>
+      <stop stop-color="hsl(212 34% 58%)"/>
+      <stop offset="1" stop-color="hsl(214 39% 48%)"/>
     </linearGradient>
     <filter id="skills-shadow" x="28" y="17" width="111" height="99" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-      <feDropShadow dx="0" dy="9" stdDeviation="7" flood-color="hsl(221 97% 14%)" flood-opacity="0.24"/>
+      <feDropShadow dx="0" dy="9" stdDeviation="7" flood-color="hsl(218 78% 32%)" flood-opacity="0.16"/>
     </filter>
   </defs>
 
-  <ellipse cx="80" cy="101" rx="43" ry="8" fill="hsl(218 78% 32%)" fill-opacity="0.12"/>
+  <ellipse cx="80" cy="101" rx="43" ry="8" fill="hsl(212 34% 58%)" fill-opacity="0.08"/>
   <g filter="url(#skills-shadow)">
     <path d="M42 52L80 31L118 52L80 74L42 52Z" fill="url(#skills-top)"/>
     <path d="M42 52L80 74V100L42 78V52Z" fill="url(#skills-left)"/>
     <path d="M80 74L118 52V78L80 100V74Z" fill="url(#skills-right)"/>
     <path d="M61 41.5L99 63.5L110 57L72 35L61 41.5Z" fill="hsl(217 37% 93%)" fill-opacity="0.7"/>
-    <path d="M99 63.5V76.5L110 70V57L99 63.5Z" fill="hsl(220 88% 22%)"/>
-    <path d="M61 41.5V54.5L99 76.5V63.5L61 41.5Z" fill="hsl(214 39% 48%)"/>
+    <path d="M99 63.5V76.5L110 70V57L99 63.5Z" fill="hsl(214 39% 48%)"/>
+    <path d="M61 41.5V54.5L99 76.5V63.5L61 41.5Z" fill="hsl(209 28% 68%)"/>
     <path d="M52 65L69 74.8M52 72L65 79.5" stroke="hsl(208 16% 79%)" stroke-width="3" stroke-linecap="round"/>
-    <path d="M90 85L107 75" stroke="hsl(209 28% 68%)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M90 85L107 75" stroke="hsl(208 16% 79%)" stroke-width="3" stroke-linecap="round"/>
   </g>
   <g transform="rotate(-12 111 34)">
-    <rect x="108" y="30" width="7" height="43" rx="3.5" fill="hsl(218 78% 32%)"/>
-    <rect x="108" y="30" width="7" height="13" rx="3.5" fill="hsl(209 28% 68%)"/>
+    <rect x="108" y="30" width="7" height="43" rx="3.5" fill="hsl(212 34% 58%)"/>
+    <rect x="108" y="30" width="7" height="13" rx="3.5" fill="hsl(208 16% 79%)"/>
   </g>
-  <path d="M111 28C110 20.9 107.1 18 100 17C107.1 16 110 13.1 111 6C112 13.1 114.9 16 122 17C114.9 18 112 20.9 111 28Z" fill="hsl(214 39% 48%)"/>
-  <path d="M133 44C132.4 39.7 130.3 37.6 126 37C130.3 36.4 132.4 34.3 133 30C133.6 34.3 135.7 36.4 140 37C135.7 37.6 133.6 39.7 133 44Z" fill="hsl(212 34% 58%)"/>
-  <circle cx="128" cy="57" r="3" fill="hsl(209 28% 68%)"/>
+  <path d="M111 28C110 20.9 107.1 18 100 17C107.1 16 110 13.1 111 6C112 13.1 114.9 16 122 17C114.9 18 112 20.9 111 28Z" fill="hsl(209 28% 68%)"/>
+  <path d="M133 44C132.4 39.7 130.3 37.6 126 37C130.3 36.4 132.4 34.3 133 30C133.6 34.3 135.7 36.4 140 37C135.7 37.6 133.6 39.7 133 44Z" fill="hsl(208 16% 79%)"/>
+  <circle cx="128" cy="57" r="3" fill="hsl(217 37% 93%)"/>
 </svg>
