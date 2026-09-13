@@ -5,3 +5,4 @@ export * from "./utils";
 export * from "./cookie-storage";
 export * from "./motion-presets";
 export * from "./theme";
+export * from "./tenant-ownership";
