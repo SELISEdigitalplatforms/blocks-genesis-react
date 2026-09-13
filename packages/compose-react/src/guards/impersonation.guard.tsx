@@ -8,14 +8,23 @@ import {
 import { useGetProjects } from "@/hooks/use-project";
 import { HttpError } from "@/lib/http/error";
 import {
+  TAB_ID,
   claimTenant,
   readCurrentOwner,
   subscribeToTenantClaims,
 } from "@/lib/tenant-ownership";
+import type { IProject } from "@/models";
 import { projectService } from "@/services/project.service";
 import { useImpersonateStore, useProjectStore } from "@/store";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
+
+/** Resolves a tenant to the project name a user would recognise, or null if we cannot name it. */
+const projectNameFor = (
+  projects: IProject[],
+  tenantId: string | null | undefined,
+): string | null =>
+  (tenantId && projects.find((p) => p.tenantId === tenantId)?.name) || null;
 
 export const ImpersonationChecker = ({
   children,
@@ -40,63 +49,28 @@ export const ImpersonationChecker = ({
   return <>{children}</>;
 };
 
-export function ImpersonationTerminator({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const { terminate, isImpersonated } = useImpersonateStore();
-  const { mutateAsync } = useStopImpersonation();
-  const isTriggering = useRef(false);
-  const [isTerminating, setIsTerminating] = useState(false);
-
-  useEffect(() => {
-    if (isTriggering.current || !isImpersonated) return;
-
-    isTriggering.current = true;
-    setIsTerminating(true);
-    const blocksKey = window.process?.env.BLOCKS_X_BLOCKS_KEY || "";
-
-    const stopImpersonation = async () => {
-      try {
-        await mutateAsync(undefined);
-      } catch (error) {
-        // Stop can 401 when impersonation is already cleared server-side.
-        // Always clear local state so we do not re-trigger stop on next layout.
-        if (!(error instanceof HttpError) || error.status !== 401) {
-          console.error("Error stopping impersonation:", error);
-        }
-      } finally {
-        terminate(blocksKey);
-        isTriggering.current = false;
-        setIsTerminating(false);
-      }
-    };
-
-    void stopImpersonation();
-  }, [mutateAsync, terminate, isImpersonated]);
-
-  if (isImpersonated || isTerminating) return <AppLoadingSpinner />;
-  return <>{children}</>;
-}
-
 /**
- * Terminal state for a tab that must not render project data: either a repair failed, or another
- * tab has taken the shared cookie. Both need the same shape -- say what happened, offer the single
- * action that resolves it, and always leave a way back to the console.
+ * Terminal state for a window that must not render data: it either lost the shared session or
+ * failed to take it. Says what happened, offers the one action that resolves it, and leaves a way
+ * back to the console.
+ *
+ * `useNavigate` lives here rather than in the callers so the guards themselves stay renderable
+ * outside a router until something actually goes wrong.
  */
 function ImpersonationBlocked({
   title,
   description,
-  actionLabel,
-  onAction,
+  primaryLabel,
+  onPrimary,
   consolePath,
 }: {
   title: string;
   description: string;
-  actionLabel: string;
-  onAction: () => void;
-  consolePath: string;
+  /** Omitted when retrying cannot help, leaving the console as the only way forward. */
+  primaryLabel?: string;
+  onPrimary?: () => void;
+  /** Omitted on console routes, which are already where that button would lead. */
+  consolePath?: string;
 }) {
   const navigate = useNavigate();
 
@@ -107,13 +81,130 @@ function ImpersonationBlocked({
         <p className="max-w-md text-sm text-muted-foreground">{description}</p>
       </div>
       <div className="flex flex-row items-center gap-2">
-        <Button onClick={onAction}>{actionLabel}</Button>
-        <Button variant="outline" onClick={() => navigate(consolePath)}>
-          Back to console
-        </Button>
+        {primaryLabel && onPrimary && (
+          <Button onClick={onPrimary}>{primaryLabel}</Button>
+        )}
+        {consolePath && (
+          <Button
+            variant={primaryLabel && onPrimary ? "outline" : "default"}
+            onClick={() => navigate(consolePath)}
+          >
+            Go to console
+          </Button>
+        )}
       </div>
     </div>
   );
+}
+
+/**
+ * A wait with a reason. The guard now holds a window on a spinner in several situations -- taking
+ * the session, waiting for the projects list -- and an unexplained spinner through a full round
+ * trip reads as a hang.
+ */
+function ImpersonationWaiting({ label }: { label: string }) {
+  return (
+    <div className="flex h-full min-h-[320px] w-full flex-col items-center justify-center gap-3">
+      <AppLoadingSpinner />
+      <p className="text-sm text-muted-foreground">{label}</p>
+    </div>
+  );
+}
+
+export function ImpersonationTerminator({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const {
+    terminate,
+    isImpersonated,
+    detachedReason,
+    detachedTenantId,
+    setDetached,
+  } = useImpersonateStore();
+  const { mutateAsync } = useStopImpersonation();
+  const { projects } = useProjectStore();
+  const isTriggering = useRef(false);
+  const [isTerminating, setIsTerminating] = useState(false);
+
+  // A console route expects the root tenant, the same way a project route expects its own. Stopping
+  // impersonation is therefore a claim like any other: it moves the shared cookie back to root.
+  const rootTenantId = window.process?.env.BLOCKS_X_BLOCKS_KEY || "";
+
+  useEffect(() => {
+    if (!rootTenantId) return;
+
+    const owner = readCurrentOwner();
+    if (owner && owner.tabId !== TAB_ID && owner.tenantId !== rootTenantId) {
+      setDetached("another-project", owner.tenantId);
+    }
+
+    return subscribeToTenantClaims((claim) => {
+      if (claim.tenantId === rootTenantId) {
+        setDetached(null);
+        return;
+      }
+      setDetached("another-project", claim.tenantId);
+    });
+  }, [rootTenantId, setDetached]);
+
+  useEffect(() => {
+    if (isTriggering.current || !isImpersonated) return;
+    // Another window is inside a project. Stopping here would pull the shared cookie back to root
+    // underneath it -- the mirror of the bug this guard exists to prevent, and triggered by nothing
+    // more than this window regaining focus and refetching its status.
+    if (detachedReason) return;
+
+    isTriggering.current = true;
+    setIsTerminating(true);
+
+    const stopImpersonation = async () => {
+      let sessionIsRootScoped = false;
+      try {
+        await mutateAsync(undefined);
+        sessionIsRootScoped = true;
+      } catch (error) {
+        // Stop can 401 when impersonation is already cleared server-side.
+        // Always clear local state so we do not re-trigger stop on next layout.
+        if (!(error instanceof HttpError) || error.status !== 401) {
+          console.error("Error stopping impersonation:", error);
+        }
+        // A 401 means the session is already root-scoped, which is the state we asked for.
+        sessionIsRootScoped =
+          error instanceof HttpError && error.status === 401;
+      } finally {
+        terminate(rootTenantId);
+        // Tell the other windows the cookie is root again. Without this they keep their own
+        // impersonated state, agree with their own route, and go on calling APIs under a token that
+        // now points at root -- which is how a project page came to list the console's users.
+        if (sessionIsRootScoped && rootTenantId) claimTenant(rootTenantId);
+        isTriggering.current = false;
+        setIsTerminating(false);
+      }
+    };
+
+    void stopImpersonation();
+  }, [mutateAsync, terminate, isImpersonated, detachedReason, rootTenantId]);
+
+  if (detachedReason) {
+    const name = projectNameFor(projects, detachedTenantId);
+    return (
+      <ImpersonationBlocked
+        title={
+          name ? `Your session is in ${name}` : "Your session is in a project"
+        }
+        description="The project is open in another window. A session can only be in one place at a time."
+        primaryLabel={name ? `Leave ${name}` : "Leave the project"}
+        onPrimary={() => setDetached(null)}
+      />
+    );
+  }
+
+  if (isImpersonated || isTerminating) {
+    return <ImpersonationWaiting label="Returning to the console…" />;
+  }
+  return <>{children}</>;
 }
 
 export function ImpersonationSynchronizer({
@@ -129,7 +220,8 @@ export function ImpersonationSynchronizer({
     isImpersonated,
     impersonatedTenantId,
     impersonationError,
-    isDetached,
+    detachedReason,
+    detachedTenantId,
     setImpersonationError,
     setDetached,
   } = useImpersonateStore();
@@ -141,17 +233,19 @@ export function ImpersonationSynchronizer({
   const [isImpersonating, setIsImpersonating] = useState(false);
   const { itemId } = useParams<{ itemId: string }>();
 
+  const rootTenantId = window.process?.env.BLOCKS_X_BLOCKS_KEY || "";
+
   /**
-   * The tenant this tab is *supposed* to be in, derived from the URL rather than from
+   * The tenant this window is *supposed* to be in, derived from the URL rather than from
    * `selectedProject`.
    *
-   * The route is the only per-tab source of truth available. `selectedProject` was persisted to
-   * localStorage, so it could arrive from a different tab entirely; the route cannot. The projects
-   * list hydrates synchronously from storage, so this resolves on the first render in every case
-   * except a genuinely cold first visit.
+   * The route is the only per-window source of truth available. `selectedProject` was persisted to
+   * localStorage, so it could arrive from a different window entirely; the route cannot. The
+   * projects list hydrates synchronously from storage, so this resolves on the first render in
+   * every case except a genuinely cold first visit.
    *
    * `null` means "cannot resolve yet", which is emphatically not "wrong tenant" -- a project
-   * created in another session simply is not in this tab's copy of the list. Conflating the two
+   * created in another session simply is not in this window's copy of the list. Conflating the two
    * would bounce people out of perfectly valid deep links.
    */
   const routeTenantId = useMemo(() => {
@@ -209,7 +303,7 @@ export function ImpersonationSynchronizer({
     setIsImpersonating(true);
     try {
       // Cold start: the token is already impersonated but the route cannot be resolved, because
-      // this tab has no copy of the projects list yet. Ask the server which project the current
+      // this window has no copy of the projects list yet. Ask the server which project the current
       // token belongs to rather than re-impersonating on a guess.
       if (!targetTenantId) {
         if (currentTenantId && !selectedProjectRef.current) {
@@ -228,11 +322,8 @@ export function ImpersonationSynchronizer({
       // endpoint already retargets an existing session, and stopping first costs two extra round
       // trips and leaves the cookie holding a root token in between.
       await mutateAsync({ targeted_tenant_id: targetTenantId });
-      impersonate(
-        targetTenantId,
-        window.process?.env.BLOCKS_X_BLOCKS_KEY || "",
-      );
-      // This tab now owns the shared cookie; tell the others before they fetch under it.
+      impersonate(targetTenantId, rootTenantId);
+      // This window now owns the shared cookie; tell the others before they fetch under it.
       claimTenant(targetTenantId);
 
       const project = knownProjects.find((p) => p.tenantId === targetTenantId);
@@ -253,37 +344,59 @@ export function ImpersonationSynchronizer({
   }, [
     mutateAsync,
     impersonate,
+    rootTenantId,
     setSelectedProject,
     setTenantGroup,
     setImpersonationError,
   ]);
 
-  const retry = useCallback(() => {
+  const takeSession = useCallback(() => {
     setImpersonationError(null);
-    setDetached(false);
+    setDetached(null);
     void runImpersonation();
   }, [runImpersonation, setImpersonationError, setDetached]);
 
-  // Another tab taking the cookie is the one event this tab cannot observe for itself: the token is
-  // HttpOnly, and the status endpoint is only refetched on window focus.
+  // Another window taking the cookie is the one event this window cannot observe for itself: the
+  // token is HttpOnly, and the status endpoint is only refetched on window focus.
   useEffect(() => {
     const owner = readCurrentOwner();
-    if (owner && routeTenantId && owner.tenantId !== routeTenantId) {
-      setDetached(true);
+    // `owner.tabId !== TAB_ID` matters: the stored claim is the last one made by ANY window,
+    // including this one. Without the check, navigating from one project to another inside a single
+    // window reads back its own previous claim, decides it has been detached, and then refuses to
+    // re-impersonate -- stranding the window on a notice it wrote itself.
+    if (
+      owner &&
+      owner.tabId !== TAB_ID &&
+      routeTenantId &&
+      owner.tenantId !== routeTenantId
+    ) {
+      setDetached(
+        owner.tenantId === rootTenantId ? "console" : "another-project",
+        owner.tenantId,
+      );
     }
+
     return subscribeToTenantClaims((claim) => {
       const mine = routeTenantIdRef.current;
       if (!mine) return;
-      setDetached(claim.tenantId !== mine);
+      // Another window on the SAME project is no conflict -- one cookie serves both.
+      if (claim.tenantId === mine) {
+        setDetached(null);
+        return;
+      }
+      setDetached(
+        claim.tenantId === rootTenantId ? "console" : "another-project",
+        claim.tenantId,
+      );
     });
-  }, [routeTenantId, setDetached]);
+  }, [routeTenantId, rootTenantId, setDetached]);
 
   useEffect(() => {
     if (!itemId) return;
     if (isTriggering.current) return;
-    // A failed repair and a detached tab are both terminal: retrying on every render would hammer
-    // the endpoint and flicker the UI. Both clear only through an explicit user action.
-    if (impersonationError || isDetached) return;
+    // A failed repair and a detached window are both terminal: retrying on every render would
+    // hammer the endpoint and flicker the UI. Both clear only through an explicit user action.
+    if (impersonationError || detachedReason) return;
 
     const needsColdStart =
       !routeTenantId && !!impersonatedTenantId && !selectedProject;
@@ -298,11 +411,21 @@ export function ImpersonationSynchronizer({
     impersonatedTenantId,
     selectedProject,
     impersonationError,
-    isDetached,
+    detachedReason,
     runImpersonation,
   ]);
 
-  if (isImpersonating) return <AppLoadingSpinner />;
+  const thisProjectName = projectNameFor(projects, routeTenantId);
+
+  if (isImpersonating) {
+    return (
+      <ImpersonationWaiting
+        label={
+          thisProjectName ? `Opening ${thisProjectName}…` : "Opening project…"
+        }
+      />
+    );
+  }
 
   // Outside a project scope there is no tenant to agree about; preserve the original behaviour.
   if (!itemId) {
@@ -311,24 +434,71 @@ export function ImpersonationSynchronizer({
   }
 
   if (impersonationError) {
-    return (
+    // Retrying a revoked access check just teaches people the button does nothing, so 403 gets its
+    // own message and no retry.
+    const accessDenied =
+      impersonationError instanceof HttpError &&
+      impersonationError.status === 403;
+
+    return accessDenied ? (
       <ImpersonationBlocked
-        title="Could not open this project"
-        description="We could not switch your session to this project. Retry, or go back to the console and pick a project again."
-        actionLabel="Retry"
-        onAction={retry}
+        title={
+          thisProjectName
+            ? `You don't have access to ${thisProjectName}`
+            : "You don't have access to this project"
+        }
+        description="Your access to this project may have been removed. Pick another project from the console."
+        consolePath={consolePath}
+      />
+    ) : (
+      <ImpersonationBlocked
+        title={
+          thisProjectName
+            ? `Couldn't open ${thisProjectName}`
+            : "Couldn't open this project"
+        }
+        description="Something went wrong switching to this project. Try again, or pick a different one from the console."
+        primaryLabel="Try again"
+        onPrimary={takeSession}
         consolePath={consolePath}
       />
     );
   }
 
-  if (isDetached) {
+  if (detachedReason === "console") {
     return (
       <ImpersonationBlocked
-        title="This project is open in another tab"
-        description="Your session can only be in one project at a time. Use this tab instead, or return to the console."
-        actionLabel="Use this tab"
-        onAction={retry}
+        title="Your session returned to the console"
+        description={
+          thisProjectName
+            ? `You went back to the console in another window, so ${thisProjectName} is no longer open here.`
+            : "You went back to the console in another window, so this project is no longer open here."
+        }
+        primaryLabel={
+          thisProjectName ? `Reopen ${thisProjectName}` : "Reopen this project"
+        }
+        onPrimary={takeSession}
+        consolePath={consolePath}
+      />
+    );
+  }
+
+  if (detachedReason === "another-project") {
+    const otherName = projectNameFor(projects, detachedTenantId);
+    return (
+      <ImpersonationBlocked
+        title="Another project is open in this browser"
+        description={
+          otherName
+            ? `Your session moved to ${otherName} in another window. A session can only be in one project at a time.`
+            : "Your session moved to another project in a different window. A session can only be in one project at a time."
+        }
+        primaryLabel={
+          thisProjectName
+            ? `Continue in ${thisProjectName}`
+            : "Continue in this project"
+        }
+        onPrimary={takeSession}
         consolePath={consolePath}
       />
     );
@@ -338,8 +508,19 @@ export function ImpersonationSynchronizer({
   // impersonating the WRONG project -- which is how one tenant's rows came to be rendered under
   // another project's name. Nothing renders unless the tenant we are in is the tenant the URL
   // asked for.
-  if (!routeTenantId) return <AppLoadingSpinner />;
-  if (routeTenantId !== impersonatedTenantId) return <AppLoadingSpinner />;
+  if (!routeTenantId)
+    return <ImpersonationWaiting label="Loading your projects…" />;
+  if (routeTenantId !== impersonatedTenantId) {
+    return (
+      <ImpersonationWaiting
+        label={
+          thisProjectName
+            ? `Switching to ${thisProjectName}…`
+            : "Switching projects…"
+        }
+      />
+    );
+  }
 
   return <>{children}</>;
 }

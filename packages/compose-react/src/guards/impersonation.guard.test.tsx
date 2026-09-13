@@ -19,6 +19,7 @@ const h = vi.hoisted(() => ({
 // Driving the subscription callback directly keeps these tests about the guard's use of tenant
 // ownership rather than about BroadcastChannel's semantics under jsdom.
 vi.mock("@/lib/tenant-ownership", () => ({
+  TAB_ID: "this-tab",
   claimTenant: h.claimTenant,
   readCurrentOwner: () => h.currentOwner,
   subscribeToTenantClaims: (cb: (claim: Claim) => void) => {
@@ -48,9 +49,14 @@ import {
   ImpersonationTerminator,
   ImpersonationSynchronizer,
 } from "@/guards/impersonation.guard";
+import { HttpError } from "@/lib/http/error";
 import { useImpersonateStore, useProjectStore } from "@/store";
 
+const ROOT_KEY = "root-key";
+
 beforeEach(() => {
+  (window as unknown as { process?: { env: Record<string, string> } }).process =
+    { env: { BLOCKS_X_BLOCKS_KEY: ROOT_KEY } };
   useImpersonateStore.getState().reset();
   useProjectStore.getState().resetProjectStore();
   h.status = { data: undefined, isLoading: true, isSuccess: false };
@@ -138,7 +144,12 @@ describe("ImpersonationSynchronizer", () => {
 });
 
 describe("ImpersonationSynchronizer inside a project route", () => {
-  const P1 = { itemId: "p1", tenantId: "t1", tenantGroupId: "tg1" };
+  const P1 = {
+    itemId: "p1",
+    tenantId: "t1",
+    tenantGroupId: "tg1",
+    name: "Test Construct",
+  };
 
   const renderAt = (itemId: string) =>
     render(
@@ -198,7 +209,7 @@ describe("ImpersonationSynchronizer inside a project route", () => {
     renderAt("p1");
 
     expect(
-      await screen.findByText("Could not open this project"),
+      await screen.findByText("Couldn't open Test Construct"),
     ).toBeInTheDocument();
     expect(screen.queryByText("child")).toBeNull();
     // Previously the failure was swallowed and the effect's deps froze; assert we neither loop
@@ -218,9 +229,61 @@ describe("ImpersonationSynchronizer inside a project route", () => {
     });
 
     expect(
-      await screen.findByText("This project is open in another tab"),
+      await screen.findByText("Another project is open in this browser"),
     ).toBeInTheDocument();
     expect(screen.queryByText("child")).toBeNull();
+  });
+
+  it("names the console when the console takes the session back", async () => {
+    useProjectStore.getState().setProjects([P1] as never);
+    useImpersonateStore.getState().setImpersonation(true, ROOT_KEY, "t1");
+
+    renderAt("p1");
+    expect(screen.getByText("child")).toBeInTheDocument();
+
+    // The console releasing the cookie is a claim for the ROOT tenant, not for a project.
+    act(() => {
+      h.onClaim?.({ tenantId: ROOT_KEY, tabId: "console-tab", ts: Date.now() });
+    });
+
+    expect(
+      await screen.findByText("Your session returned to the console"),
+    ).toBeInTheDocument();
+    // Telling someone their project is "open in another window" when they went back to the console
+    // would send them looking for a window that is not there.
+    expect(
+      screen.queryByText("Another project is open in this browser"),
+    ).toBeNull();
+    expect(screen.getByText("Reopen Test Construct")).toBeInTheDocument();
+  });
+
+  it("stays attached when another window opens the SAME project", () => {
+    useProjectStore.getState().setProjects([P1] as never);
+    useImpersonateStore.getState().setImpersonation(true, ROOT_KEY, "t1");
+
+    renderAt("p1");
+
+    act(() => {
+      h.onClaim?.({ tenantId: "t1", tabId: "other-tab", ts: Date.now() });
+    });
+
+    // One cookie serves both windows when they want the same project; blocking would be noise.
+    expect(screen.getByText("child")).toBeInTheDocument();
+  });
+
+  it("offers no retry when access to the project is denied", async () => {
+    h.startMutate.mockRejectedValue(new HttpError(403, { errors: {} }));
+    useProjectStore.getState().setProjects([P1] as never);
+    useImpersonateStore.getState().setImpersonation(true, ROOT_KEY, "t2");
+
+    renderAt("p1");
+
+    expect(
+      await screen.findByText("You don't have access to Test Construct"),
+    ).toBeInTheDocument();
+    // Retrying a revoked access check only teaches people the button does nothing.
+    expect(screen.queryByText("Try again")).toBeNull();
+    expect(screen.getByText("Go to console")).toBeInTheDocument();
   });
 
   it("claims the cookie for other tabs after a successful retarget", async () => {
@@ -230,5 +293,75 @@ describe("ImpersonationSynchronizer inside a project route", () => {
     renderAt("p1");
 
     await waitFor(() => expect(h.claimTenant).toHaveBeenCalledWith("t1"));
+  });
+
+  it("ignores a stored claim made by this same tab", async () => {
+    // Navigating project -> project inside one tab reads back that tab's own previous claim.
+    // Treating it as someone else's would strand the tab on a notice it wrote itself.
+    h.currentOwner = { tenantId: "t2", tabId: "this-tab", ts: 1 };
+    useProjectStore.getState().setProjects([P1] as never);
+    useImpersonateStore.getState().setImpersonation(true, "orig", "t1");
+
+    renderAt("p1");
+
+    expect(screen.getByText("child")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Another project is open in this browser"),
+    ).toBeNull();
+  });
+
+  it("detaches on mount when another tab already owns a different tenant", async () => {
+    h.currentOwner = { tenantId: "t2", tabId: "another-tab", ts: 1 };
+    useProjectStore.getState().setProjects([P1] as never);
+    useImpersonateStore.getState().setImpersonation(true, "orig", "t1");
+
+    renderAt("p1");
+
+    expect(
+      await screen.findByText("Another project is open in this browser"),
+    ).toBeInTheDocument();
+  });
+});
+
+describe("ImpersonationTerminator and the shared cookie", () => {
+  const ROOT = ROOT_KEY;
+
+  const renderTerminator = () =>
+    render(
+      <MemoryRouter>
+        <ImpersonationTerminator>
+          <div>console</div>
+        </ImpersonationTerminator>
+      </MemoryRouter>,
+    );
+
+  it("announces the release so project windows learn the cookie went back to root", async () => {
+    useImpersonateStore.getState().setImpersonation(true, ROOT, "t1");
+
+    renderTerminator();
+
+    await waitFor(() => expect(h.stopMutate).toHaveBeenCalled());
+    // Without this the other window keeps its own impersonated state, agrees with its own route,
+    // and goes on calling APIs under a token that now points at root.
+    await waitFor(() => expect(h.claimTenant).toHaveBeenCalledWith(ROOT));
+  });
+
+  it("does not pull the cookie back while another window is inside a project", async () => {
+    useImpersonateStore.getState().setImpersonation(true, ROOT, "t1");
+
+    renderTerminator();
+    await waitFor(() => expect(h.stopMutate).toHaveBeenCalledTimes(1));
+    h.stopMutate.mockClear();
+
+    act(() => {
+      h.onClaim?.({ tenantId: "t1", tabId: "another-tab", ts: Date.now() });
+    });
+
+    expect(
+      await screen.findByText("Your session is in a project"),
+    ).toBeInTheDocument();
+    // Stopping here would yank the cookie out from under the other window on nothing more than
+    // this one regaining focus.
+    expect(h.stopMutate).not.toHaveBeenCalled();
   });
 });
