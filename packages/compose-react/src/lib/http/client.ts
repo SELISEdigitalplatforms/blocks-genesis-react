@@ -28,9 +28,20 @@ export class HttpClient {
   private autoRedirectOnAuthFailure: boolean;
   private onError?: (failure: HttpRequestFailure) => void;
 
-  // Per-instance, not module-level — two HttpClient instances pointed at
-  // different baseURLs/tenants must never share a refresh lock.
-  private refreshPromise: Promise<void> | null = null;
+  // Keyed by refresh target, not per instance.
+  //
+  // The lock used to be an instance field, on the reasoning that two clients pointed at different
+  // baseURLs or tenants must not share one. That reasoning is sound but did not describe the actual
+  // instances: iamClient, logicClient and notificationClient all carry the same blocks key, and
+  // performRefresh always refreshes against IAM via resolveBaseUrl("user") using the same
+  // HttpOnly refresh cookie and therefore the same server-side token lineage.
+  //
+  // So a single window-focus event could fire three concurrent rotations of one refresh token. The
+  // server rotates an impersonated lineage twice more per refresh, so up to six writes raced; the
+  // losers came back invalid_grant, and handleRefreshFailure turned that into a forced redirect to
+  // /login. Keying by the refresh target keeps the original guarantee for clients that genuinely
+  // differ while collapsing the ones that do not into one in-flight refresh.
+  private static readonly refreshPromises = new Map<string, Promise<void>>();
 
   constructor(config: HttpClientConfig) {
     this.baseURL = config.baseURL;
@@ -103,16 +114,26 @@ export class HttpClient {
     return JSON.stringify(body);
   }
 
-  // Ensures only one refresh request is ever in flight per instance.
-  // Concurrent 401s from get/post/.../stream all await this same
-  // promise instead of each independently racing to refresh.
+  // Identifies the credential a refresh actually rotates: the IAM base URL performRefresh posts to,
+  // plus the tenant key it sends. Two clients that resolve to the same pair are rotating the same
+  // token and must share one lock; two that do not are independent and must not.
+  private refreshLockKey(): string {
+    return `${resolveBaseUrl("user")}::${this.getBlocksKey()}`;
+  }
+
+  // Ensures only one refresh request is ever in flight per refresh target.
+  // Concurrent 401s from get/post/.../stream — across every client sharing
+  // that target — all await this same promise instead of racing to refresh.
   private refreshAccessToken(): Promise<void> {
-    if (!this.refreshPromise) {
-      this.refreshPromise = this.performRefresh().finally(() => {
-        this.refreshPromise = null;
-      });
-    }
-    return this.refreshPromise;
+    const key = this.refreshLockKey();
+    const inFlight = HttpClient.refreshPromises.get(key);
+    if (inFlight) return inFlight;
+
+    const promise = this.performRefresh().finally(() => {
+      HttpClient.refreshPromises.delete(key);
+    });
+    HttpClient.refreshPromises.set(key, promise);
+    return promise;
   }
 
   private async performRefresh(): Promise<void> {
