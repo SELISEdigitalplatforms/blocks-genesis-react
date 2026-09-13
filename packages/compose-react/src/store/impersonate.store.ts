@@ -1,5 +1,8 @@
 import { create } from "zustand";
 
+/** Why a window is no longer the one holding the shared session. */
+export type DetachedReason = "another-project" | "console";
+
 interface ImpersonateStoreState {
   isImpersonated: boolean;
   impersonatedTenantId: string | null;
@@ -12,11 +15,19 @@ interface ImpersonateStoreState {
    */
   impersonationError: unknown;
   /**
-   * True when another tab has claimed the shared access-token cookie for a different tenant.
-   * A detached tab must issue no requests: its own state is stale, and the cookie underneath it
-   * now belongs to someone else.
+   * Why this window lost the shared session, or null while it still holds it. A detached window
+   * must issue no requests: its own state is stale, and the cookie underneath it now belongs to
+   * somewhere else.
+   *
+   * The cause is kept, not just the fact, because the two read very differently to a user. Being
+   * displaced by another project is "your session moved"; being displaced by the console is "you
+   * went back to the console" -- and telling someone their project is "open in another window"
+   * when they actually returned to the console would send them looking for a window that is not
+   * there.
    */
-  isDetached: boolean;
+  detachedReason: DetachedReason | null;
+  /** Tenant that took the session, so the UI can name it rather than say "another window". */
+  detachedTenantId: string | null;
   setImpersonation: (
     isImpersonated: boolean,
     originalTenantId: string | null,
@@ -26,7 +37,10 @@ interface ImpersonateStoreState {
   terminate: (originalTenantId: string) => void;
   setInitialized: (isInitialized: boolean) => void;
   setImpersonationError: (impersonationError: unknown) => void;
-  setDetached: (isDetached: boolean) => void;
+  setDetached: (
+    detachedReason: DetachedReason | null,
+    detachedTenantId?: string | null,
+  ) => void;
   reset: () => void;
 }
 
@@ -36,7 +50,8 @@ export const useImpersonateStore = create<ImpersonateStoreState>()((set) => ({
   originalTenantId: null,
   isInitialized: false,
   impersonationError: null,
-  isDetached: false,
+  detachedReason: null,
+  detachedTenantId: null,
   setImpersonation: (
     isImpersonated: boolean,
     originalTenantId: string | null,
@@ -52,7 +67,8 @@ export const useImpersonateStore = create<ImpersonateStoreState>()((set) => ({
       impersonatedTenantId,
       originalTenantId,
       impersonationError: null,
-      isDetached: false,
+      detachedReason: null,
+      detachedTenantId: null,
     });
   },
   terminate: (originalTenantId: string) => {
@@ -69,8 +85,11 @@ export const useImpersonateStore = create<ImpersonateStoreState>()((set) => ({
   setImpersonationError: (impersonationError: unknown) => {
     set({ impersonationError });
   },
-  setDetached: (isDetached: boolean) => {
-    set({ isDetached });
+  setDetached: (
+    detachedReason: DetachedReason | null,
+    detachedTenantId: string | null = null,
+  ) => {
+    set({ detachedReason, detachedTenantId });
   },
   reset: () => {
     set({
@@ -79,7 +98,8 @@ export const useImpersonateStore = create<ImpersonateStoreState>()((set) => ({
       originalTenantId: null,
       isInitialized: false,
       impersonationError: null,
-      isDetached: false,
+      detachedReason: null,
+      detachedTenantId: null,
     });
   },
 }));
