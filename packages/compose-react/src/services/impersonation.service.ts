@@ -2,14 +2,14 @@ import { IMPERSONATE_ENDPOINTS } from "@/constants/endpoint.constant";
 import { iamClient } from "@/lib/http/instances";
 import type {
   ImpersonationRequest,
-  ImpersonationState,
   ImpersonationStatusResponse,
+  StartImpersonationResponse,
 } from "@/models/impersonation.model";
 
 class ImpersonationService {
   startImpersonation(
     request: ImpersonationRequest,
-  ): Promise<ImpersonationState> {
+  ): Promise<StartImpersonationResponse> {
     return iamClient.post(IMPERSONATE_ENDPOINTS.IMPERSONATE, request);
   }
 
