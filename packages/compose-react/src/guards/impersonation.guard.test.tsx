@@ -286,14 +286,9 @@ describe("ImpersonationSynchronizer inside a project route", () => {
     expect(screen.getByText("Go to console")).toBeInTheDocument();
   });
 
-  it("claims the cookie for other tabs after a successful retarget", async () => {
-    useProjectStore.getState().setProjects([P1] as never);
-    useImpersonateStore.getState().setImpersonation(true, "orig", "t2");
-
-    renderAt("p1");
-
-    await waitFor(() => expect(h.claimTenant).toHaveBeenCalledWith("t1"));
-  });
+  // The start-side claim moved into useStartImpersonation so that the environment cards -- which
+  // call the hook directly and never reach this guard -- claim too. It is covered in
+  // hooks/use-impersonation.test.tsx; the stop-side claim below is still this guard's own.
 
   it("ignores a stored claim made by this same tab", async () => {
     // Navigating project -> project inside one tab reads back that tab's own previous claim.

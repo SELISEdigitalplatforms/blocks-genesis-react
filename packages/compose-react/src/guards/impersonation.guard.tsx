@@ -321,10 +321,11 @@ export function ImpersonationSynchronizer({
       // Retarget straight to the route's tenant. Deliberately not stop-then-start: the impersonate
       // endpoint already retargets an existing session, and stopping first costs two extra round
       // trips and leaves the cookie holding a root token in between.
+      // useStartImpersonation claims the tenant for this window on success, so every entry path --
+      // this guard and the environment cards alike -- tells the other tabs that the shared cookie
+      // just moved.
       await mutateAsync({ targeted_tenant_id: targetTenantId });
       impersonate(targetTenantId, rootTenantId);
-      // This window now owns the shared cookie; tell the others before they fetch under it.
-      claimTenant(targetTenantId);
 
       const project = knownProjects.find((p) => p.tenantId === targetTenantId);
       if (project) {
