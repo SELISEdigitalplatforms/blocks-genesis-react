@@ -11,7 +11,11 @@ import { AddProjectCard } from "./add-project-card";
 import ConsoleCreateProject from "./console-create";
 import { ProjectCard } from "./project-card";
 import { ProjectList } from "./project-list";
-import { canOpenProject } from "./project-list-utils";
+import {
+  canOpenProject,
+  countOwnedProjectGroups,
+  MAX_OWNED_PROJECT_GROUPS,
+} from "./project-list-utils";
 import { ProjectToolbar } from "./project-toolbar";
 import type { ProjectViewMode } from "./use-project-list-state";
 import { useProjectListState } from "./use-project-list-state";
@@ -75,8 +79,10 @@ export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
   if (!isPending && !projectGroups.length && canCreateProject)
     return <ConsoleCreateProject />;
 
+  const hasReachedProjectLimit =
+    countOwnedProjectGroups(projectGroups) >= MAX_OWNED_PROJECT_GROUPS;
   const showAddProject =
-    projectGroups.length < 10 && searchText.trim().length === 0;
+    !hasReachedProjectLimit && searchText.trim().length === 0;
   const hasNoMatches =
     projectGroups.length > 0 && visibleProjectGroups.length === 0;
 
@@ -140,7 +146,7 @@ export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
             </span>
           )}
         </div>
-        {!isPending && canCreateProject && projectGroups.length > 9 && (
+        {!isPending && canCreateProject && hasReachedProjectLimit && (
           <span className="text-sm text-[hsl(var(--medium-emphasis))]">
             Please delete an existing project to create a new one.
           </span>
