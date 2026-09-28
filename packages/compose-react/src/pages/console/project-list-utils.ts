@@ -1,6 +1,14 @@
 import { environmentOptions } from "@/constants/environment-options";
 import type { IProjectGroup } from "@/models";
 
+// Mirrors the server-side cap on project creation, which counts only the groups the caller
+// owns. Shared groups are someone else's quota, and they can't be deleted from here to
+// make room either.
+export const MAX_OWNED_PROJECT_GROUPS = 10;
+
+export const countOwnedProjectGroups = (groups: IProjectGroup[]) =>
+  groups.filter((group) => !group.isShared).length;
+
 export const canOpenProject = (group: IProjectGroup) =>
   !group.isShared || !group.accessPolicies || group.accessPolicies.length > 0;
 

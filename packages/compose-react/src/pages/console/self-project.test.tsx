@@ -320,6 +320,50 @@ describe("SelfProject", () => {
     ).toBeInTheDocument();
   });
 
+  it("does not count shared groups toward the project limit", () => {
+    const groups = [
+      ...Array.from({ length: 9 }, (_v, i) => group(`g${i}`, `P${i}`)),
+      ...Array.from({ length: 5 }, (_v, i) =>
+        sharedGroup(`s${i}`, `S${i}`, ["people::view"]),
+      ),
+    ];
+    h.getProjects.mockReturnValue({
+      data: groups,
+      isLoading: false,
+      isFetching: false,
+    });
+
+    render(<SelfProject canCreateProject />);
+
+    expect(screen.getByTestId("add-card")).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "Please delete an existing project to create a new one.",
+      ),
+    ).not.toBeInTheDocument();
+  });
+
+  it("hits the project limit on ten owned groups alongside shared ones", () => {
+    const groups = [
+      ...Array.from({ length: 10 }, (_v, i) => group(`g${i}`, `P${i}`)),
+      sharedGroup("s0", "S0", ["people::view"]),
+    ];
+    h.getProjects.mockReturnValue({
+      data: groups,
+      isLoading: false,
+      isFetching: false,
+    });
+
+    render(<SelfProject canCreateProject />);
+
+    expect(screen.queryByTestId("add-card")).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Please delete an existing project to create a new one.",
+      ),
+    ).toBeInTheDocument();
+  });
+
   it("keeps the ten-group limit under filtering and in list view", async () => {
     const user = userEvent.setup();
     const groups = Array.from({ length: 10 }, (_value, index) =>
