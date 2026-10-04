@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback } from "react";
+import { useQueries, useQueryClient } from "@tanstack/react-query";
 import { initiateService } from "@/services/initiate.service";
 import { getRuntimeEnv } from "@/lib/runtime-env";
 import type { BlocksApp } from "./app-switcher.types";
@@ -6,6 +7,11 @@ import type { BlocksApp } from "./app-switcher.types";
 export type ResolvedApp = BlocksApp & {
   initiateUrl: string;
   isLoading: boolean;
+  /**
+   * Call the moment the link is used -- clicked, middle-clicked, opened from the context menu or
+   * dragged out. The URL's `state` is single-use, so it is dropped and a fresh one fetched.
+   */
+  markUsed: () => void;
 };
 
 interface UseAppRedirectUrlsParams {
@@ -19,70 +25,105 @@ interface UseAppRedirectUrlsParams {
 }
 
 /**
- * Pre-fetch the IAM initiate redirect URL for every app in `apps` whenever
- * the AppSwitcher popover opens. Replaces the inline `useEffect`/`useRef`
- * block that previously lived in `app-switcher.tsx`.
+ * How long an initiate URL is handed out after it was fetched.
  *
- * - Returns `[]` while closed (no fetch, no state churn).
- * - Clears cached URLs on every open so a stale redirect never leaks across
- *   sessions.
- * - Aborts in-flight fetches on cleanup so React 18 Strict Mode's double
- *   invocation cannot surface a stale resolved URL.
- * - Uses a memoised `apps` snapshot so passing a fresh array reference on
- *   every render does not retrigger the effect in an infinite loop.
+ * IAM keeps the flow context behind each URL's `state` for 600 s (`IdpFlowCacheTtlSeconds`), and
+ * that window has to cover the whole sign-in at the target app, password typing included. Handing
+ * out a URL for at most half of it leaves every user at least five minutes to finish.
+ */
+export const INITIATE_URL_MAX_AGE_MS = 5 * 60 * 1000;
+
+const initiateQueryKey = (
+  clientId: string,
+  redirectUri: string,
+  forwardedTo: string,
+) => ["idp-initiate", clientId, redirectUri, forwardedTo] as const;
+
+/**
+ * The IAM initiate redirect URL for every app in `apps`, fetched when the AppSwitcher popover
+ * opens and reused across opens for up to `INITIATE_URL_MAX_AGE_MS`.
+ *
+ * Every open used to call `/idp/initiate` once per app -- eight requests, each minting a state IAM
+ * then held for ten minutes -- even when the user only looked. The URLs are not tied to the user
+ * (the call is anonymous), so reuse is safe within three limits:
+ *
+ * - Age. A URL older than `INITIATE_URL_MAX_AGE_MS` is never shown; the tile waits for a new one.
+ * - Single use. `markUsed` drops a URL as soon as it is used, because the callback consumes its
+ *   `state` -- a second use would fail with `invalid_state`.
+ * - Scope. Cached per tab (in-memory TanStack cache, cleared on logout) and keyed by client,
+ *   redirect URI and `forwardedTo`, so two tabs never share a state and a URL never lands the user
+ *   on a page they did not ask for.
+ *
+ * Returns `[]` while closed.
  */
 export function useAppRedirectUrls({
   open,
   apps,
   resolveForwardedTo,
 }: UseAppRedirectUrlsParams): ResolvedApp[] {
-  const [redirectUrls, setRedirectUrls] = useState<Record<string, string>>({});
+  const queryClient = useQueryClient();
 
-  // Snapshot the apps list so referential equality across renders is stable.
-  const appsKey = apps.map((a) => a.id).join("|");
-  const stableApps = useMemo(() => apps, [appsKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  const requests = apps.map((app) => {
+    const clientId = getRuntimeEnv(app.clientId);
+    const redirectUri = getRuntimeEnv(app.redirectUri);
+    const forwardedTo = resolveForwardedTo(app);
+    return {
+      app,
+      clientId,
+      redirectUri,
+      forwardedTo,
+      queryKey: initiateQueryKey(clientId, redirectUri, forwardedTo),
+    };
+  });
 
-  // Keep the latest resolver in a ref so the effect only depends on `open`
-  // and the app identity, not the caller's callback identity.
-  const resolveRef = useRef(resolveForwardedTo);
-  resolveRef.current = resolveForwardedTo;
+  const results = useQueries({
+    queries: requests.map(
+      ({ clientId, redirectUri, forwardedTo, queryKey }) => ({
+        queryKey,
+        queryFn: ({ signal }: { signal: AbortSignal }) =>
+          initiateService.fetchRedirectUrl(
+            { clientId, redirectUri, forwardedTo },
+            signal,
+          ),
+        enabled: open,
+        staleTime: INITIATE_URL_MAX_AGE_MS,
+        gcTime: INITIATE_URL_MAX_AGE_MS,
+        // Replace a URL as it ages out while the popover stays open, rather than leaving the tile on
+        // "Loading…" until it is reopened.
+        refetchInterval: INITIATE_URL_MAX_AGE_MS,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        retry: false,
+      }),
+    ),
+  });
 
-  useEffect(() => {
-    if (!open || stableApps.length === 0) return undefined;
+  const markUsed = useCallback(
+    (queryKey: readonly unknown[]) => {
+      // Deferred past the event: React flushes a click's updates before the browser follows the
+      // link, and the tile drops its href while loading -- resetting synchronously would cancel the
+      // very navigation that used the URL.
+      setTimeout(() => {
+        void queryClient.resetQueries({ queryKey, exact: true });
+      }, 0);
+    },
+    [queryClient],
+  );
 
-    setRedirectUrls({});
+  if (!open || apps.length === 0) return [];
 
-    const controller = new AbortController();
-    const { signal } = controller;
-
-    stableApps.forEach((app) => {
-      initiateService
-        .fetchRedirectUrl({
-          clientId: getRuntimeEnv(app.clientId),
-          redirectUri: getRuntimeEnv(app.redirectUri),
-          forwardedTo: resolveRef.current(app),
-        })
-        .then((redirectUrl) => {
-          if (signal.aborted || !redirectUrl) return;
-          setRedirectUrls((prev) => ({ ...prev, [app.id]: redirectUrl }));
-        })
-        .catch((err) => {
-          if (signal.aborted) return;
-          console.error(
-            `[AppSwitcher] Failed to get redirect URL for ${app.id}:`,
-            err,
-          );
-        });
-    });
-
-    return () => controller.abort();
-  }, [open, stableApps]);
-
-  if (!open || stableApps.length === 0) return [];
-
-  return stableApps.map((app) => ({
-    ...app,
-    initiateUrl: redirectUrls[app.id] ?? app.initiateUrl,
-    isLoading: !redirectUrls[app.id],
-  }));
+  const now = Date.now();
+  return requests.map(({ app, queryKey }, index) => {
+    const result = results[index];
+    const url =
+      result?.data && now - result.dataUpdatedAt < INITIATE_URL_MAX_AGE_MS
+        ? result.data
+        : undefined;
+    return {
+      ...app,
+      initiateUrl: url ?? app.initiateUrl,
+      isLoading: !url,
+      markUsed: () => markUsed(queryKey),
+    };
+  });
 }
