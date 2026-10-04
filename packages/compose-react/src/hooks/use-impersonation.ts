@@ -8,6 +8,7 @@ import type {
 } from "@/models/impersonation.model";
 import { impersonationService } from "@/services/impersonation.service";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
 
 const IMPERSONATION_STATUS_QUERY_KEY = ["blocks-kit-impersonation", "status"];
 
@@ -25,6 +26,36 @@ export const useImpersonationStatusChecker = () => {
     refetchOnMount: "always",
     refetchOnWindowFocus: "always",
   });
+};
+
+/**
+ * Records where another tab's claim says the shared cookie now is.
+ *
+ * A claim is first-hand: a tab only makes one after the server confirmed the swap. Without recording
+ * it, this tab's cached status stays wherever it last looked, and it looks again only on
+ * `visibilitychange` -- which never fires for two windows side by side, both always visible. A
+ * console that had stopped impersonation then went on believing the cookie was root after another
+ * window re-entered a project, so "Leave <project>" cleared the notice without ever calling stop,
+ * and the console rendered under the project's token.
+ */
+export const useRecordClaimedTenant = () => {
+  const queryClient = useQueryClient();
+
+  return useCallback(
+    (tenantId: string, rootTenantId: string) => {
+      queryClient.setQueryData<ImpersonationStatusResponse>(
+        IMPERSONATION_STATUS_QUERY_KEY,
+        tenantId === rootTenantId
+          ? buildStoppedStatus()
+          : (current) => ({
+              impersonated: true,
+              originalTenantId: current?.originalTenantId || rootTenantId,
+              impersonatedTenantId: tenantId,
+            }),
+      );
+    },
+    [queryClient],
+  );
 };
 
 export const useStopImpersonation = () => {
