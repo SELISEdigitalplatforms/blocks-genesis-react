@@ -2,6 +2,7 @@ import { Button } from "@/components";
 import { AppLoadingSpinner } from "@/components/common/loader-spinner";
 import {
   useImpersonationStatusChecker,
+  useRecordClaimedTenant,
   useStartImpersonation,
   useStopImpersonation,
 } from "@/hooks/use-impersonation";
@@ -9,7 +10,11 @@ import { useGetProjects } from "@/hooks/use-project";
 import { HttpError } from "@/lib/http/error";
 import {
   TAB_ID,
+  type TenantClaim,
   claimTenant,
+  holdTenant,
+  isSameClaim,
+  isTenantHeldElsewhere,
   readCurrentOwner,
   subscribeToTenantClaims,
 } from "@/lib/tenant-ownership";
@@ -25,6 +30,78 @@ const projectNameFor = (
   tenantId: string | null | undefined,
 ): string | null =>
   (tenantId && projects.find((p) => p.tenantId === tenantId)?.name) || null;
+
+const claimKeyOf = (claim: TenantClaim | null): string | null =>
+  claim ? `${claim.tabId}|${claim.tenantId}|${claim.ts}` : null;
+
+/**
+ * On mount, decides whether another live window is already working in the tenant the shared cookie
+ * is in. Calls `onHeldElsewhere` if so, and returns true while it is still finding out -- the
+ * caller must neither take nor release the cookie until then.
+ *
+ * The stored claim is only a lead, and two checks stand between it and a detached window:
+ *
+ * 1. The server's word. A claim matters only for the tenant the status endpoint says the cookie is
+ *    in right now (`cookieTenantId`). One left by another user before a logout, or overtaken by a
+ *    later stop or impersonation, names a tenant the cookie is no longer in, and is dropped without
+ *    asking anyone. A fresh login is root-scoped, so it never waits here at all.
+ * 2. A live answer. The claim outlives the tab that wrote it -- a reload gives the same tab a new
+ *    `TAB_ID`, and a closed tab never withdraws its claim -- so the other tabs are asked, and only
+ *    one still rendering that tenant replies.
+ *
+ * `tabId !== TAB_ID` still matters: the stored claim is the last one made by ANY window, including
+ * this one, and reading back its own claim must not make a window think it was displaced.
+ */
+const useLiveOwnerProbe = ({
+  cookieTenantId,
+  ownTenantId,
+  onHeldElsewhere,
+}: {
+  /** Where the server says the shared cookie is right now; null when it is root-scoped. */
+  cookieTenantId: string | null;
+  /** The tenant this window wants. Another window in the same tenant is no conflict. */
+  ownTenantId: string | null;
+  onHeldElsewhere: (tenantId: string) => void;
+}): boolean => {
+  // Read during render, not in an effect, so the caller's own effects are held back on the very
+  // first commit rather than one commit too late.
+  const foreignClaim = useMemo(() => {
+    if (!cookieTenantId || !ownTenantId || cookieTenantId === ownTenantId) {
+      return null;
+    }
+    const owner = readCurrentOwner();
+    return owner && owner.tabId !== TAB_ID && owner.tenantId === cookieTenantId
+      ? owner
+      : null;
+  }, [cookieTenantId, ownTenantId]);
+
+  // Keyed by the claim's content: a re-read of the same claim is a new object, not a new question.
+  const claimKey = claimKeyOf(foreignClaim);
+  const [probedKey, setProbedKey] = useState<string | null>(null);
+  const foreignClaimRef = useRef(foreignClaim);
+  const onHeldElsewhereRef = useRef(onHeldElsewhere);
+  foreignClaimRef.current = foreignClaim;
+  onHeldElsewhereRef.current = onHeldElsewhere;
+
+  useEffect(() => {
+    const claim = foreignClaimRef.current;
+    if (!claim || !claimKey) return;
+    let cancelled = false;
+    void isTenantHeldElsewhere(claim.tenantId).then((held) => {
+      if (cancelled) return;
+      // A newer claim arriving mid-probe has already been handled by the claim subscription.
+      if (held && isSameClaim(readCurrentOwner(), claim)) {
+        onHeldElsewhereRef.current(claim.tenantId);
+      }
+      setProbedKey(claimKey);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [claimKey]);
+
+  return !!claimKey && probedKey !== claimKey;
+};
 
 export const ImpersonationChecker = ({
   children,
@@ -119,11 +196,13 @@ export function ImpersonationTerminator({
   const {
     terminate,
     isImpersonated,
+    impersonatedTenantId,
     detachedReason,
     detachedTenantId,
     setDetached,
   } = useImpersonateStore();
   const { mutateAsync } = useStopImpersonation();
+  const recordClaimedTenant = useRecordClaimedTenant();
   const { projects } = useProjectStore();
   const isTriggering = useRef(false);
   const [isTerminating, setIsTerminating] = useState(false);
@@ -132,29 +211,47 @@ export function ImpersonationTerminator({
   // impersonation is therefore a claim like any other: it moves the shared cookie back to root.
   const rootTenantId = window.process?.env.BLOCKS_X_BLOCKS_KEY || "";
 
+  // Trusting the stored claim on its own is what put "Your session is in <project>" on a single
+  // tab's Back to console after a reload, and on a new user's first console visit.
+  const isProbingOwner = useLiveOwnerProbe({
+    cookieTenantId: isImpersonated ? impersonatedTenantId : null,
+    ownTenantId: rootTenantId || null,
+    onHeldElsewhere: (tenantId) => setDetached("another-project", tenantId),
+  });
+
   useEffect(() => {
     if (!rootTenantId) return;
-
-    const owner = readCurrentOwner();
-    if (owner && owner.tabId !== TAB_ID && owner.tenantId !== rootTenantId) {
-      setDetached("another-project", owner.tenantId);
-    }
-
     return subscribeToTenantClaims((claim) => {
+      // The cookie moved, so this tab's status moves with it. Leaving the cached "stopped" in place
+      // is what made "Leave <project>" skip the stop call below.
+      recordClaimedTenant(claim.tenantId, rootTenantId);
       if (claim.tenantId === rootTenantId) {
         setDetached(null);
         return;
       }
       setDetached("another-project", claim.tenantId);
     });
-  }, [rootTenantId, setDetached]);
+  }, [rootTenantId, setDetached, recordClaimedTenant]);
+
+  // The detached state belongs to the tab, not the route, so it survives navigation. Only a project
+  // elsewhere detaches a console: "console" is what a project page records when the session went
+  // back to the console, and following its "Go to console" arrives exactly where the session is.
+  // Read as a block, it put that tab on "Your session is in a project" -- naming no project,
+  // because the tenant it held was root -- and took a second click to clear.
+  const isDetached = detachedReason === "another-project";
+
+  useEffect(() => {
+    if (detachedReason === "console") setDetached(null);
+  }, [detachedReason, setDetached]);
 
   useEffect(() => {
     if (isTriggering.current || !isImpersonated) return;
     // Another window is inside a project. Stopping here would pull the shared cookie back to root
     // underneath it -- the mirror of the bug this guard exists to prevent, and triggered by nothing
     // more than this window regaining focus and refetching its status.
-    if (detachedReason) return;
+    if (isDetached) return;
+    // Not known yet whether that window exists. The spinner below covers the wait.
+    if (isProbingOwner) return;
 
     isTriggering.current = true;
     setIsTerminating(true);
@@ -185,9 +282,16 @@ export function ImpersonationTerminator({
     };
 
     void stopImpersonation();
-  }, [mutateAsync, terminate, isImpersonated, detachedReason, rootTenantId]);
+  }, [
+    mutateAsync,
+    terminate,
+    isImpersonated,
+    isDetached,
+    isProbingOwner,
+    rootTenantId,
+  ]);
 
-  if (detachedReason) {
+  if (isDetached) {
     const name = projectNameFor(projects, detachedTenantId);
     return (
       <ImpersonationBlocked
@@ -226,6 +330,7 @@ export function ImpersonationSynchronizer({
     setDetached,
   } = useImpersonateStore();
   const { mutateAsync } = useStartImpersonation();
+  const recordClaimedTenant = useRecordClaimedTenant();
   const { data: _data } = useGetProjects({ enabled: true });
   const { selectedProject, setSelectedProject, projects, setTenantGroup } =
     useProjectStore();
@@ -357,27 +462,53 @@ export function ImpersonationSynchronizer({
     void runImpersonation();
   }, [runImpersonation, setImpersonationError, setDetached]);
 
-  // Another window taking the cookie is the one event this window cannot observe for itself: the
-  // token is HttpOnly, and the status endpoint is only refetched on window focus.
-  useEffect(() => {
-    const owner = readCurrentOwner();
-    // `owner.tabId !== TAB_ID` matters: the stored claim is the last one made by ANY window,
-    // including this one. Without the check, navigating from one project to another inside a single
-    // window reads back its own previous claim, decides it has been detached, and then refuses to
-    // re-impersonate -- stranding the window on a notice it wrote itself.
-    if (
-      owner &&
-      owner.tabId !== TAB_ID &&
-      routeTenantId &&
-      owner.tenantId !== routeTenantId
-    ) {
-      setDetached(
-        owner.tenantId === rootTenantId ? "console" : "another-project",
-        owner.tenantId,
-      );
-    }
+  /**
+   * Whether this window opened while another one is still working in a different project. The
+   * impersonation effect below runs in the same commit and must already see that it has to wait.
+   *
+   * A root-scoped cookie has nothing to check: `impersonatedTenantId` is null, so a stored ROOT
+   * claim never makes a newly opened project start on "Your session returned to the console". A
+   * console window that releases the cookie while this one is open still detaches it, through the
+   * subscription below.
+   */
+  // The detached state belongs to the tab, not the route, so it survives navigation. A console
+  // blocked by "Your session is in <project>" whose user then opens that very project has no
+  // conflict left: this window wants the tenant the session is already in.
+  const detachedHere =
+    detachedReason === "another-project" && detachedTenantId === routeTenantId
+      ? null
+      : detachedReason;
 
+  useEffect(() => {
+    if (detachedReason && detachedReason !== detachedHere) setDetached(null);
+  }, [detachedReason, detachedHere, setDetached]);
+
+  const isProbingOwner = useLiveOwnerProbe({
+    cookieTenantId: impersonatedTenantId,
+    ownTenantId: routeTenantId,
+    onHeldElsewhere: (tenantId) => setDetached("another-project", tenantId),
+  });
+
+  // Answer other tabs' probes for this project, but only while actually rendering its data.
+  const isAttached =
+    !!routeTenantId &&
+    routeTenantId === impersonatedTenantId &&
+    !detachedHere &&
+    !impersonationError &&
+    !isProbingOwner;
+
+  useEffect(() => {
+    if (!isAttached || !routeTenantId) return;
+    return holdTenant(routeTenantId);
+  }, [isAttached, routeTenantId]);
+
+  // Another window taking the cookie is the one event this window cannot observe for itself: the
+  // token is HttpOnly, and the status endpoint is only refetched when the tab becomes visible --
+  // never, for two windows side by side.
+  useEffect(() => {
     return subscribeToTenantClaims((claim) => {
+      // Recorded even when this window has no tenant to compare yet: the cookie moved regardless.
+      recordClaimedTenant(claim.tenantId, rootTenantId);
       const mine = routeTenantIdRef.current;
       if (!mine) return;
       // Another window on the SAME project is no conflict -- one cookie serves both.
@@ -390,14 +521,17 @@ export function ImpersonationSynchronizer({
         claim.tenantId,
       );
     });
-  }, [routeTenantId, rootTenantId, setDetached]);
+  }, [routeTenantId, rootTenantId, setDetached, recordClaimedTenant]);
 
   useEffect(() => {
     if (!itemId) return;
     if (isTriggering.current) return;
     // A failed repair and a detached window are both terminal: retrying on every render would
     // hammer the endpoint and flicker the UI. Both clear only through an explicit user action.
-    if (impersonationError || detachedReason) return;
+    if (impersonationError || detachedHere) return;
+    // Taking the cookie before knowing whether another window is in it would yank it from that
+    // window -- exactly what the probe is there to rule out.
+    if (isProbingOwner) return;
 
     const needsColdStart =
       !routeTenantId && !!impersonatedTenantId && !selectedProject;
@@ -412,7 +546,8 @@ export function ImpersonationSynchronizer({
     impersonatedTenantId,
     selectedProject,
     impersonationError,
-    detachedReason,
+    detachedHere,
+    isProbingOwner,
     runImpersonation,
   ]);
 
@@ -432,6 +567,16 @@ export function ImpersonationSynchronizer({
   if (!itemId) {
     if (!isImpersonated || isTriggering.current) return null;
     return <>{children}</>;
+  }
+
+  if (isProbingOwner && !detachedHere) {
+    return (
+      <ImpersonationWaiting
+        label={
+          thisProjectName ? `Opening ${thisProjectName}…` : "Opening project…"
+        }
+      />
+    );
   }
 
   if (impersonationError) {
@@ -466,7 +611,7 @@ export function ImpersonationSynchronizer({
     );
   }
 
-  if (detachedReason === "console") {
+  if (detachedHere === "console") {
     return (
       <ImpersonationBlocked
         title="Your session returned to the console"
@@ -484,7 +629,7 @@ export function ImpersonationSynchronizer({
     );
   }
 
-  if (detachedReason === "another-project") {
+  if (detachedHere === "another-project") {
     const otherName = projectNameFor(projects, detachedTenantId);
     return (
       <ImpersonationBlocked

@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { HttpError } from "@/lib/http/error";
 import {
   useImpersonationStatusChecker,
+  useRecordClaimedTenant,
   useStartImpersonation,
   useStopImpersonation,
 } from "./use-impersonation";
@@ -153,5 +154,33 @@ describe("use-impersonation hooks", () => {
     expect(h.claimTenant).not.toHaveBeenCalled();
     const status = client.getQueryData<{ impersonated: boolean }>(STATUS_KEY);
     expect(status?.impersonated).not.toBe(true);
+  });
+
+  it("records another tab's project claim as impersonated", () => {
+    const { result } = renderHook(() => useRecordClaimedTenant(), { wrapper });
+
+    result.current("t1", "root");
+
+    expect(client.getQueryData(STATUS_KEY)).toEqual({
+      impersonated: true,
+      originalTenantId: "root",
+      impersonatedTenantId: "t1",
+    });
+  });
+
+  it("records another tab's console claim as stopped", () => {
+    client.setQueryData(STATUS_KEY, {
+      impersonated: true,
+      originalTenantId: "root",
+      impersonatedTenantId: "t1",
+    });
+    const { result } = renderHook(() => useRecordClaimedTenant(), { wrapper });
+
+    result.current("root", "root");
+
+    expect(client.getQueryData(STATUS_KEY)).toMatchObject({
+      impersonated: false,
+      impersonatedTenantId: null,
+    });
   });
 });

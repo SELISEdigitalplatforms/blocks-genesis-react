@@ -28,7 +28,14 @@ const AppTile = ({
     <a
       href={isLoading ? undefined : app.initiateUrl}
       aria-disabled={isLoading}
-      onClick={isLoading ? (e) => e.preventDefault() : undefined}
+      // Every way a link can be used. Its state is single-use, so each one swaps in a fresh URL;
+      // the context menu counts because "Open in new tab" and "Copy link" both start from it.
+      onClick={isLoading ? (e) => e.preventDefault() : app.markUsed}
+      onAuxClick={(e) => {
+        if (!isLoading && e.button === 1) app.markUsed();
+      }}
+      onContextMenu={isLoading ? undefined : app.markUsed}
+      onDragStart={isLoading ? undefined : app.markUsed}
       className={cn(
         "hover:bg-accent focus-visible:ring-ring group flex flex-col items-center gap-2 rounded-xl p-3 text-center transition-colors focus-visible:outline-none focus-visible:ring-2",
         isLoading && "pointer-events-none opacity-50 cursor-default",

@@ -8,11 +8,10 @@ export interface InitiateParams {
 }
 
 class InitiateService {
-  async fetchRedirectUrl({
-    clientId,
-    redirectUri,
-    forwardedTo,
-  }: InitiateParams): Promise<string> {
+  async fetchRedirectUrl(
+    { clientId, redirectUri, forwardedTo }: InitiateParams,
+    signal?: AbortSignal,
+  ): Promise<string> {
     const blocksKey = getRuntimeEnv("BLOCKS_X_BLOCKS_KEY");
     const iamBaseUrl = getRuntimeEnv("userBaseUrl");
 
@@ -27,7 +26,7 @@ class InitiateService {
 
     const response = await fetch(
       `${iamBaseUrl}${IAM_ENDPOINTS.INITIATE}?${params}`,
-      { headers },
+      { headers, signal },
     );
 
     if (!response.ok) {
