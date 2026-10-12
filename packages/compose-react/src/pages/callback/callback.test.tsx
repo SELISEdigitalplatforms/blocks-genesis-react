@@ -24,7 +24,7 @@ describe("CallbackPage", () => {
     };
     Object.defineProperty(window, "location", {
       configurable: true,
-      value: { href: "" },
+      value: { href: "", origin: "https://app.test" },
     });
   });
 
@@ -41,8 +41,58 @@ describe("CallbackPage", () => {
     renderCallback("?code=abc&state=xyz&forwardedTo=/home");
 
     await waitFor(() => expect(h.setAuthenticated).toHaveBeenCalled());
-    expect(window.location.href).toBe("/home");
+    expect(window.location.href).toBe("https://app.test/home");
   });
+
+  it("keeps the query and hash of a safe forwardedTo", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true }));
+
+    renderCallback(
+      `?code=abc&state=xyz&forwardedTo=${encodeURIComponent("/orders?id=7#top")}`,
+    );
+
+    await waitFor(() => expect(h.setAuthenticated).toHaveBeenCalled());
+    expect(window.location.href).toBe("https://app.test/orders?id=7#top");
+  });
+
+  it.each([
+    ["https://evil.example/x"],
+    ["//evil.example/x"],
+    ["/\\evil.example/x"],
+    ["javascript:alert(1)"],
+    ["/\t/evil.example/x"],
+    ["/\n/evil.example/x"],
+    ["/\t\\evil.example/x"],
+  ])("ignores an unsafe forwardedTo (%s) and goes to /", async (target) => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true }));
+
+    renderCallback(
+      `?code=abc&state=xyz&forwardedTo=${encodeURIComponent(target)}`,
+    );
+
+    await waitFor(() => expect(h.setAuthenticated).toHaveBeenCalled());
+    expect(window.location.href).toBe("/");
+  });
+
+  it.each([
+    ["/.//evil.example/x"],
+    ["/..//evil.example/x"],
+    ["/a/..//evil.example/x"],
+    ["/%2e//evil.example/x"],
+    ["/./\\evil.example/x"],
+  ])(
+    "keeps a dot-segment forwardedTo (%s) on the app origin",
+    async (target) => {
+      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true }));
+
+      renderCallback(
+        `?code=abc&state=xyz&forwardedTo=${encodeURIComponent(target)}`,
+      );
+
+      await waitFor(() => expect(h.setAuthenticated).toHaveBeenCalled());
+      expect(new URL(window.location.href).origin).toBe("https://app.test");
+    },
+  );
 
   it("redirects to the login error page when the callback fails", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false }));
