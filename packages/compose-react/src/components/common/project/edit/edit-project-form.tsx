@@ -58,6 +58,7 @@ export const EditProjectForm = ({
           description: "Project name updated successfully",
         });
         queryClient.invalidateQueries({ queryKey: ["identifier", "project"] });
+        queryClient.invalidateQueries({ queryKey: ["identifier", "projects"] });
         form.reset();
         onAfterSubmit();
       } else {

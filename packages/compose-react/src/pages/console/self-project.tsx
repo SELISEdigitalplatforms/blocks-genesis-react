@@ -61,8 +61,10 @@ export type SelfProjectProps = {
 };
 
 export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
-  const { data, isLoading, isFetching } = useGetProjects({ enabled: true });
-  const isPending = isLoading || isFetching;
+  // Only the first load shows skeletons; background refetches (focus, remount)
+  // update the list in place instead of flashing it.
+  const { data, isLoading } = useGetProjects({ enabled: true });
+  const isPending = isLoading;
   const projectGroups = data || [];
   const {
     availableEnvironmentOptions,
