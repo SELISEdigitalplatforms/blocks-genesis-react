@@ -9,15 +9,26 @@ import type {
   IValidateCnameProjectPayload,
 } from "@/models";
 
+const ENV_REPOS_KEY = "env-repositories";
+const IDENTIFIER = "identifier";
+const PROJECT_KEY = [IDENTIFIER, "project"];
+const PROJECTS_KEY = [IDENTIFIER, "projects"];
+export const PROJECTS_STALE_TIME_MS = 5 * 1000;
+
 export const useGetProjects = (options: {
   tenantGroupId?: string;
   enabled?: boolean;
 }) => {
   const setProjects = useProjectStore((state) => state.setProjects);
   const query = useQuery({
-    queryKey: ["identifier", "projects", options?.tenantGroupId],
+    queryKey: [...PROJECTS_KEY, options?.tenantGroupId],
     queryFn: () => projectService.getProjects(0, 100, options?.tenantGroupId),
     enabled: !!options?.enabled,
+    // Keep the list in step with the OS app: refetch on every mount (coming back
+    // to the Console) and on window focus once it is older than a few seconds.
+    staleTime: PROJECTS_STALE_TIME_MS,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
 
   useEffect(() => {
@@ -44,7 +55,7 @@ export const useGetProject = () => {
     : originalTenantId;
 
   return useQuery({
-    queryKey: ["identifier", "project", tokenTenantId],
+    queryKey: [...PROJECT_KEY, tokenTenantId],
     queryFn: () => projectService.getProject(),
     // Deliberately unchanged from the previous `Boolean(options.projectId)`, which
     // was fed `selectedProject?.itemId`. It is load-bearing: on project-overview
@@ -61,7 +72,7 @@ export const useGetProject = () => {
 
 export const useGetEnvRepositories = (projectKey: string) => {
   return useQuery({
-    queryKey: ["env-repositories", projectKey],
+    queryKey: [ENV_REPOS_KEY, projectKey],
     queryFn: () => projectService.getEnvRepositories(),
     enabled: !!projectKey,
   });
@@ -70,24 +81,24 @@ export const useGetEnvRepositories = (projectKey: string) => {
 export const useUpdateRepositories = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationKey: ["env-repositories", "update"],
+    mutationKey: [ENV_REPOS_KEY, "update"],
     mutationFn: projectService.repoUpdate,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["env-repositories"] });
+      queryClient.invalidateQueries({ queryKey: [ENV_REPOS_KEY] });
     },
   });
 };
 export const useUpdateTenantGroup = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationKey: ["identifier", "tenant-group-update"],
+    mutationKey: [IDENTIFIER, "tenant-group-update"],
     mutationFn: (payload: IUpdateTenantGroupPayload) =>
       projectService.updateTenantGroup(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["identifier", "tenant-group"],
+        queryKey: [IDENTIFIER, "tenant-group"],
       });
-      queryClient.invalidateQueries({ queryKey: ["identifier", "projects"] });
+      queryClient.invalidateQueries({ queryKey: PROJECTS_KEY });
     },
   });
 };
@@ -95,12 +106,12 @@ export const useUpdateTenantGroup = () => {
 export const useUpdateProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationKey: ["identifier", "project-update"],
+    mutationKey: [IDENTIFIER, "project-update"],
     mutationFn: (payload: IUpdateProjectPayload) =>
       projectService.updateProject(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["identifier", "project"] });
-      queryClient.invalidateQueries({ queryKey: ["identifier", "projects"] });
+      queryClient.invalidateQueries({ queryKey: PROJECT_KEY });
+      queryClient.invalidateQueries({ queryKey: PROJECTS_KEY });
     },
   });
 };
@@ -110,12 +121,13 @@ export const useValidateCNameProject = (
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationKey: ["identifier", "projects", options],
+    mutationKey: [...PROJECTS_KEY, options],
     mutationFn: () => projectService.validateCNameProject(options),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["identifier", "project"],
+        queryKey: PROJECT_KEY,
       });
+      queryClient.invalidateQueries({ queryKey: PROJECTS_KEY });
     },
   });
 };
@@ -123,13 +135,11 @@ export const useValidateCNameProject = (
 export const useDisableProject = (options: { projectKey: string }) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationKey: ["identifier", "projects", "disable"],
+    mutationKey: [...PROJECTS_KEY, "disable"],
     mutationFn: () => projectService.disableProject(options),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["identifier", "project", options],
-      });
-      queryClient.invalidateQueries({ queryKey: ["identifier", "projects"] });
+      queryClient.invalidateQueries({ queryKey: PROJECT_KEY });
+      queryClient.invalidateQueries({ queryKey: PROJECTS_KEY });
     },
   });
 };

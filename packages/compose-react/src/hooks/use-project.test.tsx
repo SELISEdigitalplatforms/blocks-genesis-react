@@ -27,13 +27,14 @@ import {
 } from "@/hooks/use-project";
 import { useImpersonateStore, useProjectStore } from "@/store";
 
+let lastClient: QueryClient;
 const wrapper = () => {
-  const client = new QueryClient({
+  const client = (lastClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false },
       mutations: { retry: false },
     },
-  });
+  }));
   const Wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={client}>{children}</QueryClientProvider>
   );
@@ -145,5 +146,53 @@ describe("use-project mutations", () => {
   it("useDisableProject triggers disableProject", async () => {
     await runMutation(() => useDisableProject({ projectKey: "k" }));
     expect(h.disableProject).toHaveBeenCalled();
+  });
+
+  it.each([
+    ["useDisableProject", () => useDisableProject({ projectKey: "k" })],
+    ["useUpdateProject", () => useUpdateProject()],
+    ["useUpdateTenantGroup", () => useUpdateTenantGroup()],
+    ["useValidateCNameProject", () => useValidateCNameProject({} as never)],
+  ])(
+    "%s invalidates the project and projects lists by prefix",
+    async (_n, hook) => {
+      const spy = vi.fn();
+      const { result } = renderHook(
+        hook as () => { mutate: (p: never) => void; isSuccess: boolean },
+        {
+          wrapper: wrapper(),
+        },
+      );
+      const orig = lastClient.invalidateQueries.bind(lastClient);
+      lastClient.invalidateQueries = ((f: never) => {
+        spy(f);
+        return orig(f);
+      }) as never;
+      await act(async () => {
+        result.current.mutate({} as never);
+      });
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      const keys = spy.mock.calls.map((c) =>
+        JSON.stringify((c[0] as { queryKey: unknown }).queryKey),
+      );
+      expect(keys).toContain(JSON.stringify(["identifier", "projects"]));
+      if (_n !== "useUpdateTenantGroup") {
+        expect(keys).toContain(JSON.stringify(["identifier", "project"]));
+      }
+    },
+  );
+
+  it("useGetProjects refetches on mount and refetches a stale list", async () => {
+    const w = wrapper();
+    const first = renderHook(() => useGetProjects({ enabled: true }), {
+      wrapper: w,
+    });
+    await waitFor(() => expect(first.result.current.isSuccess).toBe(true));
+    first.unmount();
+    const second = renderHook(() => useGetProjects({ enabled: true }), {
+      wrapper: w,
+    });
+    await waitFor(() => expect(h.getProjects).toHaveBeenCalledTimes(2));
+    second.unmount();
   });
 });
