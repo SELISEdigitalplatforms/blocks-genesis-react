@@ -65,6 +65,13 @@ describe("NotificationListenerService reconnect", () => {
     vi.useRealTimers();
   });
 
+  it("opens the socket in one request, without negotiate", () => {
+    expect(h.builder.withUrl).toHaveBeenCalledWith(
+      expect.stringContaining("/api/NotificationHub"),
+      expect.objectContaining({ transport: 1, skipNegotiation: true }),
+    );
+  });
+
   it("connect() starts the connection without refreshing the login", async () => {
     await service.connect();
 
