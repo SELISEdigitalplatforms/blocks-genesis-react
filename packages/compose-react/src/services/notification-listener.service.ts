@@ -45,6 +45,8 @@ export class NotificationListenerService {
         `${logicOrigin()}/api/NotificationHub?x-blocks-key=${getRuntimeEnv("BLOCKS_X_BLOCKS_KEY")}`,
         {
           transport: HttpTransportType.WebSockets,
+          // One request opens the socket, so it cannot split across Api pods without sticky sessions.
+          skipNegotiation: true,
         },
       )
       .withAutomaticReconnect()
