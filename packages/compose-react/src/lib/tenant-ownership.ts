@@ -234,6 +234,73 @@ export const clearTenantClaims = (): void => {
   }
 };
 
+const SIGNED_OUT_STORAGE_KEY = "blocks:signed-out";
+
+/**
+ * Tells the other tabs that this one signed out. Like the probe, it shares no field names with
+ * `TenantClaim`, so a tab on an older build ignores it rather than mistaking it for a claim.
+ */
+interface SignedOut {
+  kind: "signed-out";
+  tabId: string;
+}
+
+const isSignedOut = (value: unknown): value is SignedOut =>
+  typeof value === "object" &&
+  value !== null &&
+  (value as SignedOut).kind === "signed-out" &&
+  typeof (value as SignedOut).tabId === "string";
+
+/**
+ * Announce that this tab signed out. The cookie is gone for every tab, but each one keeps showing
+ * the previous user's data until its next request fails -- and if someone signs in again first,
+ * that request carries the new user's cookie under the old user's page.
+ */
+export const announceSignOut = (): void => {
+  if (!isBrowser()) return;
+  const message: SignedOut = { kind: "signed-out", tabId: TAB_ID };
+  const bc = getChannel();
+  if (bc) {
+    bc.postMessage(message);
+    return;
+  }
+  try {
+    window.localStorage.setItem(
+      SIGNED_OUT_STORAGE_KEY,
+      JSON.stringify({ ...message, ts: Date.now() }),
+    );
+  } catch {
+    // Storage unavailable: the other tabs find out on their next request instead.
+  }
+};
+
+/** Subscribe to sign-outs in other tabs. Returns an unsubscribe function. */
+export const subscribeToSignOut = (onSignOut: () => void): (() => void) => {
+  if (!isBrowser()) return () => undefined;
+
+  const handle = (message: unknown) => {
+    if (isSignedOut(message) && message.tabId !== TAB_ID) onSignOut();
+  };
+
+  const bc = getChannel();
+  if (bc) {
+    const listener = (event: MessageEvent) => handle(event.data);
+    bc.addEventListener("message", listener);
+    return () => bc.removeEventListener("message", listener);
+  }
+
+  const listener = (event: StorageEvent) => {
+    if (event.key !== SIGNED_OUT_STORAGE_KEY || !event.newValue) return;
+    try {
+      handle(JSON.parse(event.newValue));
+    } catch {
+      // A malformed entry tells us nothing.
+    }
+  };
+  window.addEventListener("storage", listener);
+  return () => window.removeEventListener("storage", listener);
+};
+
 /**
  * The last claim made by any tab on this origin, or null if none is recorded.
  *

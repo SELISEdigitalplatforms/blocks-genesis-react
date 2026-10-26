@@ -75,20 +75,30 @@ describe("NotificationService", () => {
 });
 
 describe("ImpersonationService", () => {
+  // The hooks call these inside the session lock with their own request options; the service passes
+  // them through untouched.
+  const insideLock = { skipTokenRotation: true, skipSessionCheck: true };
+
   it("startImpersonation posts the request", async () => {
-    await impersonationService.startImpersonation({ x: 1 } as never);
-    expect(c.post).toHaveBeenCalledWith(IMPERSONATE_ENDPOINTS.IMPERSONATE, {
-      x: 1,
-    });
+    await impersonationService.startImpersonation(
+      { x: 1 } as never,
+      insideLock,
+    );
+    expect(c.post).toHaveBeenCalledWith(
+      IMPERSONATE_ENDPOINTS.IMPERSONATE,
+      { x: 1 },
+      undefined,
+      insideLock,
+    );
   });
 
-  it("stopImpersonation skips token rotation", async () => {
-    await impersonationService.stopImpersonation();
+  it("stopImpersonation posts with the caller's options", async () => {
+    await impersonationService.stopImpersonation(insideLock);
     expect(c.post).toHaveBeenCalledWith(
       IMPERSONATE_ENDPOINTS.STOP_IMPERSONATION,
       {},
       undefined,
-      { skipTokenRotation: true },
+      insideLock,
     );
   });
 
@@ -97,6 +107,8 @@ describe("ImpersonationService", () => {
     expect(c.post).toHaveBeenCalledWith(
       IMPERSONATE_ENDPOINTS.IMPERSONATION_STATUS,
       null,
+      undefined,
+      undefined,
     );
   });
 });

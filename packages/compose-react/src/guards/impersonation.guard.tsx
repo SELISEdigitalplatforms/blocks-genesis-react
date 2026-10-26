@@ -3,9 +3,12 @@ import { AppLoadingSpinner } from "@/components/common/loader-spinner";
 import {
   useImpersonationStatusChecker,
   useRecordClaimedTenant,
+  useSessionTenantGuard,
   useStartImpersonation,
+  useStatusFirstOnTabReturn,
   useStopImpersonation,
 } from "@/hooks/use-impersonation";
+import { useSignOut } from "@/hooks/use-logout";
 import { useGetProjects } from "@/hooks/use-project";
 import { HttpError } from "@/lib/http/error";
 import {
@@ -33,6 +36,26 @@ const projectNameFor = (
 
 const claimKeyOf = (claim: TenantClaim | null): string | null =>
   claim ? `${claim.tabId}|${claim.tenantId}|${claim.ts}` : null;
+
+/**
+ * Why a return to the console did not reach root. "unconfirmed" can still succeed on a retry;
+ * "session-ended" cannot.
+ */
+type ReturnFailure = "unconfirmed" | "session-ended";
+
+/**
+ * IAM refuses a stop with one of these when the refresh token can no longer be used at all. Unlike a
+ * bare 401, which only means the access token expired, a retry cannot fix it.
+ */
+const SESSION_ENDED_CODES = new Set([
+  "invalid_refresh_token",
+  "session_expired",
+]);
+
+const isSessionEnded = (error: unknown): boolean =>
+  error instanceof HttpError &&
+  error.status === 401 &&
+  SESSION_ENDED_CODES.has(String(error.errors?.error ?? ""));
 
 /**
  * On mount, decides whether another live window is already working in the tenant the shared cookie
@@ -108,9 +131,11 @@ export const ImpersonationChecker = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { data, isLoading, isSuccess } = useImpersonationStatusChecker();
+  const { data } = useImpersonationStatusChecker();
   const { setImpersonation, isInitialized, setInitialized } =
     useImpersonateStore();
+  useSessionTenantGuard();
+  useStatusFirstOnTabReturn();
 
   useEffect(() => {
     if (!data) return;
@@ -122,7 +147,9 @@ export const ImpersonationChecker = ({
     setInitialized(true);
   }, [data, setImpersonation, setInitialized]);
 
-  if (isLoading || !isSuccess || !isInitialized) return null;
+  // Gated on having an answer, not on the latest fetch succeeding: a refetch that fails tells us
+  // nothing new, and unmounting the whole layout over it closed menus and dropped unsaved input.
+  if (!data || !isInitialized) return null;
   return <>{children}</>;
 };
 
@@ -139,6 +166,8 @@ function ImpersonationBlocked({
   description,
   primaryLabel,
   onPrimary,
+  secondaryLabel,
+  onSecondary,
   consolePath,
 }: {
   title: string;
@@ -146,6 +175,9 @@ function ImpersonationBlocked({
   /** Omitted when retrying cannot help, leaving the console as the only way forward. */
   primaryLabel?: string;
   onPrimary?: () => void;
+  /** A second way out, for screens that hide the header and its menu. */
+  secondaryLabel?: string;
+  onSecondary?: () => void;
   /** Omitted on console routes, which are already where that button would lead. */
   consolePath?: string;
 }) {
@@ -160,6 +192,11 @@ function ImpersonationBlocked({
       <div className="flex flex-row items-center gap-2">
         {primaryLabel && onPrimary && (
           <Button onClick={onPrimary}>{primaryLabel}</Button>
+        )}
+        {secondaryLabel && onSecondary && (
+          <Button variant="outline" onClick={onSecondary}>
+            {secondaryLabel}
+          </Button>
         )}
         {consolePath && (
           <Button
@@ -244,6 +281,17 @@ export function ImpersonationTerminator({
     if (detachedReason === "console") setDetached(null);
   }, [detachedReason, setDetached]);
 
+  // A return that did not reach root, and why. The console stays hidden until the user acts on it.
+  const [returnFailure, setReturnFailure] = useState<ReturnFailure | null>(
+    null,
+  );
+  const signOut = useSignOut();
+
+  // Back in root by any route -- another window's stop, a reload -- so there is nothing to retry.
+  useEffect(() => {
+    if (!isImpersonated) setReturnFailure(null);
+  }, [isImpersonated]);
+
   useEffect(() => {
     if (isTriggering.current || !isImpersonated) return;
     // Another window is inside a project. Stopping here would pull the shared cookie back to root
@@ -252,30 +300,34 @@ export function ImpersonationTerminator({
     if (isDetached) return;
     // Not known yet whether that window exists. The spinner below covers the wait.
     if (isProbingOwner) return;
+    // A failed return waits for Try again rather than hammering the endpoint on every render.
+    if (returnFailure) return;
 
     isTriggering.current = true;
     setIsTerminating(true);
 
     const stopImpersonation = async () => {
-      let sessionIsRootScoped = false;
       try {
-        await mutateAsync(undefined);
-        sessionIsRootScoped = true;
-      } catch (error) {
-        // Stop can 401 when impersonation is already cleared server-side.
-        // Always clear local state so we do not re-trigger stop on next layout.
-        if (!(error instanceof HttpError) || error.status !== 401) {
-          console.error("Error stopping impersonation:", error);
+        // Settles with where the server says the session is, whatever the stop itself returned.
+        const { status, stopError } = await mutateAsync(undefined);
+        if (!status.impersonated) {
+          terminate(rootTenantId);
+          // Tell the other windows the cookie is root again. Without this they keep their own
+          // impersonated state, agree with their own route, and go on calling APIs under a token
+          // that now points at root -- which is how a project page came to list the console's users.
+          if (rootTenantId) claimTenant(rootTenantId);
+          return;
         }
-        // A 401 means the session is already root-scoped, which is the state we asked for.
-        sessionIsRootScoped =
-          error instanceof HttpError && error.status === 401;
+        // Still in the project. Rendering the console here is what sent its requests out under the
+        // project's token whenever a stop failed, went unanswered, or got a 401 for an expired token.
+        console.error("Error stopping impersonation:", stopError);
+        setReturnFailure(
+          isSessionEnded(stopError) ? "session-ended" : "unconfirmed",
+        );
+      } catch (error) {
+        console.error("Error stopping impersonation:", error);
+        setReturnFailure("unconfirmed");
       } finally {
-        terminate(rootTenantId);
-        // Tell the other windows the cookie is root again. Without this they keep their own
-        // impersonated state, agree with their own route, and go on calling APIs under a token that
-        // now points at root -- which is how a project page came to list the console's users.
-        if (sessionIsRootScoped && rootTenantId) claimTenant(rootTenantId);
         isTriggering.current = false;
         setIsTerminating(false);
       }
@@ -289,6 +341,7 @@ export function ImpersonationTerminator({
     isDetached,
     isProbingOwner,
     rootTenantId,
+    returnFailure,
   ]);
 
   if (isDetached) {
@@ -300,7 +353,39 @@ export function ImpersonationTerminator({
         }
         description="The project is open in another window. A session can only be in one place at a time."
         primaryLabel={name ? `Leave ${name}` : "Leave the project"}
-        onPrimary={() => setDetached(null)}
+        onPrimary={() => {
+          setReturnFailure(null);
+          setDetached(null);
+        }}
+      />
+    );
+  }
+
+  if (isImpersonated && returnFailure === "session-ended") {
+    return (
+      <ImpersonationBlocked
+        title="Your session has ended"
+        description="Sign in again to continue."
+        primaryLabel="Sign in again"
+        onPrimary={signOut}
+      />
+    );
+  }
+
+  if (isImpersonated && returnFailure === "unconfirmed") {
+    const name = projectNameFor(projects, impersonatedTenantId);
+    return (
+      <ImpersonationBlocked
+        title="Couldn't return to the console"
+        description={
+          name
+            ? `Your session is still in ${name}. Try again, or sign out.`
+            : "Your session is still in a project. Try again, or sign out."
+        }
+        primaryLabel="Try again"
+        onPrimary={() => setReturnFailure(null)}
+        secondaryLabel="Sign out"
+        onSecondary={signOut}
       />
     );
   }

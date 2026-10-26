@@ -374,6 +374,225 @@ describe("HttpClient token refresh", () => {
   });
 });
 
+describe("HttpClient after a refresh moves the session", () => {
+  const refreshEnv = {
+    BLOCKS_OIDC_CLIENT_ID: "cid",
+    BLOCKS_IAM_BASE_URL: "https://iam.test",
+  };
+  let unregister: () => void = () => undefined;
+
+  const guard = (
+    expected: string | null,
+    confirmed: () => Promise<string | null>,
+  ) => {
+    const confirmTenant = vi.fn(confirmed);
+    unregister = HttpClient.setSessionGuard({
+      expectedTenant: () => expected,
+      confirmTenant,
+    });
+    return confirmTenant;
+  };
+
+  beforeEach(() => {
+    h.runtimeEnv = refreshEnv;
+  });
+
+  afterEach(() => unregister());
+
+  it("does not send the request again in another tenant", async () => {
+    const confirmTenant = guard("t1", async () => "t2");
+    fetchMock
+      .mockResolvedValueOnce(res({ status: 401 }))
+      .mockResolvedValueOnce(res({ status: 200 }));
+
+    await expect(makeClient().get("/repos")).rejects.toMatchObject({
+      status: 409,
+    });
+    // The 401, then the refresh -- and no retry answered with the other tenant's data.
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(confirmTenant).toHaveBeenCalledTimes(1);
+  });
+
+  it("retries when the session is still in the tenant the page expects", async () => {
+    guard("t1", async () => "T1");
+    fetchMock
+      .mockResolvedValueOnce(res({ status: 401 }))
+      .mockResolvedValueOnce(res({ status: 200 }))
+      .mockResolvedValueOnce(
+        res({ contentType: "application/json", json: { ok: 3 } }),
+      );
+
+    await expect(makeClient().get("/repos")).resolves.toEqual({ ok: 3 });
+  });
+
+  it("retries when the tenant could not be confirmed", async () => {
+    guard("t1", async () => null);
+    fetchMock
+      .mockResolvedValueOnce(res({ status: 401 }))
+      .mockResolvedValueOnce(res({ status: 200 }))
+      .mockResolvedValueOnce(
+        res({ contentType: "application/json", json: { ok: 4 } }),
+      );
+
+    await expect(makeClient().get("/repos")).resolves.toEqual({ ok: 4 });
+  });
+
+  it("retries a request that opted out of the check", async () => {
+    guard("t1", async () => "t2");
+    fetchMock
+      .mockResolvedValueOnce(res({ status: 401 }))
+      .mockResolvedValueOnce(res({ status: 200 }))
+      .mockResolvedValueOnce(
+        res({ contentType: "application/json", json: { ok: 5 } }),
+      );
+
+    await expect(
+      makeClient().post("/status", null, undefined, { skipSessionCheck: true }),
+    ).resolves.toEqual({ ok: 5 });
+  });
+
+  it("does not send a stream again in another tenant", async () => {
+    guard("t1", async () => "t2");
+    fetchMock
+      .mockResolvedValueOnce(res({ status: 401 }))
+      .mockResolvedValueOnce(res({ status: 200 }));
+
+    await expect(makeClient().stream("/chat", {})).rejects.toMatchObject({
+      status: 409,
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("checks once for all the requests waiting on the same refresh", async () => {
+    const confirmTenant = guard("t1", async () => "t1");
+    fetchMock.mockImplementation(async (url: string) =>
+      url.includes("/api/oidc/token")
+        ? res({ status: 200 })
+        : fetchMock.mock.calls.filter(([u]) => u === url).length === 1
+          ? res({ status: 401 })
+          : res({ contentType: "application/json", json: { url } }),
+    );
+
+    const client = makeClient();
+    await Promise.all([client.get("/a"), client.get("/b")]);
+
+    expect(confirmTenant).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not sign out when the refresh token was replaced but the cookie works", async () => {
+    // IAM refuses a refresh token that opening, leaving or switching a project replaced. Another tab
+    // may already have put a working token in the shared cookie.
+    const replace = setLocation("/dashboard");
+    guard("t1", async () => "t1");
+    fetchMock
+      .mockResolvedValueOnce(res({ status: 401 }))
+      .mockResolvedValueOnce(
+        res({
+          status: 400,
+          json: {
+            error: "invalid_grant",
+            error_description: "session_changed",
+          },
+        }),
+      )
+      .mockResolvedValueOnce(
+        res({ contentType: "application/json", json: { ok: 6 } }),
+      );
+
+    await expect(makeClient().get("/repos")).resolves.toEqual({ ok: 6 });
+    expect(replace).not.toHaveBeenCalled();
+    expect(h.resetAuthStore).not.toHaveBeenCalled();
+  });
+
+  it("signs out when the refresh token was replaced and nothing in the cookie works", async () => {
+    const replace = setLocation("/dashboard");
+    guard("t1", async () => {
+      throw new Error("401");
+    });
+    fetchMock
+      .mockResolvedValueOnce(res({ status: 401 }))
+      .mockResolvedValueOnce(
+        res({ status: 400, json: { error: "session_changed" } }),
+      );
+
+    await expect(makeClient().get("/repos")).rejects.toMatchObject({
+      status: 401,
+    });
+    expect(replace).toHaveBeenCalledWith("/login");
+  });
+
+  it("signs out on any other refused refresh, as before", async () => {
+    const replace = setLocation("/dashboard");
+    const confirmTenant = guard("t1", async () => "t1");
+    fetchMock
+      .mockResolvedValueOnce(res({ status: 401 }))
+      .mockResolvedValueOnce(
+        res({ status: 400, json: { error: "invalid_grant" } }),
+      );
+
+    await expect(makeClient().get("/repos")).rejects.toMatchObject({
+      status: 401,
+    });
+    expect(replace).toHaveBeenCalledWith("/login");
+    expect(confirmTenant).not.toHaveBeenCalled();
+  });
+});
+
+describe("HttpClient session lock", () => {
+  it("refreshes from inside the lock without waiting for it", async () => {
+    h.runtimeEnv = {
+      BLOCKS_OIDC_CLIENT_ID: "cid",
+      BLOCKS_IAM_BASE_URL: "https://iam.test",
+    };
+    fetchMock.mockResolvedValueOnce(res({ status: 200 }));
+    const client = makeClient();
+
+    await expect(
+      client.withSessionLock(() => client.refreshWithinSessionLock()),
+    ).resolves.toBeUndefined();
+    expect(fetchMock.mock.calls[0]?.[0]).toContain("/api/oidc/token");
+  });
+
+  it("makes a refresh wait for an impersonation change already holding the lock", async () => {
+    h.runtimeEnv = {
+      BLOCKS_OIDC_CLIENT_ID: "cid",
+      BLOCKS_IAM_BASE_URL: "https://iam.test",
+    };
+    const order: string[] = [];
+    let finishChange: () => void = () => undefined;
+    fetchMock.mockImplementation(async (url: string) => {
+      if (url.includes("/api/oidc/token")) {
+        order.push("refresh");
+        return res({ status: 200 });
+      }
+      if (order.includes("refresh")) {
+        return res({ contentType: "application/json", json: {} });
+      }
+      return res({ status: 401 });
+    });
+    const client = makeClient();
+
+    const change = client.withSessionLock(
+      () =>
+        new Promise<void>((resolve) => {
+          finishChange = () => {
+            order.push("change");
+            resolve();
+          };
+        }),
+    );
+    const request = client.get("/x");
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(order).toEqual([]);
+
+    finishChange();
+    await change;
+    await request;
+
+    expect(order).toEqual(["change", "refresh"]);
+  });
+});
+
 describe("HttpClient stream", () => {
   it("returns the response body on success", async () => {
     const body = {} as ReadableStream<Uint8Array>;

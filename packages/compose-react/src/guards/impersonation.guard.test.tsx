@@ -24,6 +24,7 @@ const h = vi.hoisted(() => ({
   onClaim: undefined as
     | ((claim: { tenantId: string; tabId: string; ts: number }) => void)
     | undefined,
+  signOut: vi.fn(),
 }));
 
 // Driving the subscription callback directly keeps these tests about the guard's use of tenant
@@ -53,7 +54,10 @@ vi.mock("@/hooks/use-impersonation", () => ({
   useStopImpersonation: () => ({ mutateAsync: h.stopMutate }),
   useStartImpersonation: () => ({ mutateAsync: h.startMutate }),
   useRecordClaimedTenant: () => h.recordClaimedTenant,
+  useSessionTenantGuard: () => undefined,
+  useStatusFirstOnTabReturn: () => undefined,
 }));
+vi.mock("@/hooks/use-logout", () => ({ useSignOut: () => h.signOut }));
 vi.mock("@/hooks/use-project", () => ({ useGetProjects: () => h.projects }));
 vi.mock("@/services/project.service", () => ({
   projectService: {
@@ -73,13 +77,27 @@ import { useImpersonateStore, useProjectStore } from "@/store";
 
 const ROOT_KEY = "root-key";
 
+/** What useStopImpersonation settles with: where the server says the session is afterwards. */
+const stopOutcome = (
+  impersonatedTenantId: string | null,
+  stopError: unknown = null,
+) => ({
+  status: {
+    impersonated: impersonatedTenantId !== null,
+    originalTenantId: ROOT_KEY,
+    impersonatedTenantId,
+  },
+  stopError,
+});
+
 beforeEach(() => {
   (window as unknown as { process?: { env: Record<string, string> } }).process =
     { env: { BLOCKS_X_BLOCKS_KEY: ROOT_KEY } };
   useImpersonateStore.getState().reset();
   useProjectStore.getState().resetProjectStore();
   h.status = { data: undefined, isLoading: true, isSuccess: false };
-  h.stopMutate.mockReset().mockResolvedValue(undefined);
+  h.stopMutate.mockReset().mockResolvedValue(stopOutcome(null));
+  h.signOut.mockReset();
   h.startMutate.mockReset().mockResolvedValue(undefined);
   h.projects = { data: undefined };
   h.claimTenant.mockReset();
@@ -109,6 +127,26 @@ describe("ImpersonationChecker", () => {
       },
       isLoading: false,
       isSuccess: true,
+    };
+    render(
+      <ImpersonationChecker>
+        <div>child</div>
+      </ImpersonationChecker>,
+    );
+    expect(screen.getByText("child")).toBeInTheDocument();
+  });
+
+  it("keeps rendering when a later refetch fails", () => {
+    // A failed refetch says nothing new about the session. Unmounting the whole layout over it
+    // closed open menus and dropped unsaved input.
+    h.status = {
+      data: {
+        impersonated: false,
+        originalTenantId: "orig",
+        impersonatedTenantId: null,
+      },
+      isLoading: false,
+      isSuccess: false,
     };
     render(
       <ImpersonationChecker>
@@ -582,5 +620,150 @@ describe("ImpersonationTerminator and the shared cookie", () => {
     expect(screen.getByText("console")).toBeInTheDocument();
     expect(screen.queryByText("Your session is in a project")).toBeNull();
     expect(useImpersonateStore.getState().detachedReason).toBeNull();
+  });
+});
+
+describe("ImpersonationTerminator when the return does not reach root", () => {
+  const ROOT = ROOT_KEY;
+  const P1 = {
+    itemId: "p1",
+    tenantId: "t1",
+    tenantGroupId: "tg1",
+    name: "Test Construct",
+  };
+
+  const renderTerminator = () =>
+    render(
+      <MemoryRouter>
+        <ImpersonationTerminator>
+          <div>console</div>
+        </ImpersonationTerminator>
+      </MemoryRouter>,
+    );
+
+  beforeEach(() => {
+    useProjectStore.getState().setProjects([P1] as never);
+    useImpersonateStore.getState().setImpersonation(true, ROOT, "t1");
+  });
+
+  it("keeps the console hidden when the stop fails and the session is still in the project", async () => {
+    // The reported bug: a failed or dropped stop rendered the console under the project's token.
+    h.stopMutate.mockResolvedValue(
+      stopOutcome("t1", new TypeError("Failed to fetch")),
+    );
+
+    renderTerminator();
+
+    expect(
+      await screen.findByText("Couldn't return to the console"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Your session is still in Test Construct/),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("console")).toBeNull();
+    expect(useImpersonateStore.getState().isImpersonated).toBe(true);
+    // Telling other windows "root" here would detach them over a move that never happened.
+    expect(h.claimTenant).not.toHaveBeenCalled();
+    expect(h.stopMutate).toHaveBeenCalledTimes(1);
+  });
+
+  it("reads a 401 for an expired token as unconfirmed, not as stopped", async () => {
+    h.stopMutate.mockResolvedValue(
+      stopOutcome("t1", new HttpError(401, { errors: {} })),
+    );
+
+    renderTerminator();
+
+    expect(
+      await screen.findByText("Couldn't return to the console"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("console")).toBeNull();
+    expect(screen.queryByText("Your session has ended")).toBeNull();
+  });
+
+  it("stops again on Try again and shows the console once the server confirms root", async () => {
+    h.stopMutate
+      .mockResolvedValueOnce(
+        stopOutcome("t1", new TypeError("Failed to fetch")),
+      )
+      .mockResolvedValueOnce(stopOutcome(null));
+
+    renderTerminator();
+    fireEvent.click(await screen.findByText("Try again"));
+
+    expect(await screen.findByText("console")).toBeInTheDocument();
+    expect(h.stopMutate).toHaveBeenCalledTimes(2);
+    expect(h.claimTenant).toHaveBeenCalledWith(ROOT);
+  });
+
+  it("offers Sign out next to Try again", async () => {
+    h.stopMutate.mockResolvedValue(
+      stopOutcome("t1", new TypeError("Failed to fetch")),
+    );
+
+    renderTerminator();
+    fireEvent.click(await screen.findByText("Sign out"));
+
+    expect(h.signOut).toHaveBeenCalledTimes(1);
+  });
+
+  it("asks to sign in again when IAM says the session cannot be used any more", async () => {
+    h.stopMutate.mockResolvedValue(
+      stopOutcome(
+        "t1",
+        new HttpError(401, { errors: { error: "invalid_refresh_token" } }),
+      ),
+    );
+
+    renderTerminator();
+
+    expect(
+      await screen.findByText("Your session has ended"),
+    ).toBeInTheDocument();
+    // Retrying cannot fix it, so there is no Try again to loop on.
+    expect(screen.queryByText("Try again")).toBeNull();
+    fireEvent.click(screen.getByText("Sign in again"));
+    expect(h.signOut).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText("console")).toBeNull();
+  });
+
+  it("shows the console when the server confirms root even though the stop call failed", async () => {
+    // A retried stop can fail only because the first one, whose answer was lost, already worked.
+    h.stopMutate.mockResolvedValue(
+      stopOutcome(null, new HttpError(400, { errors: {} })),
+    );
+
+    renderTerminator();
+
+    expect(await screen.findByText("console")).toBeInTheDocument();
+    expect(h.claimTenant).toHaveBeenCalledWith(ROOT);
+  });
+
+  it("keeps the console hidden when the server cannot be asked at all", async () => {
+    h.stopMutate.mockRejectedValue(new TypeError("Failed to fetch"));
+
+    renderTerminator();
+
+    expect(
+      await screen.findByText("Couldn't return to the console"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("console")).toBeNull();
+  });
+
+  it("shows the console without a retry once another window has taken the session back to root", async () => {
+    h.stopMutate.mockResolvedValue(
+      stopOutcome("t1", new TypeError("Failed to fetch")),
+    );
+
+    renderTerminator();
+    await screen.findByText("Couldn't return to the console");
+
+    // What ImpersonationChecker does with a status that reports root.
+    act(() => {
+      useImpersonateStore.getState().setImpersonation(false, ROOT, null);
+    });
+
+    expect(await screen.findByText("console")).toBeInTheDocument();
+    expect(h.stopMutate).toHaveBeenCalledTimes(1);
   });
 });

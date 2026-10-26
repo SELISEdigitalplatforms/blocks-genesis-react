@@ -3,11 +3,19 @@ import { MemoryRouter } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CallbackPage } from "./callback";
 
-const h = vi.hoisted(() => ({ setAuthenticated: vi.fn() }));
+const h = vi.hoisted(() => ({
+  setAuthenticated: vi.fn(),
+  impersonationStatus: vi.fn(),
+  claimTenant: vi.fn(),
+}));
 
 vi.mock("@/store", () => ({
   useAuthStore: () => ({ setAuthenticated: h.setAuthenticated }),
 }));
+vi.mock("@/services/impersonation.service", () => ({
+  impersonationService: { impersonationStatus: h.impersonationStatus },
+}));
+vi.mock("@/lib/tenant-ownership", () => ({ claimTenant: h.claimTenant }));
 
 const renderCallback = (search: string) =>
   render(
@@ -25,6 +33,11 @@ describe("CallbackPage", () => {
     Object.defineProperty(window, "location", {
       configurable: true,
       value: { href: "", origin: "https://app.test" },
+    });
+    h.impersonationStatus.mockResolvedValue({
+      impersonated: false,
+      originalTenantId: "tid",
+      impersonatedTenantId: null,
     });
   });
 
@@ -93,6 +106,42 @@ describe("CallbackPage", () => {
       expect(new URL(window.location.href).origin).toBe("https://app.test");
     },
   );
+
+  it("tells the other tabs where the new session is before leaving", async () => {
+    // An app switch from a project page arrives already inside the project.
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true }));
+    h.impersonationStatus.mockResolvedValue({
+      impersonated: true,
+      originalTenantId: "tid",
+      impersonatedTenantId: "project-tenant",
+    });
+
+    renderCallback("?code=abc&state=xyz&forwardedTo=/app/p1/dashboard");
+
+    await waitFor(() => expect(h.setAuthenticated).toHaveBeenCalled());
+    expect(h.claimTenant).toHaveBeenCalledWith("project-tenant");
+    expect(window.location.href).toBe("https://app.test/app/p1/dashboard");
+  });
+
+  it("claims the console for a root-scoped session", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true }));
+
+    renderCallback("?code=abc&state=xyz");
+
+    await waitFor(() => expect(h.setAuthenticated).toHaveBeenCalled());
+    expect(h.claimTenant).toHaveBeenCalledWith("tid");
+  });
+
+  it("still signs in when the session cannot be announced", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true }));
+    h.impersonationStatus.mockRejectedValue(new Error("network"));
+
+    renderCallback("?code=abc&state=xyz&forwardedTo=/home");
+
+    await waitFor(() => expect(h.setAuthenticated).toHaveBeenCalled());
+    expect(h.claimTenant).not.toHaveBeenCalled();
+    expect(window.location.href).toBe("https://app.test/home");
+  });
 
   it("redirects to the login error page when the callback fails", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false }));
