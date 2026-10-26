@@ -1,5 +1,6 @@
 import { IMPERSONATE_ENDPOINTS } from "@/constants/endpoint.constant";
 import { iamClient } from "@/lib/http/instances";
+import type { HttpClientOptions } from "@/lib/http/types";
 import type {
   ImpersonationRequest,
   ImpersonationStatusResponse,
@@ -9,24 +10,34 @@ import type {
 class ImpersonationService {
   startImpersonation(
     request: ImpersonationRequest,
+    options?: HttpClientOptions,
   ): Promise<StartImpersonationResponse> {
-    return iamClient.post(IMPERSONATE_ENDPOINTS.IMPERSONATE, request);
+    return iamClient.post(
+      IMPERSONATE_ENDPOINTS.IMPERSONATE,
+      request,
+      undefined,
+      options,
+    );
   }
 
-  stopImpersonation(): Promise<void> {
-    // Do not run the global 401 → refresh → logout flow for stop. A 401 here
-    // usually means impersonation is already ended server-side while the
-    // session cookie is still valid for other endpoints (me/status).
+  stopImpersonation(options?: HttpClientOptions): Promise<void> {
     return iamClient.post(
       IMPERSONATE_ENDPOINTS.STOP_IMPERSONATION,
       {},
       undefined,
-      { skipTokenRotation: true },
+      options,
     );
   }
 
-  impersonationStatus(): Promise<ImpersonationStatusResponse> {
-    return iamClient.post(IMPERSONATE_ENDPOINTS.IMPERSONATION_STATUS, null);
+  impersonationStatus(
+    options?: HttpClientOptions,
+  ): Promise<ImpersonationStatusResponse> {
+    return iamClient.post(
+      IMPERSONATE_ENDPOINTS.IMPERSONATION_STATUS,
+      null,
+      undefined,
+      options,
+    );
   }
 }
 

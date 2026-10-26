@@ -1,11 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  announceSignOut,
   claimTenant,
   clearTenantClaims,
   holdTenant,
   isSameClaim,
   isTenantHeldElsewhere,
   readCurrentOwner,
+  subscribeToSignOut,
   subscribeToTenantClaims,
   TAB_ID,
 } from "@/lib/tenant-ownership";
@@ -142,5 +144,56 @@ describe("claims", () => {
     expect(isSameClaim(a, { ...a })).toBe(true);
     expect(isSameClaim(a, { ...a, ts: 2 })).toBe(false);
     expect(isSameClaim(a, null)).toBe(false);
+  });
+});
+
+describe("sign-out", () => {
+  it("reaches the other tabs", async () => {
+    const received = new Promise<unknown>((resolve) => {
+      otherTab.onmessage = (event: MessageEvent) => resolve(event.data);
+    });
+
+    announceSignOut();
+
+    await expect(received).resolves.toEqual({
+      kind: "signed-out",
+      tabId: TAB_ID,
+    });
+  });
+
+  it("tells a subscriber when another tab signs out", async () => {
+    const onSignOut = vi.fn();
+    const unsubscribe = subscribeToSignOut(onSignOut);
+
+    otherTab.postMessage({ kind: "signed-out", tabId: "another-tab" });
+
+    await vi.waitFor(() => expect(onSignOut).toHaveBeenCalledTimes(1));
+    unsubscribe();
+  });
+
+  it("is never mistaken for a claim, and a claim never for a sign-out", async () => {
+    const onSignOut = vi.fn();
+    const onClaim = vi.fn();
+    const stopSignOut = subscribeToSignOut(onSignOut);
+    const stopClaims = subscribeToTenantClaims(onClaim);
+
+    otherTab.postMessage({ kind: "signed-out", tabId: "another-tab" });
+    otherTab.postMessage({ tenantId: "t2", tabId: "another-tab", ts: 1 });
+
+    await vi.waitFor(() => expect(onClaim).toHaveBeenCalledTimes(1));
+    await vi.waitFor(() => expect(onSignOut).toHaveBeenCalledTimes(1));
+    stopSignOut();
+    stopClaims();
+  });
+
+  it("ignores its own sign-out", async () => {
+    const onSignOut = vi.fn();
+    const unsubscribe = subscribeToSignOut(onSignOut);
+
+    otherTab.postMessage({ kind: "signed-out", tabId: TAB_ID });
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    expect(onSignOut).not.toHaveBeenCalled();
+    unsubscribe();
   });
 });

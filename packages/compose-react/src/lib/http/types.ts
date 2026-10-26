@@ -19,7 +19,28 @@ export interface HttpClientOptions {
   withCredentials?: boolean;
   absoluteUrl?: boolean;
   skipTokenRotation?: boolean;
+  /**
+   * Retry after a token refresh even when the session is now in a different tenant than the page
+   * expects. Only for requests that establish the tenant themselves, such as the impersonation
+   * status.
+   */
+  skipSessionCheck?: boolean;
   signal?: AbortSignal;
+}
+
+/**
+ * Lets the client tell, after a token refresh, whether the shared session is still in the tenant
+ * the page is showing. Registered by the impersonation guards; without one the client retries as
+ * it always has.
+ */
+export interface SessionTenantGuard {
+  /** The tenant the page is showing right now, or null while it does not know yet. */
+  expectedTenant: () => string | null;
+  /**
+   * Asks the server which tenant the session cookie is in now. Must not refresh the token: it runs
+   * inside the refresh. Resolves null when it cannot tell.
+   */
+  confirmTenant: () => Promise<string | null>;
 }
 
 export interface RequestOptions extends HttpClientOptions {
