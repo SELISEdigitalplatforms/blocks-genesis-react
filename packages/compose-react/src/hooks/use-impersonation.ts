@@ -1,6 +1,7 @@
 import { HttpClient } from "@/lib/http/client";
 import { HttpError } from "@/lib/http/error";
 import { iamClient } from "@/lib/http/instances";
+import { timeoutSignal } from "@/lib/http/session-lock";
 import { getRuntimeEnv } from "@/lib/runtime-env";
 import { claimTenant } from "@/lib/tenant-ownership";
 import type {
@@ -23,13 +24,21 @@ import { useCallback, useEffect } from "react";
 const IMPERSONATION_STATUS_QUERY_KEY = ["blocks-kit-impersonation", "status"];
 
 /**
- * Options for calls made while holding the session lock: the client's own refresh would wait for
- * that lock, so a call that needs a fresh token goes through `withRefreshedToken` instead.
+ * How long one call made while holding the session lock may take -- the same bound a token refresh
+ * has. Every tab's refresh waits for that lock, so a call whose answer never comes must give it up.
  */
-const INSIDE_SESSION_LOCK = {
+const LOCKED_CALL_TIMEOUT_MS = 20_000;
+
+/**
+ * Options for a call made while holding the session lock: the client's own refresh would wait for
+ * that lock, so a call that needs a fresh token goes through `withRefreshedToken` instead. Each call
+ * gets its own time limit.
+ */
+const insideSessionLock = () => ({
   skipTokenRotation: true,
   skipSessionCheck: true,
-} as const;
+  signal: timeoutSignal(LOCKED_CALL_TIMEOUT_MS),
+});
 
 /** How long a returning tab waits for the status before refetching its data anyway. */
 const RETURN_STATUS_WAIT_MS = 5_000;
@@ -163,7 +172,7 @@ export const useSessionTenantGuard = () => {
         confirmTenant: async () =>
           applyServerStatus(
             queryClient,
-            await impersonationService.impersonationStatus(INSIDE_SESSION_LOCK),
+            await impersonationService.impersonationStatus(insideSessionLock()),
           ),
       }),
     [queryClient],
@@ -286,13 +295,13 @@ const stopAndConfirm = (): Promise<StopImpersonationOutcome> =>
     let stopError: unknown = null;
     try {
       await withRefreshedToken(() =>
-        impersonationService.stopImpersonation(INSIDE_SESSION_LOCK),
+        impersonationService.stopImpersonation(insideSessionLock()),
       );
     } catch (error) {
       stopError = error;
     }
     const status = await withRefreshedToken(() =>
-      impersonationService.impersonationStatus(INSIDE_SESSION_LOCK),
+      impersonationService.impersonationStatus(insideSessionLock()),
     );
     return { status, stopError };
   });
@@ -333,7 +342,7 @@ const startAndConfirm = (
 }> =>
   iamClient.withSessionLock(async () => {
     const result = await withRefreshedToken(() =>
-      impersonationService.startImpersonation(request, INSIDE_SESSION_LOCK),
+      impersonationService.startImpersonation(request, insideSessionLock()),
     );
 
     if (result?.cookie_set !== true) {
@@ -346,7 +355,7 @@ const startAndConfirm = (
     }
 
     const status = await withRefreshedToken(() =>
-      impersonationService.impersonationStatus(INSIDE_SESSION_LOCK),
+      impersonationService.impersonationStatus(insideSessionLock()),
     ).catch(() => null);
 
     return { result, status };

@@ -20,7 +20,7 @@ const LOCK_PREFIX = "blocks-session:";
 
 /**
  * How long to wait for another holder before going ahead without the lock. Every call made while
- * holding it is bounded well below this, so only a tab that froze mid-call is waited out.
+ * holding it is bounded below this, so only a tab that froze mid-call is waited out.
  */
 export const SESSION_LOCK_WAIT_MS = 25_000;
 
@@ -47,11 +47,6 @@ export const timeoutSignal = (ms: number): AbortSignal => {
   return controller.signal;
 };
 
-const isAbortError = (error: unknown): boolean =>
-  typeof error === "object" &&
-  error !== null &&
-  (error as { name?: string }).name === "AbortError";
-
 /** Runs `fn` while holding the session lock called `name`, and returns what it returns. */
 export const withSessionLock = async <T>(
   name: string,
@@ -60,18 +55,21 @@ export const withSessionLock = async <T>(
   const locks = typeof navigator !== "undefined" ? navigator.locks : undefined;
   if (!locks?.request) return runLocally(name, fn);
 
+  const waitLimit = timeoutSignal(SESSION_LOCK_WAIT_MS);
   let acquired = false;
   try {
     return await locks.request(
       `${LOCK_PREFIX}${name}`,
-      { signal: timeoutSignal(SESSION_LOCK_WAIT_MS) },
+      { signal: waitLimit },
       () => {
         acquired = true;
         return fn();
       },
     );
   } catch (error) {
-    if (acquired || !isAbortError(error)) throw error;
+    // The browser rejects a timed-out wait with the signal's reason, a TimeoutError, so the wait
+    // limit itself tells whether that is what happened.
+    if (acquired || !waitLimit.aborted) throw error;
     // Another tab has held the lock far longer than any call it makes should take. Going ahead
     // risks the overlap the lock exists to prevent; failing would block the user's action on a
     // tab that may never let go.
