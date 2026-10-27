@@ -94,13 +94,31 @@ describe("withSessionLock with the Web Locks API", () => {
   });
 
   it("goes ahead without the lock when another tab never lets go", async () => {
-    vi.spyOn(console, "error").mockImplementation(() => undefined);
-    stubLocks(async () => {
-      throw new DOMException("The request was aborted.", "AbortError");
+    const consoleError = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+    // The wait limit has run out, and the browser rejects with its reason, as it does for a
+    // timed-out AbortSignal.timeout(): a TimeoutError, not an AbortError.
+    vi.spyOn(AbortSignal, "timeout").mockReturnValue(
+      AbortSignal.abort(new DOMException("signal timed out", "TimeoutError")),
+    );
+    stubLocks(async (_name, options) => {
+      throw (options as { signal: AbortSignal }).signal.reason;
     });
     const fn = vi.fn().mockResolvedValue("ran");
 
     await expect(withSessionLock("s", fn)).resolves.toBe("ran");
     expect(fn).toHaveBeenCalledTimes(1);
+    expect(consoleError).toHaveBeenCalledTimes(1);
+  });
+
+  it("passes on a lock failure that is not the wait running out", async () => {
+    stubLocks(async () => {
+      throw new Error("locks unavailable");
+    });
+    const fn = vi.fn();
+
+    await expect(withSessionLock("s", fn)).rejects.toThrow("locks unavailable");
+    expect(fn).not.toHaveBeenCalled();
   });
 });

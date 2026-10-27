@@ -5,7 +5,15 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import type { ReactNode } from "react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  onTestFinished,
+  vi,
+} from "vitest";
 import { HttpClient } from "@/lib/http/client";
 import { HttpError } from "@/lib/http/error";
 import type { SessionTenantGuard } from "@/lib/http/types";
@@ -60,8 +68,15 @@ const statusIn = (impersonatedTenantId: string | null) => ({
   impersonatedTenantId,
 });
 
-/** The options every call made while holding the session lock must carry. */
-const insideLock = { skipTokenRotation: true, skipSessionCheck: true };
+/**
+ * The options every call made while holding the session lock must carry, time limit included: a
+ * call that never answers would otherwise keep every tab's refresh waiting.
+ */
+const insideLock = {
+  skipTokenRotation: true,
+  skipSessionCheck: true,
+  signal: expect.any(AbortSignal),
+};
 
 const expiredAccessToken = () => new HttpError(401, { errors: {} });
 
@@ -139,6 +154,34 @@ describe("useStopImpersonation", () => {
     await waitFor(() =>
       expect(client.getQueryData(STATUS_KEY)).toEqual(statusIn("imp")),
     );
+  });
+
+  it("gives up on a stop that never answers, so the session lock is released", async () => {
+    // The stop holds the lock every tab's refresh waits for; without a time limit a hung request
+    // kept it, and the refreshes behind it failed instead of going ahead.
+    const limit = new AbortController();
+    const timeout = vi
+      .spyOn(AbortSignal, "timeout")
+      .mockReturnValue(limit.signal);
+    onTestFinished(() => timeout.mockRestore());
+    h.stopImpersonation.mockImplementation(
+      ({ signal }: { signal: AbortSignal }) =>
+        new Promise((_, reject) =>
+          signal.addEventListener("abort", () => reject(signal.reason)),
+        ),
+    );
+    h.impersonationStatus.mockResolvedValue(statusIn("imp"));
+
+    const { result } = renderHook(() => useStopImpersonation(), { wrapper });
+    const pending = result.current.mutateAsync(undefined);
+    await waitFor(() => expect(h.stopImpersonation).toHaveBeenCalledTimes(1));
+    const timedOut = new DOMException("signal timed out", "TimeoutError");
+    limit.abort(timedOut);
+
+    await expect(pending).resolves.toEqual({
+      status: statusIn("imp"),
+      stopError: timedOut,
+    });
   });
 
   it("refreshes and stops again when the access token had expired", async () => {
