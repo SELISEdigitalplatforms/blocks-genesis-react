@@ -28,6 +28,8 @@ import { useImpersonateStore, useProjectStore } from "@/store";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
+const GENESIS_SHARED_MODULE = "genesis.shared";
+
 /** Resolves a tenant to the project name a user would recognise, or null if we cannot name it. */
 const projectNameFor = (
   projects: IProject[],
@@ -182,7 +184,7 @@ function ImpersonationBlocked({
   /** Omitted on console routes, which are already where that button would lead. */
   consolePath?: string;
 }) {
-  const { t } = useT("genesis.shared");
+  const { t } = useT(GENESIS_SHARED_MODULE);
   const navigate = useNavigate();
 
   return (
@@ -287,7 +289,7 @@ export function ImpersonationTerminator({
   const [returnFailure, setReturnFailure] = useState<ReturnFailure | null>(
     null,
   );
-  const { t } = useT("genesis.shared");
+  const { t } = useT(GENESIS_SHARED_MODULE);
   const signOut = useSignOut();
 
   // Back in root by any route -- another window's stop, a reload -- so there is nothing to retry.
@@ -423,7 +425,7 @@ export function ImpersonationSynchronizer({
     setImpersonationError,
     setDetached,
   } = useImpersonateStore();
-  const { t } = useT("genesis.shared");
+  const { t } = useT(GENESIS_SHARED_MODULE);
   const { mutateAsync } = useStartImpersonation();
   const recordClaimedTenant = useRecordClaimedTenant();
   const { data: _data } = useGetProjects({ enabled: true });
