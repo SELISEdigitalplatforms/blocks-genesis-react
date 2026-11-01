@@ -20,6 +20,8 @@ import {
   type DirectionOptions,
 } from "./use-file-upload";
 
+const I18N_MODULE = "genesis.shared";
+
 type FileUploaderProps = {
   value: File[] | null;
   reSelect?: boolean;
@@ -73,7 +75,7 @@ export const FileUploader = forwardRef<
     useEffect(() => {
       if (isFileTooBig) {
         showErrorToast({
-          errors: tStatic("genesis.shared", "FILE_UPLOADER.TOO_BIG"),
+          errors: tStatic(I18N_MODULE, "FILE_UPLOADER.TOO_BIG"),
         });
       }
     }, [isFileTooBig]);
@@ -84,7 +86,7 @@ export const FileUploader = forwardRef<
 
         if (!files) {
           showErrorToast({
-            errors: tStatic("genesis.shared", "FILE_UPLOADER.FILE_ERROR"),
+            errors: tStatic(I18N_MODULE, "FILE_UPLOADER.FILE_ERROR"),
           });
           return;
         }
@@ -109,7 +111,7 @@ export const FileUploader = forwardRef<
             if (!firstError) continue;
             if (firstError.code === "file-too-large") {
               showErrorToast({
-                errors: tStatic("genesis.shared", "FILE_UPLOADER.TOO_LARGE", {
+                errors: tStatic(I18N_MODULE, "FILE_UPLOADER.TOO_LARGE", {
                   size: maxSize / 1024 / 1024,
                 }),
               });
@@ -117,7 +119,7 @@ export const FileUploader = forwardRef<
             }
             if (firstError.code === "file-invalid-type") {
               showErrorToast({
-                errors: tStatic("genesis.shared", "FILE_UPLOADER.INVALID_TYPE"),
+                errors: tStatic(I18N_MODULE, "FILE_UPLOADER.INVALID_TYPE"),
               });
               break;
             }
@@ -293,7 +295,7 @@ export const FileUploaderItem = forwardRef<
   HTMLDivElement,
   { index: number } & React.HTMLAttributes<HTMLDivElement>
 >(({ className, index, children, ...props }, ref) => {
-  const { t } = useT("genesis.shared");
+  const { t } = useT(I18N_MODULE);
   const { removeFileFromSet, activeIndex, direction } = useFileUpload();
   const isSelected = index === activeIndex;
   return (

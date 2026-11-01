@@ -1,6 +1,8 @@
 import type { TFunction } from "@/i18n";
 import type { BlocksProduct } from "./login.types";
 
+const VISIT_KEY = "LOGIN_CONSTANT.VISIT";
+
 /** Product cards of the login carousel, in the language `t` translates to. */
 export const getBlocksProducts = (t: TFunction): BlocksProduct[] => [
   {
@@ -21,7 +23,7 @@ export const getBlocksProducts = (t: TFunction): BlocksProduct[] => [
       t("LOGIN_CONSTANT.OS_CHIP_5"),
     ],
     url: "",
-    cta: t("LOGIN_CONSTANT.VISIT", { name: "blocks OS" }),
+    cta: t(VISIT_KEY, { name: "blocks OS" }),
   },
   {
     name: "blocks-localization",
@@ -46,7 +48,7 @@ export const getBlocksProducts = (t: TFunction): BlocksProduct[] => [
       t("LOGIN_CONSTANT.LOCALIZATION_CHIP_4"),
     ],
     url: "",
-    cta: t("LOGIN_CONSTANT.VISIT", { name: "blocks Localization" }),
+    cta: t(VISIT_KEY, { name: "blocks Localization" }),
   },
   {
     name: "blocks-iam",
@@ -66,7 +68,7 @@ export const getBlocksProducts = (t: TFunction): BlocksProduct[] => [
       t("LOGIN_CONSTANT.IAM_CHIP_5"),
     ],
     url: "",
-    cta: t("LOGIN_CONSTANT.VISIT", { name: "blocks IAM" }),
+    cta: t(VISIT_KEY, { name: "blocks IAM" }),
   },
   {
     name: "blocks-data",
@@ -92,7 +94,7 @@ export const getBlocksProducts = (t: TFunction): BlocksProduct[] => [
       t("LOGIN_CONSTANT.DATA_CHIP_5"),
     ],
     url: "",
-    cta: t("LOGIN_CONSTANT.VISIT", { name: "blocks Data" }),
+    cta: t(VISIT_KEY, { name: "blocks Data" }),
   },
   {
     name: "blocks-logic",
@@ -112,7 +114,7 @@ export const getBlocksProducts = (t: TFunction): BlocksProduct[] => [
       t("LOGIN_CONSTANT.LOGIC_CHIP_5"),
     ],
     url: "",
-    cta: t("LOGIN_CONSTANT.VISIT", { name: "blocks Logic" }),
+    cta: t(VISIT_KEY, { name: "blocks Logic" }),
   },
   {
     name: "blocks-studio",
@@ -138,7 +140,7 @@ export const getBlocksProducts = (t: TFunction): BlocksProduct[] => [
       t("LOGIN_CONSTANT.STUDIO_CHIP_5"),
     ],
     url: "",
-    cta: t("LOGIN_CONSTANT.VISIT", { name: "blocks Studio" }),
+    cta: t(VISIT_KEY, { name: "blocks Studio" }),
   },
   {
     name: "blocks-agents",
@@ -163,7 +165,7 @@ export const getBlocksProducts = (t: TFunction): BlocksProduct[] => [
       t("LOGIN_CONSTANT.AGENTS_CHIP_4"),
     ],
     url: "",
-    cta: t("LOGIN_CONSTANT.VISIT", { name: "Blocks Agents" }),
+    cta: t(VISIT_KEY, { name: "Blocks Agents" }),
   },
   {
     name: "blocks-release",
@@ -183,7 +185,7 @@ export const getBlocksProducts = (t: TFunction): BlocksProduct[] => [
       t("LOGIN_CONSTANT.RELEASE_CHIP_5"),
     ],
     url: "",
-    cta: t("LOGIN_CONSTANT.VISIT", { name: "blocks Release" }),
+    cta: t(VISIT_KEY, { name: "blocks Release" }),
   },
   {
     name: "blocks-monitor",
@@ -203,7 +205,7 @@ export const getBlocksProducts = (t: TFunction): BlocksProduct[] => [
       t("LOGIN_CONSTANT.MONITOR_CHIP_5"),
     ],
     url: "",
-    cta: t("LOGIN_CONSTANT.VISIT", { name: "blocks Monitor" }),
+    cta: t(VISIT_KEY, { name: "blocks Monitor" }),
   },
   {
     name: "blocks-utilities",
@@ -223,7 +225,7 @@ export const getBlocksProducts = (t: TFunction): BlocksProduct[] => [
       t("LOGIN_CONSTANT.UTILITIES_CHIP_5"),
     ],
     url: "",
-    cta: t("LOGIN_CONSTANT.VISIT", { name: "blocks Utilities" }),
+    cta: t(VISIT_KEY, { name: "blocks Utilities" }),
   },
 ];
 
@@ -247,6 +249,6 @@ export const getDefaultBlocksProducts = (t: TFunction): BlocksProduct[] => [
       t("LOGIN_CONSTANT.DEFAULT_OS_CHIP_6"),
     ],
     url: "",
-    cta: t("LOGIN_CONSTANT.VISIT", { name: "blocks OS" }),
+    cta: t(VISIT_KEY, { name: "blocks OS" }),
   },
 ];

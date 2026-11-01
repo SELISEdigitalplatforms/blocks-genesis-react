@@ -30,6 +30,8 @@ import {
   SidebarContext,
 } from "./use-sidebar";
 
+const TOGGLE_KEY = "SIDEBAR.TOGGLE";
+
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_WIDTH = "16rem";
 const SIDEBAR_WIDTH_MOBILE = "18rem";
@@ -294,7 +296,7 @@ const SidebarTrigger = React.forwardRef<
       {...props}
     >
       <PanelLeftIcon />
-      <span className="sr-only">{t("SIDEBAR.TOGGLE")}</span>
+      <span className="sr-only">{t(TOGGLE_KEY)}</span>
     </Button>
   );
 });
@@ -311,10 +313,10 @@ const SidebarRail = React.forwardRef<
     <button
       ref={ref}
       data-sidebar="rail"
-      aria-label={t("SIDEBAR.TOGGLE")}
+      aria-label={t(TOGGLE_KEY)}
       tabIndex={-1}
       onClick={toggleSidebar}
-      title={t("SIDEBAR.TOGGLE")}
+      title={t(TOGGLE_KEY)}
       className={cn(
         "hover:after:bg-sidebar-border absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-0.5 group-data-[side=left]:-right-4 group-data-[side=right]:left-0 sm:flex",
         "in-data-[side=left]:cursor-w-resize",

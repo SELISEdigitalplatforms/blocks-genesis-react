@@ -5,8 +5,10 @@ import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { type ButtonProps, buttonVariants } from "@/components/core/button";
 
+const I18N_MODULE = "genesis.shared";
+
 const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => {
-  const { t } = useT("genesis.shared");
+  const { t } = useT(I18N_MODULE);
   return (
     <nav
       role="navigation"
@@ -67,7 +69,7 @@ const PaginationPrevious = ({
   className,
   ...props
 }: React.ComponentProps<typeof PaginationLink>) => {
-  const { t } = useT("genesis.shared");
+  const { t } = useT(I18N_MODULE);
   return (
     <PaginationLink
       aria-label={t("PAGINATION.PREVIOUS_PAGE")}
@@ -86,7 +88,7 @@ const PaginationNext = ({
   className,
   ...props
 }: React.ComponentProps<typeof PaginationLink>) => {
-  const { t } = useT("genesis.shared");
+  const { t } = useT(I18N_MODULE);
   return (
     <PaginationLink
       aria-label={t("PAGINATION.NEXT_PAGE")}
@@ -105,7 +107,7 @@ const PaginationEllipsis = ({
   className,
   ...props
 }: React.ComponentProps<"span">) => {
-  const { t } = useT("genesis.shared");
+  const { t } = useT(I18N_MODULE);
   return (
     <span
       aria-hidden

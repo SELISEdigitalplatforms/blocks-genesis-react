@@ -22,6 +22,8 @@ type ProjectListProps = {
   showAddProject: boolean;
 };
 
+const MODULE = "genesis.console";
+
 const timeAgo = (timestamp: number, language: string) =>
   formatDistanceToNow(timestamp, {
     addSuffix: true,
@@ -85,7 +87,7 @@ const cardCorners = {
 } as const;
 
 const SharedStatus = ({ isShared }: { isShared: boolean }) => {
-  const { t } = useT("genesis.console");
+  const { t } = useT(MODULE);
   return isShared ? (
     <Badge variant="outline" className="flex w-fit items-center gap-1">
       <UsersRound size={16} />
@@ -97,7 +99,7 @@ const SharedStatus = ({ isShared }: { isShared: boolean }) => {
 };
 
 const AddProjectListAction = ({ mobile = false }: { mobile?: boolean }) => {
-  const { t } = useT("genesis.console");
+  const { t } = useT(MODULE);
   const { handleClick, isDisabled, isFetching } = useCreateProjectRedirect();
 
   const action = (
@@ -141,7 +143,7 @@ const ProjectMobileList = ({
   projectGroups,
   showAddProject,
 }: Pick<ProjectListProps, "projectGroups" | "showAddProject">) => {
-  const { t, language } = useT("genesis.console");
+  const { t, language } = useT(MODULE);
   return (
     <div className="grid gap-3" data-testid="project-list-mobile">
       {showAddProject && <AddProjectListAction mobile />}
@@ -188,7 +190,7 @@ export const ProjectList = ({
   showAddProject,
 }: ProjectListProps) => {
   const isMobile = useIsMobile();
-  const { t, language } = useT("genesis.console");
+  const { t, language } = useT(MODULE);
 
   if (isMobile) {
     return (
