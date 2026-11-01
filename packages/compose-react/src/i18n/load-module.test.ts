@@ -68,6 +68,19 @@ describe("loadModule", () => {
     expect(useI18nStore.getState().remote["de:os.idp"]).toBeUndefined();
   });
 
+  it("keeps the text entries when a published value is null", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi
+        .fn()
+        .mockResolvedValue(okResponse({ SIGN_IN: "Anmelden", BROKEN: null })),
+    );
+    await loadModule("de", "os.idp");
+    expect(useI18nStore.getState().remote["de:os.idp"]).toEqual({
+      SIGN_IN: "Anmelden",
+    });
+  });
+
   it("does not call the service without base url or key", async () => {
     configureI18n({ baseUrl: () => "", blocksKey: () => "" });
     const fetchMock = vi.fn();

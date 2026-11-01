@@ -37,6 +37,20 @@ describe("useT", () => {
     expect(result.current.t("SIGN_IN")).toBe("Anmelden");
   });
 
+  it("resolves values from the published German text", () => {
+    registerTranslations(MODULE, { DELETED: "Deleted {{count}} items" });
+    const { result } = renderHook(() => useT(MODULE));
+    act(() => useAppSettingsStore.getState().setSettings({ language: "de" }));
+    act(() =>
+      useI18nStore
+        .getState()
+        .setRemote("de", MODULE, { DELETED: "{{count}} Einträge gelöscht" }),
+    );
+    expect(result.current.t("DELETED", { count: 3 })).toBe(
+      "3 Einträge gelöscht",
+    );
+  });
+
   it("tStatic reads the current language", () => {
     useI18nStore.getState().setRemote("de", "common", { SAVE: "Speichern" });
     act(() => useAppSettingsStore.getState().setSettings({ language: "de" }));

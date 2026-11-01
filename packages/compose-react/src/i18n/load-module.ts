@@ -37,18 +37,24 @@ export const resetI18nRequests = () => requested.clear();
 const cacheKey = (language: string, module: string) =>
   `${CACHE_PREFIX}${language}:${module}`;
 
-const isDictionary = (value: unknown): value is Dictionary =>
-  typeof value === "object" &&
-  value !== null &&
-  !Array.isArray(value) &&
-  Object.values(value).every((item) => typeof item === "string");
+// Keeps the text entries only: one null value in a published file must not
+// drop the whole module.
+const toDictionary = (value: unknown): Dictionary | null => {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return null;
+  }
+  const entries = Object.entries(value).filter(
+    (entry): entry is [string, string] => typeof entry[1] === "string",
+  );
+  return entries.length > 0 ? Object.fromEntries(entries) : null;
+};
 
 const readCache = (language: string, module: string): Dictionary | null => {
   try {
     const raw = globalThis.localStorage?.getItem(cacheKey(language, module));
     if (!raw) return null;
     const parsed: unknown = JSON.parse(raw);
-    return isDictionary(parsed) ? parsed : null;
+    return toDictionary(parsed);
   } catch {
     return null;
   }
@@ -88,7 +94,7 @@ const fetchModule = async (
     const text = await response.text();
     if (!text) return null;
     const parsed: unknown = JSON.parse(text);
-    return isDictionary(parsed) ? parsed : null;
+    return toDictionary(parsed);
   } finally {
     clearTimeout(timer);
   }
