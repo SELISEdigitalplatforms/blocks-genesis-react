@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +27,7 @@ export function EnvironmentList({
   redirectPaths: RedirectPaths;
   collapsed?: boolean;
 }) {
+  const { t } = useT("genesis.shared");
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { data: projectGroups = [], isLoading } = useGetProjects({
@@ -87,7 +89,7 @@ export function EnvironmentList({
     : "";
   const environmentLabel = environment
     ? `${environment}${environmentDomainSuffix}`
-    : "Select an Environment";
+    : t("ENVIRONMENT_LIST.SELECT_ENVIRONMENT");
 
   const projects = useMemo(() => {
     if (!selectedProject) return [];
@@ -120,7 +122,7 @@ export function EnvironmentList({
             <Globe className="h-4 w-4 shrink-0 text-muted-foreground" />
             <div className="flex min-w-0 flex-1 flex-col items-start">
               <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                Environment
+                {t("ENVIRONMENT_LIST.ENVIRONMENT")}
               </div>
               {environment ? (
                 <div className="flex min-w-0 items-center gap-1 leading-tight">
@@ -130,7 +132,7 @@ export function EnvironmentList({
                 </div>
               ) : (
                 <span className="text-sm leading-tight">
-                  Select an Environment
+                  {t("ENVIRONMENT_LIST.SELECT_ENVIRONMENT")}
                 </span>
               )}
             </div>
@@ -145,7 +147,9 @@ export function EnvironmentList({
           collapsed ? "min-w-48" : "w-[--radix-dropdown-menu-trigger-width]"
         }
       >
-        <DropdownMenuLabel>Your Environments</DropdownMenuLabel>
+        <DropdownMenuLabel>
+          {t("ENVIRONMENT_LIST.YOUR_ENVIRONMENTS")}
+        </DropdownMenuLabel>
         {(() => {
           const others = projects
             .filter((project) => project.itemId !== selectedProject?.itemId)
@@ -154,7 +158,7 @@ export function EnvironmentList({
             return (
               <DropdownMenuItem disabled>
                 <span className="text-xs text-muted-foreground">
-                  No other environments available
+                  {t("ENVIRONMENT_LIST.NO_OTHERS")}
                 </span>
               </DropdownMenuItem>
             );
@@ -176,7 +180,7 @@ export function EnvironmentList({
         })()}
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled>
-          Environment overview is not part of this client
+          {t("ENVIRONMENT_LIST.OVERVIEW_UNAVAILABLE")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

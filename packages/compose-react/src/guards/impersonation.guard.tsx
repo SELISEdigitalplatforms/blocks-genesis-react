@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import { Button } from "@/components";
 import { AppLoadingSpinner } from "@/components/common/loader-spinner";
 import {
@@ -181,6 +182,7 @@ function ImpersonationBlocked({
   /** Omitted on console routes, which are already where that button would lead. */
   consolePath?: string;
 }) {
+  const { t } = useT("genesis.shared");
   const navigate = useNavigate();
 
   return (
@@ -203,7 +205,7 @@ function ImpersonationBlocked({
             variant={primaryLabel && onPrimary ? "outline" : "default"}
             onClick={() => navigate(consolePath)}
           >
-            Go to console
+            {t("IMPERSONATION_GUARD.GO_TO_CONSOLE")}
           </Button>
         )}
       </div>
@@ -285,6 +287,7 @@ export function ImpersonationTerminator({
   const [returnFailure, setReturnFailure] = useState<ReturnFailure | null>(
     null,
   );
+  const { t } = useT("genesis.shared");
   const signOut = useSignOut();
 
   // Back in root by any route -- another window's stop, a reload -- so there is nothing to retry.
@@ -349,10 +352,16 @@ export function ImpersonationTerminator({
     return (
       <ImpersonationBlocked
         title={
-          name ? `Your session is in ${name}` : "Your session is in a project"
+          name
+            ? t("IMPERSONATION_GUARD.DETACHED_TITLE_NAMED", { name })
+            : t("IMPERSONATION_GUARD.DETACHED_TITLE")
         }
-        description="The project is open in another window. A session can only be in one place at a time."
-        primaryLabel={name ? `Leave ${name}` : "Leave the project"}
+        description={t("IMPERSONATION_GUARD.DETACHED_DESCRIPTION")}
+        primaryLabel={
+          name
+            ? t("IMPERSONATION_GUARD.LEAVE_NAMED", { name })
+            : t("IMPERSONATION_GUARD.LEAVE")
+        }
         onPrimary={() => {
           setReturnFailure(null);
           setDetached(null);
@@ -364,9 +373,9 @@ export function ImpersonationTerminator({
   if (isImpersonated && returnFailure === "session-ended") {
     return (
       <ImpersonationBlocked
-        title="Your session has ended"
-        description="Sign in again to continue."
-        primaryLabel="Sign in again"
+        title={t("IMPERSONATION_GUARD.SESSION_ENDED_TITLE")}
+        description={t("IMPERSONATION_GUARD.SESSION_ENDED_DESCRIPTION")}
+        primaryLabel={t("IMPERSONATION_GUARD.SIGN_IN_AGAIN")}
         onPrimary={signOut}
       />
     );
@@ -376,22 +385,22 @@ export function ImpersonationTerminator({
     const name = projectNameFor(projects, impersonatedTenantId);
     return (
       <ImpersonationBlocked
-        title="Couldn't return to the console"
+        title={t("IMPERSONATION_GUARD.RETURN_FAILED_TITLE")}
         description={
           name
-            ? `Your session is still in ${name}. Try again, or sign out.`
-            : "Your session is still in a project. Try again, or sign out."
+            ? t("IMPERSONATION_GUARD.RETURN_FAILED_NAMED", { name })
+            : t("IMPERSONATION_GUARD.RETURN_FAILED")
         }
-        primaryLabel="Try again"
+        primaryLabel={t("IMPERSONATION_GUARD.TRY_AGAIN")}
         onPrimary={() => setReturnFailure(null)}
-        secondaryLabel="Sign out"
+        secondaryLabel={t("IMPERSONATION_GUARD.SIGN_OUT")}
         onSecondary={signOut}
       />
     );
   }
 
   if (isImpersonated || isTerminating) {
-    return <ImpersonationWaiting label="Returning to the console…" />;
+    return <ImpersonationWaiting label={t("IMPERSONATION_GUARD.RETURNING")} />;
   }
   return <>{children}</>;
 }
@@ -414,6 +423,7 @@ export function ImpersonationSynchronizer({
     setImpersonationError,
     setDetached,
   } = useImpersonateStore();
+  const { t } = useT("genesis.shared");
   const { mutateAsync } = useStartImpersonation();
   const recordClaimedTenant = useRecordClaimedTenant();
   const { data: _data } = useGetProjects({ enabled: true });
@@ -642,7 +652,9 @@ export function ImpersonationSynchronizer({
     return (
       <ImpersonationWaiting
         label={
-          thisProjectName ? `Opening ${thisProjectName}…` : "Opening project…"
+          thisProjectName
+            ? t("IMPERSONATION_GUARD.OPENING_NAMED", { name: thisProjectName })
+            : t("IMPERSONATION_GUARD.OPENING")
         }
       />
     );
@@ -658,7 +670,9 @@ export function ImpersonationSynchronizer({
     return (
       <ImpersonationWaiting
         label={
-          thisProjectName ? `Opening ${thisProjectName}…` : "Opening project…"
+          thisProjectName
+            ? t("IMPERSONATION_GUARD.OPENING_NAMED", { name: thisProjectName })
+            : t("IMPERSONATION_GUARD.OPENING")
         }
       />
     );
@@ -675,21 +689,25 @@ export function ImpersonationSynchronizer({
       <ImpersonationBlocked
         title={
           thisProjectName
-            ? `You don't have access to ${thisProjectName}`
-            : "You don't have access to this project"
+            ? t("IMPERSONATION_GUARD.NO_ACCESS_NAMED", {
+                name: thisProjectName,
+              })
+            : t("IMPERSONATION_GUARD.NO_ACCESS")
         }
-        description="Your access to this project may have been removed. Pick another project from the console."
+        description={t("IMPERSONATION_GUARD.NO_ACCESS_DESCRIPTION")}
         consolePath={consolePath}
       />
     ) : (
       <ImpersonationBlocked
         title={
           thisProjectName
-            ? `Couldn't open ${thisProjectName}`
-            : "Couldn't open this project"
+            ? t("IMPERSONATION_GUARD.OPEN_FAILED_NAMED", {
+                name: thisProjectName,
+              })
+            : t("IMPERSONATION_GUARD.OPEN_FAILED")
         }
-        description="Something went wrong switching to this project. Try again, or pick a different one from the console."
-        primaryLabel="Try again"
+        description={t("IMPERSONATION_GUARD.OPEN_FAILED_DESCRIPTION")}
+        primaryLabel={t("IMPERSONATION_GUARD.TRY_AGAIN")}
         onPrimary={takeSession}
         consolePath={consolePath}
       />
@@ -699,14 +717,18 @@ export function ImpersonationSynchronizer({
   if (detachedHere === "console") {
     return (
       <ImpersonationBlocked
-        title="Your session returned to the console"
+        title={t("IMPERSONATION_GUARD.CONSOLE_RETURNED_TITLE")}
         description={
           thisProjectName
-            ? `You went back to the console in another window, so ${thisProjectName} is no longer open here.`
-            : "You went back to the console in another window, so this project is no longer open here."
+            ? t("IMPERSONATION_GUARD.CONSOLE_RETURNED_NAMED", {
+                name: thisProjectName,
+              })
+            : t("IMPERSONATION_GUARD.CONSOLE_RETURNED")
         }
         primaryLabel={
-          thisProjectName ? `Reopen ${thisProjectName}` : "Reopen this project"
+          thisProjectName
+            ? t("IMPERSONATION_GUARD.REOPEN_NAMED", { name: thisProjectName })
+            : t("IMPERSONATION_GUARD.REOPEN")
         }
         onPrimary={takeSession}
         consolePath={consolePath}
@@ -718,16 +740,20 @@ export function ImpersonationSynchronizer({
     const otherName = projectNameFor(projects, detachedTenantId);
     return (
       <ImpersonationBlocked
-        title="Another project is open in this browser"
+        title={t("IMPERSONATION_GUARD.ANOTHER_PROJECT_TITLE")}
         description={
           otherName
-            ? `Your session moved to ${otherName} in another window. A session can only be in one project at a time.`
-            : "Your session moved to another project in a different window. A session can only be in one project at a time."
+            ? t("IMPERSONATION_GUARD.ANOTHER_PROJECT_NAMED", {
+                name: otherName,
+              })
+            : t("IMPERSONATION_GUARD.ANOTHER_PROJECT")
         }
         primaryLabel={
           thisProjectName
-            ? `Continue in ${thisProjectName}`
-            : "Continue in this project"
+            ? t("IMPERSONATION_GUARD.CONTINUE_NAMED", {
+                name: thisProjectName,
+              })
+            : t("IMPERSONATION_GUARD.CONTINUE")
         }
         onPrimary={takeSession}
         consolePath={consolePath}
@@ -740,14 +766,18 @@ export function ImpersonationSynchronizer({
   // another project's name. Nothing renders unless the tenant we are in is the tenant the URL
   // asked for.
   if (!routeTenantId)
-    return <ImpersonationWaiting label="Loading your projects…" />;
+    return (
+      <ImpersonationWaiting label={t("IMPERSONATION_GUARD.LOADING_PROJECTS")} />
+    );
   if (routeTenantId !== impersonatedTenantId) {
     return (
       <ImpersonationWaiting
         label={
           thisProjectName
-            ? `Switching to ${thisProjectName}…`
-            : "Switching projects…"
+            ? t("IMPERSONATION_GUARD.SWITCHING_NAMED", {
+                name: thisProjectName,
+              })
+            : t("IMPERSONATION_GUARD.SWITCHING")
         }
       />
     );

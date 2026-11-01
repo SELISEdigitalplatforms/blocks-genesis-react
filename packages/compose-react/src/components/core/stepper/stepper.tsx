@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import * as React from "react";
 import { Check } from "lucide-react";
 import { motion } from "framer-motion";
@@ -116,10 +117,11 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
     { steps, currentStep, orientation = "horizontal", className, ...props },
     ref,
   ) => {
+    const { t } = useT("genesis.shared");
     return (
       <ol
         ref={ref}
-        aria-label="Progress"
+        aria-label={t("STEPPER.PROGRESS")}
         className={cn(
           "flex w-full",
           orientation === "vertical"

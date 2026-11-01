@@ -1,3 +1,4 @@
+import { tStatic } from "@/i18n";
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { AlertCircle } from "lucide-react";
 import { ErrorDisplay } from "@/components/common/error-display";
@@ -37,7 +38,10 @@ export class ErrorBoundary extends Component<
         this.props.fallback ?? (
           <ErrorDisplay
             icon={AlertCircle}
-            text={this.state.error?.message ?? "Something went wrong"}
+            text={
+              this.state.error?.message ??
+              tStatic("genesis.shared", "ERROR_BOUNDARY.DEFAULT")
+            }
             containerClassName="h-full w-full min-h-100"
           />
         )

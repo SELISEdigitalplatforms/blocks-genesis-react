@@ -1,6 +1,11 @@
 import { create } from "zustand";
 import { COMMON_MODULE } from "./languages";
 import common from "./locales/common.en.json";
+import genesisConsole from "./locales/genesis.console.en.json";
+import genesisDashboard from "./locales/genesis.dashboard.en.json";
+import genesisLogin from "./locales/genesis.login.en.json";
+import genesisProfile from "./locales/genesis.profile.en.json";
+import genesisShared from "./locales/genesis.shared.en.json";
 import type { Dictionary } from "./translate";
 
 interface I18nState {
@@ -17,7 +22,14 @@ export const remoteKey = (language: string, module: string) =>
 
 export const useI18nStore = create<I18nState>()((set) => ({
   // Shared words (Save, Cancel…) every app uses as `common:KEY`.
-  bundled: { [COMMON_MODULE]: common },
+  bundled: {
+    [COMMON_MODULE]: common,
+    "genesis.console": genesisConsole,
+    "genesis.dashboard": genesisDashboard,
+    "genesis.login": genesisLogin,
+    "genesis.profile": genesisProfile,
+    "genesis.shared": genesisShared,
+  },
   remote: {},
   registerBundle: (module, dictionary) =>
     set((state) => ({

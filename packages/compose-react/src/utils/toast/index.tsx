@@ -1,3 +1,4 @@
+import { tStatic } from "@/i18n";
 import { toast } from "@/hooks/use-toast";
 import { handleErrorMessages } from "@/utils/error";
 
@@ -16,7 +17,7 @@ type ErrorToastOptions = {
 };
 
 export const showSuccessToast = ({
-  title = "Success",
+  title = tStatic("common", "SUCCESS"),
   description,
 }: SuccessToastOptions) => {
   toast({
@@ -26,7 +27,7 @@ export const showSuccessToast = ({
   });
 };
 export const showInfoToast = ({
-  title = "Info",
+  title = tStatic("genesis.shared", "TOAST.INFO_TITLE"),
   description,
 }: InfoToastOptions) => {
   toast({
@@ -36,7 +37,7 @@ export const showInfoToast = ({
   });
 };
 export const showErrorToast = ({
-  title = "Failed",
+  title = tStatic("genesis.shared", "TOAST.FAILED_TITLE"),
   errors,
   customMessages,
 }: ErrorToastOptions) => {

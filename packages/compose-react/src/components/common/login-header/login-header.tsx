@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { ThemeSwitcher } from "..";
 import { Logo } from "../logo";
@@ -13,6 +14,7 @@ export const LoginHeader = ({
   blocksUrl = "https://seliseblocks.com",
   githubUrl = "https://github.com/SELISEdigitalplatforms",
 }: LoginHeaderProps) => {
+  const { t } = useT("genesis.shared");
   const {
     config: { appLogoUrl },
   } = useBlocksAppConfigStore((state) => state);
@@ -37,7 +39,7 @@ export const LoginHeader = ({
 
       <div className="nav-right">
         <a href={docsUrl} target="_blank" rel="noreferrer" className="nav-link">
-          Docs
+          {t("LOGIN_HEADER.DOCS")}
         </a>
         <a
           href={blocksUrl}

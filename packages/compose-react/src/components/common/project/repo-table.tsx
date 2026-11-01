@@ -1,3 +1,4 @@
+import { useT, type TFunction } from "@/i18n";
 import { Button } from "@/components";
 import { cn } from "@/lib";
 import type { IEnvRepository } from "@/models";
@@ -17,9 +18,9 @@ import { SetCustomDomainDialog } from "./set-custom-domain/dialog";
 
 const columnHelper = createColumnHelper<IEnvRepository>();
 
-const buildColumns = (onSet: (repo: IEnvRepository) => void) => [
+const buildColumns = (t: TFunction, onSet: (repo: IEnvRepository) => void) => [
   columnHelper.accessor("repoName", {
-    header: "Name",
+    header: t("common:NAME"),
     cell: (info) => (
       <span className="text-sm font-medium text-high-emphasis">
         {info.getValue()}
@@ -27,13 +28,13 @@ const buildColumns = (onSet: (repo: IEnvRepository) => void) => [
     ),
   }),
   columnHelper.accessor("defaultDeploymentUrl", {
-    header: "Deployment Domain",
+    header: t("PROJECT_REPO_TABLE.COLUMN_DEPLOYMENT_DOMAIN"),
     cell: (info) => (
       <span className="text-sm text-medium-emphasis">{info.getValue()}</span>
     ),
   }),
   columnHelper.accessor("customDeploymentUrl", {
-    header: "Custom Domain",
+    header: t("PROJECT_REPO_TABLE.COLUMN_CUSTOM_DOMAIN"),
     cell: ({ row }) => {
       const repo = row.original;
       return repo.customDeploymentUrl ? (
@@ -42,21 +43,21 @@ const buildColumns = (onSet: (repo: IEnvRepository) => void) => [
         </span>
       ) : (
         <Button variant="outline" size="xxs" onClick={() => onSet(repo)}>
-          <span className="px-2">Set</span>
+          <span className="px-2">{t("PROJECT_REPO_TABLE.SET")}</span>
         </Button>
       );
     },
   }),
   columnHelper.display({
     id: "lastDeploymentDate",
-    header: "Last Deployment Date",
+    header: t("PROJECT_REPO_TABLE.COLUMN_LAST_DEPLOYMENT"),
     cell: ({ row }) => {
       const repo = row.original;
       const isDefaultDate = repo.lastDeploymentDate === "0001-01-01T00:00:00";
       return (
         <div className="text-sm text-medium-emphasis">
           {!repo.lastDeploymentDate || isDefaultDate
-            ? "Not deployed"
+            ? t("PROJECT_REPO_TABLE.NOT_DEPLOYED")
             : formatFullDate(new Date(repo.lastDeploymentDate))}
         </div>
       );
@@ -64,7 +65,7 @@ const buildColumns = (onSet: (repo: IEnvRepository) => void) => [
   }),
   columnHelper.display({
     id: "actions",
-    header: "Actions",
+    header: t("common:ACTIONS"),
     cell: ({ row }) => {
       const repo = row.original;
       const hasCustomDomain = !!repo.customDeploymentUrl;
@@ -73,7 +74,7 @@ const buildColumns = (onSet: (repo: IEnvRepository) => void) => [
           <Button
             variant="ghost"
             size="icon"
-            title="Edit custom domain"
+            title={t("PROJECT_REPO_TABLE.EDIT_CUSTOM_DOMAIN")}
             disabled={!hasCustomDomain}
             onClick={() => onSet(repo)}
           >
@@ -100,6 +101,7 @@ export const ProjectRepoTable = ({
   projectKey,
   projectEnv,
 }: ProjectRepoTableProps) => {
+  const { t } = useT("genesis.shared");
   // ── Set custom domain dialog ────────────────────────────────────────────────
   const [setTarget, setSetTarget] = useState<IEnvRepository | null>(null);
   const [setDialogOpen, setSetDialogOpen] = useState(false);
@@ -110,7 +112,7 @@ export const ProjectRepoTable = ({
   };
 
   // ── Table ──────────────────────────────────────────────────────────────────
-  const columns = buildColumns(handleSet);
+  const columns = buildColumns(t, handleSet);
   const table = useReactTable({
     data,
     columns,
@@ -162,7 +164,7 @@ export const ProjectRepoTable = ({
                   colSpan={columns.length}
                   className="py-10 text-center text-sm text-muted-foreground"
                 >
-                  No repositories found for this project.
+                  {t("PROJECT_REPO_TABLE.EMPTY")}
                 </td>
               </tr>
             ) : (

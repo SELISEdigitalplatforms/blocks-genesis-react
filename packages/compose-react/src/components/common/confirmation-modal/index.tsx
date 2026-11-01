@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import {
   Button,
   DialogContent,
@@ -25,29 +26,32 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   data,
   onConfirm,
   buttonState,
-}) => (
-  <DialogContent className="mr-4 w-full max-w-[425px] rounded-md">
-    <DialogHeader>
-      <DialogTitle className="text-left text-lg font-semibold leading-7">
-        {data.dialogTitle}
-      </DialogTitle>
-      <DialogDescription className="mb-6 mt-2 wrap-break-word text-left text-sm font-normal leading-5 text-medium-emphasis">
-        {data.dialogSubtitle}
-      </DialogDescription>
-    </DialogHeader>
-    <DialogFooter className="mt-4 flex flex-row gap-2">
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          {data.cancelButton || "Cancel"}
+}) => {
+  const { t } = useT("genesis.shared");
+  return (
+    <DialogContent className="mr-4 w-full max-w-[425px] rounded-md">
+      <DialogHeader>
+        <DialogTitle className="text-left text-lg font-semibold leading-7">
+          {data.dialogTitle}
+        </DialogTitle>
+        <DialogDescription className="mb-6 mt-2 wrap-break-word text-left text-sm font-normal leading-5 text-medium-emphasis">
+          {data.dialogSubtitle}
+        </DialogDescription>
+      </DialogHeader>
+      <DialogFooter className="mt-4 flex flex-row gap-2">
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm">
+            {data.cancelButton || t("common:CANCEL")}
+          </Button>
+        </DialogTrigger>
+        <Button
+          size="sm"
+          onClick={onConfirm}
+          disabled={buttonState?.confirm.disable}
+        >
+          {data.confirmButton || t("common:YES")}
         </Button>
-      </DialogTrigger>
-      <Button
-        size="sm"
-        onClick={onConfirm}
-        disabled={buttonState?.confirm.disable}
-      >
-        {data.confirmButton || "Yes"}
-      </Button>
-    </DialogFooter>
-  </DialogContent>
-);
+      </DialogFooter>
+    </DialogContent>
+  );
+};

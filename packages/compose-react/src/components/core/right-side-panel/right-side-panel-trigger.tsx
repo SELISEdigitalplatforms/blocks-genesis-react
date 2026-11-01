@@ -1,4 +1,5 @@
 "use client";
+import { useT } from "@/i18n";
 
 import * as React from "react";
 import { MessageSquare } from "lucide-react";
@@ -50,10 +51,12 @@ export const RightSidePanelTrigger = React.forwardRef<
     },
     ref,
   ) => {
+    const { t } = useT("genesis.shared");
     const { open, toggle, panelId } = useRightSidePanel();
     const Comp = asChild ? Slot : Button;
     const isFloating = position !== "inline";
-    const computedLabel = ariaLabel ?? label ?? "Toggle side panel";
+    const computedLabel =
+      ariaLabel ?? label ?? t("RIGHT_SIDE_PANEL.TOGGLE_PANEL");
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
       onClick?.(event);

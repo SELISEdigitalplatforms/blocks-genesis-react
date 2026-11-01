@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import { Skeleton } from "@/components";
 import { DashboardSectionCard } from "@/components/common/dashboard-section-card";
 import { useGetEnvRepositories } from "@/hooks/use-project";
@@ -11,6 +12,7 @@ export const ProjectRepoList = ({
   project: IProject;
   isLoading: boolean;
 }) => {
+  const { t } = useT("genesis.shared");
   const { applications } = project;
   const {
     data: envRepositoriesResponse,
@@ -35,8 +37,8 @@ export const ProjectRepoList = ({
 
   return (
     <DashboardSectionCard
-      title="Repositories"
-      description="Repositories deployed for this project"
+      title={t("PROJECT_REPO_LIST.TITLE")}
+      description={t("PROJECT_REPO_LIST.DESCRIPTION")}
       contentClassName="p-0"
     >
       <ProjectRepoTable

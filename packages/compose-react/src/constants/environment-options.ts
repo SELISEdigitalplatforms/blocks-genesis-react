@@ -1,52 +1,87 @@
+import { tStatic } from "@/i18n";
+
+const MODULE = "genesis.shared";
+
+// `label` and `subtext` are read when shown, so a language change is picked up.
 export const environmentOptions = [
   {
     index: 0,
-    label: "Development",
+    get label() {
+      return tStatic(MODULE, "ENVIRONMENT_OPTIONS.DEV_LABEL");
+    },
     value: "dev",
-    subtext: "For day-to-day development and testing unstable changes.",
+    get subtext() {
+      return tStatic(MODULE, "ENVIRONMENT_OPTIONS.DEV_SUBTEXT");
+    },
   },
   {
     index: 1,
-    label: "Testing",
+    get label() {
+      return tStatic(MODULE, "ENVIRONMENT_OPTIONS.TEST_LABEL");
+    },
     value: "test",
-    subtext: "For QA testing and validation of new features.",
+    get subtext() {
+      return tStatic(MODULE, "ENVIRONMENT_OPTIONS.TEST_SUBTEXT");
+    },
   },
   {
     index: 2,
-    label: "Staging",
+    get label() {
+      return tStatic(MODULE, "ENVIRONMENT_OPTIONS.STG_LABEL");
+    },
     value: "stg",
-    subtext: "For final pre-prod validation in a near-production replica.",
+    get subtext() {
+      return tStatic(MODULE, "ENVIRONMENT_OPTIONS.STG_SUBTEXT");
+    },
   },
   {
     index: 3,
-    label: "IAT",
+    get label() {
+      return tStatic(MODULE, "ENVIRONMENT_OPTIONS.IAT_LABEL");
+    },
     value: "iat",
-    subtext: "For testing service integrations across modules/systems.",
+    get subtext() {
+      return tStatic(MODULE, "ENVIRONMENT_OPTIONS.IAT_SUBTEXT");
+    },
   },
   {
     index: 4,
-    label: "UAT",
+    get label() {
+      return tStatic(MODULE, "ENVIRONMENT_OPTIONS.UAT_LABEL");
+    },
     value: "uat",
-    subtext: "For end-user or stakeholder validation of new features.",
+    get subtext() {
+      return tStatic(MODULE, "ENVIRONMENT_OPTIONS.UAT_SUBTEXT");
+    },
   },
   {
     index: 5,
-    label: "Prod Shadow",
+    get label() {
+      return tStatic(MODULE, "ENVIRONMENT_OPTIONS.PROD_SHADOW_LABEL");
+    },
     value: "prod-shadow",
-    subtext:
-      "For mirroring production data/traffic to validate changes invisibly.",
+    get subtext() {
+      return tStatic(MODULE, "ENVIRONMENT_OPTIONS.PROD_SHADOW_SUBTEXT");
+    },
   },
   {
     index: 6,
-    label: "Pre-Prod",
+    get label() {
+      return tStatic(MODULE, "ENVIRONMENT_OPTIONS.PRE_PROD_LABEL");
+    },
     value: "pre-prod",
-    subtext:
-      "For load testing, security checks, or final sanity tests before production.",
+    get subtext() {
+      return tStatic(MODULE, "ENVIRONMENT_OPTIONS.PRE_PROD_SUBTEXT");
+    },
   },
   {
     index: 7,
-    label: "Production",
+    get label() {
+      return tStatic(MODULE, "ENVIRONMENT_OPTIONS.PROD_LABEL");
+    },
     value: "prod",
-    subtext: "The live environment serving actual users.",
+    get subtext() {
+      return tStatic(MODULE, "ENVIRONMENT_OPTIONS.PROD_SUBTEXT");
+    },
   },
 ];

@@ -1,7 +1,9 @@
+import { useT } from "@/i18n";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/core/button";
 import { useTheme } from "@/hooks/use-theme";
 export function ModeToggle() {
+  const { t } = useT("genesis.shared");
   const { setTheme, resolvedTheme } = useTheme();
   return (
     <Button
@@ -12,7 +14,7 @@ export function ModeToggle() {
     >
       <Moon className="aspect-square w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
       <Sun className="absolute aspect-square w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-      <span className="sr-only">Toggle theme</span>
+      <span className="sr-only">{t("MODE_TOGGLE.TOGGLE_THEME")}</span>
     </Button>
   );
 }

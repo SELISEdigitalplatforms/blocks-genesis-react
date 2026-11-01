@@ -3,6 +3,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/core/popover/popover";
+import { useT } from "@/i18n";
 import type { IProject } from "@/models";
 import { useProjectStore } from "@/store/project.store";
 import { ChevronRight } from "lucide-react";
@@ -16,6 +17,7 @@ type ProjectEnvironmentsProps = {
 };
 
 export const ProjectEnvironments = ({ projects }: ProjectEnvironmentsProps) => {
+  const { t } = useT("genesis.console");
   const navigate = useNavigate();
   const { setTenantGroup, setSelectedProject } = useProjectStore();
 
@@ -48,7 +50,7 @@ export const ProjectEnvironments = ({ projects }: ProjectEnvironmentsProps) => {
   if (projects.length === 0) {
     return (
       <span className="border-border/60 bg-muted/40 text-muted-foreground inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs">
-        No environments
+        {t("PROJECT_ENVIRONMENTS.NO_ENVIRONMENTS")}
       </span>
     );
   }
@@ -70,7 +72,7 @@ export const ProjectEnvironments = ({ projects }: ProjectEnvironmentsProps) => {
               onClick={(event) => event.stopPropagation()}
               className="border-border/60 bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground inline-flex cursor-pointer items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors"
             >
-              +{overflowCount} more
+              {t("PROJECT_ENVIRONMENTS.MORE", { count: overflowCount })}
             </button>
           </PopoverTrigger>
           <PopoverContent
@@ -79,7 +81,7 @@ export const ProjectEnvironments = ({ projects }: ProjectEnvironmentsProps) => {
             onClick={(event) => event.stopPropagation()}
           >
             <p className="text-muted-foreground px-2 pb-1.5 pt-1 text-[10px] font-semibold uppercase tracking-wider">
-              All environments
+              {t("PROJECT_ENVIRONMENTS.ALL_ENVIRONMENTS")}
             </p>
             {projects.map((project) => (
               <button

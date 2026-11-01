@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import {
   Button,
   DashboardSectionCard,
@@ -50,22 +51,25 @@ export const ProjectDetail = ({
   project?: IProject;
   isLoading: boolean;
 }) => {
+  const { t } = useT("genesis.shared");
   if (isLoading) return <LoadingSkeleton />;
   if (!project)
     return (
       <ErrorDisplayWithCard
-        text={"Error loading project data"}
+        text={t("PROJECT_DETAIL.ERROR")}
         containerClassName="min-h-[20dvh]"
       />
     );
 
   return (
     <DashboardSectionCard
-      title="Project Details"
-      description="Core configuration and metadata for this project"
+      title={t("PROJECT_DETAIL.TITLE")}
+      description={t("PROJECT_DETAIL.DESCRIPTION")}
     >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
-        <ProjectDetailItem label="Name">{project?.name}</ProjectDetailItem>
+        <ProjectDetailItem label={t("common:NAME")}>
+          {project?.name}
+        </ProjectDetailItem>
         <ProjectDetailItem label="X-Blocks-Key">
           <div className="flex h-6 items-center gap-2">
             <CopyToClipboardButton
@@ -81,10 +85,10 @@ export const ProjectDetail = ({
             </CopyToClipboardButton>
           </div>
         </ProjectDetailItem>
-        <ProjectDetailItem label="Environment">
+        <ProjectDetailItem label={t("PROJECT_DETAIL.ENVIRONMENT")}>
           {project?.environment === "prod" ? (
             <Button className="h-6 rounded-xl" size="sm" variant="default">
-              Production
+              {t("ENVIRONMENT_OPTIONS.PROD_LABEL")}
             </Button>
           ) : (
             <Button
@@ -103,11 +107,11 @@ export const ProjectDetail = ({
         {/* <ProjectDetailItem label="Blocks Microservices Url">
           <RenderProjectUrl project={project} />
         </ProjectDetailItem> */}
-        <ProjectDetailItem label="Last updated Date">
+        <ProjectDetailItem label={t("PROJECT_DETAIL.LAST_UPDATED")}>
           {project?.lastUpdatedDate &&
             formatFullDate(new Date(project.lastUpdatedDate))}
         </ProjectDetailItem>
-        <ProjectDetailItem label="Created Date">
+        <ProjectDetailItem label={t("PROJECT_DETAIL.CREATED")}>
           {project?.createdDate &&
             formatFullDate(new Date(project.createdDate))}
         </ProjectDetailItem>

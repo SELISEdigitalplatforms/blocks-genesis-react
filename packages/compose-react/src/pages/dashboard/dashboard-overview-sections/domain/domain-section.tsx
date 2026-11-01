@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components";
@@ -11,6 +12,7 @@ interface DomainsSectionProps {
 }
 
 export const DomainsSection = ({ applications }: DomainsSectionProps) => {
+  const { t } = useT("genesis.dashboard");
   const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   return (
@@ -23,8 +25,8 @@ export const DomainsSection = ({ applications }: DomainsSectionProps) => {
       />
 
       <DashboardSectionCard
-        title="Domains"
-        description="Domains and cookie domains configured for this project"
+        title={t("DOMAIN_SECTION.TITLE")}
+        description={t("DOMAIN_SECTION.DESCRIPTION")}
         contentClassName="p-0"
         headerRight={
           <Button
@@ -34,7 +36,7 @@ export const DomainsSection = ({ applications }: DomainsSectionProps) => {
             onClick={() => setAddDialogOpen(true)}
           >
             <Plus className="h-4 w-4" />
-            Add Domain
+            {t("DOMAIN_SECTION.ADD_DOMAIN")}
           </Button>
         }
       >

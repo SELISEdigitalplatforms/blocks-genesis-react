@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/core";
 import { getRuntimeEnv } from "@/lib/runtime-env";
 import { InfoIcon } from "lucide-react";
@@ -9,6 +10,7 @@ export const CNameInstruction = ({
   cookieDomainName: string;
   customDomain?: string;
 }) => {
+  const { t } = useT("genesis.dashboard");
   const apiBaseUrl = "blocksapi." + cookieDomainName;
   // Domains arrive both with and without a protocol prefix
   const customDomainHost = customDomain?.replace(/^https?:\/\//, "");
@@ -23,39 +25,46 @@ export const CNameInstruction = ({
       <CardHeader className="p-0">
         <CardTitle className="flex items-center gap-3 text-lg font-semibold">
           <InfoIcon className="h-6 w-6 shrink-0 text-neutral-300" />
-          DNS CNAME Record for Domain Validation
+          {t("CNAME_INSTRUCTIONS.TITLE")}
         </CardTitle>
       </CardHeader>
       <CardContent className="my-2.5 p-0">
         <div>
           <h4>
-            Please add the following
-            {cookieDomainName ? " two CNAME records" : " CNAME record"} to your
-            DNS configuration to complete domain validation:
+            {cookieDomainName
+              ? t("CNAME_INSTRUCTIONS.INTRO_TWO")
+              : t("CNAME_INSTRUCTIONS.INTRO_ONE")}
           </h4>
           {cookieDomainName && (
             <>
-              <p className="mt-3 font-semibold">CNAME configuration 1</p>
+              <p className="mt-3 font-semibold">
+                {t("CNAME_INSTRUCTIONS.CONFIG_ONE")}
+              </p>
               <ul className="mt-2 list-disc break-all pl-5">
                 <li>
-                  Host:{" "}
+                  {t("CNAME_INSTRUCTIONS.HOST")}{" "}
                   <span className="font-semibold">{customDomainHost}</span>
                 </li>
-                <li className="my-2">Type: CNAME</li>
+                <li className="my-2">{t("CNAME_INSTRUCTIONS.TYPE")} CNAME</li>
                 <li>
-                  Value: <span className="font-semibold">{cnameTarget}</span>
+                  {t("CNAME_INSTRUCTIONS.VALUE")}{" "}
+                  <span className="font-semibold">{cnameTarget}</span>
                 </li>
               </ul>
-              <p className="mt-3 font-semibold">CNAME configuration 2</p>
+              <p className="mt-3 font-semibold">
+                {t("CNAME_INSTRUCTIONS.CONFIG_TWO")}
+              </p>
             </>
           )}
           <ul className="mt-2 list-disc break-all pl-5">
             <li>
-              Host: <span className="font-semibold">{apiBaseUrl}</span>
+              {t("CNAME_INSTRUCTIONS.HOST")}{" "}
+              <span className="font-semibold">{apiBaseUrl}</span>
             </li>
-            <li className="my-2">Type: CNAME</li>
+            <li className="my-2">{t("CNAME_INSTRUCTIONS.TYPE")} CNAME</li>
             <li>
-              Value: <span className="font-semibold">{cnameTarget}</span>
+              {t("CNAME_INSTRUCTIONS.VALUE")}{" "}
+              <span className="font-semibold">{cnameTarget}</span>
             </li>
           </ul>
         </div>

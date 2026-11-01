@@ -1,10 +1,14 @@
 import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { useLogin } from "@/hooks/use-login";
 import { useSignUpAffordance, useSignUpRedirect } from "@/hooks/use-signup";
+import { useT } from "@/i18n";
+import { useMemo } from "react";
 import { BlocksLoginPage } from "./blocks-login";
-import { BLOCKS_PRODUCTS } from "./login.constant";
+import { getBlocksProducts } from "./login.constant";
 
 export const LoginPage = () => {
+  const { t } = useT("genesis.login");
+  const products = useMemo(() => getBlocksProducts(t), [t]);
   const config = useBlocksAppConfigStore((state) => state.getConfig());
   const { start, isLoading } = useLogin();
   const { canSignUp } = useSignUpAffordance();
@@ -19,7 +23,7 @@ export const LoginPage = () => {
       showSignUp={canSignUp}
       onSignUp={startSignUp}
       isSignUpLoading={isSignUpLoading}
-      carouselItems={BLOCKS_PRODUCTS}
+      carouselItems={products}
     />
   );
 };

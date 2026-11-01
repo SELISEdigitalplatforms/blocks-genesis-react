@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import { Terminal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buildCurlCommand } from "./util";
@@ -22,6 +23,7 @@ export const CoreApiEndpointRow = ({
   endpoint,
   xBlocksKey,
 }: CoreApiEndpointRowProps) => {
+  const { t } = useT("genesis.dashboard");
   const curlCommand = buildCurlCommand(endpoint, xBlocksKey);
 
   return (
@@ -47,7 +49,7 @@ export const CoreApiEndpointRow = ({
       <CopyToClipboardButton textToCopy={curlCommand} isHoverable>
         <span className="flex shrink-0 items-center gap-1 whitespace-nowrap text-xs text-muted-foreground">
           <Terminal className="h-3.5 w-3.5" />
-          Copy as cURL
+          {t("CORE_API_ENDPOINT_ROW.COPY_CURL")}
         </span>
       </CopyToClipboardButton>
     </div>

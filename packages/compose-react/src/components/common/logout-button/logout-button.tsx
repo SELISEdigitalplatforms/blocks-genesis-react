@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import { Button } from "@/components/core/button";
 import { useLogout } from "@/hooks/use-logout";
 import { getQueryClient } from "@/providers/query-client";
@@ -15,6 +16,7 @@ import { useProjectStore } from "@/store/project.store";
  * the user on the current page (no redirect).
  */
 export function LogOutButton() {
+  const { t } = useT("genesis.shared");
   const queryClient = getQueryClient();
   const { resetProjectStore } = useProjectStore();
   const { setUnAuthenticated, clearTokens } = useAuthStore();
@@ -43,7 +45,7 @@ export function LogOutButton() {
       disabled={isPending}
       onClick={handleLogout}
     >
-      Logout
+      {t("LOGOUT_BUTTON.LOGOUT")}
     </Button>
   );
 }

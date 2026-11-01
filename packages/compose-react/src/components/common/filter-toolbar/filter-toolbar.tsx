@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import { type ReactNode, useRef } from "react";
 import { FilterControls } from "./filter-controls";
 import { ResetButton } from "./reset-button/reset-button";
@@ -73,6 +74,7 @@ export const FilterToolBarMobileView = ({
   showReset,
   onReset,
 }: ViewType) => {
+  const { t } = useT("genesis.shared");
   return (
     <div className={"flex items-center justify-between gap-2 md:hidden"}>
       <div className="min-w-0 max-w-72 flex-1">{Components[0]}</div>
@@ -92,13 +94,15 @@ export const FilterToolBarMobileView = ({
             className="w-full"
             aria-describedby="filter-description"
           >
-            <SheetTitle className="mb-4">Filter</SheetTitle>
+            <SheetTitle className="mb-4">
+              {t("FILTER_TOOLBAR.TITLE")}
+            </SheetTitle>
             <SheetDescription></SheetDescription>
             <div className="flex flex-col space-y-4">
               {Components.slice(1).map((item) => item)}
               <SheetClose asChild>
                 <Button className="mt-4" size="sm">
-                  Show Results
+                  {t("FILTER_TOOLBAR.SHOW_RESULTS")}
                 </Button>
               </SheetClose>
 

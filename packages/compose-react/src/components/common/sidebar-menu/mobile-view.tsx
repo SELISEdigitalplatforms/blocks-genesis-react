@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import { Fragment, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Link } from "react-router";
@@ -23,6 +24,7 @@ export function SidebarMobileView({
   redirectPaths,
   navigationMenus,
 }: SideBarMenuProps) {
+  const { t } = useT("genesis.shared");
   const [open, setOpen] = useState(false);
   const { appLightLogo, appDarkLogo } = useLogo();
 
@@ -33,7 +35,9 @@ export function SidebarMobileView({
       <SheetTrigger asChild>
         <Button variant="outline" size="icon" className="shrink-0">
           <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle navigation menu</span>
+          <span className="sr-only">
+            {t("SIDEBAR_MOBILE_VIEW.TOGGLE_MENU")}
+          </span>
         </Button>
       </SheetTrigger>
       <SheetContent
@@ -61,11 +65,15 @@ export function SidebarMobileView({
         </SheetHeader>
         <Separator />
         <div className="mt-3 flex w-full flex-col items-start px-6">
-          <div className="ml-1 text-sm text-low-emphasis">Project</div>
+          <div className="ml-1 text-sm text-low-emphasis">
+            {t("SIDEBAR_MOBILE_VIEW.PROJECT")}
+          </div>
           <ProjectList redirectPaths={redirectPaths} />
         </div>
         <div className="my-3 flex w-full flex-col items-start px-6">
-          <div className="ml-1 text-sm text-low-emphasis">Environment</div>
+          <div className="ml-1 text-sm text-low-emphasis">
+            {t("SIDEBAR_MOBILE_VIEW.ENVIRONMENT")}
+          </div>
           <EnvironmentList redirectPaths={redirectPaths} />
         </div>
         <Separator />

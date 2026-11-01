@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import { Card, CardHeader, CardTitle } from "@/components/core/card/card";
 import {
   Tooltip,
@@ -23,6 +24,7 @@ export const EnvironmentCard = ({
   isMigrationOngoing,
   className,
 }: EnvironmentCardProps) => {
+  const { t } = useT("genesis.shared");
   const { setSelectedProject, setTenantGroup } = useProjectStore();
   const { mutateAsync } = useStartImpersonation();
   const navigate = useNavigate();
@@ -65,7 +67,7 @@ export const EnvironmentCard = ({
                     <HourglassIcon className="text-icon-warning h-4 w-4 cursor-pointer" />
                   </TooltipTrigger>
                   <TooltipContent className="border-none bg-neutral-500 text-white shadow-none">
-                    Migration in progress
+                    {t("ENVIRONMENT_CARD.MIGRATION")}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

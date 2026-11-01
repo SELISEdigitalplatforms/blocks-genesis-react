@@ -2,9 +2,11 @@ import { ProjectCardLoadingSkeleton } from "@/components";
 import { Card, CardContent } from "@/components/core/card/card";
 import { cn } from "@/lib";
 import { Plus } from "lucide-react";
+import { useT } from "@/i18n";
 import { useCreateProjectRedirect } from "./use-create-project-redirect";
 
 export const AddProjectCard = () => {
+  const { t } = useT("genesis.console");
   const { handleClick, isDisabled, isFetching } = useCreateProjectRedirect();
 
   if (isFetching) {
@@ -24,7 +26,9 @@ export const AddProjectCard = () => {
         <div className="flex justify-center">
           <Plus className="text-primary" strokeWidth={2} size={50} />
         </div>
-        <p className="text-primary mt-2 font-bold">{"Add Project"}</p>
+        <p className="text-primary mt-2 font-bold">
+          {t("ADD_PROJECT_CARD.ADD_PROJECT")}
+        </p>
       </CardContent>
     </Card>
   );
