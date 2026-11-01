@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { COMMON_MODULE } from "./languages";
+import common from "./locales/common.en.json";
 import type { Dictionary } from "./translate";
 
 interface I18nState {
@@ -14,7 +16,8 @@ export const remoteKey = (language: string, module: string) =>
   `${language}:${module}`;
 
 export const useI18nStore = create<I18nState>()((set) => ({
-  bundled: {},
+  // Shared words (Save, Cancel…) every app uses as `common:KEY`.
+  bundled: { [COMMON_MODULE]: common },
   remote: {},
   registerBundle: (module, dictionary) =>
     set((state) => ({
