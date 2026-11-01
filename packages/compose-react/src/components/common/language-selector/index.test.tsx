@@ -34,8 +34,8 @@ describe("LanguageSelector", () => {
     await user.click(screen.getByRole("button"));
 
     expect(screen.getByText("English")).toBeInTheDocument();
-    expect(screen.getByText("German")).toBeInTheDocument();
-    expect(screen.getByText("French")).toBeInTheDocument();
+    expect(screen.getByText("Deutsch")).toBeInTheDocument();
+    expect(screen.queryByText("French")).not.toBeInTheDocument();
   });
 
   it("changes the language when an enabled option is selected", async () => {
@@ -46,5 +46,23 @@ describe("LanguageSelector", () => {
     await user.click(screen.getByText("English"));
 
     expect(h.changeLanguage).toHaveBeenCalledWith("en");
+  });
+
+  it("switches to German", async () => {
+    const user = userEvent.setup();
+    render(<LanguageSelector />);
+
+    await user.click(screen.getByRole("button"));
+    await user.click(screen.getByText("Deutsch"));
+
+    expect(h.changeLanguage).toHaveBeenCalledWith("de");
+  });
+
+  it("shows English for an unsupported stored language and sets the page lang", () => {
+    h.language = "fr";
+    render(<LanguageSelector />);
+
+    expect(screen.getByText("en")).toBeInTheDocument();
+    expect(document.documentElement.lang).toBe("en");
   });
 });

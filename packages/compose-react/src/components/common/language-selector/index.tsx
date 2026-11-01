@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import { useLanguageSwitcher } from "@/hooks/use-language-switcher";
+import { resolveLanguage, SUPPORTED_LANGUAGES } from "@/i18n/languages";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,14 +10,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components";
 
-const languages = [
-  { key: "en", title: "English" },
-  { key: "de", title: "German" },
-  { key: "fr", title: "French" },
-];
-
 export function LanguageSelector() {
-  const { changeLanguage, language } = useLanguageSwitcher();
+  const { changeLanguage, language: storedLanguage } = useLanguageSwitcher();
+  const language = resolveLanguage(storedLanguage);
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
 
   return (
     <DropdownMenu>
@@ -29,16 +30,18 @@ export function LanguageSelector() {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {languages.map((lang, index) => (
-          <div key={lang.key}>
+        {SUPPORTED_LANGUAGES.map((lang, index) => (
+          <div key={lang.code}>
             <DropdownMenuItem
-              className={lang.key === language ? "font-semibold" : ""}
-              onClick={() => changeLanguage(lang.key)}
-              disabled={lang.key !== "en"}
+              lang={lang.code}
+              className={lang.code === language ? "font-semibold" : ""}
+              onClick={() => changeLanguage(lang.code)}
             >
               {lang.title}
             </DropdownMenuItem>
-            {index !== languages.length - 1 && <DropdownMenuSeparator />}
+            {index !== SUPPORTED_LANGUAGES.length - 1 && (
+              <DropdownMenuSeparator />
+            )}
           </div>
         ))}
       </DropdownMenuContent>

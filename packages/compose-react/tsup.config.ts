@@ -15,6 +15,7 @@ export default defineConfig({
     "utils/index": "src/utils/index.ts",
     "models/index": "src/models/index.ts",
     "observability/index": "src/observability/index.ts",
+    "i18n/index": "src/i18n/index.ts",
   },
   format: ["esm", "cjs"],
   dts: true,
