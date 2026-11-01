@@ -1,5 +1,5 @@
 import { getRuntimeEnv } from "@/lib/runtime-env";
-import { DEFAULT_LANGUAGE } from "./languages";
+import { cultureOf, DEFAULT_LANGUAGE } from "./languages";
 import { useI18nStore } from "./i18n.store";
 import type { Dictionary } from "./translate";
 
@@ -73,7 +73,10 @@ const fetchModule = async (
   const blocksKey = config.blocksKey();
   if (!baseUrl || !blocksKey) return null;
 
-  const query = new URLSearchParams({ Language: language, ModuleName: module });
+  const query = new URLSearchParams({
+    Language: cultureOf(language),
+    ModuleName: module,
+  });
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), config.timeoutMs);
   try {

@@ -39,7 +39,7 @@ describe("loadModule", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(url).toBe(
-      "https://loc.example/api/Key/GetUilmFile?Language=de&ModuleName=os.idp",
+      "https://loc.example/api/Key/GetUilmFile?Language=de-DE&ModuleName=os.idp",
     );
     expect(init.headers).toEqual({ "X-Blocks-Key": "key-1" });
     expect(useI18nStore.getState().remote["de:os.idp"]).toEqual({
