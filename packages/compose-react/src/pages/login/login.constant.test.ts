@@ -1,8 +1,14 @@
 import { describe, it, expect } from "vitest";
 import {
-  BLOCKS_PRODUCTS,
-  DEFAULT_BLOCKS_PRODUCTS,
+  getBlocksProducts,
+  getDefaultBlocksProducts,
 } from "@/pages/login/login.constant";
+import { tStatic } from "@/i18n";
+
+const t = (key: string, values?: Record<string, string | number>) =>
+  tStatic("genesis.login", key, values);
+const BLOCKS_PRODUCTS = getBlocksProducts(t);
+const DEFAULT_BLOCKS_PRODUCTS = getDefaultBlocksProducts(t);
 
 describe("login product catalogue", () => {
   it("exposes a non-empty product list", () => {

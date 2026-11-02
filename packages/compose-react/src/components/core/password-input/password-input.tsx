@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import * as React from "react";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -13,10 +14,8 @@ export interface PasswordInputProps extends Omit<
 }
 
 const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
-  (
-    { className, toggleAriaLabel = "Toggle password visibility", ...props },
-    ref,
-  ) => {
+  ({ className, toggleAriaLabel, ...props }, ref) => {
+    const { t } = useT("genesis.shared");
     const [visible, setVisible] = React.useState(false);
     const Icon = visible ? EyeOff : Eye;
 
@@ -30,7 +29,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
         />
         <button
           type="button"
-          aria-label={toggleAriaLabel}
+          aria-label={toggleAriaLabel ?? t("PASSWORD_INPUT.TOGGLE_VISIBILITY")}
           onClick={() => setVisible((v) => !v)}
           className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >

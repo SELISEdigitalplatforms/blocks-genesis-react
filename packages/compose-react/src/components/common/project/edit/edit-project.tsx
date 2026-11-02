@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import { Dialog, DialogTrigger, Button } from "@/components";
 import { Edit } from "lucide-react";
 import { EditProjectDialog } from "./edit-project-dialog";
@@ -5,6 +6,7 @@ import { useState } from "react";
 import { useProjectStore } from "@/store";
 
 export function EditProject() {
+  const { t } = useT("genesis.shared");
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const { selectedProject } = useProjectStore();
   const { tenantGroupId, name } = selectedProject || {};
@@ -14,7 +16,7 @@ export function EditProject() {
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="flex items-center gap-2">
           <Edit className="h-4 w-4" />
-          <span className="sr-only sm:not-sr-only">Edit</span>
+          <span className="sr-only sm:not-sr-only">{t("common:EDIT")}</span>
         </Button>
       </DialogTrigger>
       <EditProjectDialog

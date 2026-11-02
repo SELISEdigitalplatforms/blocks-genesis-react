@@ -4,16 +4,18 @@ import { useAppSettingsStore } from "@/store/app-settings.store";
 describe("useAppSettingsStore", () => {
   beforeEach(() => useAppSettingsStore.getState().resetSettings());
 
-  it("defaults to the system theme and English", () => {
+  it("defaults to the system theme and no chosen language", () => {
     const settings = useAppSettingsStore.getState().getSettings();
     expect(settings.theme).toBe("system");
-    expect(settings.language).toBe("en");
+    // Unset: the UI starts in the project's default language.
+    expect(settings.language).toBeUndefined();
   });
 
   it("setSettings merges partial settings", () => {
+    useAppSettingsStore.getState().setSettings({ language: "de" });
     useAppSettingsStore.getState().setSettings({ theme: "dark" });
     expect(useAppSettingsStore.getState().getSettings().theme).toBe("dark");
-    expect(useAppSettingsStore.getState().getSettings().language).toBe("en");
+    expect(useAppSettingsStore.getState().getSettings().language).toBe("de");
   });
 
   it("setSystemTheme updates the reactive system theme", () => {
@@ -28,6 +30,6 @@ describe("useAppSettingsStore", () => {
     useAppSettingsStore.getState().resetSettings();
     const settings = useAppSettingsStore.getState().getSettings();
     expect(settings.theme).toBe("system");
-    expect(settings.language).toBe("en");
+    expect(settings.language).toBeUndefined();
   });
 });

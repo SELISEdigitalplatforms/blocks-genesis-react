@@ -85,7 +85,7 @@ describe("SetCustomDomainDialog", () => {
     renderDialog();
 
     expect(screen.getByText("Set custom domain")).toBeInTheDocument();
-    expect(screen.getByText("acme-web")).toBeInTheDocument();
+    expect(screen.getByText(/acme-web/)).toBeInTheDocument();
   });
 
   it("deduplicates verified domains and preselects the matching url", () => {

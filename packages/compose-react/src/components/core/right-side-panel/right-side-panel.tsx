@@ -1,4 +1,5 @@
 "use client";
+import { useT } from "@/i18n";
 
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
@@ -269,12 +270,13 @@ const RightSidePanelClose = React.forwardRef<
   React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({ className, ...props }, ref) => {
   const { isMobile, close } = useRightSidePanel();
+  const { t } = useT("genesis.shared");
   const Comp = isMobile ? DrawerPrimitive.Close : DialogPrimitive.Close;
   return (
     <Comp
       ref={ref as React.Ref<HTMLButtonElement>}
       data-slot="right-side-panel-close"
-      aria-label="Close panel"
+      aria-label={t("RIGHT_SIDE_PANEL.CLOSE_PANEL")}
       className={cn(
         "ring-offset-background focus:ring-ring rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2",
         className,
@@ -286,7 +288,7 @@ const RightSidePanelClose = React.forwardRef<
       {...props}
     >
       <X className="h-4 w-4" aria-hidden />
-      <span className="sr-only">Close</span>
+      <span className="sr-only">{t("common:CLOSE")}</span>
     </Comp>
   );
 });

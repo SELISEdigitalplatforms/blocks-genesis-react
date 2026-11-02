@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import {
   Badge,
   Button,
@@ -27,6 +28,7 @@ interface MultiSelectProps {
 }
 
 export function Radio({ label, options, onChange, value }: MultiSelectProps) {
+  const { t } = useT("genesis.shared");
   const [search, setSearch] = useState("");
   const [buttonRef, popoverWidth] = usePopoverWidth();
   const isMobile = useIsMobile();
@@ -119,7 +121,7 @@ export function Radio({ label, options, onChange, value }: MultiSelectProps) {
             </RadioGroup>
           ) : (
             <div className="py-6 text-center text-sm !text-popover-foreground">
-              No results found.
+              {t("RADIO.NO_RESULTS")}
             </div>
           )}
         </>

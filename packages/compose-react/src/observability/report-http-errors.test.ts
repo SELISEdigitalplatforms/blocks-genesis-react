@@ -7,7 +7,7 @@ import { createHttpFailureReporter } from "./report-http-errors";
 const failure = (
   overrides: Partial<HttpRequestFailure> = {},
 ): HttpRequestFailure => ({
-  error: new TypeError("Failed to fetch"),
+  error: new SyntaxError("Unexpected token < in JSON"),
   normalized: new HttpError(500, {
     errors: { general: "Something went wrong" },
   }),
@@ -20,19 +20,36 @@ const failure = (
 describe("createHttpFailureReporter", () => {
   const rollbarStub = () => ({ error: vi.fn() }) as unknown as Rollbar;
 
-  it("reports a request that never reached the server", () => {
+  // §7 #3, H12: a transport failure that is not the browser's own network error is a client fault.
+  it("reports a transport failure that is not a network failure", () => {
     const rollbar = rollbarStub();
 
     createHttpFailureReporter(rollbar)(failure());
 
+    expect(rollbar.error).toHaveBeenCalledTimes(1);
     expect(rollbar.error).toHaveBeenCalledWith(
-      expect.any(TypeError),
+      expect.any(SyntaxError),
       expect.objectContaining({
         source: "http-client",
         url: "https://api.example.com/api/Project/Gets",
         method: "GET",
       }),
     );
+  });
+
+  // §7 #2, H2
+  it.each([
+    new TypeError("Failed to fetch"),
+    new TypeError("Failed to fetch (api.example.com)"),
+    new TypeError("NetworkError when attempting to fetch resource."),
+    new TypeError("Load failed"),
+    new DOMException("signal is aborted without reason", "AbortError"),
+  ])("skips the browser network failure %s", (error) => {
+    const rollbar = rollbarStub();
+
+    createHttpFailureReporter(rollbar)(failure({ error }));
+
+    expect(rollbar.error).not.toHaveBeenCalled();
   });
 
   it.each([400, 401, 403, 404, 409, 500, 502])(

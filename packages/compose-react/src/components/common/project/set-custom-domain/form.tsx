@@ -1,3 +1,4 @@
+import { tStatic, useT } from "@/i18n";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -16,7 +17,9 @@ import {
 } from "@/components";
 
 const formSchema = z.object({
-  domain: z.string().min(1, "Please select a domain"),
+  domain: z.string().min(1, {
+    error: () => tStatic("genesis.shared", "SET_CUSTOM_DOMAIN_FORM.REQUIRED"),
+  }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -36,6 +39,7 @@ export const SetCustomDomainForm = ({
   onSubmit,
   onCancel,
 }: SetCustomDomainFormProps) => {
+  const { t } = useT("genesis.shared");
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: { domain: defaultDomain },
@@ -63,8 +67,8 @@ export const SetCustomDomainForm = ({
                     <SelectValue
                       placeholder={
                         verifiedDomains.length === 0
-                          ? "No verified domains available"
-                          : "Select a domain"
+                          ? t("SET_CUSTOM_DOMAIN_FORM.NO_VERIFIED")
+                          : t("SET_CUSTOM_DOMAIN_FORM.SELECT")
                       }
                     />
                   </SelectTrigger>
@@ -90,10 +94,10 @@ export const SetCustomDomainForm = ({
 
         <div className="mt-4 flex justify-end gap-2">
           <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
+            {t("common:CANCEL")}
           </Button>
           <Button type="submit" disabled={isPending}>
-            Set
+            {t("SET_CUSTOM_DOMAIN_FORM.SET")}
           </Button>
         </div>
       </form>

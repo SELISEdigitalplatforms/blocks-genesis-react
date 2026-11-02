@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 const h = vi.hoisted(() => ({ env: {} as Record<string, string> }));
 vi.mock("@/lib", () => ({ getRuntimeEnv: (key: string) => h.env[key] ?? "" }));
 
+import { HttpError } from "@/lib/http/error";
 import { initiateService } from "@/services/initiate.service";
 
 const params = { clientId: "c", redirectUri: "r", forwardedTo: "f" };
@@ -35,13 +36,46 @@ describe("InitiateService.fetchRedirectUrl", () => {
     );
   });
 
+  // §7 #4, H5: an HttpError, so the query reporter leaves it to IAM.
+  it("rejects a non-ok response with an HttpError carrying the status", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: false, status: 400 }),
+    );
+    const error: unknown = await initiateService
+      .fetchRedirectUrl(params)
+      .catch((e: unknown) => e);
+
+    expect(error).toBeInstanceOf(HttpError);
+    expect(error).toMatchObject({
+      status: 400,
+      errors: { general: "Initiate request failed — HTTP 400" },
+    });
+  });
+
+  // C5: a contract fault, not an HTTP outcome, so it stays a plain Error and is reported.
   it("throws when the response has no redirect_uri", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) }),
     );
-    await expect(initiateService.fetchRedirectUrl(params)).rejects.toThrow(
-      /No redirect_uri/,
+    const error: unknown = await initiateService
+      .fetchRedirectUrl(params)
+      .catch((e: unknown) => e);
+
+    expect(error).toBeInstanceOf(Error);
+    expect(error).not.toBeInstanceOf(HttpError);
+    expect((error as Error).message).toBe(
+      "No redirect_uri in initiate response",
+    );
+  });
+
+  it("lets a network failure propagate as the browser's own error", async () => {
+    const networkError = new TypeError("Failed to fetch");
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(networkError));
+
+    await expect(initiateService.fetchRedirectUrl(params)).rejects.toBe(
+      networkError,
     );
   });
 

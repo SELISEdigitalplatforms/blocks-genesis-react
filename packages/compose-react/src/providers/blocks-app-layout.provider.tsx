@@ -4,6 +4,7 @@ import {
   CreateAppConfigStore,
   type AppConfigStoreState,
 } from "@/store/app-config.store";
+import { useDocumentLanguage } from "@/i18n/use-t";
 import type { RuntimeKey } from "@/types";
 import { useState } from "react";
 
@@ -56,8 +57,15 @@ export const BlocksAppLayout = ({ children, config }: BlocksAppLayoutProps) => {
   }
   return (
     <BlocksAppLayoutContext.Provider value={store}>
+      <DocumentLanguage />
       {children}
       <Toaster />
     </BlocksAppLayoutContext.Provider>
   );
 };
+
+/** Keeps `<html lang>` on the UI language on every page, with or without a language selector. */
+function DocumentLanguage() {
+  useDocumentLanguage();
+  return null;
+}

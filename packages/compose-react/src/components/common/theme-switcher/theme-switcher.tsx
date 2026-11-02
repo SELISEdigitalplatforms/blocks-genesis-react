@@ -1,3 +1,4 @@
+import { useT, type TFunction } from "@/i18n";
 import { ChevronDown, Monitor, Moon, Sun, type LucideIcon } from "lucide-react";
 import {
   DropdownMenu,
@@ -13,16 +14,21 @@ import { useTheme } from "@/hooks/use-theme";
 type ThemeOption = "light" | "dark" | "system";
 
 const OPTIONS = {
-  system: { Icon: Monitor, label: "Auto" },
-  light: { Icon: Sun, label: "Light" },
-  dark: { Icon: Moon, label: "Dark" },
-} satisfies Record<
-  ThemeOption,
-  {
-    Icon: LucideIcon;
-    label: string;
+  system: { Icon: Monitor },
+  light: { Icon: Sun },
+  dark: { Icon: Moon },
+} satisfies Record<ThemeOption, { Icon: LucideIcon }>;
+
+const getLabel = (t: TFunction, option: ThemeOption) => {
+  switch (option) {
+    case "system":
+      return t("THEME_SWITCHER.AUTO");
+    case "light":
+      return t("THEME_SWITCHER.LIGHT");
+    default:
+      return t("THEME_SWITCHER.DARK");
   }
->;
+};
 
 const OPTION_ORDER: ThemeOption[] = ["system", "light", "dark"];
 
@@ -47,6 +53,7 @@ export function ThemeSwitcher({
   className,
   showChevron = true,
 }: ThemeSwitcherProps = {}) {
+  const { t } = useT("genesis.shared");
   const { theme, setTheme } = useTheme();
   const { Icon: ThemeIcon } = OPTIONS[theme];
 
@@ -55,7 +62,7 @@ export function ThemeSwitcher({
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          aria-label="Change theme"
+          aria-label={t("THEME_SWITCHER.CHANGE_THEME")}
           className={cn(
             TRIGGER_BASE_CLASSES,
             className ?? TRIGGER_DEFAULT_TYPOGRAPHY_CLASSES,
@@ -72,14 +79,15 @@ export function ThemeSwitcher({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-40">
         <DropdownMenuLabel className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-          Appearance
+          {t("THEME_SWITCHER.APPEARANCE")}
         </DropdownMenuLabel>
         <DropdownMenuRadioGroup
           value={theme}
           onValueChange={(value) => setTheme(value as ThemeOption)}
         >
           {OPTION_ORDER.map((value) => {
-            const { Icon, label } = OPTIONS[value];
+            const { Icon } = OPTIONS[value];
+            const label = getLabel(t, value);
             const isActive = value === theme;
 
             return (

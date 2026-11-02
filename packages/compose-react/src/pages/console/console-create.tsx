@@ -3,8 +3,10 @@ import { motion } from "framer-motion";
 import { Layers, BookOpenText } from "lucide-react";
 import { useCreateProjectRedirect } from "./use-create-project-redirect";
 import { Button } from "@/components";
+import { useT } from "@/i18n";
 
 export default function ConsoleCreateProject() {
+  const { t } = useT("genesis.console");
   const { handleClick, isDisabled, isFetching } = useCreateProjectRedirect();
 
   return (
@@ -20,18 +22,16 @@ export default function ConsoleCreateProject() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(hsl(210_100%_100%/0.07)_1px,transparent_1px)] [background-size:22px_22px]" />
       <div className="relative flex flex-col items-center gap-5 px-8 py-14 text-center sm:px-12 sm:py-20">
         <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-primary-foreground/60">
-          Blocks OS Platform
+          {t("CONSOLE_CREATE.EYEBROW")}
         </p>
         <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/15 bg-white/10">
           <Layers className="h-6 w-6 text-primary-foreground" />
         </div>
         <h3 className="text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl">
-          Welcome to SELISE Blocks
+          {t("CONSOLE_CREATE.TITLE")}
         </h3>
         <p className="max-w-md text-sm leading-relaxed text-primary-foreground/70">
-          Explore and manage all your projects in one place. With SELISE Blocks,
-          building and scaling applications has never been easier. Start by
-          creating a project.
+          {t("CONSOLE_CREATE.DESCRIPTION")}
         </p>
         <div className="flex flex-wrap justify-center gap-3 pt-1">
           <Button
@@ -39,7 +39,9 @@ export default function ConsoleCreateProject() {
             disabled={isDisabled}
             className="inline-flex items-center rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-primary shadow-sm transition-colors hover:bg-white/90"
           >
-            {isFetching ? "Redirecting..." : "Create a project"}
+            {isFetching
+              ? t("CONSOLE_CREATE.REDIRECTING")
+              : t("CONSOLE_CREATE.CREATE_PROJECT")}
           </Button>
           <Link
             to="https://docs.seliseblocks.com/"
@@ -47,7 +49,7 @@ export default function ConsoleCreateProject() {
             className="inline-flex items-center gap-2 rounded-lg bg-white/15 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/25"
           >
             <BookOpenText className="h-4 w-4" />
-            View documentation
+            {t("CONSOLE_CREATE.VIEW_DOCUMENTATION")}
           </Link>
         </div>
       </div>

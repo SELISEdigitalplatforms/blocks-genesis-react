@@ -1,5 +1,6 @@
 import Rollbar from "rollbar";
 import { getRuntimeEnv } from "@/lib/runtime-env";
+import { classifyReportingNoise } from "./noise-filter";
 
 /**
  * Payload keys and header names that must never leave the browser.
@@ -47,6 +48,23 @@ const DEFAULT_IGNORED_MESSAGES = [
  */
 export const UNCONFIGURED_ACCESS_TOKEN = "rollbar-reporting-disabled";
 
+/**
+ * Rollbar's `checkIgnore`: drops browser noise before it is sent (see `noise-filter.ts`).
+ *
+ * For uncaught errors and unhandled rejections Rollbar passes `[message, error, ...]`, so the raw
+ * value is `args[1]`; for `rollbar.error(err, ...)` it is `args[0]`. Kept a single expression:
+ * Rollbar copies the function's source into every item it does send.
+ */
+const ignoreNoise: NonNullable<Rollbar.Configuration["checkIgnore"]> = (
+  isUncaught,
+  args,
+  payload,
+) =>
+  classifyReportingNoise(
+    isUncaught ? (args?.[1] ?? args?.[0]) : args?.[0],
+    payload,
+  ) !== null;
+
 export interface RollbarConfigOptions {
   /**
    * The app reporting, e.g. `"blocks-os"`. Pass the same name the app already gives
@@ -86,6 +104,7 @@ export const createRollbarConfig = (
       ...DEFAULT_IGNORED_MESSAGES,
       ...(options.extraIgnoredMessages ?? []),
     ],
+    checkIgnore: ignoreNoise,
     payload: {
       // Under `custom`, not at the root of `data`. Rollbar recognises a fixed set of top-level
       // fields and gives unknown ones "no special handling" -- they are stored but not indexed as

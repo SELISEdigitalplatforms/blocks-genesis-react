@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import { Button, Dialog, DialogTrigger } from "@/components";
 import { useDisableProject } from "@/hooks/use-project";
 import { isErrorWithErrors } from "@/utils/error";
@@ -9,6 +10,7 @@ import { ConfirmationModal } from "@/components/common/confirmation-modal";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 
 export const ArchiveProject = () => {
+  const { t } = useT("genesis.shared");
   const navigate = useNavigate();
   const projectKey = useProjectStore().selectedProject?.tenantId || "";
   const { mutateAsync, isPending } = useDisableProject({ projectKey });
@@ -17,8 +19,8 @@ export const ArchiveProject = () => {
       const res = await mutateAsync();
       if (res.isSuccess) {
         showSuccessToast({
-          title: "Project delete",
-          description: "Successfully deleted",
+          title: t("ARCHIVE_PROJECT.TOAST_TITLE"),
+          description: t("ARCHIVE_PROJECT.TOAST_DESCRIPTION"),
         });
         navigate("/app/console");
       } else {
@@ -40,24 +42,21 @@ export const ArchiveProject = () => {
           className="flex items-center gap-2"
         >
           <Archive className="h-4 w-4" />
-          <span className="sr-only sm:not-sr-only">Delete</span>
+          <span className="sr-only sm:not-sr-only">{t("common:DELETE")}</span>
         </Button>
       </DialogTrigger>
       <ConfirmationModal
         onCancel={() => setOpen(false)}
         onConfirm={onClickHandler}
         data={{
-          dialogTitle: "Delete this environment?",
+          dialogTitle: t("ARCHIVE_PROJECT.DIALOG_TITLE"),
           dialogSubtitle: (
             <>
-              <p>Are you sure you want to delete this environment?</p>
-              <p>
-                This will permanently delete the environment and you&apos;ll
-                need to contact support to recover it.
-              </p>
+              <p>{t("ARCHIVE_PROJECT.CONFIRM")}</p>
+              <p>{t("ARCHIVE_PROJECT.WARNING")}</p>
             </>
           ),
-          confirmButton: "Delete",
+          confirmButton: t("common:DELETE"),
         }}
         buttonState={{ confirm: { disable: isPending } }}
       />

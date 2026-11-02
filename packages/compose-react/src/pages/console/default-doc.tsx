@@ -7,6 +7,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT, type TFunction } from "@/i18n";
 import docsImage from "@/assets/images/console/resource-docs.svg";
 import cliImage from "@/assets/images/console/resource-cli.svg";
 import skillsImage from "@/assets/images/console/resource-skills.svg";
@@ -21,36 +22,33 @@ type Resource = {
   actionLabel: string;
 };
 
-const resources: Resource[] = [
+const getResources = (t: TFunction): Resource[] => [
   {
-    eyebrow: "Learn",
-    label: "Read Docs",
-    description:
-      "Established standards and guides that help teams minimize project risk and ship consistently. Learn the possibilities that you can unlock with Selise Blocks.",
+    eyebrow: t("DEFAULT_DOC.LEARN_EYEBROW"),
+    label: t("DEFAULT_DOC.LEARN_LABEL"),
+    description: t("DEFAULT_DOC.LEARN_DESCRIPTION"),
     image: docsImage,
     url: "https://docs.seliseblocks.com",
     icon: BookOpenText,
-    actionLabel: "Start Reading",
+    actionLabel: t("DEFAULT_DOC.LEARN_ACTION"),
   },
   {
-    eyebrow: "Build",
-    label: "Install CLI",
-    description:
-      "Public npm packages for building with Blocks: a CLI for project setup plus a framework-neutral frontend SDK. Blocks CLI tool unlocks all the configurations of Blocks project without having to leave your IDE.",
+    eyebrow: t("DEFAULT_DOC.BUILD_EYEBROW"),
+    label: t("DEFAULT_DOC.BUILD_LABEL"),
+    description: t("DEFAULT_DOC.BUILD_DESCRIPTION"),
     image: cliImage,
     url: "https://github.com/SELISEdigitalplatforms/blocks-cli",
     icon: SquareTerminal,
-    actionLabel: "See Installation Steps",
+    actionLabel: t("DEFAULT_DOC.BUILD_ACTION"),
   },
   {
-    eyebrow: "Automate",
-    label: "Bootstrap",
-    description:
-      "Describe what you want in plain language and an agent maps it to a focused, ready-to-run Blocks workflow. Quick start for your coding agent to initialize your blocks project, install the cli and the necessary skills.",
+    eyebrow: t("DEFAULT_DOC.AUTOMATE_EYEBROW"),
+    label: t("DEFAULT_DOC.AUTOMATE_LABEL"),
+    description: t("DEFAULT_DOC.AUTOMATE_DESCRIPTION"),
     image: skillsImage,
     url: "https://github.com/SELISEdigitalplatforms/blocks-skills",
     icon: Sparkles,
-    actionLabel: "Set Up Your Agent",
+    actionLabel: t("DEFAULT_DOC.AUTOMATE_ACTION"),
   },
 ];
 
@@ -128,10 +126,13 @@ const BentoCard = ({
   </a>
 );
 
-export const DefaultDoc = () => (
-  <BentoGrid>
-    {resources.map((resource) => (
-      <BentoCard key={resource.url} {...resource} />
-    ))}
-  </BentoGrid>
-);
+export const DefaultDoc = () => {
+  const { t } = useT("genesis.console");
+  return (
+    <BentoGrid>
+      {getResources(t).map((resource) => (
+        <BentoCard key={resource.url} {...resource} />
+      ))}
+    </BentoGrid>
+  );
+};

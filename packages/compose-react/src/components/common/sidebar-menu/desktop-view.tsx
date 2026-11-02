@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import {
   Button,
   DesktopMenuItem,
@@ -22,6 +23,7 @@ export function SidebarMenuDesktop({
   redirectPaths,
   navigationMenus,
 }: SideBarMenuProps) {
+  const { t } = useT("genesis.shared");
   const { isSidebarOpen, toggleSidebar } = useContext(SidebarContext);
   const { appLightLogo, appDarkLogo } = useLogo();
   const icon = useIcon();
@@ -69,7 +71,7 @@ export function SidebarMenuDesktop({
       {isSidebarOpen ? (
         <div className="border-b px-2 pb-2 pt-2">
           <p className="mb-1 px-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-            Workspace
+            {t("SIDEBAR_DESKTOP_VIEW.WORKSPACE")}
           </p>
           <div className="space-y-0.5">
             <ProjectList redirectPaths={redirectPaths} />

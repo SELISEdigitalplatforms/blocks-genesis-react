@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import { cn } from "@/lib/utils";
 
 export function RightSidePanelResizer({
@@ -5,6 +6,7 @@ export function RightSidePanelResizer({
 }: {
   onHandlePointerDown: (event: React.PointerEvent<HTMLDivElement>) => void;
 }) {
+  const { t } = useT("genesis.shared");
   return (
     <div className="pointer-events-none absolute inset-y-0 -left-0.5 w-1.5">
       {/* Thin separator line visible above and below the knob */}
@@ -17,7 +19,7 @@ export function RightSidePanelResizer({
         data-resize-handle
         role="separator"
         aria-orientation="vertical"
-        aria-label="Resize panel"
+        aria-label={t("RIGHT_SIDE_PANEL.RESIZE_PANEL")}
         onPointerDown={onHandlePointerDown}
         className={cn(
           "pointer-events-auto",

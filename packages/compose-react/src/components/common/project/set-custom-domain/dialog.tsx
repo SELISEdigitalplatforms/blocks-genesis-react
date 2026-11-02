@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import { useMemo } from "react";
 import {
   Dialog,
@@ -38,6 +39,7 @@ export const SetCustomDomainDialog = ({
   projectKey,
   projectEnv,
 }: SetCustomDomainDialogProps) => {
+  const { t } = useT("genesis.shared");
   const { mutateAsync, isPending } = useUpdateRepositories();
 
   // Only verified domains are assignable. Dedupe because applications can
@@ -76,7 +78,9 @@ export const SetCustomDomainDialog = ({
         ],
       });
       if (res.isSuccess) {
-        showSuccessToast({ description: "Custom domain updated successfully" });
+        showSuccessToast({
+          description: t("SET_CUSTOM_DOMAIN_DIALOG.UPDATED"),
+        });
         onOpenChange(false);
       } else {
         showErrorToast({ errors: res.errors });
@@ -92,10 +96,11 @@ export const SetCustomDomainDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Set custom domain</DialogTitle>
+          <DialogTitle>{t("SET_CUSTOM_DOMAIN_DIALOG.TITLE")}</DialogTitle>
           <DialogDescription>
-            Choose a verified domain to assign to{" "}
-            <span className="font-medium">{repo?.repoName}</span>
+            {t("SET_CUSTOM_DOMAIN_DIALOG.DESCRIPTION", {
+              name: repo?.repoName ?? "",
+            })}
           </DialogDescription>
         </DialogHeader>
 

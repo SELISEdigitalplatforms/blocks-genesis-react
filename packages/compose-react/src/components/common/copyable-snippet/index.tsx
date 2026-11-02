@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -46,6 +47,7 @@ export const CopyableSnippet = ({
   language = "bash",
   isCopyable = true,
 }: CopyableSnippetProps) => {
+  const { t } = useT("genesis.shared");
   const [copied, setCopied] = useState(false);
   const handleCopy = async () => {
     try {
@@ -75,7 +77,7 @@ export const CopyableSnippet = ({
         <button
           onClick={handleCopy}
           className="absolute -top-[28px] right-2 z-10 text-muted-foreground transition hover:text-foreground"
-          aria-label="Copy code"
+          aria-label={t("COPYABLE_SNIPPET.COPY_CODE")}
         >
           {copied ? (
             <Check className="h-4 w-4 text-green-500" />

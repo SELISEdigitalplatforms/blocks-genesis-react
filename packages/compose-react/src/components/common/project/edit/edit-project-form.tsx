@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import {
   Button,
   DialogClose,
@@ -33,6 +34,7 @@ export const EditProjectForm = ({
   currentName,
   onAfterSubmit,
 }: EditProjectFormProps) => {
+  const { t } = useT("genesis.shared");
   const queryClient = useQueryClient();
   const { mutateAsync, isPending } = useUpdateTenantGroup();
 
@@ -54,8 +56,8 @@ export const EditProjectForm = ({
 
       if (res.isSuccess) {
         showSuccessToast({
-          title: "Project updated",
-          description: "Project name updated successfully",
+          title: t("EDIT_PROJECT_FORM.TOAST_TITLE"),
+          description: t("EDIT_PROJECT_FORM.TOAST_DESCRIPTION"),
         });
         queryClient.invalidateQueries({ queryKey: ["identifier", "project"] });
         queryClient.invalidateQueries({ queryKey: ["identifier", "projects"] });
@@ -83,10 +85,13 @@ export const EditProjectForm = ({
           render={({ field }) => (
             <FormItem className="space-y-1.5">
               <FormLabel className="text-sm font-medium text-medium-emphasis">
-                Project Name
+                {t("EDIT_PROJECT_FORM.NAME_LABEL")}
               </FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Enter project name" />
+                <Input
+                  {...field}
+                  placeholder={t("EDIT_PROJECT_FORM.NAME_PLACEHOLDER")}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -95,7 +100,7 @@ export const EditProjectForm = ({
         <DialogFooter className="mt-2 flex flex-row justify-end gap-2">
           <DialogClose asChild>
             <Button variant="outline" size="sm" className="w-20">
-              Cancel
+              {t("common:CANCEL")}
             </Button>
           </DialogClose>
           <Button
@@ -106,7 +111,7 @@ export const EditProjectForm = ({
               !form.formState.isValid || isPending || !form.formState.isDirty
             }
           >
-            Save
+            {t("common:SAVE")}
           </Button>
         </DialogFooter>
       </form>

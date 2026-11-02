@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useT } from "@/i18n";
 import { useProjectStore } from "@/store/project.store";
 import { DefaultDoc } from "./default-doc";
 import { SelfProject } from "./self-project";
@@ -8,6 +9,7 @@ export type ConsolePageProps = {
 };
 
 export const ConsolePage = ({ canCreateProject = false }: ConsolePageProps) => {
+  const { t } = useT("genesis.console");
   const { resetSelectedProject, resetTenantGroup } = useProjectStore();
   useEffect(() => {
     resetSelectedProject();
@@ -26,7 +28,7 @@ export const ConsolePage = ({ canCreateProject = false }: ConsolePageProps) => {
         <section className="flex flex-col gap-5">
           <div className="flex items-center gap-3">
             <span className="bg-primary/10 text-primary inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold tracking-wide">
-              Resources
+              {t("CONSOLE_PAGE.RESOURCES")}
             </span>
           </div>
           <DefaultDoc />

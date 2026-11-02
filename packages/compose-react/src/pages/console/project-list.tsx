@@ -3,8 +3,10 @@ import { Button } from "@/components/core/button/button";
 import { Card, CardTitle } from "@/components/core/card/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/core/table";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useT, type TFunction } from "@/i18n";
 import type { IProjectGroup } from "@/models";
 import { formatDistanceToNow } from "date-fns";
+import { de } from "date-fns/locale/de";
 import { Plus, UsersRound } from "lucide-react";
 import { ProjectActionButton } from "./project-action-button";
 import { ProjectEnvironments } from "./project-environments";
@@ -20,11 +22,23 @@ type ProjectListProps = {
   showAddProject: boolean;
 };
 
-const getLastUpdatedLabel = (group: IProjectGroup) => {
+const MODULE = "genesis.console";
+
+const timeAgo = (timestamp: number, language: string) =>
+  formatDistanceToNow(timestamp, {
+    addSuffix: true,
+    locale: language === "de" ? de : undefined,
+  });
+
+const getLastUpdatedLabel = (
+  group: IProjectGroup,
+  t: TFunction,
+  language: string,
+) => {
   const timestamp = getLatestProjectUpdate(group);
   return timestamp === 0
-    ? "Unknown"
-    : formatDistanceToNow(timestamp, { addSuffix: true });
+    ? t("PROJECT_LIST.UNKNOWN")
+    : timeAgo(timestamp, language);
 };
 
 /**
@@ -32,11 +46,15 @@ const getLastUpdatedLabel = (group: IProjectGroup) => {
  * below), so the cell value carries that context itself instead of a bare relative
  * timestamp.
  */
-const getLastUpdatedCellLabel = (group: IProjectGroup) => {
+const getLastUpdatedCellLabel = (
+  group: IProjectGroup,
+  t: TFunction,
+  language: string,
+) => {
   const timestamp = getLatestProjectUpdate(group);
   return timestamp === 0
-    ? "Not updated yet"
-    : `Updated ${formatDistanceToNow(timestamp, { addSuffix: true })}`;
+    ? t("PROJECT_LIST.NOT_UPDATED_YET")
+    : t("PROJECT_LIST.UPDATED", { time: timeAgo(timestamp, language) });
 };
 
 /**
@@ -68,17 +86,20 @@ const cardCorners = {
   },
 } as const;
 
-const SharedStatus = ({ isShared }: { isShared: boolean }) =>
-  isShared ? (
+const SharedStatus = ({ isShared }: { isShared: boolean }) => {
+  const { t } = useT(MODULE);
+  return isShared ? (
     <Badge variant="outline" className="flex w-fit items-center gap-1">
       <UsersRound size={16} />
-      Shared
+      {t("PROJECT_LIST.SHARED")}
     </Badge>
   ) : (
     <span className="text-muted-foreground">—</span>
   );
+};
 
 const AddProjectListAction = ({ mobile = false }: { mobile?: boolean }) => {
+  const { t } = useT(MODULE);
   const { handleClick, isDisabled, isFetching } = useCreateProjectRedirect();
 
   const action = (
@@ -90,7 +111,7 @@ const AddProjectListAction = ({ mobile = false }: { mobile?: boolean }) => {
       onClick={handleClick}
     >
       <Plus className="h-4 w-4" />
-      Add Project
+      {t("PROJECT_LIST.ADD_PROJECT")}
     </Button>
   );
 
@@ -121,48 +142,55 @@ const AddProjectListAction = ({ mobile = false }: { mobile?: boolean }) => {
 const ProjectMobileList = ({
   projectGroups,
   showAddProject,
-}: Pick<ProjectListProps, "projectGroups" | "showAddProject">) => (
-  <div className="grid gap-3" data-testid="project-list-mobile">
-    {showAddProject && <AddProjectListAction mobile />}
-    {projectGroups.map((group) => {
-      const project = group.projects[0];
+}: Pick<ProjectListProps, "projectGroups" | "showAddProject">) => {
+  const { t, language } = useT(MODULE);
+  return (
+    <div className="grid gap-3" data-testid="project-list-mobile">
+      {showAddProject && <AddProjectListAction mobile />}
+      {projectGroups.map((group) => {
+        const project = group.projects[0];
 
-      return (
-        <Card
-          key={group.tenantGroupId}
-          data-testid="project-list-row"
-          className="border-border/60 space-y-3 rounded-xl border p-4 shadow-sm"
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 space-y-2">
-              <CardTitle className="break-all text-base">
-                {getProjectGroupName(group) || "Unnamed project"}
-              </CardTitle>
-              <SharedStatus isShared={group.isShared} />
+        return (
+          <Card
+            key={group.tenantGroupId}
+            data-testid="project-list-row"
+            className="border-border/60 space-y-3 rounded-xl border p-4 shadow-sm"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 space-y-2">
+                <CardTitle className="break-all text-base">
+                  {getProjectGroupName(group) ||
+                    t("PROJECT_LIST.UNNAMED_PROJECT")}
+                </CardTitle>
+                <SharedStatus isShared={group.isShared} />
+              </div>
+              {project && (
+                <ProjectActionButton
+                  project={project}
+                  isShared={group.isShared}
+                  canOpen={canOpenProject(group)}
+                />
+              )}
             </div>
-            {project && (
-              <ProjectActionButton
-                project={project}
-                isShared={group.isShared}
-                canOpen={canOpenProject(group)}
-              />
-            )}
-          </div>
-          <ProjectEnvironments projects={group.projects} />
-          <p className="text-muted-foreground text-xs">
-            Last updated {getLastUpdatedLabel(group)}
-          </p>
-        </Card>
-      );
-    })}
-  </div>
-);
+            <ProjectEnvironments projects={group.projects} />
+            <p className="text-muted-foreground text-xs">
+              {t("PROJECT_LIST.LAST_UPDATED", {
+                time: getLastUpdatedLabel(group, t, language),
+              })}
+            </p>
+          </Card>
+        );
+      })}
+    </div>
+  );
+};
 
 export const ProjectList = ({
   projectGroups,
   showAddProject,
 }: ProjectListProps) => {
   const isMobile = useIsMobile();
+  const { t, language } = useT(MODULE);
 
   if (isMobile) {
     return (
@@ -193,7 +221,8 @@ export const ProjectList = ({
                 className="bg-card max-w-64 break-all py-2 font-medium"
                 style={cardCorners.left}
               >
-                {getProjectGroupName(group) || "Unnamed project"}
+                {getProjectGroupName(group) ||
+                  t("PROJECT_LIST.UNNAMED_PROJECT")}
               </TableCell>
               <TableCell className="bg-card py-2">
                 <ProjectEnvironments projects={group.projects} />
@@ -202,7 +231,7 @@ export const ProjectList = ({
                 <SharedStatus isShared={group.isShared} />
               </TableCell>
               <TableCell className="bg-card whitespace-nowrap py-2 text-muted-foreground">
-                {getLastUpdatedCellLabel(group)}
+                {getLastUpdatedCellLabel(group, t, language)}
               </TableCell>
               <TableCell
                 className="bg-card py-2 text-right"

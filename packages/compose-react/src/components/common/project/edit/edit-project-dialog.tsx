@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import {
   Dialog,
   DialogContent,
@@ -20,12 +21,15 @@ export const EditProjectDialog = ({
   tenantGroupId,
   currentName,
 }: EditProjectDialogProps) => {
+  const { t } = useT("genesis.shared");
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Edit Project</DialogTitle>
-          <DialogDescription>Update the project name.</DialogDescription>
+          <DialogTitle>{t("EDIT_PROJECT_DIALOG.TITLE")}</DialogTitle>
+          <DialogDescription>
+            {t("EDIT_PROJECT_DIALOG.DESCRIPTION")}
+          </DialogDescription>
         </DialogHeader>
         <EditProjectForm
           tenantGroupId={tenantGroupId}

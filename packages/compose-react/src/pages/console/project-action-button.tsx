@@ -4,6 +4,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/core/tooltip/tooltip";
+import { useT, type TFunction } from "@/i18n";
 import type { IProject } from "@/models";
 import { useProjectStore } from "@/store/project.store";
 import { Settings2 } from "lucide-react";
@@ -15,18 +16,21 @@ type ProjectActionButtonProps = {
   canOpen?: boolean;
 };
 
-const getActionLabels = (canOpen: boolean, isShared: boolean) => {
+const getActionLabels = (t: TFunction, canOpen: boolean, isShared: boolean) => {
   if (canOpen) {
     return isShared
-      ? { accessibleLabel: "Open shared project", tooltipLabel: "Open Project" }
+      ? {
+          accessibleLabel: t("PROJECT_ACTION_BUTTON.OPEN_SHARED_ARIA"),
+          tooltipLabel: t("PROJECT_ACTION_BUTTON.OPEN_SHARED_TOOLTIP"),
+        }
       : {
-          accessibleLabel: "Configure project",
-          tooltipLabel: "Configure Project",
+          accessibleLabel: t("PROJECT_ACTION_BUTTON.CONFIGURE_ARIA"),
+          tooltipLabel: t("PROJECT_ACTION_BUTTON.CONFIGURE_TOOLTIP"),
         };
   }
   return {
-    accessibleLabel: "Project access unavailable",
-    tooltipLabel: "Project access unavailable",
+    accessibleLabel: t("PROJECT_ACTION_BUTTON.ACCESS_UNAVAILABLE"),
+    tooltipLabel: t("PROJECT_ACTION_BUTTON.ACCESS_UNAVAILABLE"),
   };
 };
 
@@ -35,13 +39,18 @@ export const ProjectActionButton = ({
   isShared,
   canOpen = true,
 }: ProjectActionButtonProps) => {
+  const { t } = useT("genesis.console");
   const { setTenantGroup } = useProjectStore();
   const { handleClick, isDisabled, isFetching } = useProjectOverviewRedirect({
     tenantGroupId: project.tenantGroupId,
   });
 
   const isActionDisabled = !canOpen || isDisabled || isFetching;
-  const { accessibleLabel, tooltipLabel } = getActionLabels(canOpen, isShared);
+  const { accessibleLabel, tooltipLabel } = getActionLabels(
+    t,
+    canOpen,
+    isShared,
+  );
 
   const onClick = () => {
     setTenantGroup(project.tenantGroupId);
