@@ -1,5 +1,6 @@
 import { IAM_ENDPOINTS } from "@/constants/endpoint.constant";
 import { getRuntimeEnv } from "@/lib";
+import { HttpError } from "@/lib/http/error";
 
 export interface InitiateParams {
   clientId: string;
@@ -29,8 +30,13 @@ class InitiateService {
       { headers, signal },
     );
 
+    // An `HttpError`, so error reporting can tell an IAM answer (logged on the IAM side) from a bug.
     if (!response.ok) {
-      throw new Error(`Initiate request failed — HTTP ${response.status}`);
+      throw new HttpError(response.status, {
+        errors: {
+          general: `Initiate request failed — HTTP ${response.status}`,
+        },
+      });
     }
 
     const data = await response.json();
