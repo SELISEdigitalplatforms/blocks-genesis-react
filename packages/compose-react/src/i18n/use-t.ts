@@ -1,6 +1,13 @@
 import { useCallback, useEffect } from "react";
 import { useAppSettingsStore } from "@/store/app-settings.store";
-import { COMMON_MODULE, DEFAULT_LANGUAGE, resolveLanguage } from "./languages";
+import {
+  COMMON_MODULE,
+  DEFAULT_LANGUAGE,
+  loadLanguages,
+  resolveLanguage,
+  resolveLanguageIn,
+  useLanguagesStore,
+} from "./languages";
 import { remoteKey, useI18nStore } from "./i18n.store";
 import { loadModule } from "./load-module";
 import {
@@ -53,9 +60,27 @@ const translateIn = (
   );
 };
 
-/** The language the UI shows now (`en` or `de`). */
-export const useLanguageCode = () =>
-  resolveLanguage(useAppSettingsStore((state) => state.settings.language));
+/** The language the UI shows now (`en`, `de`, …): the user's choice if the project offers it, else the project's default. */
+export const useLanguageCode = () => {
+  const stored = useAppSettingsStore((state) => state.settings.language);
+  const languages = useLanguagesStore((state) => state.languages);
+  const loaded = useLanguagesStore((state) => state.loaded);
+  useEffect(() => {
+    void loadLanguages();
+  }, []);
+  return resolveLanguageIn(stored, languages, loaded);
+};
+
+/** Keeps `<html lang>` on the language the UI shows, for screen readers and browser translation. */
+export const useDocumentLanguage = () => {
+  const language = useLanguageCode();
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.lang = language;
+    }
+  }, [language]);
+  return language;
+};
 
 export const getLanguageCode = () =>
   resolveLanguage(useAppSettingsStore.getState().settings.language);
@@ -77,8 +102,15 @@ export const useT = (module: string) => {
   }, [language, module]);
 
   const t = useCallback<TFunction>(
-    (key, values) =>
-      translateIn({ bundled, remote }, language, module, key, values),
+    (key, values) => {
+      // A key of another module (`other.module:KEY`) needs that module's text too; the
+      // request is made once per session, and its arrival re-renders through `remote`.
+      const target = splitKey(module, key);
+      if (target.module !== module && target.module !== COMMON_MODULE) {
+        void loadModule(language, target.module);
+      }
+      return translateIn({ bundled, remote }, language, module, key, values);
+    },
     [bundled, remote, language, module],
   );
 

@@ -1,35 +1,14 @@
-import { getRuntimeEnv } from "@/lib/runtime-env";
-import { cultureOf, DEFAULT_LANGUAGE } from "./languages";
+import { fetchFromLocalization, i18nConfig } from "./config";
+import { cultureOf, DEFAULT_LANGUAGE, loadLanguages } from "./languages";
 import { useI18nStore } from "./i18n.store";
 import type { Dictionary } from "./translate";
 
-export interface I18nConfig {
-  /** Origin of the localization app; `/api/Key/GetUilmFile` is called on it. */
-  baseUrl?: () => string;
-  /** Project key sent as `X-Blocks-Key`. */
-  blocksKey?: () => string;
-  /** Request timeout in ms. */
-  timeoutMs?: number;
-  /** Wait before a failed module is requested again, in ms. */
-  retryAfterMs?: number;
-}
+export { configureI18n, type I18nConfig } from "./config";
 
 const CACHE_PREFIX = "blocks-i18n:";
 
-const defaults: Required<I18nConfig> = {
-  baseUrl: () => getRuntimeEnv("BLOCKS_LOCALIZATION_BASE_URL"),
-  blocksKey: () => getRuntimeEnv("BLOCKS_X_BLOCKS_KEY"),
-  timeoutMs: 3000,
-  retryAfterMs: 30000,
-};
-
-let config: Required<I18nConfig> = { ...defaults };
 // Loaded (or loading) this page session, so each module is fetched once.
 const requested = new Map<string, Promise<void>>();
-
-export const configureI18n = (next: I18nConfig) => {
-  config = { ...defaults, ...next };
-};
 
 /** Test helper: forgets which modules were requested. */
 export const resetI18nRequests = () => requested.clear();
@@ -75,29 +54,18 @@ const fetchModule = async (
   language: string,
   module: string,
 ): Promise<Dictionary | null> => {
-  const baseUrl = config.baseUrl().replace(/\/$/, "");
-  const blocksKey = config.blocksKey();
-  if (!baseUrl || !blocksKey) return null;
-
+  // The culture code comes from the project's languages (`de` → `de-DE`).
+  await loadLanguages();
   const query = new URLSearchParams({
     Language: cultureOf(language),
     ModuleName: module,
   });
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), config.timeoutMs);
-  try {
-    const response = await fetch(
-      `${baseUrl}/api/Key/GetUilmFile?${query.toString()}`,
-      { headers: { "X-Blocks-Key": blocksKey }, signal: controller.signal },
-    );
-    if (!response.ok) return null;
-    const text = await response.text();
-    if (!text) return null;
-    const parsed: unknown = JSON.parse(text);
-    return toDictionary(parsed);
-  } finally {
-    clearTimeout(timer);
-  }
+  const text = await fetchFromLocalization(
+    `/api/Key/GetUilmFile?${query.toString()}`,
+  );
+  if (!text) return null;
+  const parsed: unknown = JSON.parse(text);
+  return toDictionary(parsed);
 };
 
 const load = async (language: string, module: string) => {
@@ -112,7 +80,7 @@ const load = async (language: string, module: string) => {
     writeCache(language, module, fresh);
   } catch {
     // Service down, slow or not published: cached or bundled English is shown.
-    setTimeout(() => requested.delete(key), config.retryAfterMs);
+    setTimeout(() => requested.delete(key), i18nConfig().retryAfterMs);
   }
 };
 

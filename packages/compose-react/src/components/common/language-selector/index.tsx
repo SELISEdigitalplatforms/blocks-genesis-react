@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { Fragment } from "react";
 import { ChevronDown } from "lucide-react";
 import { useLanguageSwitcher } from "@/hooks/use-language-switcher";
-import { resolveLanguage, SUPPORTED_LANGUAGES } from "@/i18n/languages";
+import { useLanguagesStore } from "@/i18n/languages";
+import { useDocumentLanguage } from "@/i18n/use-t";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,13 +11,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components";
 
+/**
+ * Switches the UI language among the languages of the project (from the localization
+ * service). Hidden while the project offers only one language.
+ */
 export function LanguageSelector() {
-  const { changeLanguage, language: storedLanguage } = useLanguageSwitcher();
-  const language = resolveLanguage(storedLanguage);
+  const { changeLanguage } = useLanguageSwitcher();
+  const language = useDocumentLanguage();
+  const languages = useLanguagesStore((state) => state.languages);
 
-  useEffect(() => {
-    document.documentElement.lang = language;
-  }, [language]);
+  if (languages.length < 2) return null;
 
   return (
     <DropdownMenu>
@@ -30,8 +34,8 @@ export function LanguageSelector() {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {SUPPORTED_LANGUAGES.map((lang, index) => (
-          <div key={lang.code}>
+        {languages.map((lang, index) => (
+          <Fragment key={lang.code}>
             <DropdownMenuItem
               lang={lang.code}
               className={lang.code === language ? "font-semibold" : ""}
@@ -39,10 +43,8 @@ export function LanguageSelector() {
             >
               {lang.title}
             </DropdownMenuItem>
-            {index !== SUPPORTED_LANGUAGES.length - 1 && (
-              <DropdownMenuSeparator />
-            )}
-          </div>
+            {index !== languages.length - 1 && <DropdownMenuSeparator />}
+          </Fragment>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>

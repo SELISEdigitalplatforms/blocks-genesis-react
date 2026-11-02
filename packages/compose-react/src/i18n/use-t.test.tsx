@@ -58,6 +58,40 @@ describe("useT", () => {
   });
 });
 
+describe("useT with another module's key", () => {
+  beforeEach(() => {
+    resetI18nRequests();
+    useI18nStore.setState({ bundled: {}, remote: {} });
+    configureI18n({
+      baseUrl: () => "https://loc.example",
+      blocksKey: () => "key-1",
+    });
+    registerTranslations("os.other", { TITLE: "Title" });
+    act(() => useAppSettingsStore.getState().setSettings({ language: "de" }));
+  });
+
+  it("loads that module's German too", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      text: () => Promise.resolve(JSON.stringify({ TITLE: "Titel" })),
+    } as Response);
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { result } = renderHook(() => useT(MODULE));
+    expect(result.current.t("os.other:TITLE")).toBe("Title");
+
+    await vi.waitFor(() =>
+      expect(result.current.t("os.other:TITLE")).toBe("Titel"),
+    );
+    expect(
+      fetchMock.mock.calls.some(([url]) =>
+        String(url).includes("ModuleName=os.other"),
+      ),
+    ).toBe(true);
+    vi.unstubAllGlobals();
+  });
+});
+
 describe("splitKey", () => {
   it("splits a namespaced key", () => {
     expect(splitKey(MODULE, COMMON_SAVE)).toEqual({
