@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import { Skeleton } from "@/index";
 import { Badge } from "@/components/core/badge";
 import { CoreApiGroupSection } from "./core-api-group-section";
@@ -29,26 +30,27 @@ const CoreApiLoadingSkeleton = () => (
 );
 
 export const CoreApiCard = ({
-  title = "Core APIs",
-  description = "Available endpoints for this module",
+  title,
+  description,
   endpoints,
   xBlocksKey,
   isLoading,
   error,
 }: CoreApiCardProps) => {
+  const { t } = useT("genesis.dashboard");
   if (isLoading) return <CoreApiLoadingSkeleton />;
 
   const groups = groupEndpointsByTag(endpoints);
 
   return (
     <DashboardSectionCard
-      title={title}
-      description={description}
+      title={title ?? t("CORE_API_CARD.TITLE")}
+      description={description ?? t("CORE_API_CARD.DESCRIPTION")}
       contentClassName="flex flex-col gap-2"
       headerRight={
         <>
           <Badge className="hidden rounded-full bg-primary/10 font-mono text-xs text-primary pointer-events-none sm:flex">
-            {endpoints.length} Endpoint{endpoints.length !== 1 ? "s" : ""}
+            {t("CORE_API_CARD.ENDPOINTS", { count: endpoints.length })}
           </Badge>
           <span className="flex rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-mono font-medium text-primary pointer-events-none sm:hidden">
             {endpoints.length}
@@ -58,9 +60,7 @@ export const CoreApiCard = ({
     >
       {groups.length === 0 ? (
         <p className="px-1 py-3 text-center text-sm text-muted-foreground">
-          {error
-            ? "Couldn't load endpoints for this module."
-            : "No endpoints available for this module."}
+          {error ? t("CORE_API_CARD.LOAD_ERROR") : t("CORE_API_CARD.EMPTY")}
         </p>
       ) : (
         groups.map((group) => (

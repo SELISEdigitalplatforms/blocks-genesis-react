@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import { Button } from "@/components/core/button";
 import { Building2, Check, LogOut, UserRound } from "lucide-react";
 import { Link } from "react-router";
@@ -57,6 +58,7 @@ function UserAvatar({ size = "sm" }: { size?: "sm" | "lg" }) {
 }
 
 export function UserDropdownMenu() {
+  const { t } = useT("genesis.shared");
   const { name } = useBlocksAppConfigStore((state) => state.config);
   const { data } = useGetUserInfo();
   const userData = data?.data;
@@ -95,7 +97,7 @@ export function UserDropdownMenu() {
           variant="link"
           size="icon"
           className="relative h-10 w-10 overflow-hidden rounded-full bg-[hsl(var(--avatar-surface-default))] p-0 text-base font-normal text-[hsl(var(--avatar-text-high-emphasis))] hover:no-underline focus-visible:ring-2 focus-visible:ring-offset-2"
-          aria-label="Open user menu"
+          aria-label={t("USER_DROPDOWN_MENU.OPEN_MENU")}
         >
           <UserAvatar size="sm" />
         </Button>
@@ -110,7 +112,9 @@ export function UserDropdownMenu() {
           <UserAvatar size="lg" />
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-foreground">
-              <span className="sr-only">User name: </span>
+              <span className="sr-only">
+                {t("USER_DROPDOWN_MENU.USER_NAME")}{" "}
+              </span>
               <span>{fullName}</span>
             </p>
             <p className="mt-0.5 truncate text-xs text-muted-foreground">
@@ -122,7 +126,7 @@ export function UserDropdownMenu() {
                 {userData?.lastUsedOrganizationId && (
                   <span className="text-muted-foreground/60">
                     {" "}
-                    &bull; Default
+                    &bull; {t("USER_DROPDOWN_MENU.DEFAULT")}
                   </span>
                 )}
               </p>
@@ -140,7 +144,9 @@ export function UserDropdownMenu() {
             >
               <Link to="/app/profile" className="flex items-center gap-4">
                 <UserRound className="h-5 w-5 shrink-0 text-foreground/90" />
-                <span className="text-sm font-medium">My Profile</span>
+                <span className="text-sm font-medium">
+                  {t("USER_DROPDOWN_MENU.MY_PROFILE")}
+                </span>
               </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -153,7 +159,7 @@ export function UserDropdownMenu() {
             <DropdownMenuLabel className="flex items-center gap-4 px-4 py-3.5 text-sm font-medium text-muted-foreground/70">
               <Building2 className="h-5 w-5 shrink-0 text-foreground/90" />
               <span className="text-sm font-medium text-foreground">
-                Organizations
+                {t("USER_DROPDOWN_MENU.ORGANIZATIONS")}
               </span>
             </DropdownMenuLabel>
 
@@ -212,7 +218,9 @@ export function UserDropdownMenu() {
           >
             <div className="flex items-center gap-4">
               <LogOut className="h-5 w-5 shrink-0" />
-              <span className="text-sm font-medium">Log out</span>
+              <span className="text-sm font-medium">
+                {t("USER_DROPDOWN_MENU.LOG_OUT")}
+              </span>
             </div>
           </DropdownMenuItem>
         </DropdownMenuGroup>

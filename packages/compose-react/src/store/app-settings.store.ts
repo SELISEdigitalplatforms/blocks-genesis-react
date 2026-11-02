@@ -56,9 +56,9 @@ const persistStorage: PersistStorage<AppSettingsPersistedState> = {
 export const useAppSettingsStore = create<AppSettingsStoreState>()(
   persist(
     (set, get) => ({
+      // No language until the user picks one: the UI then starts in the project's default.
       settings: {
         theme: "system",
-        language: "en",
       },
       // Initialized from app at store creation — correct on first render
       systemTheme: getSystemTheme(),
@@ -75,7 +75,7 @@ export const useAppSettingsStore = create<AppSettingsStoreState>()(
       resetSettings: () => {
         set((state) => ({
           ...state,
-          settings: { theme: "system", language: "en" },
+          settings: { theme: "system" },
         }));
       },
     }),

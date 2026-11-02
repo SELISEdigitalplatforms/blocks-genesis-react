@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import type { RefObject } from "react";
 import type { INotification } from "@/models";
 import { NotificationItem } from "./notification-item";
@@ -19,6 +20,7 @@ export function NotificationList({
   onScroll,
   onMarkAsRead,
 }: NotificationListProps) {
+  const { t } = useT("genesis.shared");
   const isEmpty = notifications.length === 0;
 
   const renderNotifications = () => {
@@ -28,7 +30,7 @@ export function NotificationList({
     if (isEmpty) {
       return (
         <div className="p-4 text-center text-sm text-muted-foreground">
-          No notifications
+          {t("NOTIFICATION_LIST.EMPTY")}
         </div>
       );
     }
@@ -50,7 +52,7 @@ export function NotificationList({
       {renderNotifications()}
       {isFetching && !isEmpty && (
         <div className="p-2 text-center text-xs text-muted-foreground">
-          Loading...
+          {t("common:LOADING")}
         </div>
       )}
     </div>

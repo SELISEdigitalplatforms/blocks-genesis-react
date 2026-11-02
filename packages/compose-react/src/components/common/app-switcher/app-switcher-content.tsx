@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import { cn } from "@/lib/utils";
 import type { ResolvedApp } from "./use-app-redirect-urls";
 
@@ -24,6 +25,7 @@ const AppTile = ({
   app: ResolvedApp;
   isLoading: boolean;
 }) => {
+  const { t } = useT("genesis.shared");
   return (
     <a
       href={isLoading ? undefined : app.initiateUrl}
@@ -43,7 +45,7 @@ const AppTile = ({
     >
       <AppIcon icon={app.icon} label={app.label} />
       <span className="text-foreground line-clamp-1 max-w-[90px] text-[12px] font-medium leading-tight">
-        {isLoading ? "Loading…" : app.label}
+        {isLoading ? t("APP_SWITCHER_CONTENT.LOADING") : app.label}
       </span>
     </a>
   );
@@ -55,10 +57,11 @@ const AppTile = ({
  * popover does not render an empty section.
  */
 export function AppSwitcherContent({ apps }: AppSwitcherContentProps) {
+  const { t } = useT("genesis.shared");
   if (!apps.length)
     return (
       <div className="bg-muted/50 border-t p-3 flex h-12 items-center justify-center">
-        <p className="text-xs">No apps found</p>
+        <p className="text-xs">{t("APP_SWITCHER_CONTENT.NO_APPS")}</p>
       </div>
     );
 

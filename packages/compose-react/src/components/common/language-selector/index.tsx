@@ -1,5 +1,8 @@
+import { Fragment } from "react";
 import { ChevronDown } from "lucide-react";
 import { useLanguageSwitcher } from "@/hooks/use-language-switcher";
+import { useLanguagesStore } from "@/i18n/languages";
+import { useDocumentLanguage } from "@/i18n/use-t";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,14 +11,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components";
 
-const languages = [
-  { key: "en", title: "English" },
-  { key: "de", title: "German" },
-  { key: "fr", title: "French" },
-];
-
+/**
+ * Switches the UI language among the languages of the project (from the localization
+ * service). Hidden while the project offers only one language.
+ */
 export function LanguageSelector() {
-  const { changeLanguage, language } = useLanguageSwitcher();
+  const { changeLanguage } = useLanguageSwitcher();
+  const language = useDocumentLanguage();
+  const languages = useLanguagesStore((state) => state.languages);
+
+  if (languages.length < 2) return null;
 
   return (
     <DropdownMenu>
@@ -30,16 +35,16 @@ export function LanguageSelector() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {languages.map((lang, index) => (
-          <div key={lang.key}>
+          <Fragment key={lang.code}>
             <DropdownMenuItem
-              className={lang.key === language ? "font-semibold" : ""}
-              onClick={() => changeLanguage(lang.key)}
-              disabled={lang.key !== "en"}
+              lang={lang.code}
+              className={lang.code === language ? "font-semibold" : ""}
+              onClick={() => changeLanguage(lang.code)}
             >
               {lang.title}
             </DropdownMenuItem>
             {index !== languages.length - 1 && <DropdownMenuSeparator />}
-          </div>
+          </Fragment>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>

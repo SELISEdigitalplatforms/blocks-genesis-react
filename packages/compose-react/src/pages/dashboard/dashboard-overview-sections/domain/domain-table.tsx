@@ -1,3 +1,4 @@
+import { useT, type TFunction } from "@/i18n";
 import {
   Button,
   CopyToClipboardButton,
@@ -23,16 +24,18 @@ import { CnameValidatorDialog } from "../cname/dialog";
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
-const StatusBadge = ({ verified }: { verified: boolean }) =>
-  verified ? (
+const StatusBadge = ({ verified }: { verified: boolean }) => {
+  const { t } = useT("genesis.dashboard");
+  return verified ? (
     <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
-      Verified
+      {t("DOMAIN_TABLE.VERIFIED")}
     </span>
   ) : (
     <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
-      Unverified
+      {t("DOMAIN_TABLE.UNVERIFIED")}
     </span>
   );
+};
 
 // ─── Column helper ────────────────────────────────────────────────────────────
 
@@ -58,25 +61,26 @@ const CopyableDomainValue = ({
 );
 
 const buildColumns = (
+  t: TFunction,
   onEdit: (domain: IDomain) => void,
   onDeleteRequest: (domain: IDomain) => void,
   onCname: (domain: IDomain) => void,
 ) => [
   columnHelper.accessor("domain", {
-    header: "Domain",
+    header: t("DOMAIN_TABLE.COLUMN_DOMAIN"),
     cell: (info) => <CopyableDomainValue value={info.getValue()} />,
   }),
   columnHelper.accessor("isDomainVerified", {
-    header: "DNS Status",
+    header: t("DOMAIN_TABLE.COLUMN_DNS_STATUS"),
     cell: (info) => <StatusBadge verified={info.getValue()} />,
   }),
   columnHelper.accessor("cookieDomain", {
-    header: "Cookie Domain",
+    header: t("DOMAIN_TABLE.COLUMN_COOKIE_DOMAIN"),
     cell: (info) => <CopyableDomainValue value={info.getValue()} muted />,
   }),
   columnHelper.display({
     id: "actions",
-    header: "Actions",
+    header: t("common:ACTIONS"),
     cell: ({ row }) => {
       const domain = row.original;
       return (
@@ -84,7 +88,7 @@ const buildColumns = (
           <Button
             variant="ghost"
             size="icon"
-            title="Delete domain"
+            title={t("DOMAIN_TABLE.DELETE_DOMAIN")}
             className="text-destructive hover:bg-destructive/10 hover:text-destructive"
             onClick={() => onDeleteRequest(domain)}
           >
@@ -96,7 +100,7 @@ const buildColumns = (
             <Button
               variant="ghost"
               size="icon"
-              title="Configure domain"
+              title={t("DOMAIN_TABLE.CONFIGURE_DOMAIN")}
               onClick={() => onEdit(domain)}
             >
               <Settings className="h-4 w-4 text-muted-foreground" />
@@ -104,7 +108,7 @@ const buildColumns = (
             <Button
               variant="ghost"
               size="icon"
-              title="Validate CNAME"
+              title={t("DOMAIN_TABLE.VALIDATE_CNAME")}
               onClick={() => onCname(domain)}
             >
               <ShieldCheck className="h-4 w-4 text-muted-foreground" />
@@ -123,6 +127,7 @@ interface DomainTableProps {
 }
 
 export const DomainTable = ({ data }: DomainTableProps) => {
+  const { t } = useT("genesis.dashboard");
   const { mutateAsync, isPending } = useUpdateProject();
 
   // ── Edit dialog ────────────────────────────────────────────────────────────
@@ -152,12 +157,12 @@ export const DomainTable = ({ data }: DomainTableProps) => {
         applicationDomain: deleteTarget.domain,
       });
       if (res.isSuccess) {
-        showSuccessToast({ description: "Domain deleted successfully" });
+        showSuccessToast({ description: t("DOMAIN_TABLE.DELETED") });
       } else {
         showErrorToast({ errors: res.errors });
       }
     } catch {
-      showErrorToast({ errors: "Failed to delete domain" });
+      showErrorToast({ errors: t("DOMAIN_TABLE.DELETE_FAILED") });
     } finally {
       setDeleteDialogOpen(false);
       setDeleteTarget(null);
@@ -174,7 +179,7 @@ export const DomainTable = ({ data }: DomainTableProps) => {
   };
 
   // ── Table ──────────────────────────────────────────────────────────────────
-  const columns = buildColumns(handleEdit, handleDeleteRequest, handleCname);
+  const columns = buildColumns(t, handleEdit, handleDeleteRequest, handleCname);
   const table = useReactTable({
     data,
     columns,
@@ -197,18 +202,12 @@ export const DomainTable = ({ data }: DomainTableProps) => {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <ConfirmationModal
           data={{
-            dialogTitle: "Delete Domain",
-            dialogSubtitle: (
-              <>
-                Are you sure you want to delete{" "}
-                <span className="break-all font-semibold">
-                  {deleteTarget?.domain}
-                </span>
-                ? This action cannot be undone.
-              </>
-            ),
-            confirmButton: "Delete",
-            cancelButton: "Cancel",
+            dialogTitle: t("DOMAIN_TABLE.CONFIRM_TITLE"),
+            dialogSubtitle: t("DOMAIN_TABLE.CONFIRM_SUBTITLE", {
+              domain: deleteTarget?.domain ?? "",
+            }),
+            confirmButton: t("common:DELETE"),
+            cancelButton: t("common:CANCEL"),
           }}
           onCancel={() => setDeleteDialogOpen(false)}
           onConfirm={handleDeleteConfirm}
@@ -262,7 +261,7 @@ export const DomainTable = ({ data }: DomainTableProps) => {
                   colSpan={columns.length}
                   className="py-10 text-center text-sm text-muted-foreground"
                 >
-                  No domains configured yet.
+                  {t("DOMAIN_TABLE.EMPTY")}
                 </td>
               </tr>
             ) : (

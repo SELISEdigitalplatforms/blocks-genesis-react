@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import type { IDenormalizedPayload, INotification } from "@/models";
 import { formatKBMetaDescription, formatKBTitle } from "./utils";
 
@@ -10,6 +11,7 @@ export function NotificationItem({
   notification,
   onMarkAsRead,
 }: NotificationItemProps) {
+  const { t, language } = useT("genesis.shared");
   let denorm: IDenormalizedPayload = {
     title: "",
     description: "",
@@ -39,13 +41,13 @@ export function NotificationItem({
       }}
     >
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium">{formatKBTitle(denorm.title)}</p>
+        <p className="text-sm font-medium">{formatKBTitle(denorm.title, t)}</p>
         <p className="text-xs text-muted-foreground">
-          {formatKBMetaDescription(denorm.meta, denorm.description)}
+          {formatKBMetaDescription(denorm.meta, denorm.description, t)}
         </p>
         {notification.createdTime && (
           <p className="mt-1 text-[11px] text-muted-foreground">
-            {new Date(notification.createdTime).toLocaleString()}
+            {new Date(notification.createdTime).toLocaleString(language)}
           </p>
         )}
       </div>

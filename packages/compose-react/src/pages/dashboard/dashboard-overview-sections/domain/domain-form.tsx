@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import {
   Button,
   DialogClose,
@@ -42,6 +43,7 @@ interface DomainFormProps {
 }
 
 export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
+  const { t } = useT("genesis.dashboard");
   const isEditMode = !!application;
   const { mutateAsync, isPending } = useUpdateProject();
 
@@ -78,8 +80,8 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
       if (res.isSuccess) {
         showSuccessToast({
           description: isEditMode
-            ? "Application updated successfully"
-            : "Application added successfully",
+            ? t("DOMAIN_FORM.UPDATED")
+            : t("DOMAIN_FORM.ADDED"),
         });
         form.reset();
         onAfterSubmit();
@@ -107,7 +109,7 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
           render={({ field }) => (
             <FormItem className="space-y-1.5">
               <FormLabel className="text-sm font-medium text-medium-emphasis">
-                Domain
+                {t("DOMAIN_FORM.DOMAIN")}
               </FormLabel>
               <FormControl>
                 <div className="flex items-center rounded-md border border-input bg-background px-3 py-2">
@@ -146,7 +148,7 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
           render={({ field }) => (
             <FormItem className="space-y-1.5">
               <FormLabel className="text-sm font-medium text-medium-emphasis">
-                Cookie Domain
+                {t("DOMAIN_FORM.COOKIE_DOMAIN")}
               </FormLabel>
               <FormControl>
                 <Input {...field} placeholder="your-domain.com" />
@@ -158,7 +160,7 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
         <DialogFooter className="mt-2 flex flex-row justify-end gap-2">
           <DialogClose asChild>
             <Button variant="outline" size="sm" className="w-20">
-              Cancel
+              {t("common:CANCEL")}
             </Button>
           </DialogClose>
           <Button
@@ -167,7 +169,7 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
             type="submit"
             disabled={!isFormValid || isPending}
           >
-            {isEditMode ? "Update" : "Add"}
+            {isEditMode ? t("common:UPDATE") : t("common:ADD")}
           </Button>
         </DialogFooter>
       </form>

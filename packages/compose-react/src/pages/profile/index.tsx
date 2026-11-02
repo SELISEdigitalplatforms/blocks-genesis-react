@@ -1,7 +1,9 @@
 import { getRuntimeEnv } from "@/lib/runtime-env";
 import { useInitiateRedirect } from "@/hooks/use-initiate";
+import { useT } from "@/i18n";
 
 export function ProfilePage() {
+  const { t } = useT("genesis.profile");
   const { isLoading, error } = useInitiateRedirect({
     clientId: getRuntimeEnv("BLOCKS_IAM_CLIENT_ID"),
     redirectUri: getRuntimeEnv("BLOCKS_IAM_CALLBACK_URL"),
@@ -13,10 +15,10 @@ export function ProfilePage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <p className="text-lg font-medium text-destructive">
-            Failed to redirect to profile page
+            {t("PROFILE_PAGE.REDIRECT_FAILED")}
           </p>
           <p className="text-sm text-muted-foreground mt-1">
-            Please check your console for more details
+            {t("PROFILE_PAGE.CHECK_CONSOLE")}
           </p>
         </div>
       </div>
@@ -26,7 +28,7 @@ export function ProfilePage() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <p className="text-sm text-muted-foreground">
-          Redirecting to profile page…
+          {t("PROFILE_PAGE.REDIRECTING")}
         </p>
       </div>
     );

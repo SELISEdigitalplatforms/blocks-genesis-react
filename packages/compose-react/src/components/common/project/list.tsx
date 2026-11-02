@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,6 +28,7 @@ export function ProjectList({
   redirectPaths: RedirectPaths;
   collapsed?: boolean;
 }) {
+  const { t } = useT("genesis.shared");
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { data: projectGroups = [], isLoading } = useGetProjects({
@@ -85,7 +87,7 @@ export function ProjectList({
         >
           <FolderOpen className="h-5 w-5 text-muted-foreground" />
           <div className="pointer-events-none absolute left-full top-0 z-20 ml-2 min-w-max whitespace-nowrap rounded bg-gray-300 px-2 py-1 text-xs text-primary opacity-0 transition-opacity group-hover:opacity-100">
-            {name || "Select a Project"}
+            {name || t("PROJECT_LIST.SELECT_PROJECT")}
           </div>
         </DropdownMenuTrigger>
       ) : (
@@ -97,10 +99,10 @@ export function ProjectList({
             <FolderOpen className="h-4 w-4 shrink-0 text-muted-foreground" />
             <div className="min-w-0 flex-1">
               <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                Project
+                {t("PROJECT_LIST.PROJECT")}
               </div>
               <div className="break-all text-sm font-medium leading-tight">
-                {name || "Select a Project"}
+                {name || t("PROJECT_LIST.SELECT_PROJECT")}
               </div>
             </div>
           </div>
@@ -114,7 +116,7 @@ export function ProjectList({
           collapsed ? "min-w-48" : "w-[--radix-dropdown-menu-trigger-width]"
         }
       >
-        <DropdownMenuLabel>Your Projects</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("PROJECT_LIST.YOUR_PROJECTS")}</DropdownMenuLabel>
         {isLoading ? (
           <DropdownMenuItem disabled>
             <div className="flex w-full items-center justify-center py-1">
@@ -136,7 +138,7 @@ export function ProjectList({
         )}
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled>
-          Project overview is not part of this client
+          {t("PROJECT_LIST.OVERVIEW_UNAVAILABLE")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

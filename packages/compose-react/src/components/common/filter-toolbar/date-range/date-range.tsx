@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import {
   Button,
   Calendar,
@@ -20,6 +21,7 @@ interface DateRangeFilterProps {
 }
 
 export function DateRange({ label, value, onChange }: DateRangeFilterProps) {
+  const { t } = useT("genesis.shared");
   const isMobile = useIsMobile();
   const [open, setOpen] = useState<boolean>(false);
   const [date, setDate] = useState<DateRangeType>(value);
@@ -95,10 +97,10 @@ export function DateRange({ label, value, onChange }: DateRangeFilterProps) {
             className="w-full"
             onClick={resetBtnHandler}
           >
-            Reset
+            {t("common:RESET")}
           </Button>
           <Button type="button" className="w-full" onClick={applyBtnHandler}>
-            Apply
+            {t("common:APPLY")}
           </Button>
         </div>
       </PopoverContent>

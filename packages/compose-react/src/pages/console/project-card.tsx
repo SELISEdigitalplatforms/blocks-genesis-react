@@ -1,6 +1,7 @@
 import { Badge } from "@/components/core/badge";
 import { Card, CardTitle } from "@/components/core/card/card";
 import { RenderAlternatively } from "@/components/core/render-elements";
+import { useT } from "@/i18n";
 import type { IProject } from "@/models";
 import { UsersRound } from "lucide-react";
 import { ProjectActionButton } from "./project-action-button";
@@ -27,6 +28,7 @@ export const ProjectCard = ({
   isShared,
   canOpen = true,
 }: ProjectCardProps) => {
+  const { t } = useT("genesis.console");
   return (
     <Card className="border-border/60 bg-card hover:border-primary/30 group flex h-40 flex-col overflow-hidden rounded-xl border p-4 shadow-sm transition-all duration-200 hover:shadow-md">
       <div className="relative flex items-start justify-between gap-2">
@@ -45,7 +47,7 @@ export const ProjectCard = ({
                   className="flex items-center gap-1 shrink-0"
                 >
                   <UsersRound size={16} />
-                  {"Shared"}
+                  {t("PROJECT_CARD.SHARED")}
                 </Badge>
                 <ProjectActionButton
                   project={project}

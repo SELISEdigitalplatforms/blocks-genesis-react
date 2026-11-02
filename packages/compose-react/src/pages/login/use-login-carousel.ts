@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { DEFAULT_BLOCKS_PRODUCTS } from "./login.constant";
+import { useT } from "@/i18n";
+import { getDefaultBlocksProducts } from "./login.constant";
 import type {
   BlocksProduct,
   LoginCarouselItem,
@@ -40,15 +41,16 @@ export function useLoginCarousel({
   name,
   carouselItems,
 }: UseLoginCarouselParams): UseLoginCarouselResult {
+  const { t } = useT("genesis.login");
+  const defaultProducts = useMemo(() => getDefaultBlocksProducts(t), [t]);
   const active = useMemo(() => {
-    const products =
-      carouselItems?.filter(isBlocksProduct) ?? DEFAULT_BLOCKS_PRODUCTS;
+    const products = carouselItems?.filter(isBlocksProduct) ?? defaultProducts;
     return products.find((p) => p.name === name) ?? products[0];
-  }, [name, carouselItems]);
+  }, [name, carouselItems, defaultProducts]);
 
   const otherProducts = useMemo(
-    () => DEFAULT_BLOCKS_PRODUCTS.filter((p) => p.name !== active?.name),
-    [active?.name],
+    () => defaultProducts.filter((p) => p.name !== active?.name),
+    [defaultProducts, active?.name],
   );
 
   const carouselSource = carouselItems ?? otherProducts;

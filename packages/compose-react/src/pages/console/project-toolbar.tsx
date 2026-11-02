@@ -2,6 +2,7 @@ import { MultiSelect } from "@/components/common/filter-toolbar/multi-select/mul
 import { ResetButton } from "@/components/common/filter-toolbar/reset-button/reset-button";
 import { SearchInput } from "@/components/common/filter-toolbar/search-input/search-input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/core/toggle-group";
+import { useT } from "@/i18n";
 import { LayoutGrid, List } from "lucide-react";
 import type { ProjectViewMode } from "./use-project-list-state";
 
@@ -26,22 +27,23 @@ export const ProjectToolbar = ({
   searchText,
   viewMode,
 }: ProjectToolbarProps) => {
+  const { t } = useT("genesis.console");
   const hasActiveFilters =
     searchText.trim().length > 0 || environmentFilter.length > 0;
 
   return (
     <div
       className="flex flex-wrap items-center justify-between gap-3"
-      aria-label="Project filters and view"
+      aria-label={t("PROJECT_TOOLBAR.FILTERS_ARIA")}
     >
       <div className="flex flex-wrap items-center gap-3">
         <SearchInput
           value={searchText}
           onChange={onSearchTextChange}
-          placeholder="Search projects..."
+          placeholder={t("PROJECT_TOOLBAR.SEARCH_PLACEHOLDER")}
         />
         <MultiSelect
-          label="Environment"
+          label={t("PROJECT_TOOLBAR.ENVIRONMENT")}
           options={availableEnvironmentOptions}
           value={environmentFilter}
           onChange={onEnvironmentFilterChange}
@@ -56,19 +58,19 @@ export const ProjectToolbar = ({
         onValueChange={(value) => {
           if (value === "grid" || value === "list") onViewModeChange(value);
         }}
-        aria-label="Project view"
+        aria-label={t("PROJECT_TOOLBAR.VIEW_ARIA")}
         className="h-8 rounded-md border bg-background p-0.5"
       >
         <ToggleGroupItem
           value="grid"
-          aria-label="Grid view"
+          aria-label={t("PROJECT_TOOLBAR.GRID_VIEW")}
           className="h-7 w-7 min-w-0 border-0 px-0"
         >
           <LayoutGrid className="h-4 w-4" />
         </ToggleGroupItem>
         <ToggleGroupItem
           value="list"
-          aria-label="List view"
+          aria-label={t("PROJECT_TOOLBAR.LIST_VIEW")}
           className="h-7 w-7 min-w-0 border-0 px-0"
         >
           <List className="h-4 w-4" />

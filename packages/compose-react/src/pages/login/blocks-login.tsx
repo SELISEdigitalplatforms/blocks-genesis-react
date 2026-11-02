@@ -1,6 +1,7 @@
 import { LoginHeader } from "@/components/common/login-header/login-header";
 import { Badge } from "@/components/core/badge";
 import { Button } from "@/components/core/button";
+import { useT } from "@/i18n";
 import { useRef } from "react";
 import { blocksLoginStyles } from "./login.styles";
 import type { BlocksLoginPageProps, LoginCarouselStack } from "./login.types";
@@ -11,15 +12,20 @@ export const BlocksLoginPage = ({
   name,
   onLogin,
   isLoading = false,
-  eyebrow = "Blocks · Core Services",
-  loginLabel = "Log in to your account",
+  eyebrow,
+  loginLabel,
   docsUrl = "https://docs.seliseblocks.com/",
-  footerLink = { label: "Visit Blocks", url: "https://seliseblocks.com" },
+  footerLink,
   showSignUp = false,
   onSignUp,
   isSignUpLoading = false,
   carouselItems,
 }: BlocksLoginPageProps) => {
+  const { t } = useT("genesis.login");
+  const footer = footerLink ?? {
+    label: t("BLOCKS_LOGIN_PAGE.FOOTER_LINK"),
+    url: "https://seliseblocks.com",
+  };
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   useAtmosphericCanvas(canvasRef);
 
@@ -128,7 +134,7 @@ export const BlocksLoginPage = ({
 
       <main className="main">
         <div className="col-left">
-          <p className="eyebrow">{eyebrow}</p>
+          <p className="eyebrow">{eyebrow ?? t("BLOCKS_LOGIN_PAGE.EYEBROW")}</p>
           <h1 className="title-main">
             {titleHead}
             {titleTail && (
@@ -160,7 +166,9 @@ export const BlocksLoginPage = ({
                 disabled={isLoading}
                 onClick={onLogin}
               >
-                {isLoading ? "Redirecting…" : loginLabel}
+                {isLoading
+                  ? t("BLOCKS_LOGIN_PAGE.REDIRECTING")
+                  : (loginLabel ?? t("BLOCKS_LOGIN_PAGE.LOGIN_LABEL"))}
               </Button>
             </div>
             <a
@@ -169,7 +177,7 @@ export const BlocksLoginPage = ({
               rel="noreferrer"
               className="cta-docs"
             >
-              View documentation
+              {t("BLOCKS_LOGIN_PAGE.VIEW_DOCUMENTATION")}
               <svg
                 width="12"
                 height="12"
@@ -184,14 +192,16 @@ export const BlocksLoginPage = ({
           </div>
           {showSignUp && (
             <p className="cta-signup">
-              Not a member?{" "}
+              {t("BLOCKS_LOGIN_PAGE.NOT_A_MEMBER")}{" "}
               <button
                 type="button"
                 onClick={onSignUp}
                 disabled={isSignUpLoading}
                 className="cta-signup-link"
               >
-                {isSignUpLoading ? "Redirecting…" : "Sign up"}
+                {isSignUpLoading
+                  ? t("BLOCKS_LOGIN_PAGE.REDIRECTING")
+                  : t("BLOCKS_LOGIN_PAGE.SIGN_UP")}
                 <svg
                   width="11"
                   height="11"
@@ -209,9 +219,13 @@ export const BlocksLoginPage = ({
 
         <div className="col-right">
           <div className="sdk-header-row">
-            <p className="sdk-header-label">Core Services — Blocks Platform</p>
+            <p className="sdk-header-label">
+              {t("BLOCKS_LOGIN_PAGE.SERVICES_HEADER")}
+            </p>
             <Badge variant="outline" className="sdk-count-badge">
-              {carouselSource.length} services
+              {t("BLOCKS_LOGIN_PAGE.SERVICES_COUNT", {
+                count: carouselSource.length,
+              })}
             </Badge>
           </div>
 
@@ -317,12 +331,12 @@ export const BlocksLoginPage = ({
 
           <div className="sdk-footer">
             <a
-              href={footerLink.url}
+              href={footer.url}
               target="_blank"
               rel="noreferrer"
               className="visit-construct"
             >
-              {footerLink.label}
+              {footer.label}
               <svg
                 width="12"
                 height="12"
@@ -334,7 +348,9 @@ export const BlocksLoginPage = ({
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </a>
-            <span className="sdk-open-source">Open source</span>
+            <span className="sdk-open-source">
+              {t("BLOCKS_LOGIN_PAGE.OPEN_SOURCE")}
+            </span>
           </div>
         </div>
       </main>

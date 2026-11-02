@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import * as React from "react";
 import {
   ChevronLeft,
@@ -46,6 +47,7 @@ const TablePagination = React.forwardRef<HTMLDivElement, TablePaginationProps>(
     },
     ref,
   ) => {
+    const { t } = useT("genesis.shared");
     const canPrev = pageIndex > 0;
     const canNext = pageIndex < pageCount - 1;
 
@@ -62,7 +64,9 @@ const TablePagination = React.forwardRef<HTMLDivElement, TablePaginationProps>(
 
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
-            <p className="text-sm font-medium">Rows per page</p>
+            <p className="text-sm font-medium">
+              {t("DATA_TABLE_PAGINATION.ROWS_PER_PAGE")}
+            </p>
             <Select
               value={`${pageSize}`}
               onValueChange={(value) => onPageSizeChange(Number(value))}
@@ -81,7 +85,10 @@ const TablePagination = React.forwardRef<HTMLDivElement, TablePaginationProps>(
           </div>
 
           <div className="flex w-[120px] items-center justify-center text-sm font-medium">
-            Page {pageIndex + 1} of {Math.max(pageCount, 1)}
+            {t("DATA_TABLE_PAGINATION.PAGE_OF", {
+              page: pageIndex + 1,
+              total: Math.max(pageCount, 1),
+            })}
           </div>
 
           <div className="flex items-center gap-1">
@@ -91,7 +98,7 @@ const TablePagination = React.forwardRef<HTMLDivElement, TablePaginationProps>(
               className="hidden size-8 lg:flex"
               onClick={() => onPageChange(0)}
               disabled={!canPrev}
-              aria-label="Go to first page"
+              aria-label={t("DATA_TABLE_PAGINATION.FIRST_PAGE")}
             >
               <ChevronsLeft className="size-4" />
             </Button>
@@ -101,7 +108,7 @@ const TablePagination = React.forwardRef<HTMLDivElement, TablePaginationProps>(
               className="size-8"
               onClick={() => onPageChange(pageIndex - 1)}
               disabled={!canPrev}
-              aria-label="Go to previous page"
+              aria-label={t("DATA_TABLE_PAGINATION.PREVIOUS_PAGE")}
             >
               <ChevronLeft className="size-4" />
             </Button>
@@ -111,7 +118,7 @@ const TablePagination = React.forwardRef<HTMLDivElement, TablePaginationProps>(
               className="size-8"
               onClick={() => onPageChange(pageIndex + 1)}
               disabled={!canNext}
-              aria-label="Go to next page"
+              aria-label={t("DATA_TABLE_PAGINATION.NEXT_PAGE")}
             >
               <ChevronRight className="size-4" />
             </Button>
@@ -121,7 +128,7 @@ const TablePagination = React.forwardRef<HTMLDivElement, TablePaginationProps>(
               className="hidden size-8 lg:flex"
               onClick={() => onPageChange(pageCount - 1)}
               disabled={!canNext}
-              aria-label="Go to last page"
+              aria-label={t("DATA_TABLE_PAGINATION.LAST_PAGE")}
             >
               <ChevronsRight className="size-4" />
             </Button>

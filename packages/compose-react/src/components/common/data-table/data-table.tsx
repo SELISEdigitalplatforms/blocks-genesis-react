@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import {
   flexRender,
   getCoreRowModel,
@@ -41,6 +42,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
   // ── Sort resolution ───────────────────────────────────────────────────────
   // nuqs hooks are always called unconditionally (React rules).
   // Their values are ignored when sort is controlled externally.
+  const { t } = useT("genesis.shared");
   const sortNamespace =
     "sortNamespace" in props ? props.sortNamespace : undefined;
   const defaultSortValue =
@@ -131,7 +133,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
             colSpan={table.getAllColumns().length}
             className="h-24 text-center text-muted-foreground"
           >
-            {renderEmptyState ?? "No results."}
+            {renderEmptyState ?? t("DATA_TABLE.NO_RESULTS")}
           </TableCell>
         </TableRow>
       )}

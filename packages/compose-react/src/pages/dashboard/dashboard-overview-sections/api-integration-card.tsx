@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import type { ReactNode } from "react";
 import { CopyToClipboardButton, MaskedText, Skeleton } from "@/index";
 import { DashboardSectionCard } from "@/components/common/dashboard-section-card";
@@ -40,18 +41,19 @@ const AppIntegrationLoadingSkeleton = () => (
  * vs. a future module) from whatever wrapper decides which app is active.
  */
 export const AppIntegrationCard = ({
-  title = "Connect Extensions",
+  title,
   description,
   links = [],
   clientId,
   clientSecret,
   isLoading,
 }: AppIntegrationCardProps) => {
+  const { t } = useT("genesis.dashboard");
   if (isLoading) return <AppIntegrationLoadingSkeleton />;
 
   return (
     <DashboardSectionCard
-      title={title}
+      title={title ?? t("API_INTEGRATION_CARD.TITLE")}
       description={description}
       headerRight={
         links.length > 0 ? (
@@ -77,7 +79,7 @@ export const AppIntegrationCard = ({
         {clientId && (
           <div className="space-y-1.5">
             <div className="text-sm font-medium text-medium-emphasis">
-              Client ID
+              {t("API_INTEGRATION_CARD.CLIENT_ID")}
             </div>
             <CopyToClipboardButton textToCopy={clientId} isHoverable>
               <MaskedText
@@ -92,7 +94,7 @@ export const AppIntegrationCard = ({
         {clientSecret && (
           <div className="space-y-1.5">
             <div className="text-sm font-medium text-medium-emphasis">
-              Client Secret
+              {t("API_INTEGRATION_CARD.CLIENT_SECRET")}
             </div>
             <CopyToClipboardButton textToCopy={clientSecret} isHoverable>
               <MaskedText
@@ -106,7 +108,7 @@ export const AppIntegrationCard = ({
         )}
         {!clientId && !clientSecret && links.length === 0 && (
           <p className="text-sm text-muted-foreground sm:col-span-2">
-            No integration details available for this app yet.
+            {t("API_INTEGRATION_CARD.NO_DETAILS")}
           </p>
         )}
       </div>

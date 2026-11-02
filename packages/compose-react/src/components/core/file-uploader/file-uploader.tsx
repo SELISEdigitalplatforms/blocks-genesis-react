@@ -1,4 +1,5 @@
 "use client";
+import { tStatic, useT } from "@/i18n";
 
 import { showErrorToast } from "@/utils/toast";
 import { Trash2 as RemoveIcon } from "lucide-react";
@@ -18,6 +19,8 @@ import {
   useFileUpload,
   type DirectionOptions,
 } from "./use-file-upload";
+
+const I18N_MODULE = "genesis.shared";
 
 type FileUploaderProps = {
   value: File[] | null;
@@ -71,7 +74,9 @@ export const FileUploader = forwardRef<
 
     useEffect(() => {
       if (isFileTooBig) {
-        showErrorToast({ errors: "The file size is more than 5MB" });
+        showErrorToast({
+          errors: tStatic(I18N_MODULE, "FILE_UPLOADER.TOO_BIG"),
+        });
       }
     }, [isFileTooBig]);
 
@@ -80,7 +85,9 @@ export const FileUploader = forwardRef<
         const files = acceptedFiles;
 
         if (!files) {
-          showErrorToast({ errors: "file error , probably too big" });
+          showErrorToast({
+            errors: tStatic(I18N_MODULE, "FILE_UPLOADER.FILE_ERROR"),
+          });
           return;
         }
 
@@ -104,12 +111,16 @@ export const FileUploader = forwardRef<
             if (!firstError) continue;
             if (firstError.code === "file-too-large") {
               showErrorToast({
-                errors: `File is too large. Max size is ${maxSize / 1024 / 1024}MB`,
+                errors: tStatic(I18N_MODULE, "FILE_UPLOADER.TOO_LARGE", {
+                  size: maxSize / 1024 / 1024,
+                }),
               });
               break;
             }
             if (firstError.code === "file-invalid-type") {
-              showErrorToast({ errors: "Invalid file type" });
+              showErrorToast({
+                errors: tStatic(I18N_MODULE, "FILE_UPLOADER.INVALID_TYPE"),
+              });
               break;
             }
             if (firstError.message) {
@@ -284,6 +295,7 @@ export const FileUploaderItem = forwardRef<
   HTMLDivElement,
   { index: number } & React.HTMLAttributes<HTMLDivElement>
 >(({ className, index, children, ...props }, ref) => {
+  const { t } = useT(I18N_MODULE);
   const { removeFileFromSet, activeIndex, direction } = useFileUpload();
   const isSelected = index === activeIndex;
   return (
@@ -308,7 +320,9 @@ export const FileUploaderItem = forwardRef<
         )}
         onClick={() => removeFileFromSet(index)}
       >
-        <span className="sr-only">remove item {index}</span>
+        <span className="sr-only">
+          {t("FILE_UPLOADER.REMOVE_ITEM", { index })}
+        </span>
         <RemoveIcon className="h-4 w-4 duration-200 ease-in-out hover:stroke-destructive" />
       </button>
     </div>

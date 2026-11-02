@@ -1,17 +1,23 @@
+import { useT } from "@/i18n";
 import * as React from "react";
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { type ButtonProps, buttonVariants } from "@/components/core/button";
 
-const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
-  <nav
-    role="navigation"
-    aria-label="pagination"
-    className={cn("mx-auto flex w-full justify-center", className)}
-    {...props}
-  />
-);
+const I18N_MODULE = "genesis.shared";
+
+const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => {
+  const { t } = useT(I18N_MODULE);
+  return (
+    <nav
+      role="navigation"
+      aria-label={t("PAGINATION.NAV_ARIA")}
+      className={cn("mx-auto flex w-full justify-center", className)}
+      {...props}
+    />
+  );
+};
 Pagination.displayName = "Pagination";
 
 const PaginationContent = React.forwardRef<
@@ -63,15 +69,16 @@ const PaginationPrevious = ({
   className,
   ...props
 }: React.ComponentProps<typeof PaginationLink>) => {
+  const { t } = useT(I18N_MODULE);
   return (
     <PaginationLink
-      aria-label="Go to previous page"
+      aria-label={t("PAGINATION.PREVIOUS_PAGE")}
       size="default"
       className={cn("gap-1 pl-2.5", className)}
       {...props}
     >
       <ChevronLeft className="h-4 w-4" />
-      <span>Previous</span>
+      <span>{t("common:PREVIOUS")}</span>
     </PaginationLink>
   );
 };
@@ -81,14 +88,15 @@ const PaginationNext = ({
   className,
   ...props
 }: React.ComponentProps<typeof PaginationLink>) => {
+  const { t } = useT(I18N_MODULE);
   return (
     <PaginationLink
-      aria-label="Go to next page"
+      aria-label={t("PAGINATION.NEXT_PAGE")}
       size="default"
       className={cn("gap-1 pr-2.5", className)}
       {...props}
     >
-      <span>Next</span>
+      <span>{t("common:NEXT")}</span>
       <ChevronRight className="h-4 w-4" />
     </PaginationLink>
   );
@@ -99,6 +107,7 @@ const PaginationEllipsis = ({
   className,
   ...props
 }: React.ComponentProps<"span">) => {
+  const { t } = useT(I18N_MODULE);
   return (
     <span
       aria-hidden
@@ -106,7 +115,7 @@ const PaginationEllipsis = ({
       {...props}
     >
       <MoreHorizontal className="h-4 w-4" />
-      <span className="sr-only">More pages</span>
+      <span className="sr-only">{t("PAGINATION.MORE_PAGES")}</span>
     </span>
   );
 };

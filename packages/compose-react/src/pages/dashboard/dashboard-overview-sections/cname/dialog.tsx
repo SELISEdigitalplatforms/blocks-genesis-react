@@ -1,3 +1,4 @@
+import { useT } from "@/i18n";
 import {
   Dialog,
   DialogContent,
@@ -21,14 +22,13 @@ export const CnameValidatorDialog = ({
   onOpenChange,
   domain,
 }: CnameValidatorDialogProps) => {
+  const { t } = useT("genesis.dashboard");
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] w-[calc(100vw-2rem)] max-w-md overflow-y-auto overflow-x-hidden rounded-lg">
         <DialogHeader>
-          <DialogTitle>Validate Domain</DialogTitle>
-          <DialogDescription>
-            Run a CNAME lookup to verify your domain configuration.
-          </DialogDescription>
+          <DialogTitle>{t("CNAME_DIALOG.TITLE")}</DialogTitle>
+          <DialogDescription>{t("CNAME_DIALOG.DESCRIPTION")}</DialogDescription>
         </DialogHeader>
 
         <div className="flex min-w-0 flex-col gap-4">
@@ -36,7 +36,7 @@ export const CnameValidatorDialog = ({
           <div className="min-w-0 space-y-3 rounded-md border border-border bg-muted/30 px-4 py-3">
             <div className="space-y-0.5">
               <p className="text-xs font-semibold uppercase tracking-wide text-medium-emphasis">
-                Application Domain
+                {t("CNAME_DIALOG.APPLICATION_DOMAIN")}
               </p>
               <p className="break-all text-sm font-medium text-high-emphasis">
                 {domain?.domain}
@@ -44,7 +44,7 @@ export const CnameValidatorDialog = ({
             </div>
             <div className="space-y-0.5">
               <p className="text-xs font-semibold uppercase tracking-wide text-medium-emphasis">
-                Cookie Domain
+                {t("CNAME_DIALOG.COOKIE_DOMAIN")}
               </p>
               <p className="break-all text-sm text-muted-foreground">
                 {domain?.cookieDomain}
@@ -56,8 +56,7 @@ export const CnameValidatorDialog = ({
           {domain && !domain.isDomainVerified && (
             <div className="flex min-w-0 flex-col gap-1 rounded-sm border border-base-error bg-blocks-error-100 px-4 py-3 text-sm font-normal text-blocks-error-800">
               <p className="wrap-break-word">
-                No servers found for &apos;{domain.cookieDomain}&apos;. Run a
-                CNAME lookup to check your DNS configuration.
+                {t("CNAME_DIALOG.NOT_FOUND", { domain: domain.cookieDomain })}
               </p>
             </div>
           )}
@@ -66,9 +65,7 @@ export const CnameValidatorDialog = ({
           {domain && domain.isDomainVerified && (
             <div className="flex min-w-0 items-center gap-2 rounded-sm border border-green-200 bg-green-50 px-4 py-3 text-sm font-normal text-green-800">
               <CheckCircle2 className="h-4 w-4 shrink-0" />
-              <p className="wrap-break-word">
-                This domain is verified and ready to use.
-              </p>
+              <p className="wrap-break-word">{t("CNAME_DIALOG.VERIFIED")}</p>
             </div>
           )}
 

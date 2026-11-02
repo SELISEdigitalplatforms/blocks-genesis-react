@@ -5,6 +5,7 @@ import {
 import { Button } from "@/components/core/button/button";
 import { Skeleton } from "@/components/core/skeleton";
 import { useGetProjects } from "@/hooks/use-project";
+import { useT } from "@/i18n";
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { AddProjectCard } from "./add-project-card";
@@ -61,6 +62,7 @@ export type SelfProjectProps = {
 };
 
 export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
+  const { t } = useT("genesis.console");
   // Only the first load shows skeletons; background refetches (focus, remount)
   // update the list in place instead of flashing it.
   const { data, isLoading } = useGetProjects({ enabled: true });
@@ -138,7 +140,7 @@ export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <h2 className="shrink-0 text-base font-semibold text-[hsl(var(--high-emphasis))]">
-            Your Blocks Projects
+            {t("SELF_PROJECT.YOUR_PROJECTS")}
           </h2>
           {isPending ? (
             <Skeleton className="h-5 w-8 rounded-full" />
@@ -150,7 +152,7 @@ export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
         </div>
         {!isPending && canCreateProject && hasReachedProjectLimit && (
           <span className="text-sm text-[hsl(var(--medium-emphasis))]">
-            Please delete an existing project to create a new one.
+            {t("SELF_PROJECT.DELETE_TO_CREATE")}
           </span>
         )}
       </div>
@@ -171,8 +173,8 @@ export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
         <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed px-6 py-10 text-center">
           <p className="text-sm font-medium text-muted-foreground">
             {searchText.trim()
-              ? "No projects match your search"
-              : "No projects match the selected filters"}
+              ? t("SELF_PROJECT.NO_SEARCH_MATCH")
+              : t("SELF_PROJECT.NO_FILTER_MATCH")}
           </p>
           <Button
             type="button"
@@ -183,7 +185,9 @@ export const SelfProject = ({ canCreateProject = false }: SelfProjectProps) => {
               else setEnvironmentFilter([]);
             }}
           >
-            {searchText.trim() ? "Clear search" : "Clear filters"}
+            {searchText.trim()
+              ? t("SELF_PROJECT.CLEAR_SEARCH")
+              : t("SELF_PROJECT.CLEAR_FILTERS")}
           </Button>
         </div>
       )}
