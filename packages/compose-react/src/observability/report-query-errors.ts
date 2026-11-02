@@ -1,6 +1,7 @@
 import type { QueryClient } from "@tanstack/react-query";
 import type Rollbar from "rollbar";
 import { HttpError } from "@/lib/http/error";
+import { isNetworkFailure } from "./noise-filter";
 
 /**
  * Reports errors thrown inside query and mutation functions that are not request failures.
@@ -21,6 +22,8 @@ export const attachQueryErrorReporting = (
     if (error instanceof HttpError) return;
     // Belt and braces: an HttpError that crossed a module boundary may fail `instanceof`.
     if (typeof (error as { status?: unknown })?.status === "number") return;
+    // A raw `fetch` in a query function rejects with the browser's own network error.
+    if (isNetworkFailure(error)) return;
 
     rollbar.error(error instanceof Error ? error : new Error(String(error)), {
       source: "react-query",

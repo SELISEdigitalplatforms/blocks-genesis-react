@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // The provider builds a real Rollbar client, and the test environment's runtime-env proxy would
 // otherwise hand it a token and let it attempt transmission.
@@ -27,6 +27,8 @@ describe("RollbarProvider", () => {
     h.runtimeEnv = {};
   });
 
+  afterEach(() => vi.restoreAllMocks());
+
   // Reporting is optional. `@rollbar/react`'s Provider asserts on the instance's access token from
   // its own constructor -- above the error boundary -- so an unseeded token used to take the whole
   // app down with "`instance` must be a configured instance of Rollbar" rather than merely turning
@@ -43,5 +45,34 @@ describe("RollbarProvider", () => {
     await renderApp();
 
     expect(screen.getByText("app")).toBeInTheDocument();
+  });
+
+  // H10: the noise rules must not reach the boundary, which reports every render crash at critical.
+  it("reports a render crash at critical and shows the fallback", async () => {
+    vi.resetModules();
+    const { getRollbar } = await import("./rollbar.instance");
+    const { RollbarProvider } = await import("./rollbar.provider");
+    // Same module graph as the provider, so this is the instance it renders with.
+    const critical = vi
+      .spyOn(getRollbar({ service: "blocks-os" }), "critical")
+      .mockReturnValue({ uuid: "test" });
+    // React logs the caught render error; keep the test output clean.
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const crash = new TypeError(
+      "Cannot read properties of undefined (reading 'id')",
+    );
+    const Crashing = () => {
+      throw crash;
+    };
+
+    render(
+      <RollbarProvider service="blocks-os">
+        <Crashing />
+      </RollbarProvider>,
+    );
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Something went wrong");
+    expect(critical).toHaveBeenCalledTimes(1);
+    expect(critical.mock.calls[0]?.[0]).toBe(crash);
   });
 });
