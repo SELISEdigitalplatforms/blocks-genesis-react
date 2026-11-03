@@ -370,8 +370,9 @@ export class HttpClient {
           normalized,
           url,
           method,
-          // Not already an HttpError means no HTTP response ever came back: DNS, CORS, TLS,
-          // offline, abort, or a bug in this client.
+          // Not already an HttpError means the server gave no usable answer: no HTTP response
+          // came back (DNS, CORS, TLS, offline, abort), a success body could not be read or
+          // parsed as JSON, or this client threw.
           transport: !(error instanceof HttpError),
         });
       } catch {
@@ -382,9 +383,19 @@ export class HttpClient {
     return normalized;
   }
 
+  /**
+   * Decodes a success response. A response without data resolves to the envelope
+   * `{ success: true, status }`: 204 and 205 (checked before the content type, since they never
+   * carry a body), no content type, and a JSON-branch response with `content-length: 0` or a blank
+   * body. JSON is read with `text()` and `JSON.parse`, so an empty body never reaches the parser,
+   * while a non-empty body that is not JSON still throws its `SyntaxError`.
+   */
   private async parseSuccessResponse<T>(response: Response): Promise<T> {
+    const noData = { success: true, status: response.status } as T;
+    if (response.status === 204 || response.status === 205) return noData;
+
     const contentType = response.headers.get("content-type")?.toLowerCase();
-    if (!contentType) return { success: true, status: response.status } as T;
+    if (!contentType) return noData;
 
     if (contentType.includes("text/html")) {
       throw new HttpError(response.status, {
@@ -403,7 +414,11 @@ export class HttpClient {
       return (await response.blob()) as unknown as T;
     }
 
-    return (await response.json()) as T;
+    if (response.headers.get("content-length") === "0") return noData;
+
+    const text = await response.text();
+    if (text.trim() === "") return noData;
+    return JSON.parse(text) as T;
   }
 
   private async request<T = unknown>(
@@ -458,7 +473,9 @@ export class HttpClient {
 
       await this.throwIfNotOk(response);
 
-      return this.parseSuccessResponse<T>(response);
+      // Awaited so a decode failure lands in the catch below and goes through onError. The
+      // retry above stays un-awaited: it runs its own failRequest, so onError fires once.
+      return await this.parseSuccessResponse<T>(response);
     } catch (error) {
       throw this.failRequest(error, fullUrl, method);
     }

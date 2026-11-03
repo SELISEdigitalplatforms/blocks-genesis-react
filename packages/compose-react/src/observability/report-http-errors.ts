@@ -16,6 +16,10 @@ import { isNetworkFailure } from "./noise-filter";
  * up in server-side 5xx items and uptime monitoring instead. What is left -- a body that fails to
  * parse, a throw inside the client itself -- is a client fault the server cannot see.
  *
+ * A success response without data never reaches this reporter: `HttpClient` resolves 204, 205,
+ * `content-length: 0` and blank bodies to `{ success: true, status }`. A non-empty success body
+ * that is not valid JSON is reported once, as a transport failure carrying the `SyntaxError`.
+ *
  * `HttpClient` normalises every failure to an `HttpError` with status 500 before callers see it, so
  * this distinction only exists inside the `onError` hook. Reporting from a `catch` further out
  * cannot tell the two apart.
