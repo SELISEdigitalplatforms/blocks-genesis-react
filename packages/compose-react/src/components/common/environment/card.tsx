@@ -78,9 +78,11 @@ export const EnvironmentCard = ({
       </CardHeader>
       <div className="mt-2">
         <div className="flex flex-wrap items-center gap-1.5 py-0.5 text-xs sm:py-1 md:py-1.5">
+          {/* eslint-disable no-restricted-syntax -- HTTP header name, not translated */}
           <span className="text-muted-foreground font-semibold">
             X-Blocks-Key:
           </span>
+          {/* eslint-enable no-restricted-syntax */}
           <span className="text-muted-foreground truncate font-mono">
             {project?.tenantId}
           </span>

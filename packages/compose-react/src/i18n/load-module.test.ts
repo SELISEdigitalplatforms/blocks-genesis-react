@@ -39,15 +39,15 @@ describe("loadModule", () => {
                 languageName: "English",
                 isDefault: true,
               },
-              { languageCode: "de-DE", languageName: "Deutsch" },
+              { languageCode: "xx-XX", languageName: "Test language" },
             ])
-          : okResponse({ SIGN_IN: "Anmelden" }),
+          : okResponse({ SIGN_IN: "[xx] Sign in" }),
       ),
     );
     vi.stubGlobal("fetch", fetchMock);
 
-    await loadModule("de", "os.idp");
-    await loadModule("de", "os.idp");
+    await loadModule("xx", "os.idp");
+    await loadModule("xx", "os.idp");
 
     const fileCalls = fetchMock.mock.calls.filter(([url]) =>
       String(url).includes("GetUilmFile"),
@@ -55,33 +55,35 @@ describe("loadModule", () => {
     expect(fileCalls).toHaveLength(1);
     const [url, init] = fileCalls[0] as unknown as [string, RequestInit];
     expect(url).toBe(
-      "https://loc.example/api/Key/GetUilmFile?Language=de-DE&ModuleName=os.idp",
+      "https://loc.example/api/Key/GetUilmFile?Language=xx-XX&ModuleName=os.idp",
     );
     expect(init.headers).toEqual({ "X-Blocks-Key": "key-1" });
-    expect(useI18nStore.getState().remote["de:os.idp"]).toEqual({
-      SIGN_IN: "Anmelden",
+    expect(useI18nStore.getState().remote["xx:os.idp"]).toEqual({
+      SIGN_IN: "[xx] Sign in",
     });
-    expect(localStorage.getItem("blocks-i18n:de:os.idp")).toContain("Anmelden");
+    expect(localStorage.getItem("blocks-i18n:xx:os.idp")).toContain(
+      "[xx] Sign in",
+    );
   });
 
   it("uses the cache when the service fails", async () => {
     localStorage.setItem(
-      "blocks-i18n:de:os.idp",
+      "blocks-i18n:xx:os.idp",
       JSON.stringify({ SIGN_IN: "Alt" }),
     );
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("down")));
 
-    await loadModule("de", "os.idp");
+    await loadModule("xx", "os.idp");
 
-    expect(useI18nStore.getState().remote["de:os.idp"]).toEqual({
+    expect(useI18nStore.getState().remote["xx:os.idp"]).toEqual({
       SIGN_IN: "Alt",
     });
   });
 
   it("ignores an empty or malformed answer", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(okResponse(["x"])));
-    await loadModule("de", "os.idp");
-    expect(useI18nStore.getState().remote["de:os.idp"]).toBeUndefined();
+    await loadModule("xx", "os.idp");
+    expect(useI18nStore.getState().remote["xx:os.idp"]).toBeUndefined();
   });
 
   it("keeps the text entries when a published value is null", async () => {
@@ -89,11 +91,13 @@ describe("loadModule", () => {
       "fetch",
       vi
         .fn()
-        .mockResolvedValue(okResponse({ SIGN_IN: "Anmelden", BROKEN: null })),
+        .mockResolvedValue(
+          okResponse({ SIGN_IN: "[xx] Sign in", BROKEN: null }),
+        ),
     );
-    await loadModule("de", "os.idp");
-    expect(useI18nStore.getState().remote["de:os.idp"]).toEqual({
-      SIGN_IN: "Anmelden",
+    await loadModule("xx", "os.idp");
+    expect(useI18nStore.getState().remote["xx:os.idp"]).toEqual({
+      SIGN_IN: "[xx] Sign in",
     });
   });
 
@@ -101,7 +105,7 @@ describe("loadModule", () => {
     configureI18n({ baseUrl: () => "", blocksKey: () => "" });
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
-    await loadModule("de", "os.idp");
+    await loadModule("xx", "os.idp");
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });

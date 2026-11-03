@@ -50,7 +50,7 @@ export function SidebarMenuDesktop({
               <Logo
                 lightSrc={appLightLogo}
                 darkSrc={appDarkLogo}
-                alt="Logo"
+                alt={t("SIDEBAR.LOGO_ALT")}
                 className="h-full w-full object-contain"
               />
             }

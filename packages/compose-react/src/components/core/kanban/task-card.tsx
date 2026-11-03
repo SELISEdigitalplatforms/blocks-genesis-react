@@ -6,6 +6,7 @@ import { GripVertical } from "lucide-react";
 import { Badge } from "@/components/core/badge";
 import { Button } from "@/components/core/button";
 import { Card, CardContent, CardHeader } from "@/components/core/card";
+import { useT } from "@/i18n";
 
 import type { KanbanTask, KanbanTaskDragData } from "./types";
 
@@ -17,6 +18,7 @@ interface KanbanTaskCardProps {
 }
 
 export const KanbanTaskCard = ({ task, isOverlay }: KanbanTaskCardProps) => {
+  const { t } = useT("genesis.shared");
   const {
     setNodeRef,
     attributes,
@@ -73,11 +75,11 @@ export const KanbanTaskCard = ({ task, isOverlay }: KanbanTaskCardProps) => {
           {...listeners}
           className="-ml-2 h-auto cursor-grab p-1 text-muted-foreground hover:text-foreground"
         >
-          <span className="sr-only">Move task</span>
+          <span className="sr-only">{t("KANBAN_TASK_CARD.MOVE_TASK")}</span>
           <GripVertical />
         </Button>
         <Badge variant="outline" className="ml-auto font-semibold">
-          Task
+          {t("KANBAN_TASK_CARD.TASK")}
         </Badge>
       </CardHeader>
       <CardContent className="whitespace-pre-wrap px-3 pb-6 pt-3 text-left">

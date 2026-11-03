@@ -9,15 +9,17 @@ vi.mock("@/hooks/use-project", () => ({
 }));
 vi.mock("react-router", () => ({ useNavigate: () => vi.fn() }));
 
-describe("genesis German text", () => {
+describe("genesis text in another language", () => {
   afterEach(() => {
     act(() => useAppSettingsStore.getState().setSettings({ language: "en" }));
   });
 
-  it("shows the German button text once a German dictionary is loaded", () => {
-    useI18nStore.getState().setRemote("de", "common", { DELETE: "Löschen" });
-    act(() => useAppSettingsStore.getState().setSettings({ language: "de" }));
+  it("shows the other-language button text once its dictionary is loaded", () => {
+    useI18nStore
+      .getState()
+      .setRemote("xx", "common", { DELETE: "[xx] Delete" });
+    act(() => useAppSettingsStore.getState().setSettings({ language: "xx" }));
     render(<ArchiveProject />);
-    expect(screen.getByText("Löschen")).toBeInTheDocument();
+    expect(screen.getByText("[xx] Delete")).toBeInTheDocument();
   });
 });
