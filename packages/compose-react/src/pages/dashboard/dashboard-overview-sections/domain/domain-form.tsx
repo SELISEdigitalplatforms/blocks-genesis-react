@@ -113,10 +113,11 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
               </FormLabel>
               <FormControl>
                 <div className="flex items-center rounded-md border border-input bg-background px-3 py-2">
+                  {/* eslint-disable-next-line no-restricted-syntax -- URL scheme, not translated */}
                   <span className="text-muted-foreground">https://</span>
                   <Input
                     {...field}
-                    placeholder="your-domain.com"
+                    placeholder={t("DOMAIN_FORM.DOMAIN_PLACEHOLDER")}
                     className="h-auto border-0 bg-transparent p-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                     onChange={(e) => {
                       field.onChange(e);
@@ -151,7 +152,10 @@ export const DomainForm = ({ application, onAfterSubmit }: DomainFormProps) => {
                 {t("DOMAIN_FORM.COOKIE_DOMAIN")}
               </FormLabel>
               <FormControl>
-                <Input {...field} placeholder="your-domain.com" />
+                <Input
+                  {...field}
+                  placeholder={t("DOMAIN_FORM.DOMAIN_PLACEHOLDER")}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -16,13 +16,22 @@ describe("toProjectLanguages", () => {
   it("maps the service list, one entry per language, English always present", () => {
     expect(
       toProjectLanguages([
-        { LanguageCode: "de-DE", LanguageName: "Deutsch", IsDefault: true },
-        { languageCode: "de-AT", languageName: "Deutsch (AT)" },
-        { languageCode: "fr-FR", languageName: "Français" },
+        {
+          LanguageCode: "xx-XX",
+          LanguageName: "Test language",
+          IsDefault: true,
+        },
+        { languageCode: "xx-YY", languageName: "Test language (YY)" },
+        { languageCode: "yy-YY", languageName: "Other test language" },
       ]),
     ).toEqual([
-      { code: "de", culture: "de-DE", title: "Deutsch", isDefault: true },
-      { code: "fr", culture: "fr-FR", title: "Français", isDefault: false },
+      { code: "xx", culture: "xx-XX", title: "Test language", isDefault: true },
+      {
+        code: "yy",
+        culture: "yy-YY",
+        title: "Other test language",
+        isDefault: false,
+      },
       { code: "en", culture: "en-US", title: "English" },
     ]);
   });
@@ -52,21 +61,21 @@ describe("toProjectLanguages", () => {
 describe("resolveLanguageIn", () => {
   const list = [
     { code: "en", culture: "en-US", title: "English" },
-    { code: "de", culture: "de-DE", title: "Deutsch", isDefault: true },
+    { code: "xx", culture: "xx-XX", title: "Test language", isDefault: true },
   ];
 
   it("keeps a stored language the project offers", () => {
     expect(resolveLanguageIn("en", list, true)).toBe("en");
-    expect(resolveLanguageIn("de-DE", list, true)).toBe("de");
+    expect(resolveLanguageIn("xx-XX", list, true)).toBe("xx");
   });
 
   it("falls back to the project's default", () => {
-    expect(resolveLanguageIn(undefined, list, true)).toBe("de");
-    expect(resolveLanguageIn("fr", list, true)).toBe("de");
+    expect(resolveLanguageIn(undefined, list, true)).toBe("xx");
+    expect(resolveLanguageIn("yy", list, true)).toBe("xx");
   });
 
   it("keeps any stored language until the list is known", () => {
-    expect(resolveLanguageIn("fr", list, false)).toBe("fr");
+    expect(resolveLanguageIn("yy", list, false)).toBe("yy");
   });
 });
 
@@ -88,7 +97,7 @@ describe("loadLanguages", () => {
     const fetchMock = vi.fn().mockResolvedValue(
       okResponse([
         { languageCode: "en-US", languageName: "English", isDefault: true },
-        { languageCode: "de-CH", languageName: "Deutsch (CH)" },
+        { languageCode: "xx-ZZ", languageName: "Test language (ZZ)" },
       ]),
     );
     vi.stubGlobal("fetch", fetchMock);
@@ -101,8 +110,8 @@ describe("loadLanguages", () => {
     expect(url).toBe("https://loc.example/api/Language/Gets");
     expect(init.headers).toEqual({ "X-Blocks-Key": "key-1" });
     expect(useLanguagesStore.getState().loaded).toBe(true);
-    expect(cultureOf("de")).toBe("de-CH");
-    expect(localStorage.getItem("blocks-i18n:languages")).toContain("de-CH");
+    expect(cultureOf("xx")).toBe("xx-ZZ");
+    expect(localStorage.getItem("blocks-i18n:languages")).toContain("xx-ZZ");
   });
 
   it("keeps English only when the service fails and nothing is cached", async () => {
@@ -119,14 +128,14 @@ describe("loadLanguages", () => {
       "blocks-i18n:languages",
       JSON.stringify([
         { languageCode: "en-US", languageName: "English" },
-        { languageCode: "de-DE", languageName: "Deutsch" },
+        { languageCode: "xx-XX", languageName: "Test language" },
       ]),
     );
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("down")));
     await loadLanguages();
     expect(useLanguagesStore.getState().languages.map((l) => l.code)).toEqual([
       "en",
-      "de",
+      "xx",
     ]);
   });
 

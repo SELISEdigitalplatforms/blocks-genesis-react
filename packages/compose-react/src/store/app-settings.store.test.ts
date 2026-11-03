@@ -12,10 +12,10 @@ describe("useAppSettingsStore", () => {
   });
 
   it("setSettings merges partial settings", () => {
-    useAppSettingsStore.getState().setSettings({ language: "de" });
+    useAppSettingsStore.getState().setSettings({ language: "xx" });
     useAppSettingsStore.getState().setSettings({ theme: "dark" });
     expect(useAppSettingsStore.getState().getSettings().theme).toBe("dark");
-    expect(useAppSettingsStore.getState().getSettings().language).toBe("de");
+    expect(useAppSettingsStore.getState().getSettings().language).toBe("xx");
   });
 
   it("setSystemTheme updates the reactive system theme", () => {

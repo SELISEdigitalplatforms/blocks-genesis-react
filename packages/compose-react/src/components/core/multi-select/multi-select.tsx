@@ -19,6 +19,7 @@ import {
 } from "@/components/core/command/command";
 import { usePopoverWidth } from "@/hooks/use-popover-width";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useT } from "@/i18n";
 
 interface MultiSelectProps {
   label?: string;
@@ -34,6 +35,7 @@ export function MultiSelect({
   value: selectedValues,
 }: MultiSelectProps) {
   const [buttonRef, popoverWidth] = usePopoverWidth();
+  const { t } = useT("genesis.shared");
 
   const onSelectHandler = (value: string) => {
     const nextValues = selectedValues.includes(value)
@@ -73,7 +75,9 @@ export function MultiSelect({
                       variant="secondary"
                       className="rounded-sm px-1 font-normal"
                     >
-                      {selectedValues.length} selected
+                      {t("MULTI_SELECT.SELECTED_COUNT", {
+                        count: selectedValues.length,
+                      })}
                     </Badge>
                   ) : (
                     options
@@ -106,7 +110,7 @@ export function MultiSelect({
         <Command>
           <CommandInput placeholder={label} />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty>{t("MULTI_SELECT.NO_RESULTS")}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {
                 const isSelected = selectedValues.includes(option.value);
@@ -138,7 +142,7 @@ export function MultiSelect({
                     onSelect={() => onResetHandler()}
                     className="justify-center text-center"
                   >
-                    Clear
+                    {t("common:CLEAR")}
                   </CommandItem>
                 </CommandGroup>
               </>

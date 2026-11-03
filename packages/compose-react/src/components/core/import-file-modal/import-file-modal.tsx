@@ -25,6 +25,7 @@ import {
   FileUploaderItem,
 } from "@/components/core/file-uploader";
 import { cn } from "@/lib/utils";
+import { useT } from "@/i18n";
 import { fadeInScale, fadeTransition } from "@/lib/motion-presets";
 
 export type ImportFileModalDropzoneOptions = {
@@ -58,16 +59,21 @@ const DefaultDropzoneContent = ({
   acceptedFormatsLabel = "SVG, PNG, JPG or GIF",
 }: {
   acceptedFormatsLabel?: string;
-}) => (
-  <>
-    <CloudUpload className="mb-3 size-8 text-muted-foreground" aria-hidden />
-    <p className="mb-1 text-sm text-foreground">
-      <span className="font-semibold text-primary">Click to upload</span> or
-      drag and drop
-    </p>
-    <p className="text-xs text-muted-foreground">{acceptedFormatsLabel}</p>
-  </>
-);
+}) => {
+  const { t } = useT("genesis.shared");
+  return (
+    <>
+      <CloudUpload className="mb-3 size-8 text-muted-foreground" aria-hidden />
+      <p className="mb-1 text-sm text-foreground">
+        <span className="font-semibold text-primary">
+          {t("IMPORT_FILE_MODAL.CLICK_TO_UPLOAD")}
+        </span>{" "}
+        {t("IMPORT_FILE_MODAL.OR_DRAG_AND_DROP")}
+      </p>
+      <p className="text-xs text-muted-foreground">{acceptedFormatsLabel}</p>
+    </>
+  );
+};
 
 export const ImportFileModalContent = ({
   dialogTitle,

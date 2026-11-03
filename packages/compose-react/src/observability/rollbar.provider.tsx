@@ -4,6 +4,7 @@ import { getQueryClient } from "@/providers/query-client";
 import { attachQueryErrorReporting } from "./report-query-errors";
 import { type RollbarConfigOptions } from "./rollbar.config";
 import { getRollbar } from "./rollbar.instance";
+import { useT } from "@/i18n/use-t";
 
 export interface RollbarFallbackProps {
   error: Error | null;
@@ -12,30 +13,33 @@ export interface RollbarFallbackProps {
 
 /**
  * Shown instead of a blank page when a render throws. Deliberately plain: it has to render when the
- * app's own state is already known-bad, so it depends on nothing but theme tokens.
+ * app's own state is already known-bad, so it depends only on theme tokens and its i18n keys, which
+ * fall back to the bundled English when nothing else loads.
  */
-const DefaultFallback = ({ resetError }: RollbarFallbackProps) => (
-  <div
-    className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-6 text-center"
-    role="alert"
-  >
-    <div className="space-y-1">
-      <p className="text-lg font-semibold text-foreground">
-        Something went wrong
-      </p>
-      <p className="text-sm text-medium-emphasis">
-        The error has been reported. Try again, or reload the page if it keeps
-        happening.
-      </p>
-    </div>
-    <button
-      onClick={resetError}
-      className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+const DefaultFallback = ({ resetError }: RollbarFallbackProps) => {
+  const { t } = useT("genesis.shared");
+  return (
+    <div
+      className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-6 text-center"
+      role="alert"
     >
-      Try again
-    </button>
-  </div>
-);
+      <div className="space-y-1">
+        <p className="text-lg font-semibold text-foreground">
+          {t("ROLLBAR_FALLBACK.TITLE")}
+        </p>
+        <p className="text-sm text-medium-emphasis">
+          {t("ROLLBAR_FALLBACK.MESSAGE")}
+        </p>
+      </div>
+      <button
+        onClick={resetError}
+        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+      >
+        {t("ROLLBAR_FALLBACK.TRY_AGAIN")}
+      </button>
+    </div>
+  );
+};
 
 export interface RollbarProviderProps extends RollbarConfigOptions {
   children: ReactNode;

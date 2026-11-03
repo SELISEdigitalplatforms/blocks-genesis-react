@@ -25,26 +25,28 @@ describe("useT", () => {
     expect(result.current.t(COMMON_SAVE)).toBe("Save");
   });
 
-  it("shows German once it arrives and updates on language change", () => {
+  it("shows the other language once it arrives and updates on language change", () => {
     const { result } = renderHook(() => useT(MODULE));
-    act(() => useAppSettingsStore.getState().setSettings({ language: "de" }));
+    act(() => useAppSettingsStore.getState().setSettings({ language: "xx" }));
     expect(result.current.t("SIGN_IN")).toBe("Sign in");
 
     act(() =>
-      useI18nStore.getState().setRemote("de", MODULE, { SIGN_IN: "Anmelden" }),
+      useI18nStore
+        .getState()
+        .setRemote("xx", MODULE, { SIGN_IN: "[xx] Sign in" }),
     );
-    expect(result.current.language).toBe("de");
-    expect(result.current.t("SIGN_IN")).toBe("Anmelden");
+    expect(result.current.language).toBe("xx");
+    expect(result.current.t("SIGN_IN")).toBe("[xx] Sign in");
   });
 
-  it("resolves values from the published German text", () => {
+  it("resolves values from the published other-language text", () => {
     registerTranslations(MODULE, { DELETED: "Deleted {{count}} items" });
     const { result } = renderHook(() => useT(MODULE));
-    act(() => useAppSettingsStore.getState().setSettings({ language: "de" }));
+    act(() => useAppSettingsStore.getState().setSettings({ language: "xx" }));
     act(() =>
       useI18nStore
         .getState()
-        .setRemote("de", MODULE, { DELETED: "{{count}} Einträge gelöscht" }),
+        .setRemote("xx", MODULE, { DELETED: "{{count}} Einträge gelöscht" }),
     );
     expect(result.current.t("DELETED", { count: 3 })).toBe(
       "3 Einträge gelöscht",
@@ -52,8 +54,8 @@ describe("useT", () => {
   });
 
   it("tStatic reads the current language", () => {
-    useI18nStore.getState().setRemote("de", "common", { SAVE: "Speichern" });
-    act(() => useAppSettingsStore.getState().setSettings({ language: "de" }));
+    useI18nStore.getState().setRemote("xx", "common", { SAVE: "Speichern" });
+    act(() => useAppSettingsStore.getState().setSettings({ language: "xx" }));
     expect(tStatic(MODULE, COMMON_SAVE)).toBe("Speichern");
   });
 });
@@ -67,10 +69,10 @@ describe("useT with another module's key", () => {
       blocksKey: () => "key-1",
     });
     registerTranslations("os.other", { TITLE: "Title" });
-    act(() => useAppSettingsStore.getState().setSettings({ language: "de" }));
+    act(() => useAppSettingsStore.getState().setSettings({ language: "xx" }));
   });
 
-  it("loads that module's German too", async () => {
+  it("loads that module's other-language text too", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       text: () => Promise.resolve(JSON.stringify({ TITLE: "Titel" })),
