@@ -55,7 +55,7 @@ export function SidebarMobileView({
                 className="h-9 w-auto"
                 lightSrc={appLightLogo}
                 darkSrc={appDarkLogo}
-                alt="Logo"
+                alt={t("SIDEBAR.LOGO_ALT")}
               />
             </Link>
             <SheetClose className="mt-0!">

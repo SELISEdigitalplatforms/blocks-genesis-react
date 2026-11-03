@@ -41,6 +41,7 @@ export const LoginHeader = ({
         <a href={docsUrl} target="_blank" rel="noreferrer" className="nav-link">
           {t("LOGIN_HEADER.DOCS")}
         </a>
+        {/* eslint-disable no-restricted-syntax -- product names (Blocks, GitHub), not translated */}
         <a
           href={blocksUrl}
           target="_blank"
@@ -57,6 +58,7 @@ export const LoginHeader = ({
         >
           GitHub
         </a>
+        {/* eslint-enable no-restricted-syntax */}
         <ThemeSwitcher
           className="nav-link inline-flex items-center gap-1.5"
           showChevron={false}

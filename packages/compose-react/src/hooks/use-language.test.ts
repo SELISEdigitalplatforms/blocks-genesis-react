@@ -36,11 +36,11 @@ describe("useLanguage", () => {
       useLanguage({ storage, onLanguageChange }),
     );
 
-    act(() => result.current.setLanguage("de"));
+    act(() => result.current.setLanguage("xx"));
 
-    expect(result.current.language).toBe("de");
-    expect(storage.get("language")).toBe("de");
-    expect(onLanguageChange).toHaveBeenCalledWith("de");
+    expect(result.current.language).toBe("xx");
+    expect(storage.get("language")).toBe("xx");
+    expect(onLanguageChange).toHaveBeenCalledWith("xx");
   });
 
   it("exposes changeLanguage as an alias of setLanguage", () => {

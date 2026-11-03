@@ -67,9 +67,11 @@ export function AppSwitcherContent({ apps }: AppSwitcherContentProps) {
 
   return (
     <div className="bg-muted/50 border-t px-3 pb-4 pt-3">
+      {/* eslint-disable no-restricted-syntax -- product name, not translated */}
       <p className="text-muted-foreground mb-2 px-1 text-[13px] font-semibold">
         SELISE Blocks
       </p>
+      {/* eslint-enable no-restricted-syntax */}
       <div className="grid grid-cols-3">
         {apps.map((app) => (
           <AppTile key={app.id} app={app} isLoading={app.isLoading} />

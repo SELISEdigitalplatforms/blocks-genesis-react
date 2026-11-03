@@ -29,7 +29,7 @@ const setProjectLanguages = () =>
   act(() =>
     useLanguagesStore.getState().setLanguages([
       { code: "en", culture: "en-US", title: "English" },
-      { code: "de", culture: "de-DE", title: "Deutsch", isDefault: true },
+      { code: "xx", culture: "xx-XX", title: "Test language", isDefault: true },
       { code: "fr", culture: "fr-FR", title: "Français" },
     ]),
   );
@@ -57,7 +57,7 @@ describe("LanguageSelector", () => {
     await user.click(screen.getByRole("button"));
 
     expect(screen.getByText("English")).toBeInTheDocument();
-    expect(screen.getByText("Deutsch")).toBeInTheDocument();
+    expect(screen.getByText("Test language")).toBeInTheDocument();
     expect(screen.getByText("Français")).toBeInTheDocument();
   });
 
@@ -77,7 +77,7 @@ describe("LanguageSelector", () => {
     h.language = "it";
     render(<LanguageSelector />);
 
-    expect(screen.getByText("de")).toBeInTheDocument();
-    expect(document.documentElement.lang).toBe("de");
+    expect(screen.getByText("xx")).toBeInTheDocument();
+    expect(document.documentElement.lang).toBe("xx");
   });
 });

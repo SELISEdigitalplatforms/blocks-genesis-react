@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import type { DateRange } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
+import { useT } from "@/i18n";
 import { Button } from "@/components/core/button";
 import { Calendar } from "@/components/core/calendar";
 import {
@@ -62,6 +63,7 @@ const DateRangePicker = React.forwardRef<
     ref,
   ) => {
     const [open, setOpen] = React.useState(false);
+    const { t } = useT("genesis.shared");
     /** Draft selection — only committed to `onChange` when "Apply" is pressed. */
     const [draft, setDraft] = React.useState<DateRange | undefined>(value);
 
@@ -105,7 +107,7 @@ const DateRangePicker = React.forwardRef<
                 setOpen(false);
               }}
             >
-              Reset
+              {t("common:RESET")}
             </Button>
             <Button
               size="sm"
@@ -115,7 +117,7 @@ const DateRangePicker = React.forwardRef<
                 setOpen(false);
               }}
             >
-              Apply
+              {t("common:APPLY")}
             </Button>
           </div>
         </PopoverContent>

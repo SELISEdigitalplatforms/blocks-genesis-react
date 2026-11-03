@@ -7,8 +7,8 @@ const en = {
   ITEMS_one: "{{count}} item",
   ITEMS_other: "{{count}} items",
 };
-const de = {
-  SIGN_IN: "Anmelden",
+const other = {
+  SIGN_IN: "[xx] Sign in",
   HELLO: MISSING_VALUE,
   ITEMS_other: "{{count}} Einträge",
 };
@@ -16,22 +16,22 @@ const de = {
 describe("translate", () => {
   it("uses the chosen language first", () => {
     const sources = [
-      { language: "de", dictionary: de },
+      { language: "xx", dictionary: other },
       { language: "en", dictionary: en },
     ];
-    expect(translate(sources, "SIGN_IN")).toBe("Anmelden");
+    expect(translate(sources, "SIGN_IN")).toBe("[xx] Sign in");
   });
 
   it("falls back to English when the value is missing or marked missing", () => {
     const sources = [
-      { language: "de", dictionary: de },
+      { language: "xx", dictionary: other },
       { language: "en", dictionary: en },
     ];
     expect(translate(sources, "HELLO", { name: "Ada" })).toBe("Hello Ada");
   });
 
   it("falls back to English when the language is not loaded", () => {
-    const sources = [{ language: "de" }, { language: "en", dictionary: en }];
+    const sources = [{ language: "xx" }, { language: "en", dictionary: en }];
     expect(translate(sources, "SIGN_IN")).toBe("Sign in");
   });
 
@@ -43,16 +43,16 @@ describe("translate", () => {
 
   it("uses the other form when a language lacks the exact form", () => {
     const sources = [
-      { language: "de", dictionary: de },
+      { language: "xx", dictionary: other },
       { language: "en", dictionary: en },
     ];
     expect(translate(sources, "ITEMS", { count: 1 })).toBe("1 Einträge");
   });
 
-  it("fills values into the German text", () => {
+  it("fills values into the other-language text", () => {
     const sources = [
       {
-        language: "de",
+        language: "xx",
         dictionary: { DELETED: "{{count}} Einträge von {{name}} gelöscht" },
       },
       {
@@ -65,10 +65,10 @@ describe("translate", () => {
     );
   });
 
-  it("uses English when the German text lost or renamed a placeholder", () => {
+  it("uses English when the other-language text lost or renamed a placeholder", () => {
     const sources = [
       {
-        language: "de",
+        language: "xx",
         dictionary: { DELETED: "{{Anzahl}} Einträge gelöscht" },
       },
       { language: "en", dictionary: { DELETED: "Deleted {{count}} items" } },

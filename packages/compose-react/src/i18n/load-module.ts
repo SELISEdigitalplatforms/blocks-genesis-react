@@ -54,7 +54,7 @@ const fetchModule = async (
   language: string,
   module: string,
 ): Promise<Dictionary | null> => {
-  // The culture code comes from the project's languages (`de` → `de-DE`).
+  // The culture code comes from the project's languages (`en` → `en-US`).
   await loadLanguages();
   const query = new URLSearchParams({
     Language: cultureOf(language),

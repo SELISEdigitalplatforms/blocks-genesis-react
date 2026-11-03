@@ -72,7 +72,9 @@ export function MultiSelect({
                       variant="outline"
                       className="rounded-sm px-1 font-normal"
                     >
-                      {selectedValues.length} selected
+                      {t("MULTI_SELECT.SELECTED_COUNT", {
+                        count: selectedValues.length,
+                      })}
                     </Badge>
                   ) : (
                     options

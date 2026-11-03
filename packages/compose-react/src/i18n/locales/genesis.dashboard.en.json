@@ -30,6 +30,7 @@
   "DOMAIN_FORM.ADDED": "Application added successfully",
   "DOMAIN_FORM.COOKIE_DOMAIN": "Cookie Domain",
   "DOMAIN_FORM.DOMAIN": "Domain",
+  "DOMAIN_FORM.DOMAIN_PLACEHOLDER": "your-domain.com",
   "DOMAIN_FORM.UPDATED": "Application updated successfully",
   "DOMAIN_FORM_DIALOG.ADD_DESCRIPTION": "Add a new domain to this project.",
   "DOMAIN_FORM_DIALOG.ADD_TITLE": "Add Domain",

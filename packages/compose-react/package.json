@@ -82,6 +82,11 @@
       "import": "./dist/i18n/index.js",
       "require": "./dist/i18n/index.cjs"
     },
+    "./eslint": {
+      "types": "./dist/eslint/index.d.ts",
+      "import": "./dist/eslint/index.js",
+      "require": "./dist/eslint/index.cjs"
+    },
     "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",

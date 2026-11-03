@@ -6,9 +6,9 @@ import {
 } from "./config";
 
 export interface SupportedLanguage {
-  /** Code the apps store and show (`en`, `de`): the culture's language part. */
+  /** Code the apps store and show (`en`): the culture's language part. */
   code: string;
-  /** Culture code of the language in the localization service (`de-DE`). */
+  /** Culture code of the language in the localization service (`en-US`). */
   culture: string;
   title: string;
   /** The project's default language. */
@@ -45,7 +45,7 @@ const KNOWN_CULTURES: Readonly<Record<string, string>> = {
 
 const CACHE_KEY = "blocks-i18n:languages";
 
-/** `de-DE` → `de`. */
+/** `en-US` → `en`. */
 export const toLanguageCode = (culture: string): string =>
   culture.trim().toLowerCase().split(/[-_]/)[0] ?? "";
 
@@ -189,7 +189,7 @@ export const resolveLanguage = (language?: string | null): string => {
   return resolveLanguageIn(language, languages, loaded);
 };
 
-/** Culture code the localization service uses for an app language (`de` → `de-DE`). */
+/** Culture code the localization service uses for an app language (`en` → `en-US`). */
 export const cultureOf = (language: string): string =>
   useLanguagesStore.getState().languages.find((item) => item.code === language)
     ?.culture ??
