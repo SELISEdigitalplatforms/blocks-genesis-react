@@ -14,14 +14,14 @@ type MenuItemType = Extract<Menu, { type: "menu" }>;
 
 const parentClasses = (isSidebarOpen: boolean, isActive: boolean) =>
   cn(
-    "group relative flex h-10 w-full cursor-pointer items-center p-1.5 text-base text-[hsl(var(--low-emphasis))] transition-[padding,gap] duration-200 hover:text-[hsl(var(--high-emphasis))]",
+    "group relative flex min-h-[2.5rem] w-full cursor-pointer items-center p-1.5 text-left text-base text-[hsl(var(--low-emphasis))] transition-[padding,gap] duration-200 hover:text-[hsl(var(--high-emphasis))]",
     isSidebarOpen ? "gap-3 px-4" : "gap-0 justify-center px-0",
     isActive && "!text-primary",
   );
 
 const childClasses = (isSidebarOpen: boolean, isActive: boolean) =>
   cn(
-    "group relative flex h-10 w-full items-center text-base transition-[padding,gap,color] duration-200",
+    "group relative flex min-h-[2.5rem] w-full items-center text-left text-base transition-[padding,gap,color] duration-200",
     isSidebarOpen ? "gap-2 px-4 pl-8" : "gap-0 justify-center px-4",
     isActive
       ? "!text-primary"
@@ -52,8 +52,10 @@ const ChildMenuItem = ({ menu, isSidebarOpen }: ChildMenuItemProps) => {
         {menu.icon ? <menu.icon className="h-5 w-5 shrink-0" /> : null}
         <span
           className={cn(
-            "inline-block overflow-hidden whitespace-nowrap transition-all duration-200",
-            isSidebarOpen ? "w-auto opacity-100" : "w-0 opacity-0",
+            "inline-block overflow-hidden transition-all duration-200",
+            isSidebarOpen
+              ? "min-w-0 flex-1 whitespace-normal break-words opacity-100"
+              : "w-0 whitespace-nowrap opacity-0",
           )}
         >
           {menu.name}
@@ -81,7 +83,7 @@ function DesktopLeafMenuItem({
         <Link
           to={menu.path}
           className={cn(
-            "flex w-full items-center transition-[gap] duration-200",
+            "flex w-full min-w-0 items-center transition-[gap] duration-200",
             isSidebarOpen ? "gap-3" : "justify-center gap-0",
             menu.disabled && "pointer-events-none opacity-50",
           )}
@@ -89,8 +91,10 @@ function DesktopLeafMenuItem({
           {menu.icon ? <menu.icon className="h-5 w-5 shrink-0" /> : null}
           <span
             className={cn(
-              "inline-block overflow-hidden whitespace-nowrap transition-all duration-200",
-              isSidebarOpen ? "w-auto opacity-100" : "w-0 opacity-0",
+              "inline-block overflow-hidden transition-all duration-200",
+              isSidebarOpen
+                ? "min-w-0 flex-1 whitespace-normal break-words opacity-100"
+                : "w-0 whitespace-nowrap opacity-0",
             )}
           >
             <span className="relative inline-block">
@@ -198,14 +202,18 @@ export function DesktopMenuItem({
           <div
             className={cn(
               "flex items-center transition-[gap] duration-200",
-              isSidebarOpen ? "gap-3" : "w-full justify-center gap-0",
+              isSidebarOpen
+                ? "min-w-0 flex-1 gap-3"
+                : "w-full justify-center gap-0",
             )}
           >
             {menu.icon ? <menu.icon className="h-5 w-5 shrink-0" /> : null}
             <span
               className={cn(
-                "inline-block overflow-hidden whitespace-nowrap transition-all duration-200",
-                isSidebarOpen ? "w-auto opacity-100" : "w-0 opacity-0",
+                "inline-block overflow-hidden transition-all duration-200",
+                isSidebarOpen
+                  ? "min-w-0 flex-1 whitespace-normal break-words opacity-100"
+                  : "w-0 whitespace-nowrap opacity-0",
               )}
             >
               <span className="relative inline-block">
