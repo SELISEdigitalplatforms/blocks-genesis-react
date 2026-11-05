@@ -5,6 +5,8 @@ import { useNotificationFeed } from "./use-notification-feed";
 import { NotificationBell } from "./notification-bell";
 import { NotificationHeader } from "./notification-header";
 import { NotificationList } from "./notification-list";
+import { useNotificationOpen } from "./use-notification-open";
+import type { INotification } from "@/models";
 
 export function Notification() {
   const [open, setOpen] = useState(false);
@@ -21,6 +23,13 @@ export function Notification() {
     handleMarkAsRead,
     handleMarkAllAsRead,
   } = useNotificationFeed(open);
+  const { getHref, open: openPage } = useNotificationOpen();
+
+  const handleOpen = (notification: INotification, href: string) => {
+    if (!notification.isRead) handleMarkAsRead(notification.id);
+    setOpen(false);
+    openPage(href);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -38,6 +47,8 @@ export function Notification() {
           listRef={listRef}
           onScroll={handleScroll}
           onMarkAsRead={handleMarkAsRead}
+          getHref={getHref}
+          onOpen={handleOpen}
         />
       </PopoverContent>
     </Popover>

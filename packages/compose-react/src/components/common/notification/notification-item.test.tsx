@@ -73,4 +73,33 @@ describe("NotificationItem", () => {
 
     expect(screen.getByText("No Title")).toBeInTheDocument();
   });
+  it("opens its page when it has one", () => {
+    const onOpen = vi.fn();
+    const notification = makeNotification();
+    render(
+      <NotificationItem
+        notification={notification}
+        onMarkAsRead={vi.fn()}
+        href="/app/p/functions/f"
+        onOpen={onOpen}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button"));
+
+    expect(onOpen).toHaveBeenCalledWith(notification, "/app/p/functions/f");
+  });
+
+  it("is not a link when it has no page", () => {
+    render(
+      <NotificationItem
+        notification={makeNotification()}
+        onMarkAsRead={vi.fn()}
+        href={null}
+        onOpen={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
 });

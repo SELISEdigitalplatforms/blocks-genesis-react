@@ -18,6 +18,9 @@ vi.mock("./use-notification-feed", () => ({
     handleMarkAllAsRead: vi.fn(),
   }),
 }));
+vi.mock("./use-notification-open", () => ({
+  useNotificationOpen: () => ({ getHref: () => null, open: vi.fn() }),
+}));
 vi.mock("./notification-bell", () => ({
   NotificationBell: ({ unreadCount }: { unreadCount: number }) => (
     <div data-testid="bell">{unreadCount}</div>
