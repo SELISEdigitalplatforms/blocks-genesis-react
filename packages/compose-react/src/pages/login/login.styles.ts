@@ -488,6 +488,7 @@ export const blocksLoginStyles = `
 
 @media (max-width: 600px) {
   .blocksLogin-page .site-nav { padding: 0 22px; }
+  .blocksLogin-page .nav-right { gap: 8px; }
   .blocksLogin-page .nav-links { display: none; }
   .blocksLogin-page .main { padding: calc(var(--nav-h) + 28px) 22px 80px; }
   .blocksLogin-page .title-main { font-size: 1.8rem; }
