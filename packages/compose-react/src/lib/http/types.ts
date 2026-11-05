@@ -75,7 +75,11 @@ export interface HttpRequestFailure {
   /** Absolute request URL. */
   url: string;
   method: RequestOptions["method"];
-  /** True when the request never produced an HTTP response (DNS, CORS, TLS, offline, abort). */
+  /**
+   * True when the thrown error is not an `HttpError`: the request never produced an HTTP response
+   * (DNS, CORS, TLS, offline, abort), a success response's body could not be read or parsed as
+   * JSON, or the client itself threw.
+   */
   transport: boolean;
 }
 

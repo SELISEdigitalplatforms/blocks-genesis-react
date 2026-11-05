@@ -10,6 +10,8 @@ interface NotificationListProps {
   listRef: RefObject<HTMLDivElement | null>;
   onScroll: () => void;
   onMarkAsRead: (id: string) => void;
+  getHref?: (notification: INotification) => string | null;
+  onOpen?: (notification: INotification, href: string) => void;
 }
 
 export function NotificationList({
@@ -19,7 +21,9 @@ export function NotificationList({
   listRef,
   onScroll,
   onMarkAsRead,
-}: NotificationListProps) {
+  getHref,
+  onOpen,
+}: Readonly<NotificationListProps>) {
   const { t } = useT("genesis.shared");
   const isEmpty = notifications.length === 0;
 
@@ -39,6 +43,8 @@ export function NotificationList({
         key={notification.id || idx}
         notification={notification}
         onMarkAsRead={onMarkAsRead}
+        href={getHref?.(notification)}
+        onOpen={onOpen}
       />
     ));
   };

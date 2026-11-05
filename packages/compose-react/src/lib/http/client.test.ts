@@ -23,38 +23,64 @@ vi.mock("@/store/project.store", () => ({
   },
 }));
 
+import type Rollbar from "rollbar";
 import { HttpClient } from "@/lib/http/client";
+import { HttpError } from "@/lib/http/error";
+import type { HttpRequestFailure } from "@/lib/http/types";
+import { createHttpFailureReporter } from "@/observability/report-http-errors";
 
 type ResOpts = {
   status?: number;
   ok?: boolean;
   contentType?: string;
+  contentLength?: string;
   json?: unknown;
   text?: string;
+  textRejects?: unknown;
   blob?: unknown;
   body?: unknown;
   jsonThrows?: boolean;
 };
 
+// `text()` answers like a real body: the given text, else the serialised `json`, else "".
 const res = (opts: ResOpts) => {
   const status = opts.status ?? 200;
+  const headerValues: Record<string, string | undefined> = {
+    "content-type": opts.contentType,
+    "content-length": opts.contentLength,
+  };
   return {
     status,
     ok: opts.ok ?? (status >= 200 && status < 300),
     headers: {
-      get: (key: string) =>
-        key.toLowerCase() === "content-type"
-          ? (opts.contentType ?? null)
-          : null,
+      get: (key: string) => headerValues[key.toLowerCase()] ?? null,
     },
-    json: async () => {
+    json: vi.fn(async () => {
       if (opts.jsonThrows) throw new Error("bad json");
       return opts.json;
-    },
-    text: async () => opts.text,
-    blob: async () => opts.blob,
+    }),
+    text: vi.fn(async () => {
+      if (opts.textRejects !== undefined) throw opts.textRejects;
+      if (opts.text !== undefined) return opts.text;
+      return "json" in opts ? JSON.stringify(opts.json) : "";
+    }),
+    blob: vi.fn(async () => opts.blob),
     body: opts.body ?? null,
   };
+};
+
+type MockResponse = ReturnType<typeof res>;
+
+const expectNoBodyRead = (response: MockResponse) => {
+  expect(response.text).not.toHaveBeenCalled();
+  expect(response.json).not.toHaveBeenCalled();
+  expect(response.blob).not.toHaveBeenCalled();
+};
+
+const expectOneTextRead = (response: MockResponse) => {
+  expect(response.text).toHaveBeenCalledTimes(1);
+  expect(response.json).not.toHaveBeenCalled();
+  expect(response.blob).not.toHaveBeenCalled();
 };
 
 const originalLocation = window.location;
@@ -713,5 +739,401 @@ describe("HttpClient onError", () => {
     await expect(makeClient().get("/thing")).rejects.toMatchObject({
       status: 500,
     });
+  });
+});
+
+describe("HttpClient success responses without data", () => {
+  const envelope = (status: number) => ({ success: true, status });
+
+  const getWith = async (response: MockResponse, onError = vi.fn()) => {
+    fetchMock.mockResolvedValueOnce(response);
+    const out = await makeClient({ onError }).get("/x");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(onError).not.toHaveBeenCalled();
+    return out;
+  };
+
+  it.each(["application/json", "application/json; charset=utf-8"])(
+    "resolves a 204 with %s to the envelope without reading the body (E1)",
+    async (contentType) => {
+      const response = res({ status: 204, contentType });
+      expect(await getWith(response)).toEqual(envelope(204));
+      expectNoBodyRead(response);
+    },
+  );
+
+  it("resolves a 205 without a content type to the envelope (E2)", async () => {
+    const response = res({ status: 205 });
+    expect(await getWith(response)).toEqual(envelope(205));
+    expectNoBodyRead(response);
+  });
+
+  it("resolves a 205 with a JSON content type without reading the body", async () => {
+    const response = res({ status: 205, contentType: "application/json" });
+    expect(await getWith(response)).toEqual(envelope(205));
+    expectNoBodyRead(response);
+  });
+
+  it.each([
+    [204, "text/html"],
+    [205, "text/html; charset=utf-8"],
+    [204, "text/plain"],
+    [204, "image/png"],
+    [205, "application/octet-stream"],
+    [204, "application/pdf"],
+  ])(
+    "resolves a %i with %s to the envelope before looking at the content type (E10)",
+    async (status, contentType) => {
+      const response = res({
+        status,
+        contentType,
+        text: "ignored",
+        blob: new Blob(["ignored"]),
+      });
+      expect(await getWith(response)).toEqual(envelope(status));
+      expectNoBodyRead(response);
+    },
+  );
+
+  it("still resolves a 200 without a content type to the envelope", async () => {
+    const response = res({ status: 200 });
+    expect(await getWith(response)).toEqual(envelope(200));
+    expectNoBodyRead(response);
+  });
+
+  it("resolves a JSON response with content-length 0 without reading the body (E3)", async () => {
+    const response = res({
+      contentType: "application/json",
+      contentLength: "0",
+    });
+    expect(await getWith(response)).toEqual(envelope(200));
+    expectNoBodyRead(response);
+  });
+
+  it("reads a JSON body whose content-length is not 0", async () => {
+    const response = res({
+      contentType: "application/json",
+      contentLength: "8",
+      json: { ok: 1 },
+    });
+    expect(await getWith(response)).toEqual({ ok: 1 });
+    expectOneTextRead(response);
+  });
+
+  it("resolves an empty JSON body without content-length after one text() read", async () => {
+    const response = res({ contentType: "application/json", text: "" });
+    expect(await getWith(response)).toEqual(envelope(200));
+    expectOneTextRead(response);
+  });
+
+  it("resolves a whitespace-only JSON body to the envelope (E4)", async () => {
+    const response = res({ contentType: "application/json", text: "  \n" });
+    expect(await getWith(response)).toEqual(envelope(200));
+    expectOneTextRead(response);
+  });
+
+  it("treats any other content type as JSON, so an empty body is no data", async () => {
+    const response = res({ contentType: "application/problem+json", text: "" });
+    expect(await getWith(response)).toEqual(envelope(200));
+    expectOneTextRead(response);
+  });
+
+  it("parses a JSON body from text() and never calls json() (E5)", async () => {
+    const response = res({
+      status: 201,
+      contentType: "application/json",
+      text: '{"id":"a1"}',
+    });
+    fetchMock.mockResolvedValueOnce(response);
+    const onError = vi.fn();
+    expect(await makeClient({ onError }).post("/x", {})).toEqual({ id: "a1" });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(onError).not.toHaveBeenCalled();
+    expectOneTextRead(response);
+  });
+
+  it.each([
+    ["null", null],
+    ["[]", []],
+    [" [1,2] ", [1, 2]],
+  ])("resolves the JSON body %s to its parsed value", async (text, value) => {
+    const response = res({ contentType: "application/json", text });
+    expect(await getWith(response)).toEqual(value);
+    expectOneTextRead(response);
+  });
+
+  it("keeps an empty text/plain body as an empty string (E11)", async () => {
+    const response = res({ contentType: "text/plain", text: "" });
+    expect(await getWith(response)).toBe("");
+    expect(response.text).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps returning a blob for a binary 200", async () => {
+    const blob = new Blob(["z"]);
+    const response = res({ contentType: "image/png", blob });
+    expect(await getWith(response)).toBe(blob);
+    expect(response.blob).toHaveBeenCalledTimes(1);
+    expect(response.text).not.toHaveBeenCalled();
+  });
+
+  it.each(["post", "put", "patch", "delete"] as const)(
+    "resolves a 204 JSON answer to %s to the same envelope as get",
+    async (verb) => {
+      const response = res({ status: 204, contentType: "application/json" });
+      fetchMock.mockResolvedValueOnce(response);
+      const onError = vi.fn();
+      const client = makeClient({ onError });
+      const out =
+        verb === "delete"
+          ? await client.delete("/x")
+          : await client[verb]("/x", {});
+      expect(out).toEqual(envelope(204));
+      expect(lastConfig().method).toBe(verb.toUpperCase());
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(onError).not.toHaveBeenCalled();
+      expectNoBodyRead(response);
+    },
+  );
+
+  it("gives a value that DTO-field narrowing reads as none", async () => {
+    const result = await getWith(
+      res({ status: 204, contentType: "application/json" }),
+    );
+    // The blocks-studio pattern for "no record".
+    const narrowed =
+      result && typeof result === "object" && "id" in result ? result : null;
+    expect(narrowed).toBeNull();
+  });
+});
+
+describe("HttpClient success responses that fail to decode", () => {
+  // An onError that records every call and also runs the real Rollbar reporter.
+  const spyingReporter = () => {
+    const rollbar = { error: vi.fn() };
+    const reporter = createHttpFailureReporter(rollbar as unknown as Rollbar);
+    const onError = vi.fn((failure: HttpRequestFailure) => reporter(failure));
+    return { onError, rollbar };
+  };
+
+  it("rejects invalid JSON with an HttpError and reports it once as transport (E6)", async () => {
+    const onError = vi.fn();
+    const response = res({ contentType: "application/json", text: "not json" });
+    fetchMock.mockResolvedValueOnce(response);
+
+    const rejection = await makeClient({ onError })
+      .get("/thing")
+      .catch((e: unknown) => e);
+
+    expect(rejection).toBeInstanceOf(HttpError);
+    expect(rejection).not.toBeInstanceOf(SyntaxError);
+    expect(rejection).toMatchObject({ status: 500, message: "{}" });
+    expect(onError).toHaveBeenCalledTimes(1);
+    const failure = onError.mock.calls[0]![0];
+    expect(failure).toMatchObject({
+      url: "https://api.test/thing",
+      method: "GET",
+      transport: true,
+    });
+    expect(failure.error).toBeInstanceOf(SyntaxError);
+    expect(failure.normalized).toBe(rejection);
+    expect((rejection as HttpError).errors).toBe(failure.error);
+    expectOneTextRead(response);
+  });
+
+  it("reports invalid JSON to Rollbar once through createHttpFailureReporter", async () => {
+    const rollbar = { error: vi.fn() };
+    const onError = createHttpFailureReporter(rollbar as unknown as Rollbar);
+    fetchMock.mockResolvedValueOnce(
+      res({ contentType: "application/json", text: "not json" }),
+    );
+
+    await expect(makeClient({ onError }).get("/thing")).rejects.toBeInstanceOf(
+      HttpError,
+    );
+
+    expect(rollbar.error).toHaveBeenCalledTimes(1);
+    const [error, context] = rollbar.error.mock.calls[0]!;
+    expect(error).toBeInstanceOf(SyntaxError);
+    expect(context).toEqual({
+      source: "http-client",
+      url: "https://api.test/thing",
+      method: "GET",
+    });
+  });
+
+  it("rejects an HTML success with the same HttpError and reports it as not transport (E7)", async () => {
+    const { onError, rollbar } = spyingReporter();
+    const response = res({ contentType: "text/html", text: "<html></html>" });
+    fetchMock.mockResolvedValueOnce(response);
+
+    const rejection = await makeClient({ onError })
+      .get("/x")
+      .catch((e: unknown) => e);
+
+    expect(rejection).toBeInstanceOf(HttpError);
+    expect(rejection).toMatchObject({
+      status: 200,
+      errors: { general: "Unexpected HTML response from server" },
+    });
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError.mock.calls[0]![0]).toMatchObject({
+      transport: false,
+      normalized: rejection,
+    });
+    expect(rollbar.error).not.toHaveBeenCalled();
+    expectNoBodyRead(response);
+  });
+
+  it("rejects an aborted body read with an HttpError(500) that the reporter skips", async () => {
+    const { onError, rollbar } = spyingReporter();
+    const abort = new DOMException("The operation was aborted.", "AbortError");
+    fetchMock.mockResolvedValueOnce(
+      res({ contentType: "application/json", textRejects: abort }),
+    );
+
+    const rejection = await makeClient({ onError })
+      .get("/x")
+      .catch((e: unknown) => e);
+
+    expect(rejection).toBeInstanceOf(HttpError);
+    expect(rejection).toMatchObject({ status: 500 });
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError.mock.calls[0]![0]).toMatchObject({
+      transport: true,
+      error: abort,
+      normalized: rejection,
+    });
+    expect(rollbar.error).not.toHaveBeenCalled();
+  });
+
+  it("reports a body read failure that is not a network failure", async () => {
+    const rollbar = { error: vi.fn() };
+    const onError = createHttpFailureReporter(rollbar as unknown as Rollbar);
+    const broken = new Error("body stream already read");
+    fetchMock.mockResolvedValueOnce(
+      res({ contentType: "application/json", textRejects: broken }),
+    );
+
+    await expect(makeClient({ onError }).get("/x")).rejects.toMatchObject({
+      status: 500,
+    });
+
+    expect(rollbar.error).toHaveBeenCalledTimes(1);
+    expect(rollbar.error.mock.calls[0]![0]).toBe(broken);
+  });
+
+  it("still rejects with the same HttpError when onError throws on a decode failure", async () => {
+    const onError = vi.fn(() => {
+      throw new Error("reporter is broken");
+    });
+    fetchMock.mockResolvedValueOnce(
+      res({ contentType: "application/json", text: "not json" }),
+    );
+
+    const rejection = await makeClient({ onError })
+      .get("/x")
+      .catch((e: unknown) => e);
+
+    expect(rejection).toBeInstanceOf(HttpError);
+    expect(rejection).toMatchObject({ status: 500 });
+    expect(onError).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([404, 500])(
+    "keeps rejecting a %i with an empty JSON body instead of resolving the envelope",
+    async (status) => {
+      const onError = vi.fn();
+      const response = res({
+        status,
+        contentType: "application/json",
+        jsonThrows: true,
+      });
+      fetchMock.mockResolvedValueOnce(response);
+
+      const rejection = await makeClient({ onError })
+        .get("/x")
+        .catch((e: unknown) => e);
+
+      expect(rejection).toBeInstanceOf(HttpError);
+      expect(rejection).toMatchObject({ status, errors: {} });
+      expect(rejection).not.toMatchObject({ success: true });
+      expect(onError).toHaveBeenCalledTimes(1);
+      expect(onError.mock.calls[0]![0]).toMatchObject({ transport: false });
+      expect(response.text).not.toHaveBeenCalled();
+    },
+  );
+});
+
+describe("HttpClient decoding after a token refresh", () => {
+  beforeEach(() => {
+    h.runtimeEnv = {
+      BLOCKS_OIDC_CLIENT_ID: "cid",
+      BLOCKS_IAM_BASE_URL: "https://iam.test",
+    };
+  });
+
+  const refreshThen = (retry: MockResponse) =>
+    fetchMock
+      .mockResolvedValueOnce(res({ status: 401 }))
+      .mockResolvedValueOnce(res({ status: 200 }))
+      .mockResolvedValueOnce(retry);
+
+  it("resolves a retried 204 JSON answer to the envelope without onError (E8)", async () => {
+    const onError = vi.fn();
+    const retry = res({ status: 204, contentType: "application/json" });
+    refreshThen(retry);
+
+    const out = await makeClient({
+      onError,
+      onTokenRefresh: vi.fn().mockResolvedValue({}),
+    }).get("/x");
+
+    expect(out).toEqual({ success: true, status: 204 });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(onError).not.toHaveBeenCalled();
+    expectNoBodyRead(retry);
+  });
+
+  it("calls onError once when the retried answer is invalid JSON (E9)", async () => {
+    const onError = vi.fn();
+    refreshThen(res({ contentType: "application/json", text: "not json" }));
+
+    const rejection = await makeClient({
+      onError,
+      onTokenRefresh: vi.fn().mockResolvedValue({}),
+    })
+      .get("/x")
+      .catch((e: unknown) => e);
+
+    expect(rejection).toBeInstanceOf(HttpError);
+    expect(rejection).toMatchObject({ status: 500 });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError.mock.calls[0]![0]).toMatchObject({
+      transport: true,
+      normalized: rejection,
+    });
+    expect(onError.mock.calls[0]![0].error).toBeInstanceOf(SyntaxError);
+  });
+
+  it("calls onError once when the retried answer is not ok", async () => {
+    const onError = vi.fn();
+    refreshThen(
+      res({
+        status: 500,
+        contentType: "application/json",
+        json: { errors: { general: "boom" } },
+      }),
+    );
+
+    await expect(
+      makeClient({
+        onError,
+        onTokenRefresh: vi.fn().mockResolvedValue({}),
+      }).get("/x"),
+    ).rejects.toMatchObject({ status: 500, errors: { general: "boom" } });
+
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError.mock.calls[0]![0]).toMatchObject({ transport: false });
   });
 });
