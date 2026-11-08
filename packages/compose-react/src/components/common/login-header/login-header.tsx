@@ -2,6 +2,7 @@ import { useT } from "@/i18n";
 import { useBlocksAppConfigStore } from "@/hooks/use-blocks-app-config-store";
 import { ThemeSwitcher } from "..";
 import { Logo } from "../logo";
+import { LanguageSelector } from "../language-selector";
 
 export type LoginHeaderProps = {
   docsUrl?: string;
@@ -38,27 +39,33 @@ export const LoginHeader = ({
       />
 
       <div className="nav-right">
-        <a href={docsUrl} target="_blank" rel="noreferrer" className="nav-link">
-          {t("LOGIN_HEADER.DOCS")}
-        </a>
-        {/* eslint-disable no-restricted-syntax -- product names (Blocks, GitHub), not translated */}
-        <a
-          href={blocksUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="nav-link"
-        >
-          Blocks
-        </a>
-        <a
-          href={githubUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="nav-link"
-        >
-          GitHub
-        </a>
-        {/* eslint-enable no-restricted-syntax */}
+        <div className="nav-links">
+          <a
+            href={docsUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="nav-link"
+          >
+            {t("LOGIN_HEADER.DOCS")}
+          </a>
+          <a
+            href={blocksUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="nav-link"
+          >
+            {t("LOGIN_HEADER.BLOCKS")}
+          </a>
+          <a
+            href={githubUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="nav-link"
+          >
+            {t("LOGIN_HEADER.GITHUB")}
+          </a>
+        </div>
+        <LanguageSelector className="nav-link" />
         <ThemeSwitcher
           className="nav-link inline-flex items-center gap-1.5"
           showChevron={false}
