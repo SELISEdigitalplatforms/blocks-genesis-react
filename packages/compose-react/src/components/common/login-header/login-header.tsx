@@ -48,14 +48,13 @@ export const LoginHeader = ({
           >
             {t("LOGIN_HEADER.DOCS")}
           </a>
-          {}
           <a
             href={blocksUrl}
             target="_blank"
             rel="noreferrer"
             className="nav-link"
           >
-            Blocks
+            {t("LOGIN_HEADER.BLOCKS")}
           </a>
           <a
             href={githubUrl}
@@ -63,9 +62,8 @@ export const LoginHeader = ({
             rel="noreferrer"
             className="nav-link"
           >
-            GitHub
+            {t("LOGIN_HEADER.GITHUB")}
           </a>
-          {}
         </div>
         <LanguageSelector className="nav-link" />
         <ThemeSwitcher

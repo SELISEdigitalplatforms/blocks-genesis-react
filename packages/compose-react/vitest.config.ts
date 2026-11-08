@@ -29,7 +29,7 @@ export default defineConfig({
         "src/**/*.test-d.ts",
         "src/**/*.{test,spec}.{ts,tsx}",
         "src/**/*.stories.{ts,tsx}",
-        "src/**/index.ts",
+        // Excluding index.ts also drops index.tsx components from the LCOV report.
         "src/assets/**",
         "src/types/**",
         "src/styles/**",
