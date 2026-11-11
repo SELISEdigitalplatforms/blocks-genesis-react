@@ -156,8 +156,25 @@ describe("attachQueryErrorReporting", () => {
       expect(rollbar.error).not.toHaveBeenCalled();
     });
 
-    // C5: a 200 without the URL is a contract fault, so it is still reported.
-    it("reports a response without redirect_uri", async () => {
+    // H6, §7 #1: IAM's rejection, typed as an InitiateError, stays out of the bug stream.
+    it("skips a rejection carrying IAM's error code", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          ok: false,
+          status: 400,
+          json: async () => ({ error: "invalid_redirect_uri" }),
+        }),
+      );
+      attachQueryErrorReporting(queryClient, rollbar);
+
+      await initiate();
+
+      expect(rollbar.error).not.toHaveBeenCalled();
+    });
+
+    // A3 (genesis-react#73): a 200 without the URL is now a 502 InitiateError, an HTTP failure.
+    it("skips a response without redirect_uri", async () => {
       vi.stubGlobal(
         "fetch",
         vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) }),
@@ -166,13 +183,7 @@ describe("attachQueryErrorReporting", () => {
 
       await initiate();
 
-      expect(rollbar.error).toHaveBeenCalledTimes(1);
-      expect(rollbar.error).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "No redirect_uri in initiate response",
-        }),
-        expect.objectContaining({ source: "react-query", kind: "query" }),
-      );
+      expect(rollbar.error).not.toHaveBeenCalled();
     });
   });
 });
