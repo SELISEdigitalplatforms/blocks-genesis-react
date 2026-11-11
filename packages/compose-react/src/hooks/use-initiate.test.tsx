@@ -2,11 +2,13 @@ import { renderHook, waitFor, act } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { InitiateError } from "@/services/initiate.service";
 import { useInitiateRedirect, usePrefetchRedirect } from "./use-initiate";
 
 const h = vi.hoisted(() => ({ fetchRedirectUrl: vi.fn() }));
 
-vi.mock("@/services/initiate.service", () => ({
+vi.mock("@/services/initiate.service", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/services/initiate.service")>()),
   initiateService: { fetchRedirectUrl: h.fetchRedirectUrl },
 }));
 
@@ -63,6 +65,23 @@ describe("use-initiate hooks", () => {
 
       await waitFor(() => expect(result.current.error).toBe(boom));
       expect(result.current.isLoading).toBe(false);
+    });
+
+    // H12
+    it("returns an IAM rejection as is, with its readable message and status", async () => {
+      const rejection = new InitiateError(400, { code: "invalid_client" });
+      h.fetchRedirectUrl.mockRejectedValue(rejection);
+
+      const { result } = renderHook(() => useInitiateRedirect(params), {
+        wrapper: wrapper(),
+      });
+
+      await waitFor(() => expect(result.current.error).toBe(rejection));
+      expect(result.current.error?.message).toBe(
+        "Initiate request failed — HTTP 400 (invalid_client)",
+      );
+      expect(result.current.error).toMatchObject({ status: 400 });
+      expect(replaceMock).not.toHaveBeenCalled();
     });
 
     it("wraps a non-Error rejection with a default message", async () => {

@@ -1,6 +1,7 @@
 {
   "APP_SWITCHER_CONTENT.LOADING": "Loading…",
   "APP_SWITCHER_CONTENT.NO_APPS": "No apps found",
+  "APP_SWITCHER_CONTENT.UNAVAILABLE": "{{label}} is unavailable right now",
   "APP_SWITCHER_TRIGGER.ARIA": "SELISE Blocks apps",
   "ARCHIVE_PROJECT.CONFIRM": "Are you sure you want to delete this environment?",
   "ARCHIVE_PROJECT.DIALOG_TITLE": "Delete this environment?",

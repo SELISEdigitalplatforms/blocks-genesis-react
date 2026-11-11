@@ -18,33 +18,42 @@ const AppIcon = ({ icon, label }: { icon: React.ReactNode; label: string }) => {
   );
 };
 
-const AppTile = ({
-  app,
-  isLoading,
-}: {
-  app: ResolvedApp;
-  isLoading: boolean;
-}) => {
+const AppTile = ({ app }: { app: ResolvedApp }) => {
   const { t } = useT("genesis.shared");
+  const { isLoading, isUnavailable } = app;
+  // No usable link: no href, and none of the handlers that would use up a URL's single-use state.
+  const isInert = isLoading || isUnavailable;
+  const unavailableText = isUnavailable
+    ? t("APP_SWITCHER_CONTENT.UNAVAILABLE", { label: app.label })
+    : undefined;
   return (
     <a
-      href={isLoading ? undefined : app.initiateUrl}
-      aria-disabled={isLoading}
+      href={isInert ? undefined : app.initiateUrl}
+      aria-disabled={isInert}
+      // Shown on hover and read as the tile's accessible description.
+      title={unavailableText}
       // Every way a link can be used. Its state is single-use, so each one swaps in a fresh URL;
       // the context menu counts because "Open in new tab" and "Copy link" both start from it.
-      onClick={isLoading ? (e) => e.preventDefault() : app.markUsed}
+      onClick={isInert ? (e) => e.preventDefault() : app.markUsed}
       onAuxClick={(e) => {
-        if (!isLoading && e.button === 1) app.markUsed();
+        if (!isInert && e.button === 1) app.markUsed();
       }}
-      onContextMenu={isLoading ? undefined : app.markUsed}
-      onDragStart={isLoading ? undefined : app.markUsed}
+      onContextMenu={isInert ? undefined : app.markUsed}
+      onDragStart={isInert ? undefined : app.markUsed}
       className={cn(
         "hover:bg-accent focus-visible:ring-ring group flex flex-col items-center gap-2 rounded-xl p-3 text-center transition-colors focus-visible:outline-none focus-visible:ring-2",
         isLoading && "pointer-events-none opacity-50 cursor-default",
+        // Keeps pointer events so the hover title can explain why the app cannot be opened.
+        isUnavailable && "opacity-50 cursor-default",
       )}
     >
       <AppIcon icon={app.icon} label={app.label} />
-      <span className="text-foreground line-clamp-1 max-w-[90px] text-[12px] font-medium leading-tight">
+      <span
+        className={cn(
+          "text-foreground line-clamp-1 max-w-[90px] text-[12px] font-medium leading-tight",
+          isUnavailable && "text-muted-foreground",
+        )}
+      >
         {isLoading ? t("APP_SWITCHER_CONTENT.LOADING") : app.label}
       </span>
     </a>
@@ -74,7 +83,7 @@ export function AppSwitcherContent({ apps }: AppSwitcherContentProps) {
       {/* eslint-enable no-restricted-syntax */}
       <div className="grid grid-cols-3">
         {apps.map((app) => (
-          <AppTile key={app.id} app={app} isLoading={app.isLoading} />
+          <AppTile key={app.id} app={app} />
         ))}
       </div>
     </div>
