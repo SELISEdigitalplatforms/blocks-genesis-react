@@ -738,6 +738,7 @@ describe("HttpClient onError", () => {
 
     await expect(makeClient().get("/thing")).rejects.toMatchObject({
       status: 500,
+      errors: { general: "Failed to fetch" },
     });
   });
 });
@@ -926,7 +927,7 @@ describe("HttpClient success responses that fail to decode", () => {
 
     expect(rejection).toBeInstanceOf(HttpError);
     expect(rejection).not.toBeInstanceOf(SyntaxError);
-    expect(rejection).toMatchObject({ status: 500, message: "{}" });
+    expect(rejection).toMatchObject({ status: 500 });
     expect(onError).toHaveBeenCalledTimes(1);
     const failure = onError.mock.calls[0]![0];
     expect(failure).toMatchObject({
@@ -936,7 +937,13 @@ describe("HttpClient success responses that fail to decode", () => {
     });
     expect(failure.error).toBeInstanceOf(SyntaxError);
     expect(failure.normalized).toBe(rejection);
-    expect((rejection as HttpError).errors).toBe(failure.error);
+    // A SyntaxError is an Error, so its text is kept instead of the empty `{}` (#72).
+    const parseText = (failure.error as SyntaxError).message;
+    expect(parseText).not.toBe("");
+    expect((rejection as HttpError).errors).toEqual({
+      general: parseText,
+      message: parseText,
+    });
     expectOneTextRead(response);
   });
 
@@ -1135,5 +1142,189 @@ describe("HttpClient decoding after a token refresh", () => {
 
     expect(onError).toHaveBeenCalledTimes(1);
     expect(onError.mock.calls[0]![0]).toMatchObject({ transport: false });
+  });
+});
+
+describe("HttpClient keeps the text of a thrown Error (#72)", () => {
+  const rejectionOf = async (thrown: unknown, call = "get") => {
+    fetchMock.mockRejectedValueOnce(thrown);
+    const client = makeClient();
+    const pending =
+      call === "stream" ? client.stream("/x", {}) : client.get("/x");
+    return (await pending.catch((e: unknown) => e)) as HttpError;
+  };
+
+  it("turns TypeError: Failed to fetch into general and message with status 500 (H1, H2, H3, C7, C8)", async () => {
+    const rejection = await rejectionOf(new TypeError("Failed to fetch"));
+
+    expect(rejection).toBeInstanceOf(HttpError);
+    expect(rejection.status).toBe(500);
+    expect(rejection.errors).toEqual({
+      general: "Failed to fetch",
+      message: "Failed to fetch",
+    });
+    expect(rejection.message).toContain("Failed to fetch");
+    expect(JSON.stringify(rejection.errors)).not.toBe("{}");
+  });
+
+  it("keeps the exact Firefox network error text (H4)", async () => {
+    const text = "NetworkError when attempting to fetch resource.";
+    const rejection = await rejectionOf(new TypeError(text));
+
+    expect(rejection.errors.general).toBe(text);
+    expect(rejection.errors.message).toBe(text);
+  });
+
+  it("treats a DOMException as an Error (H5)", async () => {
+    const rejection = await rejectionOf(
+      new DOMException("The user aborted a request.", "AbortError"),
+    );
+
+    expect(rejection).toMatchObject({
+      status: 500,
+      errors: {
+        general: "The user aborted a request.",
+        message: "The user aborted a request.",
+      },
+    });
+  });
+
+  it("normalises stream() transport failures the same way (H11)", async () => {
+    const rejection = await rejectionOf(
+      new TypeError("Failed to fetch"),
+      "stream",
+    );
+
+    expect(rejection).toMatchObject({
+      status: 500,
+      errors: { general: "Failed to fetch", message: "Failed to fetch" },
+    });
+  });
+
+  it.each([
+    ["an empty", ""],
+    ["a whitespace-only", "   "],
+  ])(
+    "falls back to Network request failed for %s message (C1)",
+    async (_label, text) => {
+      const rejection = await rejectionOf(new Error(text));
+
+      expect(rejection.errors).toEqual({
+        general: "Network request failed",
+        message: "Network request failed",
+      });
+      expect(rejection.message).toBe(
+        '{"general":"Network request failed","message":"Network request failed"}',
+      );
+    },
+  );
+
+  it("falls back without throwing when message is not a string (C2)", async () => {
+    const tampered = Object.assign(new Error("x"), { message: 42 });
+
+    const rejection = await rejectionOf(tampered);
+
+    expect(rejection).toMatchObject({
+      status: 500,
+      errors: { general: "Network request failed" },
+    });
+  });
+
+  it("falls back without throwing when reading message throws (C2)", async () => {
+    const tampered = new Error("x");
+    Object.defineProperty(tampered, "message", {
+      get() {
+        throw new Error("no message for you");
+      },
+    });
+
+    const rejection = await rejectionOf(tampered);
+
+    expect(rejection.errors.general).toBe("Network request failed");
+  });
+
+  it("caps both keys at 500 characters (C3)", async () => {
+    const rejection = await rejectionOf(new Error("a".repeat(600)));
+
+    expect(rejection.errors.general).toBe("a".repeat(500));
+    expect(rejection.errors.message).toBe("a".repeat(500));
+  });
+
+  it("copies no other property of the original error into errors (C4)", async () => {
+    const thrown = Object.assign(new TypeError("Failed to fetch"), {
+      code: "ENET",
+      token: "secret-value",
+    });
+
+    const rejection = await rejectionOf(thrown);
+
+    expect(Object.keys(rejection.errors).sort()).toEqual([
+      "general",
+      "message",
+    ]);
+    expect(rejection.message).not.toContain("secret-value");
+    expect(rejection.message).not.toContain("stack");
+  });
+
+  it("hands the new normalized error and the original error to onError (H9, H10)", async () => {
+    const onError = vi.fn();
+    const thrown = new TypeError("Failed to fetch");
+    fetchMock.mockRejectedValueOnce(thrown);
+
+    const rejection = await makeClient({ onError })
+      .get("/x")
+      .catch((e: unknown) => e);
+
+    expect(onError).toHaveBeenCalledTimes(1);
+    const failure = onError.mock.calls[0]![0] as HttpRequestFailure;
+    expect(failure.error).toBe(thrown);
+    expect(failure.transport).toBe(true);
+    expect(failure.normalized).toBe(rejection);
+    expect(failure.normalized.errors.general).toBe("Failed to fetch");
+  });
+
+  it("still rejects with the normalized error when onError throws (C5)", async () => {
+    const onError = vi.fn(() => {
+      throw new Error("reporter is broken");
+    });
+    fetchMock.mockRejectedValueOnce(new TypeError("Failed to fetch"));
+
+    await expect(makeClient({ onError }).get("/x")).rejects.toMatchObject({
+      status: 500,
+      errors: { general: "Failed to fetch", message: "Failed to fetch" },
+    });
+  });
+
+  it("normalises a retried request's transport failure once, without double wrapping (C6)", async () => {
+    h.runtimeEnv = {
+      BLOCKS_OIDC_CLIENT_ID: "cid",
+      BLOCKS_IAM_BASE_URL: "https://iam.test",
+    };
+    const onError = vi.fn();
+    fetchMock
+      .mockResolvedValueOnce(res({ status: 401 }))
+      .mockResolvedValueOnce(res({ status: 200 }))
+      .mockRejectedValueOnce(new TypeError("Failed to fetch"));
+
+    const rejection = await makeClient({
+      onError,
+      onTokenRefresh: vi.fn().mockResolvedValue({}),
+    })
+      .get("/x")
+      .catch((e: unknown) => e);
+
+    expect(rejection).toBeInstanceOf(HttpError);
+    expect(rejection).toMatchObject({
+      status: 500,
+      errors: { general: "Failed to fetch", message: "Failed to fetch" },
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    // The retry runs its own failRequest and its rejection is returned as is, so the failure is
+    // normalised and reported exactly once.
+    expect(onError).toHaveBeenCalledTimes(1);
+    const failure = onError.mock.calls[0]![0] as HttpRequestFailure;
+    expect(failure.transport).toBe(true);
+    expect(failure.error).toBeInstanceOf(TypeError);
+    expect(failure.normalized).toBe(rejection);
   });
 });

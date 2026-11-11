@@ -28,24 +28,27 @@ export const getErrorMessage = (
     return "Something went wrong.";
   }
 
-  const messages: string[] = [];
+  // A Set keeps the first-seen order and shows each distinct text once: a normalized transport
+  // failure carries the same text under both `general` and `message`, and callers render the
+  // list with each text as its React key.
+  const messages = new Set<string>();
 
   for (const key in error) {
     const value = error[key];
 
     if (messageMap[key]) {
-      messages.push(messageMap[key]);
+      messages.add(messageMap[key]);
       continue;
     }
 
     if (typeof value === "string") {
-      messages.push(value);
+      messages.add(value);
     } else if (Array.isArray(value) && value.length > 0) {
-      messages.push(value.join(", "));
+      messages.add(value.join(", "));
     }
   }
 
-  return messages.length ? messages : "Something went wrong.";
+  return messages.size ? [...messages] : "Something went wrong.";
 };
 
 export const handleErrorMessages = (

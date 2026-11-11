@@ -36,6 +36,11 @@ const SESSION_CHANGED = "session_changed";
 const isSameTenant = (a: string, b: string): boolean =>
   a.toLowerCase() === b.toLowerCase();
 
+// A fixed literal like the other `errors` values this client sets, so it reads the same for every
+// user and in every Rollbar title.
+const TRANSPORT_ERROR_FALLBACK = "Network request failed";
+const MAX_ERROR_TEXT_LENGTH = 500;
+
 /**
  * Thrown instead of retrying a request after a refresh moved the session to a tenant other than
  * the one the page was showing when the request started. Sending it again would answer the page
@@ -339,12 +344,46 @@ export class HttpClient {
 
   private normalizeRequestError(error: unknown): HttpError {
     if (error instanceof HttpError) return error;
+    // An Error has no enumerable own properties, so using it as `errors` would serialise to `{}`.
+    // Keep only its text. `message` is kept beside `general` for callers that read
+    // `errors.message`, as they could while `errors` was the Error object itself.
+    if (HttpClient.isThrownError(error)) {
+      const text = HttpClient.transportErrorText(error);
+      return new HttpError(500, { errors: { general: text, message: text } });
+    }
     if (typeof error === "object" && error !== null) {
       return new HttpError(500, {
         errors: error as Record<string, string | string[]>,
       });
     }
     return new HttpError(500, { errors: { general: "Something went wrong" } });
+  }
+
+  // Browsers make DOMException an Error subclass, but a DOMException from another realm (such as
+  // jsdom's in unit tests) fails `instanceof Error`.
+  private static isThrownError(error: unknown): error is Error {
+    return (
+      error instanceof Error ||
+      (typeof DOMException !== "undefined" && error instanceof DOMException)
+    );
+  }
+
+  /**
+   * The text of a thrown Error, capped at `MAX_ERROR_TEXT_LENGTH` characters. An empty,
+   * whitespace-only or non-string message (or a `message` getter that throws) falls back to
+   * `TRANSPORT_ERROR_FALLBACK`, so normalising never throws.
+   */
+  private static transportErrorText(error: Error): string {
+    let message: unknown;
+    try {
+      message = error.message;
+    } catch {
+      message = undefined;
+    }
+    if (typeof message !== "string" || message.trim() === "") {
+      return TRANSPORT_ERROR_FALLBACK;
+    }
+    return message.slice(0, MAX_ERROR_TEXT_LENGTH);
   }
 
   /**

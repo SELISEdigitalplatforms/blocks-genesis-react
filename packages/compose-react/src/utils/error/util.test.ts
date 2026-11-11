@@ -53,6 +53,22 @@ describe("getErrorMessage", () => {
   it("collects string values", () => {
     expect(getErrorMessage({ email: "bad" })).toEqual(["bad"]);
   });
+
+  it("shows each distinct text once, in first-seen order", () => {
+    expect(
+      getErrorMessage({
+        general: "Failed to fetch",
+        message: "Failed to fetch",
+        email: "bad",
+      }),
+    ).toEqual(["Failed to fetch", "bad"]);
+  });
+
+  it("collapses identical mapped and raw texts too", () => {
+    expect(getErrorMessage({ a: "x", b: ["x"], c: "y" }, { c: "x" })).toEqual([
+      "x",
+    ]);
+  });
 });
 
 describe("handleErrorMessages", () => {
