@@ -11,7 +11,7 @@ export interface IProject {
   name: string;
   applications: IDomain[];
   customDomain: string | null;
-  cookieDomain: "blocksdevelopers.com";
+  cookieDomain: string;
   isProduction: true;
   tenantId: string;
   isCookieEnable: boolean;
