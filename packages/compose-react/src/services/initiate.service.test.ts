@@ -4,9 +4,21 @@ const h = vi.hoisted(() => ({ env: {} as Record<string, string> }));
 vi.mock("@/lib", () => ({ getRuntimeEnv: (key: string) => h.env[key] ?? "" }));
 
 import { HttpError } from "@/lib/http/error";
-import { initiateService } from "@/services/initiate.service";
+import { InitiateError, initiateService } from "@/services/initiate.service";
 
 const params = { clientId: "c", redirectUri: "r", forwardedTo: "f" };
+
+/** A non-2xx response whose body is `body`, read the way `fetch` would. */
+const rejection = (status: number, body: string) => ({
+  ok: false,
+  status,
+  json: async () => JSON.parse(body) as unknown,
+});
+
+const failure = async (response: unknown) => {
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue(response));
+  return initiateService.fetchRedirectUrl(params).catch((e: unknown) => e);
+};
 
 beforeEach(() => {
   h.env = { BLOCKS_X_BLOCKS_KEY: "key", userBaseUrl: "https://iam.test" };
@@ -14,6 +26,7 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 describe("InitiateService.fetchRedirectUrl", () => {
+  // H1, §7 #5
   it("returns the redirect_uri on a successful response", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
@@ -36,40 +49,169 @@ describe("InitiateService.fetchRedirectUrl", () => {
     );
   });
 
-  // §7 #4, H5: an HttpError, so the query reporter leaves it to IAM.
-  it("rejects a non-ok response with an HttpError carrying the status", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({ ok: false, status: 400 }),
+  // H2-H5, §7 #1: an HttpError, so the query reporter leaves it to IAM.
+  it("rejects a 400 with an InitiateError carrying IAM's error and description", async () => {
+    const error = await failure(
+      rejection(
+        400,
+        '{"error":"invalid_redirect_uri","error_description":"redirectUri is not registered for this client"}',
+      ),
     );
-    const error: unknown = await initiateService
-      .fetchRedirectUrl(params)
-      .catch((e: unknown) => e);
 
+    expect(error).toBeInstanceOf(InitiateError);
     expect(error).toBeInstanceOf(HttpError);
     expect(error).toMatchObject({
+      name: "InitiateError",
       status: 400,
-      errors: { general: "Initiate request failed — HTTP 400" },
+      code: "invalid_redirect_uri",
+      description: "redirectUri is not registered for this client",
+      message: "Initiate request failed — HTTP 400 (invalid_redirect_uri)",
+      errors: {
+        general: "Initiate request failed — HTTP 400",
+        code: "invalid_redirect_uri",
+      },
     });
   });
 
-  // C5: a contract fault, not an HTTP outcome, so it stays a plain Error and is reported.
-  it("throws when the response has no redirect_uri", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) }),
+  // §7 #2
+  it("keeps the code of an invalid_client rejection", async () => {
+    const error = await failure(
+      rejection(
+        400,
+        '{"error":"invalid_client","error_description":"ClientId not found or inactive"}',
+      ),
     );
-    const error: unknown = await initiateService
-      .fetchRedirectUrl(params)
-      .catch((e: unknown) => e);
 
-    expect(error).toBeInstanceOf(Error);
-    expect(error).not.toBeInstanceOf(HttpError);
-    expect((error as Error).message).toBe(
-      "No redirect_uri in initiate response",
-    );
+    expect(error).toMatchObject({ status: 400, code: "invalid_client" });
   });
 
+  // §7 #3, C1
+  it("rejects a non-JSON body with the status alone, not a parse error", async () => {
+    const error = await failure(
+      rejection(400, "<html><body>Bad Request</body></html>"),
+    );
+
+    expect(error).toBeInstanceOf(InitiateError);
+    expect(error).toMatchObject({
+      status: 400,
+      code: null,
+      description: null,
+      message: "Initiate request failed — HTTP 400",
+      errors: { general: "Initiate request failed — HTTP 400" },
+    });
+    expect((error as InitiateError).errors).not.toHaveProperty("code");
+  });
+
+  // C2: an empty body, and a response with no body reader at all.
+  it.each([
+    ["an empty body", rejection(403, "")],
+    ["no body", { ok: false, status: 403 }],
+  ])("rejects %s with the status and no code", async (_, response) => {
+    const error = await failure(response);
+
+    expect(error).toBeInstanceOf(InitiateError);
+    expect(error).toMatchObject({ status: 403, code: null, description: null });
+  });
+
+  it("ignores error fields that are not text", async () => {
+    const error = await failure(
+      rejection(400, '{"error":42,"error_description":{"a":1}}'),
+    );
+
+    expect(error).toMatchObject({ code: null, description: null });
+  });
+
+  // C3
+  it("cuts an error_description longer than 300 characters to 300", async () => {
+    const long = "x".repeat(301);
+    const error = await failure(
+      rejection(400, JSON.stringify({ error_description: long })),
+    );
+
+    expect((error as InitiateError).description).toBe("x".repeat(300));
+  });
+
+  // C5
+  it("rejects a 5xx with an InitiateError carrying that status", async () => {
+    const error = await failure(
+      rejection(
+        500,
+        '{"error":"server_error","error_description":"Failed to start authentication flow"}',
+      ),
+    );
+
+    expect(error).toBeInstanceOf(InitiateError);
+    expect(error).toMatchObject({
+      status: 500,
+      code: "server_error",
+      message: "Initiate request failed — HTTP 500 (server_error)",
+    });
+  });
+
+  // C4, §7 #4, A3: no URL in a 2xx is a bad upstream answer, handled like an HTTP failure.
+  it.each([
+    ["an empty object", {}],
+    ["null", null],
+    ["a redirect_uri that is not text", { redirect_uri: { href: "x" } }],
+  ])("rejects a 2xx with %s as a 502 InitiateError", async (_, body) => {
+    const error = await failure({ ok: true, json: async () => body });
+
+    expect(error).toBeInstanceOf(InitiateError);
+    expect(error).toMatchObject({
+      status: 502,
+      code: null,
+      description: null,
+      message: "No redirect_uri in initiate response",
+    });
+  });
+
+  // C10: the error keeps nothing from the request.
+  it("copies no blocks key, query string or header value into the error", async () => {
+    h.env = {
+      BLOCKS_X_BLOCKS_KEY: "blocks-key-value-7f3a",
+      userBaseUrl: "https://iam.test",
+    };
+    const error = (await failure(
+      rejection(
+        400,
+        '{"error":"invalid_client","error_description":"ClientId not found or inactive"}',
+      ),
+    )) as InitiateError;
+
+    const exposed = JSON.stringify([
+      error.message,
+      error.errors,
+      error.description,
+    ]);
+    expect(exposed).not.toContain("blocks-key-value-7f3a");
+    expect(exposed).not.toContain("x-blocks-key");
+    expect(exposed).not.toContain("redirectUri=");
+    expect(exposed).not.toContain("clientId=");
+    expect(exposed).not.toContain("application/json");
+  });
+
+  // C6/C7: an abort while the error body is read stays an abort.
+  it("rethrows an abort that interrupts reading the error body", async () => {
+    const controller = new AbortController();
+    const abort = new DOMException("The operation was aborted.", "AbortError");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        json: async () => {
+          controller.abort();
+          throw abort;
+        },
+      }),
+    );
+
+    await expect(
+      initiateService.fetchRedirectUrl(params, controller.signal),
+    ).rejects.toBe(abort);
+  });
+
+  // C6, §7 #6
   it("lets a network failure propagate as the browser's own error", async () => {
     const networkError = new TypeError("Failed to fetch");
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(networkError));

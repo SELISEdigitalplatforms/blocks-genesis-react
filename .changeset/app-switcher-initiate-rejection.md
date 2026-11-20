@@ -1,0 +1,5 @@
+---
+"@seliseblocks/genesis-os": patch
+---
+
+The AppSwitcher shows an app that IAM's `/idp/initiate` rejects as unavailable instead of leaving it on "Loading…". The tile keeps its icon and label, dimmed, without a link, with `aria-disabled="true"` and the title "<Label> is unavailable right now" (new English key `APP_SWITCHER_CONTENT.UNAVAILABLE` in `genesis.shared`). After a 4xx the app is not asked again for five minutes; after a 5xx or a network failure it is asked again on the next open. `initiateService.fetchRedirectUrl` now rejects with an `InitiateError` (an `HttpError`) that carries IAM's `error` as `code` and `error_description` (up to 300 characters) as `description`, with a readable `message` such as `Initiate request failed — HTTP 400 (invalid_redirect_uri)`. A success response without a `redirect_uri` is now a 502 `InitiateError` (`message` unchanged), so `attachQueryErrorReporting` no longer sends it to Rollbar as a query bug. `useInitiateRedirect` still returns the error as an `Error`, now with a `status`.

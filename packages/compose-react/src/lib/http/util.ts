@@ -1,4 +1,5 @@
 import { getRuntimeEnv } from "@/lib/runtime-env";
+import { getMergedAreaBaseUrl } from "@/lib/merged-area";
 
 export const resolveBaseUrl = (
   type: "user" | "project" | "notification",
@@ -17,7 +18,7 @@ export const resolveBaseUrl = (
   if (type === "user") {
     return getRuntimeEnv("BLOCKS_IAM_BASE_URL") || "";
   } else if (type === "notification") {
-    return getRuntimeEnv("BLOCKS_LOGIC_BASE_URL") || "";
+    return getMergedAreaBaseUrl("BLOCKS_LOGIC_BASE_URL");
   } else {
     return getRuntimeEnv("BLOCKS_OS_BASE_URL") || "";
   }
