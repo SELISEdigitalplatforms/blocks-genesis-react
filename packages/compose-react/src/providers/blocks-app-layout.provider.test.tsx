@@ -28,12 +28,12 @@ const originalEnv = (window as unknown as EnvWindow).__BLOCKS_ENV__;
  * window.__BLOCKS_ENV__ reference at module load.
  */
 const renderWithEnv = async (name: string, env: Record<string, string>) => {
-  (window as unknown as { __BLOCKS_ENV__: Record<string, string> }).__BLOCKS_ENV__ =
-    env;
+  (
+    window as unknown as { __BLOCKS_ENV__: Record<string, string> }
+  ).__BLOCKS_ENV__ = env;
   vi.resetModules();
-  const { BlocksAppLayout: Reloaded } = await import(
-    "./blocks-app-layout.provider"
-  );
+  const { BlocksAppLayout: Reloaded } =
+    await import("./blocks-app-layout.provider");
   render(
     <Reloaded config={{ name } as AppConfigStoreState["config"]}>
       <span>app content</span>
@@ -81,6 +81,38 @@ describe("BlocksAppLayout", () => {
       await renderWithEnv("blocks-logic", {});
 
       expect(window.process?.env.userBaseUrl).toBe("");
+    });
+  });
+
+  describe("projectBaseUrl and notificationBaseUrl (logic merged into os)", () => {
+    const os = "https://dev-os.blocksdevelopers.com";
+    const logic = "https://dev-logic.blocksdevelopers.com";
+
+    it("use BLOCKS_LOGIC_BASE_URL while the app still sets it", async () => {
+      await renderWithEnv("blocks-release", {
+        BLOCKS_OS_BASE_URL: os,
+        BLOCKS_LOGIC_BASE_URL: logic,
+      });
+
+      expect(window.process?.env.projectBaseUrl).toBe(logic);
+      expect(window.process?.env.notificationBaseUrl).toBe(logic);
+    });
+
+    it("use BLOCKS_OS_BASE_URL once BLOCKS_LOGIC_BASE_URL is gone", async () => {
+      await renderWithEnv("blocks-release", { BLOCKS_OS_BASE_URL: os });
+
+      expect(window.process?.env.projectBaseUrl).toBe(os);
+      expect(window.process?.env.notificationBaseUrl).toBe(os);
+    });
+
+    it("keeps BLOCKS_OS_BASE_URL as the project base for blocks-os", async () => {
+      await renderWithEnv("blocks-os", {
+        BLOCKS_OS_BASE_URL: os,
+        BLOCKS_LOGIC_BASE_URL: logic,
+      });
+
+      expect(window.process?.env.projectBaseUrl).toBe(os);
+      expect(window.process?.env.notificationBaseUrl).toBe(logic);
     });
   });
 });

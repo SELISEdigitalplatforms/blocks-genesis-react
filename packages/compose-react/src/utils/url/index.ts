@@ -1,5 +1,6 @@
 import type { RuntimeKey } from "@/types";
 import { getRuntimeEnv } from "@/lib";
+import { getMergedAreaBaseUrl, isMergedAreaKey } from "@/lib/merged-area";
 import type { ServiceName } from "@/store";
 
 /**
@@ -69,6 +70,8 @@ export const getServiceSwaggerUrl = (
 ): string | undefined => {
   const baseUrl = getServiceBaseUrl(serviceName);
   if (!baseUrl) return undefined;
-  const runTimeBaseUrl = getRuntimeEnv(baseUrl);
+  const runTimeBaseUrl = isMergedAreaKey(baseUrl)
+    ? getMergedAreaBaseUrl(baseUrl)
+    : getRuntimeEnv(baseUrl);
   return `${runTimeBaseUrl.replace(/\/+$/, "")}/swagger/v1/swagger.json`;
 };

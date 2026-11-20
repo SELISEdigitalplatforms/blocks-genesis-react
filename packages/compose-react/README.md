@@ -60,7 +60,7 @@ Service base URLs and keys are read at runtime, not baked in at build time. Prov
 </script>
 ```
 
-Read values with `getRuntimeEnv` from `@seliseblocks/genesis-os/lib`. The full key list is the `RuntimeKey` union exported from `@seliseblocks/genesis-os/types` (per-service `*_BASE_URL`, `*_CLIENT_ID`, and `*_CALLBACK_URL` keys plus `BLOCKS_X_BLOCKS_KEY` and others).
+Read values with `getRuntimeEnv` from `@seliseblocks/genesis-os/lib`. Logic, localization, data and monitor are served by the os host: for those, `getMergedAreaBaseUrl("BLOCKS_LOGIC_BASE_URL")` (and the same for the other three) returns the area's key while it is set, else `BLOCKS_OS_BASE_URL`, so an app can drop the area keys once its environment runs blocks-os-net-react. The full key list is the `RuntimeKey` union exported from `@seliseblocks/genesis-os/types` (per-service `*_BASE_URL`, `*_CLIENT_ID`, and `*_CALLBACK_URL` keys plus `BLOCKS_X_BLOCKS_KEY` and others).
 
 ## Quick Start
 

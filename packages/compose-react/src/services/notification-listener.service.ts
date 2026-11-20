@@ -4,10 +4,11 @@ import {
   HubConnectionBuilder,
 } from "@microsoft/signalr";
 import { getRuntimeEnv } from "@/lib/runtime-env";
+import { getMergedAreaBaseUrl } from "@/lib/merged-area";
 import { notificationService } from "@/services/notification.service";
 
 const logicOrigin = (): string =>
-  getRuntimeEnv("BLOCKS_LOGIC_BASE_URL").trim().replace(/\/$/, "");
+  getMergedAreaBaseUrl("BLOCKS_LOGIC_BASE_URL").trim().replace(/\/$/, "");
 
 // Wait before retry n (0-based); after the list is used up, retry every minute.
 const RETRY_DELAYS_MS = [2000, 5000, 15_000, 30_000];
