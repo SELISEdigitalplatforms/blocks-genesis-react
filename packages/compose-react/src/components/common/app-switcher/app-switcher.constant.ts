@@ -8,6 +8,7 @@ import ReleaseIcon from "@/assets/images/apps/v2/Release.svg";
 import StudioIcon from "@/assets/images/apps/v2/Studio.svg";
 import UtilitiesIcon from "@/assets/images/apps/v2/Utilities.svg";
 import { getRuntimeEnv } from "@/lib/runtime-env";
+import type { RuntimeKey } from "@/types";
 import type { BlocksApp } from "./app-switcher.types";
 
 const APP_SWITCHER_DATA: BlocksApp[] = [
@@ -145,8 +146,22 @@ const isAppAllowed = (app: BlocksApp): boolean => {
   return allowedServiceIds.has(app.id);
 };
 
+// Apps served by a service that not every installation runs. Each one is listed only when its
+// runtime setting is "true", so an installation without that service shows no dead entry.
+const OPTIONAL_APP_FEATURES: Partial<Record<string, RuntimeKey>> = {
+  "blocks-agents": "BLOCKS_FEATURE_AGENTS",
+  "blocks-studio": "BLOCKS_FEATURE_STUDIO",
+};
+
+const isAppFeatureEnabled = (app: BlocksApp): boolean => {
+  const feature = OPTIONAL_APP_FEATURES[app.id];
+  if (!feature) return true;
+  return getRuntimeEnv(feature).trim().toLowerCase() === "true";
+};
+
 export const filteredAppSwitcherData = APP_SWITCHER_DATA.filter((app) => {
   if (!isAppAllowed(app)) return false;
+  if (!isAppFeatureEnabled(app)) return false;
   return typeof app.isDisabled === "function"
     ? !app.isDisabled()
     : !app.isDisabled;

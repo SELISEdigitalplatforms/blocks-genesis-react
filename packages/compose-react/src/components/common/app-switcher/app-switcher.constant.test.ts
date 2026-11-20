@@ -71,10 +71,57 @@ describe("filteredAppSwitcherData", () => {
       ...MERGED_KEYS_SET,
       BLOCKS_ALLOWED_SERVICES:
         " blocks-os , blocks-logic , blocks-data , blocks-localization , blocks-monitor , blocks-release , blocks-studio , blocks-utilities , blocks-agents ",
+      BLOCKS_FEATURE_AGENTS: "true",
+      BLOCKS_FEATURE_STUDIO: "true",
     };
     const { filteredAppSwitcherData } =
       await import("@/components/common/app-switcher/app-switcher.constant");
     expect(filteredAppSwitcherData.length).toBe(9);
+  });
+
+  it("hides Agents and Studio when their feature settings are not set", async () => {
+    const { filteredAppSwitcherData } =
+      await import("@/components/common/app-switcher/app-switcher.constant");
+    const ids = filteredAppSwitcherData.map((a) => a.id);
+    expect(ids).not.toContain("blocks-agents");
+    expect(ids).not.toContain("blocks-studio");
+    expect(ids).toContain("blocks-os");
+  });
+
+  it("hides Agents and Studio when their feature settings are not true", async () => {
+    h.env = { BLOCKS_FEATURE_AGENTS: "false", BLOCKS_FEATURE_STUDIO: "1" };
+    const { filteredAppSwitcherData } =
+      await import("@/components/common/app-switcher/app-switcher.constant");
+    const ids = filteredAppSwitcherData.map((a) => a.id);
+    expect(ids).not.toContain("blocks-agents");
+    expect(ids).not.toContain("blocks-studio");
+  });
+
+  it("lists Agents and Studio each when its own feature setting is true", async () => {
+    h.env = { BLOCKS_FEATURE_AGENTS: " TRUE " };
+    const agentsOnly = (
+      await import("@/components/common/app-switcher/app-switcher.constant")
+    ).filteredAppSwitcherData.map((a) => a.id);
+    expect(agentsOnly).toContain("blocks-agents");
+    expect(agentsOnly).not.toContain("blocks-studio");
+
+    vi.resetModules();
+    h.env = { BLOCKS_FEATURE_STUDIO: "true" };
+    const studioOnly = (
+      await import("@/components/common/app-switcher/app-switcher.constant")
+    ).filteredAppSwitcherData.map((a) => a.id);
+    expect(studioOnly).toContain("blocks-studio");
+    expect(studioOnly).not.toContain("blocks-agents");
+  });
+
+  it("still applies the BLOCKS_ALLOWED_SERVICES whitelist to an enabled feature", async () => {
+    h.env = {
+      BLOCKS_ALLOWED_SERVICES: "blocks-os",
+      BLOCKS_FEATURE_AGENTS: "true",
+    };
+    const { filteredAppSwitcherData } =
+      await import("@/components/common/app-switcher/app-switcher.constant");
+    expect(filteredAppSwitcherData.map((a) => a.id)).toEqual(["blocks-os"]);
   });
 
   it("falls back to all enabled apps when the env var is empty", async () => {
