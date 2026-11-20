@@ -26,20 +26,26 @@ const AppTile = ({ app }: { app: ResolvedApp }) => {
   const unavailableText = isUnavailable
     ? t("APP_SWITCHER_CONTENT.UNAVAILABLE", { label: app.label })
     : undefined;
+  // Every way a link can be used. Its state is single-use, so each one swaps in a fresh URL; the context menu counts
+  // because "Open in new tab" and "Copy link" both start from it. An inert tile gets none of them: without an href
+  // the anchor cannot navigate, so it needs no click handler either.
+  const linkProps: React.AnchorHTMLAttributes<HTMLAnchorElement> = isInert
+    ? {}
+    : {
+        href: app.initiateUrl,
+        onClick: app.markUsed,
+        onAuxClick: (e) => {
+          if (e.button === 1) app.markUsed();
+        },
+        onContextMenu: app.markUsed,
+        onDragStart: app.markUsed,
+      };
   return (
     <a
-      href={isInert ? undefined : app.initiateUrl}
+      {...linkProps}
       aria-disabled={isInert}
       // Shown on hover and read as the tile's accessible description.
       title={unavailableText}
-      // Every way a link can be used. Its state is single-use, so each one swaps in a fresh URL;
-      // the context menu counts because "Open in new tab" and "Copy link" both start from it.
-      onClick={isInert ? (e) => e.preventDefault() : app.markUsed}
-      onAuxClick={(e) => {
-        if (!isInert && e.button === 1) app.markUsed();
-      }}
-      onContextMenu={isInert ? undefined : app.markUsed}
-      onDragStart={isInert ? undefined : app.markUsed}
       className={cn(
         "hover:bg-accent focus-visible:ring-ring group flex flex-col items-center gap-2 rounded-xl p-3 text-center transition-colors focus-visible:outline-none focus-visible:ring-2",
         isLoading && "pointer-events-none opacity-50 cursor-default",
@@ -76,11 +82,11 @@ export function AppSwitcherContent({ apps }: AppSwitcherContentProps) {
 
   return (
     <div className="bg-muted/50 border-t px-3 pb-4 pt-3">
-      {/* eslint-disable no-restricted-syntax -- product name, not translated */}
+      {}
       <p className="text-muted-foreground mb-2 px-1 text-[13px] font-semibold">
         SELISE Blocks
       </p>
-      {/* eslint-enable no-restricted-syntax */}
+      {}
       <div className="grid grid-cols-3">
         {apps.map((app) => (
           <AppTile key={app.id} app={app} />
