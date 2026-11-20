@@ -1,4 +1,5 @@
 import { getRuntimeEnv } from "@/lib/runtime-env";
+import { getMergedAreaBaseUrl } from "@/lib/merged-area";
 
 export interface I18nConfig {
   /** Origin of the localization service; `/api/Key/GetUilmFile` and `/api/Language/Gets` are called on it. */
@@ -12,7 +13,7 @@ export interface I18nConfig {
 }
 
 const defaults: Required<I18nConfig> = {
-  baseUrl: () => getRuntimeEnv("BLOCKS_LOCALIZATION_BASE_URL"),
+  baseUrl: () => getMergedAreaBaseUrl("BLOCKS_LOCALIZATION_BASE_URL"),
   blocksKey: () => getRuntimeEnv("BLOCKS_X_BLOCKS_KEY"),
   timeoutMs: 3000,
   retryAfterMs: 30000,

@@ -5,6 +5,7 @@ import {
   type AppConfigStoreState,
 } from "@/store/app-config.store";
 import { useDocumentLanguage } from "@/i18n/use-t";
+import { getMergedAreaBaseUrl } from "@/lib/merged-area";
 import type { RuntimeKey } from "@/types";
 import { useState } from "react";
 
@@ -31,12 +32,12 @@ browserWindow.process = {
 export const BlocksAppLayout = ({ children, config }: BlocksAppLayoutProps) => {
   const [store] = useState(() => CreateAppConfigStore(config));
   if (window && window.process && config) {
-    const projectBaseUrlKey =
-      config.name === "blocks-os"
-        ? "BLOCKS_OS_BASE_URL"
-        : "BLOCKS_LOGIC_BASE_URL";
+    // Logic is served by the os host now: getMergedAreaBaseUrl uses BLOCKS_LOGIC_BASE_URL while the app still sets
+    // it, else BLOCKS_OS_BASE_URL.
     window.process.env.projectBaseUrl =
-      window.process.env[projectBaseUrlKey] ?? "";
+      config.name === "blocks-os"
+        ? (window.process.env.BLOCKS_OS_BASE_URL ?? "")
+        : getMergedAreaBaseUrl("BLOCKS_LOGIC_BASE_URL");
 
     // When the host app IS blocks-iam, the IAM API is same-origin with this SPA
     // (the client is built into server/Api/wwwroot and one Kestrel serves both),
@@ -50,10 +51,9 @@ export const BlocksAppLayout = ({ children, config }: BlocksAppLayoutProps) => {
         ? window.location.origin
         : window.process?.env["BLOCKS_IAM_BASE_URL"] || "";
 
-    const notificationBaseUrlKey = "BLOCKS_LOGIC_BASE_URL";
-    window.process.env["notificationBaseUrl"] = notificationBaseUrlKey
-      ? window.process?.env[notificationBaseUrlKey] || ""
-      : "";
+    window.process.env["notificationBaseUrl"] = getMergedAreaBaseUrl(
+      "BLOCKS_LOGIC_BASE_URL",
+    );
   }
   return (
     <BlocksAppLayoutContext.Provider value={store}>

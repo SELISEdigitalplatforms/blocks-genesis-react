@@ -13,10 +13,11 @@ import type {
 } from "@/models";
 import { PROJECT_ENDPOINTS } from "@/constants/endpoint.constant";
 import { getRuntimeEnv, HttpClient } from "@/lib";
+import { getMergedAreaBaseUrl } from "@/lib/merged-area";
 
 //Exception only for OS.
 const logicClientForOS = new HttpClient({
-  baseURL: () => getRuntimeEnv("BLOCKS_LOGIC_BASE_URL"),
+  baseURL: () => getMergedAreaBaseUrl("BLOCKS_LOGIC_BASE_URL"),
   blocksKey: () => getRuntimeEnv("BLOCKS_X_BLOCKS_KEY"),
 });
 

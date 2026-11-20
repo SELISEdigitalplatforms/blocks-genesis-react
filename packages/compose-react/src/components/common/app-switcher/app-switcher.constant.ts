@@ -21,7 +21,8 @@ const APP_SWITCHER_DATA: BlocksApp[] = [
     redirectUri: "BLOCKS_LOCALIZATION_CALLBACK_URL",
     initiateUrl: "",
     isLoading: false,
-    isDisabled: false,
+    // Merged into OS: shown only while this app still sets BLOCKS_LOCALIZATION_BASE_URL.
+    isDisabled: () => !getRuntimeEnv("BLOCKS_LOCALIZATION_BASE_URL"),
   },
   {
     id: "blocks-agents",
@@ -45,7 +46,8 @@ const APP_SWITCHER_DATA: BlocksApp[] = [
     redirectUri: "BLOCKS_DATA_CALLBACK_URL",
     initiateUrl: "",
     isLoading: false,
-    isDisabled: false,
+    // Merged into OS: shown only while this app still sets BLOCKS_DATA_BASE_URL.
+    isDisabled: () => !getRuntimeEnv("BLOCKS_DATA_BASE_URL"),
   },
   {
     id: "blocks-os",
@@ -81,7 +83,8 @@ const APP_SWITCHER_DATA: BlocksApp[] = [
     redirectUri: "BLOCKS_LOGIC_CALLBACK_URL",
     initiateUrl: "",
     isLoading: false,
-    isDisabled: false,
+    // Merged into OS: shown only while this app still sets BLOCKS_LOGIC_BASE_URL.
+    isDisabled: () => !getRuntimeEnv("BLOCKS_LOGIC_BASE_URL"),
   },
   {
     id: "blocks-monitor",
@@ -93,7 +96,8 @@ const APP_SWITCHER_DATA: BlocksApp[] = [
     redirectUri: "BLOCKS_MONITOR_CALLBACK_URL",
     initiateUrl: "",
     isLoading: false,
-    isDisabled: false,
+    // Merged into OS: shown only while this app still sets BLOCKS_MONITOR_BASE_URL.
+    isDisabled: () => !getRuntimeEnv("BLOCKS_MONITOR_BASE_URL"),
   },
   {
     id: "blocks-release",
