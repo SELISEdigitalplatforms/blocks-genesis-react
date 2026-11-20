@@ -1,11 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import {
-  createEvent,
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-} from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 vi.mock("@/hooks/use-blocks-app-config-store", () => ({
@@ -153,13 +147,13 @@ describe("AppSwitcherContent tiles", () => {
     );
     const agents = tileOf("Agents");
 
-    const click = createEvent.click(agents);
-    fireEvent(agents, click);
+    fireEvent.click(agents);
     fireEvent(agents, new MouseEvent("auxclick", { bubbles: true, button: 1 }));
     fireEvent.contextMenu(agents);
     fireEvent.dragStart(agents);
 
-    expect(click.defaultPrevented).toBe(true);
+    // No href: the anchor cannot navigate.
+    expect(agents).not.toHaveAttribute("href");
     expect(markUsed).not.toHaveBeenCalled();
   });
 

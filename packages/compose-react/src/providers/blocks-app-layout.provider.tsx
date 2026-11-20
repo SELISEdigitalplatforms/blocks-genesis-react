@@ -31,12 +31,13 @@ browserWindow.process = {
 
 export const BlocksAppLayout = ({ children, config }: BlocksAppLayoutProps) => {
   const [store] = useState(() => CreateAppConfigStore(config));
-  if (window && window.process && config) {
+  const env = browserWindow.process?.env;
+  if (env && config) {
     // Logic is served by the os host now: getMergedAreaBaseUrl uses BLOCKS_LOGIC_BASE_URL while the app still sets
     // it, else BLOCKS_OS_BASE_URL.
-    window.process.env.projectBaseUrl =
+    env.projectBaseUrl =
       config.name === "blocks-os"
-        ? (window.process.env.BLOCKS_OS_BASE_URL ?? "")
+        ? (env.BLOCKS_OS_BASE_URL ?? "")
         : getMergedAreaBaseUrl("BLOCKS_LOGIC_BASE_URL");
 
     // When the host app IS blocks-iam, the IAM API is same-origin with this SPA
@@ -46,14 +47,12 @@ export const BlocksAppLayout = ({ children, config }: BlocksAppLayoutProps) => {
     // served on, so it points at the canonical host even on a per-PR preview —
     // which would send the preview's own login/me/status calls to shared dev.
     // Every other app talks to IAM cross-origin and keeps using the config value.
-    window.process.env["userBaseUrl"] =
+    env["userBaseUrl"] =
       config.name === "blocks-iam"
-        ? window.location.origin
-        : window.process?.env["BLOCKS_IAM_BASE_URL"] || "";
+        ? globalThis.location.origin
+        : env["BLOCKS_IAM_BASE_URL"] || "";
 
-    window.process.env["notificationBaseUrl"] = getMergedAreaBaseUrl(
-      "BLOCKS_LOGIC_BASE_URL",
-    );
+    env["notificationBaseUrl"] = getMergedAreaBaseUrl("BLOCKS_LOGIC_BASE_URL");
   }
   return (
     <BlocksAppLayoutContext.Provider value={store}>
