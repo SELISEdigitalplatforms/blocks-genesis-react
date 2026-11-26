@@ -121,8 +121,22 @@ describe("getNotificationHref in the merged os console", () => {
     );
   });
 
-  it("keeps a logic link plain while the os app still sets BLOCKS_LOGIC_BASE_URL", () => {
+  it("keeps a logic link plain while BLOCKS_LOGIC_BASE_URL points at another host", () => {
     h.env = { BLOCKS_LOGIC_BASE_URL: "https://logic.example.test" };
+
+    expect(getNotificationHref(runFailed, OS, PROJECT)).toBeNull();
+  });
+
+  it("opens a logic link when BLOCKS_LOGIC_BASE_URL is this console's own origin", () => {
+    h.env = { BLOCKS_LOGIC_BASE_URL: `${window.location.origin}/` };
+
+    expect(getNotificationHref(runFailed, OS, PROJECT)).toBe(
+      "/app/project-1/workflow/wf-1?tab=executions&executionId=ex-1",
+    );
+  });
+
+  it("keeps a logic link plain when BLOCKS_LOGIC_BASE_URL is not a URL", () => {
+    h.env = { BLOCKS_LOGIC_BASE_URL: "http://[bad" };
 
     expect(getNotificationHref(runFailed, OS, PROJECT)).toBeNull();
   });

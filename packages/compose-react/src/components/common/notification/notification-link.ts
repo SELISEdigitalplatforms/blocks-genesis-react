@@ -166,15 +166,33 @@ const MERGED_INTO_OS: Partial<Record<ServiceName, MergedAreaKey>> = {
   "blocks-logic": "BLOCKS_LOGIC_BASE_URL",
 };
 
+/** True when `url` is unset or points at the page's own origin: the area is served by this console. */
+const isServedHere = (url: string): boolean => {
+  if (!url) return true;
+  if (typeof window === "undefined") return false;
+  try {
+    return (
+      new URL(url, window.location.origin).origin === window.location.origin
+    );
+  } catch {
+    return false;
+  }
+};
+
 /**
  * Whether a link of `linkApp` opens in `currentApp`: its own app, or blocks-os for a merged area. The area counts as
- * merged when the app no longer sets its base-URL key, the same rule as `getMergedAreaBaseUrl`, so an os console
- * without the area's pages keeps the link plain.
+ * merged when its base-URL key is unset (the `getMergedAreaBaseUrl` rule) or points at this console's own origin
+ * (deployments that set the key to the os host). An os console whose key points at another host, such as the old
+ * logic app, keeps the link plain.
  */
 const opensIn = (linkApp: ServiceName, currentApp: ServiceName): boolean => {
   if (linkApp === currentApp) return true;
   const areaKey = MERGED_INTO_OS[linkApp];
-  return currentApp === "blocks-os" && !!areaKey && !getRuntimeEnv(areaKey);
+  return (
+    currentApp === "blocks-os" &&
+    !!areaKey &&
+    isServedHere(getRuntimeEnv(areaKey))
+  );
 };
 
 /**
