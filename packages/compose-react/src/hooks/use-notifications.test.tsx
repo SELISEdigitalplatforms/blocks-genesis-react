@@ -84,4 +84,38 @@ describe("use-notifications hooks", () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(h.getNotificationConfigs).toHaveBeenCalledWith(0, 100);
   });
+
+  it("keeps the configs query key and returns the response unchanged", async () => {
+    const response = {
+      configurations: [{ notifyMethod: "schema-import" }],
+      totalCount: 1,
+      errors: null,
+      isSuccess: true,
+    };
+    h.getNotificationConfigs.mockResolvedValue(response);
+
+    const { result } = renderHook(() => useGetBlocksNotificationConfig(), {
+      wrapper,
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(h.getNotificationConfigs).toHaveBeenCalledTimes(1);
+    expect(h.getNotificationConfigs).toHaveBeenCalledWith(0, 100);
+    expect(result.current.data).toBe(response);
+    expect(client.getQueryData(["blocksNotificationConfigs", 0, 100])).toBe(
+      response,
+    );
+  });
+
+  it("goes to its error state when the configs request fails", async () => {
+    h.getNotificationConfigs.mockRejectedValue(new Error("HTTP 500"));
+
+    const { result } = renderHook(() => useGetBlocksNotificationConfig(), {
+      wrapper,
+    });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.data).toBeUndefined();
+    expect(h.getNotificationConfigs).toHaveBeenCalledTimes(1);
+  });
 });

@@ -75,7 +75,10 @@ export class NotificationService {
     errors: null | unknown;
     isSuccess: boolean;
   }> => {
-    const url = `${NOTIFICATION_CONFIG_ENDPOINTS.GET_CONFIGS}?page=${page}&pageSize=${pageSize}`;
+    // Always ask os for the root tenant's Console built-ins (such as `schema-import`) so a
+    // console user inside a project subscribes to them too. os honours the flag only for
+    // console callers, and servers that do not know it ignore the unknown query key.
+    const url = `${NOTIFICATION_CONFIG_ENDPOINTS.GET_CONFIGS}?page=${page}&pageSize=${pageSize}&includeConsoleBuiltIns=true`;
     return this.notificationService.get(url);
   };
 }
