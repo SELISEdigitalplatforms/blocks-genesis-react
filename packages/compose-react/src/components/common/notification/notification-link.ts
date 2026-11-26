@@ -1,3 +1,5 @@
+import { getRuntimeEnv } from "@/lib/runtime-env";
+import type { MergedAreaKey } from "@/lib/merged-area";
 import type { ServiceName } from "@/store";
 
 /**
@@ -159,6 +161,22 @@ export function getNotificationLink(
   return build ? build(payload) : null;
 }
 
+/** Apps whose pages blocks-os serves once they are merged into it, with the base-URL key that marks them as still separate. */
+const MERGED_INTO_OS: Partial<Record<ServiceName, MergedAreaKey>> = {
+  "blocks-logic": "BLOCKS_LOGIC_BASE_URL",
+};
+
+/**
+ * Whether a link of `linkApp` opens in `currentApp`: its own app, or blocks-os for a merged area. The area counts as
+ * merged when the app no longer sets its base-URL key, the same rule as `getMergedAreaBaseUrl`, so an os console
+ * without the area's pages keeps the link plain.
+ */
+const opensIn = (linkApp: ServiceName, currentApp: ServiceName): boolean => {
+  if (linkApp === currentApp) return true;
+  const areaKey = MERGED_INTO_OS[linkApp];
+  return currentApp === "blocks-os" && !!areaKey && !getRuntimeEnv(areaKey);
+};
+
 /**
  * The in-app path for a notification, or null when it cannot open here: its page lives in another
  * app, or it needs a project and none is open (for example on the console page).
@@ -169,7 +187,7 @@ export function getNotificationHref(
   projectItemId: string | undefined,
 ): string | null {
   const link = getNotificationLink(denormalizedPayload);
-  if (link?.app !== currentApp) return null;
+  if (!link || !opensIn(link.app, currentApp)) return null;
   if (!link.scoped) return link.path;
   return projectItemId
     ? `/app/${encodeURIComponent(projectItemId)}/${link.path}`
