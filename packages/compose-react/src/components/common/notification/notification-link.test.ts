@@ -1,4 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const h = vi.hoisted(() => ({ env: {} as Record<string, string> }));
+vi.mock("@/lib/runtime-env", () => ({
+  getRuntimeEnv: (key: string) => h.env[key] ?? "",
+}));
+
 import { getNotificationHref, getNotificationLink } from "./notification-link";
 
 const payload = (fields: Record<string, unknown>) => JSON.stringify(fields);
@@ -8,6 +14,10 @@ const FUNCTION_RUN_FAILED = "FunctionRunFailed";
 const FUNCTION_ID = "fn-1";
 
 describe("getNotificationHref", () => {
+  beforeEach(() => {
+    h.env = {};
+  });
+
   it("opens the failed workflow run on the executions tab", () => {
     const raw = payload({
       event: "WorkflowRunFailed",
@@ -71,6 +81,68 @@ describe("getNotificationHref", () => {
     expect(getNotificationHref(raw, LOGIC, PROJECT)).toBe(
       "/app/project-1/functions/..%2F..%2Fconsole%3Fx%3D1",
     );
+  });
+});
+
+describe("getNotificationHref in the merged os console", () => {
+  const OS = "blocks-os";
+  const runFailed = payload({
+    event: "WorkflowRunFailed",
+    workflowId: "wf-1",
+    executionId: "ex-1",
+  });
+
+  beforeEach(() => {
+    h.env = {};
+  });
+
+  it("opens a logic link once logic is merged (no BLOCKS_LOGIC_BASE_URL)", () => {
+    expect(getNotificationHref(runFailed, OS, PROJECT)).toBe(
+      "/app/project-1/workflow/wf-1?tab=executions&executionId=ex-1",
+    );
+  });
+
+  it("opens the failed function run and the schedule", () => {
+    const fn = payload({
+      event: FUNCTION_RUN_FAILED,
+      functionId: FUNCTION_ID,
+      runId: "run-1",
+    });
+    const schedule = payload({
+      event: "ScheduleRegistrationFailed",
+      scheduleId: "s-1",
+    });
+
+    expect(getNotificationHref(fn, OS, PROJECT)).toBe(
+      "/app/project-1/functions/fn-1?tab=runs&runId=run-1",
+    );
+    expect(getNotificationHref(schedule, OS, PROJECT)).toBe(
+      "/app/project-1/schedule/s-1",
+    );
+  });
+
+  it("keeps a logic link plain while the os app still sets BLOCKS_LOGIC_BASE_URL", () => {
+    h.env = { BLOCKS_LOGIC_BASE_URL: "https://logic.example.test" };
+
+    expect(getNotificationHref(runFailed, OS, PROJECT)).toBeNull();
+  });
+
+  it("still needs an open project for a logic link", () => {
+    expect(getNotificationHref(runFailed, OS, undefined)).toBeNull();
+  });
+
+  it("does not open release links in os", () => {
+    const raw = payload({
+      event: "release-build-finished",
+      repoId: "r-1",
+      buildId: "b-1",
+    });
+
+    expect(getNotificationHref(raw, OS, PROJECT)).toBeNull();
+  });
+
+  it("does not open logic links in other merged-area apps", () => {
+    expect(getNotificationHref(runFailed, "blocks-data", PROJECT)).toBeNull();
   });
 });
 
